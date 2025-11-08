@@ -30,17 +30,16 @@ namespace ProjectCore.Domain.DITools
             T feature = Container.Instantiate<T>(new[] { Container });
             _features.Add(feature);
         }
+        protected virtual UniTask DoBeforeInitialization()
+        {
+            return UniTask.CompletedTask;
+        }
 
-        protected virtual async UniTask DoAfterInitialization()
+        protected virtual UniTask DoAfterInitialization()
         {
             Application.targetFrameRate = 60;
 
-            await UniTask.CompletedTask;
-        }
-
-        protected virtual async UniTask DoBeforeInitialization()
-        {
-            await UniTask.CompletedTask;
+            return UniTask.CompletedTask;
         }
 
         private async UniTask InitFeatures()
