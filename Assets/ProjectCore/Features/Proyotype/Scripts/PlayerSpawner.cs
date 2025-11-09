@@ -10,12 +10,15 @@ namespace ProjectCore.Features.Proyotype
     {
         [SerializeField] private NetworkRunner _runner;
         [SerializeField] private NetworkPrefabRef _playerPrefab;
+        [SerializeField] private BotSpawner _botSpawner;
 
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
             if (runner.LocalPlayer == player)
                 runner.Spawn(_playerPrefab, Vector3.zero, Quaternion.identity, player);
+
+            _botSpawner.SpawnBot();
         }
 
         public void OnInput(NetworkRunner runner, NetworkInput input)
@@ -25,8 +28,6 @@ namespace ProjectCore.Features.Proyotype
                 Horizontal = Input.GetAxisRaw("Horizontal"),
                 Vertical = Input.GetAxisRaw("Vertical")
             };
-
-            Debug.Log($"Player Input - Horizontal: {data.Horizontal}, Vertical: {data.Vertical}");
 
             input.Set(data);
         }
