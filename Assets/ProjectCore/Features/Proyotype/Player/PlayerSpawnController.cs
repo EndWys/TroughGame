@@ -10,7 +10,7 @@ namespace ProjectCore.Features.Proyotype.Player
 
         public override void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
-            if (runner.LocalPlayer == player)
+            if (HasStateAuthority)
             {
                 runner.Spawn(_playerPrefab, Vector3.zero, Quaternion.identity, player);
             }
