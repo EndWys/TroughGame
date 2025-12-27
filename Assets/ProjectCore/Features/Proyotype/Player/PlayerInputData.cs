@@ -1,6 +1,6 @@
 using Fusion;
 
-namespace ProjectCore.Features.Proyotype
+namespace ProjectCore.Features.Proyotype.Player
 {
     public struct PlayerInputData : INetworkInput
     {
