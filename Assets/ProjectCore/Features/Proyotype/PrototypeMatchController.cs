@@ -14,14 +14,34 @@ namespace ProjectCore.Features.Proyotype
         [Header("NETWORKED")]
         [Networked, OnChangedRender(nameof(OnMatchStateChanged))]
         [UnitySerializeField] private bool IsMatchRunning { get; set; }
+        
+        private ChangeDetector _changeDetector;
 
-        public override void FixedUpdateNetwork()
+        public override void Spawned()
+        {
+            base.Spawned();
+            
+            _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+        }
+
+        public override void Render()
         {
             if (!IsMatchRunning && Input.GetKeyDown(KeyCode.R))
             {
                 IsMatchRunning = true;
 
                 _botNetworkSpawnController.SpawnBot(_enemiesCount);
+            }
+        }
+
+        public override void FixedUpdateNetwork()
+        {
+            foreach (var change in _changeDetector.DetectChanges(this))
+            {
+                if (change == nameof(IsMatchRunning))
+                {
+                    Debug.Log($"Match state : {IsMatchRunning}");
+                }
             }
         }
 
