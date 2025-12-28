@@ -2,6 +2,13 @@
 {
     public enum EPlayerEventType
     {
-        OnPlayerWalk,
+        //Functional Events - Changing Data.
+        OnPlayerMovementStateChange,
+        OnPlayerTakeDamage,
+        OnPlayerHealthChange,
+        OnPlayerDeath,
+        
+        //Render Events - Casting VFX, Sounds, Visualization.
+        OnRenderPlayerTakeDamage
     }
 }

@@ -3,7 +3,8 @@ using ProjectCore.Features.Proyotype.Player.PlayerMediator;
 
 namespace ProjectCore.Features.Proyotype.Player
 {
-    public interface IPlayerColleague : IColleague<IPlayerColleague, EPlayerEventType>  {
+    public interface IPlayerColleague : IColleague<IPlayerColleague, EPlayerEventType>  
+    {
         
     }
 }

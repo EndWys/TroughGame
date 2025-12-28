@@ -16,6 +16,9 @@ GameObject:
   - component: {fileID: 7077760923883732126}
   - component: {fileID: 2687064979445113890}
   - component: {fileID: 1299870013283304158}
+  - component: {fileID: 5363297754012948237}
+  - component: {fileID: 2987931504888385604}
+  - component: {fileID: 7389111313936471077}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -155,6 +158,8 @@ MonoBehaviour:
   - {fileID: 1283588911771727745}
   - {fileID: 2687064979445113890}
   - {fileID: 1299870013283304158}
+  - {fileID: 5363297754012948237}
+  - {fileID: 2987931504888385604}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &2687064979445113890
 MonoBehaviour:
@@ -169,6 +174,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.PlayerMediator.PlayerMediator
   _playerMovement: {fileID: 1299870013283304158}
+  _playerDamageTaker: {fileID: 2987931504888385604}
+  _playerHealth: {fileID: 5363297754012948237}
 --- !u!114 &1299870013283304158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,3 +189,58 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 5
+  _MovementState: 1
+  _PreviousMovementState: 1
+--- !u!114 &5363297754012948237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5296368440522977987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0cd9331c5b64ff49ae38432b4ac4a82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.PlayerHealth
+  _Health: 100
+--- !u!114 &2987931504888385604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5296368440522977987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2434ae924985495484f0c35f62464ebb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.PlayerDamageTaker
+  _defaultDamage: 10
+--- !u!54 &7389111313936471077
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5296368440522977987}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
