@@ -8,6 +8,7 @@ namespace ProjectCore.Features.Proyotype.Player
 {
     public class PlayerMovement : NetworkBehaviour, IPlayerColleague
     {
+        [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private float _speed = 5f;
         
         private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
@@ -47,7 +48,7 @@ namespace ProjectCore.Features.Proyotype.Player
 
         private void Walk(Vector3 direction)
         {
-            transform.position += direction * _speed * Runner.DeltaTime;
+            _rigidbody.linearVelocity += direction * _speed * Runner.DeltaTime;
 
             TryChangeMovementState(EMovementState.Walk);
         }
