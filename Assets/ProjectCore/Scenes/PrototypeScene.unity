@@ -278,6 +278,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -419,6 +420,27 @@ MonoBehaviour:
   Components:
   - {fileID: 330585544}
   _guid: 34a8f491-1e17-439a-
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e03aae0a30bda41849ee2591c21bc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.FollowCameraController
+  _distance: 4
+  _heightOffset: 1.5
+  _followDamping: 0.1
+  _rotationDamping: 0.1
+  _collisionLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  _collisionRadius: 0.2
+  _collisionBuffer: 0.2
 --- !u!1 &376331425
 GameObject:
   m_ObjectHideFlags: 0
@@ -879,7 +901,7 @@ Transform:
   m_GameObject: {fileID: 1130018613}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: -3.49, z: 0}
   m_LocalScale: {x: 20, y: 1, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -993,7 +1015,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1401470810}
   - {fileID: 1980592406}
   - {fileID: 109534163}
   - {fileID: 519276624}
@@ -1126,7 +1147,7 @@ GameObject:
   - component: {fileID: 1401470812}
   - component: {fileID: 1401470811}
   m_Layer: 0
-  m_Name: PrototypeNetworkStart
+  m_Name: ===== NETWORK =====
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1145,7 +1166,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1347537687}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1401470811
 MonoBehaviour:
@@ -1680,6 +1701,7 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1401470810}
   - {fileID: 2051810007}
   - {fileID: 489340044}
   - {fileID: 2005479258}

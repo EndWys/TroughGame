@@ -2,7 +2,7 @@
 using ProjectCore.Domain.Scripts.NetworkUtilities;
 using UnityEngine;
 
-namespace ProjectCore.Features.Proyotype.Player
+namespace ProjectCore.Features.Prototype.Player
 {
     public class PlayerCharacterNetworkInputController : BaseNetworkCallbacksBehaviour
     {

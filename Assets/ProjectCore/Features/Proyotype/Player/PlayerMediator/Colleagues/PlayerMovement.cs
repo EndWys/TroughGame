@@ -1,10 +1,10 @@
 using Fusion;
 using ProjectCore.Domain.Scripts.Paterns.Mediator;
-using ProjectCore.Features.Proyotype.Player.PlayerMediator;
-using ProjectCore.Features.Proyotype.Player.PlayerMediator.EventPayloads;
+using ProjectCore.Features.Prototype.Player.PlayerMediator;
+using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
 using UnityEngine;
 
-namespace ProjectCore.Features.Proyotype.Player
+namespace ProjectCore.Features.Prototype.Player
 {
     public class PlayerMovement : NetworkBehaviour, IPlayerColleague
     {
@@ -14,11 +14,14 @@ namespace ProjectCore.Features.Proyotype.Player
         private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
         private ChangeDetector _changeDetector;
         
+        [Header("NETWORKED DATA")]
         [UnitySerializeField][Networked] private EMovementState MovementState { get; set; } = EMovementState.Idle;
         [UnitySerializeField][Networked] private EMovementState PreviousMovementState { get; set; } = EMovementState.Idle;
         
         public override void Spawned()
         {
+            Runner.SetIsSimulated(Object, true);
+            
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         }
         
@@ -48,7 +51,7 @@ namespace ProjectCore.Features.Proyotype.Player
 
         private void Walk(Vector3 direction)
         {
-            _rigidbody.linearVelocity += direction * _speed * Runner.DeltaTime;
+            _rigidbody.linearVelocity = direction * _speed;
 
             TryChangeMovementState(EMovementState.Walk);
         }

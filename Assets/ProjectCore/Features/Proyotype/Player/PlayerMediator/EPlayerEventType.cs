@@ -1,4 +1,4 @@
-﻿namespace ProjectCore.Features.Proyotype.Player.PlayerMediator
+﻿namespace ProjectCore.Features.Prototype.Player.PlayerMediator
 {
     public enum EPlayerEventType
     {

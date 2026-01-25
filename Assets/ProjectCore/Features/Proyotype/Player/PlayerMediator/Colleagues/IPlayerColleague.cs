@@ -1,7 +1,7 @@
 ﻿using ProjectCore.Domain.Scripts.Paterns.Mediator;
-using ProjectCore.Features.Proyotype.Player.PlayerMediator;
+using ProjectCore.Features.Prototype.Player.PlayerMediator;
 
-namespace ProjectCore.Features.Proyotype.Player
+namespace ProjectCore.Features.Prototype.Player
 {
     public interface IPlayerColleague : IColleague<IPlayerColleague, EPlayerEventType>  
     {

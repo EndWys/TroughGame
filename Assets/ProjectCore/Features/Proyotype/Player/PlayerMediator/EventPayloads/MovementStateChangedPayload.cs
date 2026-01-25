@@ -1,4 +1,4 @@
-﻿namespace ProjectCore.Features.Proyotype.Player.PlayerMediator.EventPayloads
+﻿namespace ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads
 {
     public struct MovementStateChangedPayload
     {

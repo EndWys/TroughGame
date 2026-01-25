@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Fusion;
 using ProjectCore.Domain.Scripts.Paterns.Mediator;
-using ProjectCore.Features.Proyotype.Player.PlayerMediator.EventPayloads;
+using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
 using UnityEngine;
 
-namespace ProjectCore.Features.Proyotype.Player.PlayerMediator
+namespace ProjectCore.Features.Prototype.Player.PlayerMediator
 {
     public class PlayerMediator : NetworkBehaviour, IMediator<IPlayerColleague,EPlayerEventType>
     {
