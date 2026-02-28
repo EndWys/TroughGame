@@ -45,12 +45,13 @@ GameObject:
   - component: {fileID: 2754202969061472908}
   - component: {fileID: 7077760923883732126}
   - component: {fileID: 2687064979445113890}
+  - component: {fileID: 7608358037462548737}
+  - component: {fileID: 3198375791311963513}
   - component: {fileID: 1299870013283304158}
   - component: {fileID: 5363297754012948237}
   - component: {fileID: 2987931504888385604}
   - component: {fileID: 7389111313936471077}
   - component: {fileID: 3536249357014696911}
-  - component: {fileID: 3198375791311963513}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -115,11 +116,12 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2687064979445113890}
+  - {fileID: 7608358037462548737}
+  - {fileID: 3198375791311963513}
   - {fileID: 1299870013283304158}
   - {fileID: 5363297754012948237}
   - {fileID: 2987931504888385604}
   - {fileID: 3536249357014696911}
-  - {fileID: 3198375791311963513}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &2687064979445113890
 MonoBehaviour:
@@ -137,6 +139,42 @@ MonoBehaviour:
   _playerMovement: {fileID: 1299870013283304158}
   _playerDamageTaker: {fileID: 2987931504888385604}
   _playerHealth: {fileID: 5363297754012948237}
+--- !u!114 &7608358037462548737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5296368440522977987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6850a0e714d140d28af752f371ffcd8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.GroundChecker
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  _groundCheckRadius: 0.3
+  _groundCheckDistance: 0.3
+  _sphereCastOffset: {x: 0, y: -0.5, z: 0}
+  _IsGrounded: 0
+  _GroundNormal: {x: 0, y: 0, z: 0}
+--- !u!114 &3198375791311963513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5296368440522977987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 783d5a5b1347af84c8cdd1d6a6cb022c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.PlayerCameraTracker
+  _playerTarget: {fileID: 8614388571397523945}
+  _cameraLookTarget: {fileID: 4171049332368208140}
+  _baseFOV: 60
+  _bustedFOVBonus: 10
 --- !u!114 &1299870013283304158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,6 +188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 7389111313936471077}
+  _groundChecker: {fileID: 7608358037462548737}
   _walkSpeed: 5
   _runSpeed: 8
   _rotationSpeed: 150
@@ -231,22 +270,6 @@ MonoBehaviour:
     Position: 0.01
     Rotation: 0.01
     Scale: 0.01
---- !u!114 &3198375791311963513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5296368440522977987}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 783d5a5b1347af84c8cdd1d6a6cb022c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.PlayerCameraTracker
-  _playerTarget: {fileID: 8614388571397523945}
-  _cameraLookTarget: {fileID: 4171049332368208140}
-  _baseFOV: 60
-  _bustedFOVBonus: 10
 --- !u!1 &5978358024866782366
 GameObject:
   m_ObjectHideFlags: 0

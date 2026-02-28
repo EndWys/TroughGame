@@ -2,6 +2,7 @@ using Fusion;
 using ProjectCore.Domain.Scripts.Paterns.Mediator;
 using ProjectCore.Features.Prototype.Player.PlayerMediator;
 using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
+using ProjectCore.Features.Proyotype.Player;
 using UnityEngine;
 
 namespace ProjectCore.Features.Prototype.Player
@@ -10,6 +11,7 @@ namespace ProjectCore.Features.Prototype.Player
     {
         [Header("REFERENCES")]
         [SerializeField] private Rigidbody _rigidbody;
+        [SerializeField] private GroundChecker _groundChecker;
         
         [Header("SETTINGS")]
         [SerializeField] private float _walkSpeed = 5f;
@@ -50,7 +52,6 @@ namespace ProjectCore.Features.Prototype.Player
         {
             if (Mathf.Abs(yawDelta) > 0.01f)
             {
-                // Вращение применяется в FixedUpdateNetwork с использованием Runner.DeltaTime
                 float rotationStep = yawDelta * _rotationSpeed * Runner.DeltaTime;
                 Quaternion deltaRotation = Quaternion.Euler(0, rotationStep, 0);
                 _rigidbody.MoveRotation(_rigidbody.rotation * deltaRotation);
@@ -59,7 +60,6 @@ namespace ProjectCore.Features.Prototype.Player
 
         private void ProcessMovement(PlayerInputData input)
         {
-            // Трансформация ввода в локальные координаты персонажа
             Vector3 moveDirection = (transform.forward * input.MoveDirection.y + transform.right * input.MoveDirection.x).normalized;
 
             if (moveDirection.sqrMagnitude > 0f)
@@ -67,7 +67,6 @@ namespace ProjectCore.Features.Prototype.Player
                 float currentSpeed = input.IsRunning ? _runSpeed : _walkSpeed;
                 Vector3 targetVelocity = moveDirection * currentSpeed;
                 
-                // Сохранение вертикальной скорости (гравитация)
                 targetVelocity.y = _rigidbody.linearVelocity.y;
                 _rigidbody.linearVelocity = targetVelocity;
 
@@ -75,7 +74,6 @@ namespace ProjectCore.Features.Prototype.Player
             }
             else
             {
-                // Сохранение гравитации при остановке
                 _rigidbody.linearVelocity = new Vector3(0, _rigidbody.linearVelocity.y, 0);
                 TryChangeMovementState(EMovementState.Idle);
             }

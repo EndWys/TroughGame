@@ -27,6 +27,21 @@ namespace ProjectCore.Features.Proyotype
             Cursor.visible = true;
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+               if(Cursor.visible)
+               {
+                   SetGameplayMode();
+               }
+               else
+               {
+                   SetUIMode();
+               }
+            }
+        }
+
         private void OnApplicationFocus(bool hasFocus)
         {
             if (hasFocus && Cursor.lockState == CursorLockMode.Locked)

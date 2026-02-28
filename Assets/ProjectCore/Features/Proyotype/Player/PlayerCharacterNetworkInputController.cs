@@ -11,7 +11,7 @@ namespace ProjectCore.Features.Prototype.Player
             var data = new PlayerInputData
             {
                 MoveDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized,
-                LookYawDelta = Input.GetAxisRaw("Mouse X"),
+                LookYawDelta = Cursor.lockState == CursorLockMode.Locked ? 0f : Input.GetAxisRaw("Mouse X"),
                 IsRunning = Input.GetKey(KeyCode.LeftShift),
             };
 

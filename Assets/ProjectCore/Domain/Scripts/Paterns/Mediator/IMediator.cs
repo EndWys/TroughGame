@@ -1,5 +1,4 @@
 using System;
-using Cysharp.Threading.Tasks;
 
 namespace ProjectCore.Domain.Scripts.Paterns.Mediator
 {

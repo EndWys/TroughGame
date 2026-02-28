@@ -1,9 +1,11 @@
 ﻿namespace ProjectCore.Features.Prototype.Player.PlayerMediator
 {
-    public enum EPlayerEventType
+    public enum EPlayerEventType : byte
     {
         //Functional Events - Changing Data.
         OnPlayerMovementStateChange,
+        OnPlayerGroundingStateChange,
+        OnPlayerGroundNormalChange,
         OnPlayerTakeDamage,
         OnPlayerHealthChange,
         OnPlayerDeath,
