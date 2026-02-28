@@ -10,8 +10,9 @@ namespace ProjectCore.Features.Prototype.Player
         {
             var data = new PlayerInputData
             {
-                Horizontal = Input.GetAxisRaw("Horizontal"),
-                Vertical = Input.GetAxisRaw("Vertical")
+                MoveDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized,
+                LookYawDelta = Input.GetAxisRaw("Mouse X"),
+                IsRunning = Input.GetKey(KeyCode.LeftShift),
             };
 
             input.Set(data);

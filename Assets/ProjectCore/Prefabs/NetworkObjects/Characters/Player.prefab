@@ -133,6 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 154b8dda91884e19971f5feec2123f91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.PlayerMediator.PlayerMediator
+  _playerCameraTracker: {fileID: 3198375791311963513}
   _playerMovement: {fileID: 1299870013283304158}
   _playerDamageTaker: {fileID: 2987931504888385604}
   _playerHealth: {fileID: 5363297754012948237}
@@ -149,7 +150,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 7389111313936471077}
-  _speed: 3
+  _walkSpeed: 5
+  _runSpeed: 8
+  _rotationSpeed: 150
   _MovementState: 1
   _PreviousMovementState: 1
 --- !u!114 &5363297754012948237
@@ -242,6 +245,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.PlayerCameraTracker
   _playerTarget: {fileID: 8614388571397523945}
   _cameraLookTarget: {fileID: 4171049332368208140}
+  _baseFOV: 60
+  _bustedFOVBonus: 10
 --- !u!1 &5978358024866782366
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,16 +2,24 @@ using Fusion;
 using ProjectCore.Domain.Scripts.Paterns.Mediator;
 using ProjectCore.Features.Prototype.Player;
 using ProjectCore.Features.Prototype.Player.PlayerMediator;
+using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
 using UnityEngine;
 
 namespace ProjectCore.Features.Proyotype.Player
 {
     public class PlayerCameraTracker : NetworkBehaviour, IPlayerColleague
     {
+        [Header("REFERENCES")]
         [SerializeField] private Transform _playerTarget;
         [SerializeField] private Transform _cameraLookTarget;
+     
+        [Header("FOV SETTINGS")]
+        [SerializeField] private float _baseFOV = 60f;
+        [SerializeField] private float _bustedFOVBonus = 10f;
         
         private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
+        
+        private FollowCameraController _cameraController;
         
         public void Initialize(IMediator<IPlayerColleague, EPlayerEventType> mediator)
         {
@@ -20,12 +28,27 @@ namespace ProjectCore.Features.Proyotype.Player
         
         public override void Spawned()
         {
-            var cameraController = FindAnyObjectByType<FollowCameraController>();
-            
-            if (cameraController != null && Object.InputAuthority == Runner.LocalPlayer)
+            if (!HasInputAuthority)
             {
-                cameraController.SetTarget(_playerTarget, _cameraLookTarget);
+                return;
             }
+
+            _cameraController = FindAnyObjectByType<FollowCameraController>();
+            
+            if (_cameraController != null)
+            {
+                _cameraController.SetTarget(_playerTarget, _cameraLookTarget);
+            }
+        }
+
+        public void ChangeFieldOfView(MovementStateChangedPayload movementStateChangedPayload)
+        {
+            if (_cameraController == null)
+            {
+                return;
+            }
+            
+            _cameraController.ChangeFov(movementStateChangedPayload.MovementState == EMovementState.Run ? _baseFOV + _bustedFOVBonus : _baseFOV);
         }
     }
 }

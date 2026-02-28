@@ -8,15 +8,20 @@ namespace ProjectCore.Features.Prototype.Player
 {
     public class PlayerMovement : NetworkBehaviour, IPlayerColleague
     {
+        [Header("REFERENCES")]
         [SerializeField] private Rigidbody _rigidbody;
-        [SerializeField] private float _speed = 5f;
         
-        private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
-        private ChangeDetector _changeDetector;
+        [Header("SETTINGS")]
+        [SerializeField] private float _walkSpeed = 5f;
+        [SerializeField] private float _runSpeed = 8f;
+        [SerializeField] private float _rotationSpeed = 150f;
         
         [Header("NETWORKED DATA")]
         [UnitySerializeField][Networked] private EMovementState MovementState { get; set; } = EMovementState.Idle;
         [UnitySerializeField][Networked] private EMovementState PreviousMovementState { get; set; } = EMovementState.Idle;
+        
+        private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
+        private ChangeDetector _changeDetector;
         
         public override void Spawned()
         {
@@ -34,31 +39,46 @@ namespace ProjectCore.Features.Prototype.Player
         {
             if (GetInput(out PlayerInputData input))
             {
-                Vector3 move = new Vector3(input.Horizontal, 0, input.Vertical);
-
-                if (move.magnitude > 0f)
-                {
-                    Walk(move);
-                }
-                else
-                {
-                    Stop();
-                }
+                ProcessRotation(input.LookYawDelta);
+                ProcessMovement(input);
             }
 
             TryToCheckChanges();
         }
 
-        private void Walk(Vector3 direction)
+        private void ProcessRotation(float yawDelta)
         {
-            _rigidbody.linearVelocity = direction * _speed;
-
-            TryChangeMovementState(EMovementState.Walk);
+            if (Mathf.Abs(yawDelta) > 0.01f)
+            {
+                // Вращение применяется в FixedUpdateNetwork с использованием Runner.DeltaTime
+                float rotationStep = yawDelta * _rotationSpeed * Runner.DeltaTime;
+                Quaternion deltaRotation = Quaternion.Euler(0, rotationStep, 0);
+                _rigidbody.MoveRotation(_rigidbody.rotation * deltaRotation);
+            }
         }
 
-        private void Stop()
+        private void ProcessMovement(PlayerInputData input)
         {
-            TryChangeMovementState(EMovementState.Idle);
+            // Трансформация ввода в локальные координаты персонажа
+            Vector3 moveDirection = (transform.forward * input.MoveDirection.y + transform.right * input.MoveDirection.x).normalized;
+
+            if (moveDirection.sqrMagnitude > 0f)
+            {
+                float currentSpeed = input.IsRunning ? _runSpeed : _walkSpeed;
+                Vector3 targetVelocity = moveDirection * currentSpeed;
+                
+                // Сохранение вертикальной скорости (гравитация)
+                targetVelocity.y = _rigidbody.linearVelocity.y;
+                _rigidbody.linearVelocity = targetVelocity;
+
+                TryChangeMovementState(input.IsRunning ? EMovementState.Run : EMovementState.Walk);
+            }
+            else
+            {
+                // Сохранение гравитации при остановке
+                _rigidbody.linearVelocity = new Vector3(0, _rigidbody.linearVelocity.y, 0);
+                TryChangeMovementState(EMovementState.Idle);
+            }
         }
 
         private void TryChangeMovementState(EMovementState newState)

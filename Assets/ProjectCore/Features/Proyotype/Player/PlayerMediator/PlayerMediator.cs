@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using Fusion;
 using ProjectCore.Domain.Scripts.Paterns.Mediator;
 using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
+using ProjectCore.Features.Proyotype.Player;
 using UnityEngine;
 
 namespace ProjectCore.Features.Prototype.Player.PlayerMediator
 {
     public class PlayerMediator : NetworkBehaviour, IMediator<IPlayerColleague,EPlayerEventType>
     {
+        [SerializeField] private PlayerCameraTracker _playerCameraTracker;
         [SerializeField] private PlayerMovement _playerMovement;
         [SerializeField] private PlayerDamageTaker _playerDamageTaker;
         [SerializeField] private PlayerHealth _playerHealth;
@@ -17,6 +19,7 @@ namespace ProjectCore.Features.Prototype.Player.PlayerMediator
 
         public override void Spawned()
         {
+            _playerCameraTracker.Initialize(this);
             _playerMovement.Initialize(this);
             _playerDamageTaker.Initialize(this);
             _playerHealth.Initialize(this);
@@ -40,7 +43,7 @@ namespace ProjectCore.Features.Prototype.Player.PlayerMediator
         {
             if (args is MovementStateChangedPayload payload)
             {
-                //_playerHealth.ApplyDamage(payload.Amount);
+                _playerCameraTracker.ChangeFieldOfView(payload);
             }
         }
 
