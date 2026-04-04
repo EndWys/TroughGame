@@ -13,6 +13,7 @@ namespace ProjectCore.Features.Prototype.Player
                 MoveDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized,
                 LookYawDelta = Cursor.lockState == CursorLockMode.Locked ? 0f : Input.GetAxisRaw("Mouse X"),
                 IsRunning = Input.GetKey(KeyCode.LeftShift),
+                IsJumpPressed = Input.GetKeyDown(KeyCode.Space),
             };
 
             input.Set(data);

@@ -7,6 +7,6 @@
         Idle = 1,
         Walk = 2,
         Run = 3,
-        Jump = 4,
+        Airborne = 4,
     }
 }

@@ -19,13 +19,8 @@ namespace ProjectCore.Features.Proyotype.Player
         {
             Runner.SetIsSimulated(Object, true);
         }
-        
-        public override void FixedUpdateNetwork()
-        {
-            PerformGroundCheck();
-        }
 
-        private void PerformGroundCheck()
+        public void PerformGroundCheck()
         {
             bool hit = Physics.SphereCast(
                 _groundCheckPivot.position, 

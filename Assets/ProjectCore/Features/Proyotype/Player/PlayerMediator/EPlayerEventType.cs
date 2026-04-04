@@ -4,6 +4,7 @@
     {
         //Functional Events - Changing Data.
         OnPlayerMovementStateChange,
+        OnPlayerJump,
         OnPlayerGroundingStateChange,
         OnPlayerGroundNormalChange,
         OnPlayerTakeDamage,

@@ -206,17 +206,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcce9cdf13a321949b6e38d2db4ab7eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Prototype.Player.PlayerMovement
-  _rigidbody: {fileID: 7389111313936471077}
-  _groundChecker: {fileID: 2258215284134407499}
-  _walkSpeed: 5
-  _runSpeed: 8
-  _rotationSpeed: 150
-  _airControlMultiplier: 0.5
-  _drawMovementGizmos: 1
-  _debugBaseDirection: {x: 0, y: 0, z: 0}
-  _debugProjectedDirection: {x: 0, y: 0, z: 0}
-  _MovementState: 1
-  _PreviousMovementState: 1
+  <Rigidbody>k__BackingField: {fileID: 7389111313936471077}
+  <GroundChecker>k__BackingField: {fileID: 2258215284134407499}
+  <LocomotionConfig>k__BackingField:
+    <WalkSpeed>k__BackingField: 5
+    <RunSpeed>k__BackingField: 8
+    <RotationSpeed>k__BackingField: 150
+  <AirborneConfig>k__BackingField:
+    <JumpForce>k__BackingField: 50
+    <AirControlMultiplier>k__BackingField: 0.5
+    <GravityMultiplier>k__BackingField: 2
+    <JumpBufferTicks>k__BackingField: 10
+    <CoyoteTimeTicks>k__BackingField: 10
+  _CurrentMovementState: 0
+  _PreviousMovementState: 0
+  _IsJumping:
+    _value: 0
 --- !u!1 &5296368440522977987
 GameObject:
   m_ObjectHideFlags: 0
