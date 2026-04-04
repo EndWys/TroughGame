@@ -169,6 +169,12 @@ namespace ProjectCore.Features.Prototype.Player
                 Gizmos.DrawRay(startPos, _groundChecker.GroundNormal);
             }
             
+            if (_debugBaseDirection.sqrMagnitude > 0)
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawRay(startPos, _debugBaseDirection);
+            }
+            
             if (_debugProjectedDirection.sqrMagnitude > 0)
             {
                 Gizmos.color = Color.green;
