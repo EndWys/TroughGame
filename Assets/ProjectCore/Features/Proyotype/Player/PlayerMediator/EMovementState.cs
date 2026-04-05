@@ -8,5 +8,6 @@
         Walk = 2,
         Run = 3,
         Airborne = 4,
+        Crouch = 5,
     }
 }

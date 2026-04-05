@@ -5,31 +5,33 @@ using ProjectCore.Features.Prototype.Player.Configs;
 using ProjectCore.Features.Prototype.Player.PlayerMediator;
 using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
 using ProjectCore.Features.Proyotype.Player;
+using ProjectCore.Features.Proyotype.Player.PlayerMediator.Colleagues;
 using UnityEngine;
 
 namespace ProjectCore.Features.Prototype.Player
 {
     public class PlayerMovement : NetworkBehaviour, IPlayerColleague
     {
-        private Dictionary<EMovementState, BaseMovementState> _movementStates;
-        
-        private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
-        
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
         [field: SerializeField] public GroundChecker GroundChecker { get; private set; }
+        [field: SerializeField] public PoseController PoseController { get; private set; }
         
         [field:Space]
         [field:SerializeField] public LocomotionMovementConfig LocomotionConfig { get; private set; }
         [field:SerializeField] public AirborneMovementConfig AirborneConfig { get; private set; }
+        [field:SerializeField] public CrouchMovementConfig CrouchConfig { get; private set; }
 
         [Header("NETWORKED DATA")]
+        [UnitySerializeField, Networked] public TickTimer CoyoteTimer { get; private set; }
+        [UnitySerializeField][Networked] public TickTimer JumpBufferTimer { get; private set; }
+        [UnitySerializeField][Networked] public NetworkBool IsJumping { get; private set; }
+        [field:Space]
         [UnitySerializeField][Networked] private EMovementState CurrentMovementState { get; set; }
         [UnitySerializeField][Networked] private EMovementState PreviousMovementState { get; set; }
-        [field:Space]
-        [UnitySerializeField][Networked] public TickTimer CoyoteTimer { get; private set; }
-        [UnitySerializeField][Networked] public TickTimer JumpBufferTimer { get; private set; }
-        [UnitySerializeField][Networked] public NetworkBool IsJumping { get; set; }
         
+        private Dictionary<EMovementState, BaseMovementState> _movementStates;
+        
+        private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
         
         public override void Spawned()
         {
@@ -41,6 +43,7 @@ namespace ProjectCore.Features.Prototype.Player
                 { EMovementState.Walk, new LocomotionMovementState(this) },
                 { EMovementState.Run, new LocomotionMovementState(this) },
                 { EMovementState.Airborne, new AirborneMovementState(this) },
+                { EMovementState.Crouch, new CrouchMovementState(this) }
             };
             
             CurrentMovementState = EMovementState.Idle;
@@ -71,7 +74,6 @@ namespace ProjectCore.Features.Prototype.Player
                 
             if (input.IsJumpPressed)
             {
-                Debug.Log("JUMP BUFFER");
                 JumpBufferTimer = TickTimer.CreateFromTicks(Runner, AirborneConfig.JumpBufferTicks);
             }
                 

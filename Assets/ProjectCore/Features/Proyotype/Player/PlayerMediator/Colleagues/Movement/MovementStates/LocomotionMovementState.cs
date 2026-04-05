@@ -14,7 +14,7 @@ namespace ProjectCore.Features.Proyotype.Player
 
         public override EMovementState Tick(ref PlayerInputData input)
         {
-            if (!Context.JumpBufferTimer.Expired(Context.Runner))
+            if (!Context.JumpBufferTimer.ExpiredOrNotRunning(Context.Runner))
             {
                 Context.ExecuteJump();
                 return EMovementState.Airborne;
@@ -23,6 +23,11 @@ namespace ProjectCore.Features.Proyotype.Player
             if (!Context.GroundChecker.IsGrounded)
             {
                 return EMovementState.Airborne;
+            }
+            
+            if (input.IsCrouchPressed && Context.PoseController.CanChangePose(PoseTypes.Crouch))
+            {
+                return EMovementState.Crouch;
             }
             
             Vector3 baseDirection = (Context.transform.forward * input.MoveDirection.y + Context.transform.right * input.MoveDirection.x).normalized;

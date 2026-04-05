@@ -12,7 +12,7 @@ namespace ProjectCore.Features.Proyotype.Player
 
         public override EMovementState Tick(ref PlayerInputData input)
         {
-            if (Context.JumpBufferTimer.IsRunning)
+            if (!Context.JumpBufferTimer.ExpiredOrNotRunning(Context.Runner))
             {
                 Context.ExecuteJump();
                 return EMovementState.Airborne;
@@ -21,6 +21,11 @@ namespace ProjectCore.Features.Proyotype.Player
             if (!Context.GroundChecker.IsGrounded)
             {
                 return EMovementState.Airborne;
+            }
+            
+            if (input.IsCrouchPressed && Context.PoseController.CanChangePose(PoseTypes.Crouch))
+            {
+                return EMovementState.Crouch;
             }
             
             if (input.MoveDirection.sqrMagnitude > 0f)

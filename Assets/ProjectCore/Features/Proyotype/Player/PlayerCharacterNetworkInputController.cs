@@ -14,6 +14,7 @@ namespace ProjectCore.Features.Prototype.Player
                 LookYawDelta = Cursor.lockState == CursorLockMode.Locked ? 0f : Input.GetAxisRaw("Mouse X"),
                 IsRunning = Input.GetKey(KeyCode.LeftShift),
                 IsJumpPressed = Input.GetKeyDown(KeyCode.Space),
+                IsCrouchPressed = Input.GetKey(KeyCode.C),
             };
 
             input.Set(data);

@@ -56,13 +56,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1996513364253435943}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.09, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.09000003, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7437003551126467619}
-  m_Father: {fileID: 3032902217201715772}
+  m_Father: {fileID: 5382133550453430090}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2258215284134407499
 MonoBehaviour:
@@ -129,6 +129,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Prototype.Player.PlayerHealth
   _Health: 100
+--- !u!1 &3061793787705278247
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1204385373368697862}
+  - component: {fileID: 8611510632839045147}
+  m_Layer: 0
+  m_Name: PoseController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1204385373368697862
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3061793787705278247}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5382133550453430090}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8611510632839045147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3061793787705278247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 216544f5affc4fb282db415d04bd37a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.PlayerMediator.Colleagues.PoseController
+  _playerCollider: {fileID: 2754202969061472908}
+  _obstaclesLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  _crouchHeightMultiplier: 0.6
+  _CurrentPose: 0
 --- !u!1 &3524126113805359020
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,6 +210,39 @@ Transform:
   m_Children:
   - {fileID: 5130218153058689000}
   - {fileID: 4171049332368208140}
+  m_Father: {fileID: 3925341549214173995}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4569941127799040234
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5382133550453430090}
+  m_Layer: 0
+  m_Name: Helpers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5382133550453430090
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4569941127799040234}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4494127883052296839}
+  - {fileID: 1204385373368697862}
   m_Father: {fileID: 3925341549214173995}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4920453006672402350
@@ -208,6 +291,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Prototype.Player.PlayerMovement
   <Rigidbody>k__BackingField: {fileID: 7389111313936471077}
   <GroundChecker>k__BackingField: {fileID: 2258215284134407499}
+  <PoseController>k__BackingField: {fileID: 8611510632839045147}
   <LocomotionConfig>k__BackingField:
     <WalkSpeed>k__BackingField: 5
     <RunSpeed>k__BackingField: 8
@@ -218,10 +302,12 @@ MonoBehaviour:
     <GravityMultiplier>k__BackingField: 2
     <JumpBufferTicks>k__BackingField: 10
     <CoyoteTimeTicks>k__BackingField: 10
-  _CurrentMovementState: 0
-  _PreviousMovementState: 0
+  <CrouchConfig>k__BackingField:
+    <CrouchSpeed>k__BackingField: 2.5
   _IsJumping:
     _value: 0
+  _CurrentMovementState: 0
+  _PreviousMovementState: 0
 --- !u!1 &5296368440522977987
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,6 +343,7 @@ Transform:
   m_Children:
   - {fileID: 8614388571397523945}
   - {fileID: 3032902217201715772}
+  - {fileID: 5382133550453430090}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &2754202969061472908
@@ -333,6 +420,7 @@ MonoBehaviour:
   - {fileID: 6306576875225163355}
   - {fileID: 4500386298023570675}
   - {fileID: 2258215284134407499}
+  - {fileID: 8611510632839045147}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &3536249357014696911
 MonoBehaviour:
@@ -391,7 +479,6 @@ Transform:
   - {fileID: 2755778372045197723}
   - {fileID: 6607804798249060368}
   - {fileID: 97862283140817993}
-  - {fileID: 4494127883052296839}
   m_Father: {fileID: 3925341549214173995}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6388893341330629145

@@ -10,5 +10,6 @@ namespace ProjectCore.Features.Prototype.Player
         public float LookYawDelta { get; set; }
         public bool IsRunning { get; set; }
         public bool IsJumpPressed { get; set; }
+        public bool IsCrouchPressed { get; set; }
     }
 }
