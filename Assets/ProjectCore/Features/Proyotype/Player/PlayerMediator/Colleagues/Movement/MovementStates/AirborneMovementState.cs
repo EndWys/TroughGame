@@ -21,8 +21,8 @@ namespace ProjectCore.Features.Proyotype.Player
             }
             
             bool canCoyoteJump = !Context.IsJumping 
-                                 && !Context.CoyoteTimer.Expired(Context.Runner) 
-                                 && !Context.JumpBufferTimer.Expired(Context.Runner);
+                                 && !Context.CoyoteTimer.ExpiredOrNotRunning(Context.Runner) 
+                                 && !Context.JumpBufferTimer.ExpiredOrNotRunning(Context.Runner);
 
             if (canCoyoteJump)
             {
