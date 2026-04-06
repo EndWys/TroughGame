@@ -122,6 +122,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 267958
   packageName: Photon Fusion
-  packageVersion: 2.0.8
-  assetPath: Assets/Photon/Fusion/Editor/EditorResources/FusionHub/Fusion-hub-tanknarok-logo.png
-  uploadId: 807342
+  packageVersion: 2.0.9
+  assetPath: Assets/ThirdParty/Photon/Fusion/Editor/EditorResources/FusionHub/Fusion-hub-tanknarok-logo.png
+  uploadId: 832254
