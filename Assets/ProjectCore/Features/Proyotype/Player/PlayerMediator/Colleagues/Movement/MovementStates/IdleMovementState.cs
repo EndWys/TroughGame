@@ -33,7 +33,7 @@ namespace ProjectCore.Features.Proyotype.Player
                 return input.IsRunning ? EMovementState.Run : EMovementState.Walk;
             }
             
-            Context.ApplyVelocityChange(Vector3.zero);
+            ApplyVelocityChange(Vector3.zero);
 
             return EMovementState.Idle;
         }

@@ -9,5 +9,6 @@
         Run = 3,
         Airborne = 4,
         Crouch = 5,
+        Climb = 6,
     }
 }

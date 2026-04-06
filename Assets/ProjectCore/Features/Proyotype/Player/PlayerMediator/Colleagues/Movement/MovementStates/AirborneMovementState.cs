@@ -12,6 +12,11 @@ namespace ProjectCore.Features.Proyotype.Player
 
         public override EMovementState Tick(ref PlayerInputData input)
         {
+            if (input.MoveDirection.y > 0f && Context.ClimbingChecker.NearValidWall)
+            {
+                return EMovementState.Climb;
+            }
+            
             if (Context.GroundChecker.IsGrounded && Context.Rigidbody.linearVelocity.y <= 0f)
             {
                 Vector3 baseDirectionCheck = new Vector3(input.MoveDirection.y, 0f, input.MoveDirection.x);
@@ -36,16 +41,23 @@ namespace ProjectCore.Features.Proyotype.Player
             if (baseDirection.sqrMagnitude > 0f)
             {
                 float targetSpeed = Context.LocomotionConfig.WalkSpeed * Context.AirborneConfig.GravityMultiplier;
-                Context.ApplyVelocityChange(baseDirection * targetSpeed);
+                ApplyVelocityChange(baseDirection * targetSpeed);
             }
             else
             {
-                Context.ApplyVelocityChange(Vector3.zero);
+                ApplyVelocityChange(Vector3.zero);
             }
 
             return EMovementState.Airborne;
         }
 
         public override void Exit() { }
+
+        protected override Vector3 ApplyVelocityChangeModifier(Vector3 velocityChange)
+        {
+            velocityChange.y = 0;
+            
+            return velocityChange;
+        }
     }
 }

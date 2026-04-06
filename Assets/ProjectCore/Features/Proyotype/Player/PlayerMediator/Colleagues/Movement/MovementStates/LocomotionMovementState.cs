@@ -34,14 +34,14 @@ namespace ProjectCore.Features.Proyotype.Player
             
             if (baseDirection.sqrMagnitude <= 0f)
             {
-                Context.ApplyVelocityChange(Vector3.zero);
+                ApplyVelocityChange(Vector3.zero);
                 return EMovementState.Idle;
             }
             
             Vector3 projectedDirection = Vector3.ProjectOnPlane(baseDirection, Context.GroundChecker.GroundNormal).normalized;
             
             float targetSpeed = input.IsRunning ? Context.LocomotionConfig.RunSpeed : Context.LocomotionConfig.WalkSpeed;
-            Context.ApplyVelocityChange(projectedDirection * targetSpeed);
+            ApplyVelocityChange(projectedDirection * targetSpeed);
 
             return input.IsRunning ? EMovementState.Run : EMovementState.Walk;
         }

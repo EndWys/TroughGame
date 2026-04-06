@@ -31,6 +31,60 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4494127883052296839}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &781805786233759780
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5664994822285066639}
+  - component: {fileID: 208372194302430936}
+  m_Layer: 0
+  m_Name: ClimbingSurfaceController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5664994822285066639
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 781805786233759780}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1164326711719840234}
+  m_Father: {fileID: 5382133550453430090}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &208372194302430936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 781805786233759780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f7801ae4d8941f38627b018d1cbff81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Prototype.Player.PlayerMediator.ClimbingSurfaceController
+  _climbCheckPivot: {fileID: 1164326711719840234}
+  _climbableLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  _checkRadius: 0.4
+  _checkDistance: 0.5
+  _NearValidWall:
+    _value: 0
+  _CurrentWallNormal: {x: 0, y: 0, z: 0}
 --- !u!1 &1996513364253435943
 GameObject:
   m_ObjectHideFlags: 0
@@ -84,6 +138,37 @@ MonoBehaviour:
   _groundCheckDistance: 0.2
   _IsGrounded: 0
   _GroundNormal: {x: 0, y: 0, z: 0}
+--- !u!1 &2306247604539171980
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1164326711719840234}
+  m_Layer: 0
+  m_Name: ClimbCheckPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1164326711719840234
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2306247604539171980}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5664994822285066639}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2490991078131806123
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,6 +328,7 @@ Transform:
   m_Children:
   - {fileID: 4494127883052296839}
   - {fileID: 1204385373368697862}
+  - {fileID: 5664994822285066639}
   m_Father: {fileID: 3925341549214173995}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4920453006672402350
@@ -292,6 +378,7 @@ MonoBehaviour:
   <Rigidbody>k__BackingField: {fileID: 7389111313936471077}
   <GroundChecker>k__BackingField: {fileID: 2258215284134407499}
   <PoseController>k__BackingField: {fileID: 8611510632839045147}
+  <ClimbingChecker>k__BackingField: {fileID: 208372194302430936}
   <LocomotionConfig>k__BackingField:
     <WalkSpeed>k__BackingField: 5
     <RunSpeed>k__BackingField: 8
@@ -421,6 +508,7 @@ MonoBehaviour:
   - {fileID: 4500386298023570675}
   - {fileID: 2258215284134407499}
   - {fileID: 8611510632839045147}
+  - {fileID: 208372194302430936}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &3536249357014696911
 MonoBehaviour:

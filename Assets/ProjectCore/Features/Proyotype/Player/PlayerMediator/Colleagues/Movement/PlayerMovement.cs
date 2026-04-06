@@ -15,6 +15,7 @@ namespace ProjectCore.Features.Prototype.Player
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
         [field: SerializeField] public GroundChecker GroundChecker { get; private set; }
         [field: SerializeField] public PoseController PoseController { get; private set; }
+        [field: SerializeField] public ClimbingChecker ClimbingChecker { get; private set; }
         
         [field:Space]
         [field:SerializeField] public LocomotionMovementConfig LocomotionConfig { get; private set; }
@@ -43,7 +44,8 @@ namespace ProjectCore.Features.Prototype.Player
                 { EMovementState.Walk, new LocomotionMovementState(this) },
                 { EMovementState.Run, new LocomotionMovementState(this) },
                 { EMovementState.Airborne, new AirborneMovementState(this) },
-                { EMovementState.Crouch, new CrouchMovementState(this) }
+                { EMovementState.Crouch, new CrouchMovementState(this) },
+                { EMovementState.Climb, new ClimbMovementState(this) }
             };
             
             CurrentMovementState = EMovementState.Idle;
@@ -58,6 +60,7 @@ namespace ProjectCore.Features.Prototype.Player
         public override void FixedUpdateNetwork()
         {
             GroundChecker.PerformGroundCheck();
+            ClimbingChecker.PerformWallCheck();
             
             if (!GetInput(out PlayerInputData input))
             {
@@ -92,29 +95,21 @@ namespace ProjectCore.Features.Prototype.Player
             Vector3 velocity = Rigidbody.linearVelocity;
             velocity.y = 0f;
             Rigidbody.linearVelocity = velocity;
-    
-            Rigidbody.AddForce(Vector3.up * AirborneConfig.JumpForce, ForceMode.Impulse);
+            
+            ExecuteJump(Vector3.up);
+        }
+        
+        public void ExecuteJump(Vector3 direction)
+        {
+            Rigidbody.AddForce(direction * AirborneConfig.JumpForce, ForceMode.Impulse);
             IsJumping = true;
-            Debug.Log("JUMP");
 
             JumpBufferTimer = TickTimer.None;
             CoyoteTimer = TickTimer.None;
             
             _mediator.Notify(this, EPlayerEventType.OnPlayerJump, new JumpPayload());
-        }
-        
-        public void ApplyVelocityChange(Vector3 targetVelocity)
-        {
-            Vector3 currentVelocity = Rigidbody.linearVelocity;
             
-            Vector3 velocityChange = targetVelocity - currentVelocity;
-            
-            if (!GroundChecker.IsGrounded)
-            {
-                velocityChange.y = 0;
-            }
-            
-            Rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
+            _mediator.Notify(this, EPlayerEventType.OnPlayerJump, new JumpPayload());
         }
         
         private void ProcessRotation(float yawDelta)

@@ -31,13 +31,13 @@ namespace ProjectCore.Features.Proyotype.Player
 
             if (baseDirection.sqrMagnitude <= 0f)
             {
-                Context.ApplyVelocityChange(Vector3.zero);
+                ApplyVelocityChange(Vector3.zero);
                 return EMovementState.Crouch;
             }
 
             Vector3 projectedDirection = Vector3.ProjectOnPlane(baseDirection, Context.GroundChecker.GroundNormal).normalized;
             
-            Context.ApplyVelocityChange(projectedDirection * Context.CrouchConfig.CrouchSpeed);
+            ApplyVelocityChange(projectedDirection * Context.CrouchConfig.CrouchSpeed);
 
             return EMovementState.Crouch;
         }
