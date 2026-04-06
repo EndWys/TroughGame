@@ -79,7 +79,7 @@ MonoBehaviour:
   _climbCheckPivot: {fileID: 1164326711719840234}
   _climbableLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 256
   _checkRadius: 0.4
   _checkDistance: 0.5
   _NearValidWall:
