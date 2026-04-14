@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Domain;
 using Fusion;
-using ProjectCore.Domain.Scripts.Paterns.Mediator;
 using ProjectCore.Features.Prototype.Player.Configs;
 using ProjectCore.Features.Prototype.Player.PlayerMediator;
 using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;

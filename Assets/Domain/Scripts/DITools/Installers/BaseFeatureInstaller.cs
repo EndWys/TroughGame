@@ -2,7 +2,8 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
-namespace ProjectCore.Domain.DITools
+
+namespace Domain
 {
     public abstract class BaseFeatureInstaller : MonoInstaller
     {

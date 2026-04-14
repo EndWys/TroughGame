@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
 
-namespace ProjectCore.Domain.Scripts.NetworkUtilities
+namespace Domain
 {
     public class BaseNetworkCallbacksBehaviour  : NetworkBehaviour, INetworkRunnerCallbacks
     {

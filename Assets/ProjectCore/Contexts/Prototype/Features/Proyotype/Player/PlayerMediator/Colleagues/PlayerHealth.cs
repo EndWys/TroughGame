@@ -1,5 +1,5 @@
-﻿using Fusion;
-using ProjectCore.Domain.Scripts.Paterns.Mediator;
+﻿using Domain;
+using Fusion;
 using ProjectCore.Features.Prototype.Player.PlayerMediator;
 
 namespace ProjectCore.Features.Prototype.Player

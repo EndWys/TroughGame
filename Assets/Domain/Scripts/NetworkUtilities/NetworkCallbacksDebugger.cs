@@ -4,7 +4,7 @@ using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 
-namespace ProjectCore.Domain.Scripts.NetworkUtilities
+namespace Domain
 {
     public class NetworkCallbacksDebugger : MonoBehaviour, INetworkRunnerCallbacks
     {

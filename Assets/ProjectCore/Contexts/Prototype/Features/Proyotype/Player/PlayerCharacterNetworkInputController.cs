@@ -1,5 +1,5 @@
-﻿using Fusion;
-using ProjectCore.Domain.Scripts.NetworkUtilities;
+﻿using Domain;
+using Fusion;
 using UnityEngine;
 
 namespace ProjectCore.Features.Prototype.Player

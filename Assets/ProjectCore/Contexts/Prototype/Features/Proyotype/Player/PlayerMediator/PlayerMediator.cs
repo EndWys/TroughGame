@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Domain;
 using Fusion;
-using ProjectCore.Domain.Scripts.Paterns.Mediator;
 using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
 using ProjectCore.Features.Proyotype.Player;
 using UnityEngine;

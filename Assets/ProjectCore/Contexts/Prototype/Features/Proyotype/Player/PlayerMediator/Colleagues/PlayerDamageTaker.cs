@@ -1,5 +1,5 @@
-﻿using Fusion;
-using ProjectCore.Domain.Scripts.Paterns.Mediator;
+﻿using Domain;
+using Fusion;
 using ProjectCore.Features.Prototype.Player.PlayerMediator;
 using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
 using UnityEngine;

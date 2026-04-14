@@ -1,5 +1,5 @@
 using Cysharp.Threading.Tasks;
-namespace ProjectCore.Domain.DITools
+namespace Domain
 {
     public interface IBaseFeature
     {

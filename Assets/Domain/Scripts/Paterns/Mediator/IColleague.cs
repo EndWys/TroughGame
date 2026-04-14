@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ProjectCore.Domain.Scripts.Paterns.Mediator
+namespace Domain
 {
     public interface IColleague<out TColleague, out TEventKey>  
         where TColleague : IColleague<TColleague, TEventKey>
