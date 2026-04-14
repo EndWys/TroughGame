@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Domain;
+using UnityEngine;
 
 namespace Prototype.Prototype
 {
@@ -10,7 +11,7 @@ namespace Prototype.Prototype
 
         public override EMovementState Tick(PlayerInputData input)
         {
-            if (!Context.JumpBufferTimer.ExpiredOrNotRunning(Context.Runner))
+            if (Context.JumpBufferTimer.IsDisabled(Context.Runner))
             {
                 Context.ExecuteJump();
                 return EMovementState.Airborne;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Domain;
+using UnityEngine;
 
 namespace Prototype.Prototype
 {
@@ -24,8 +25,8 @@ namespace Prototype.Prototype
             }
             
             bool canCoyoteJump = !Context.IsJumping 
-                                 && !Context.CoyoteTimer.ExpiredOrNotRunning(Context.Runner) 
-                                 && !Context.JumpBufferTimer.ExpiredOrNotRunning(Context.Runner);
+                                 && Context.CoyoteTimer.IsDisabled(Context.Runner) 
+                                 && Context.JumpBufferTimer.IsDisabled(Context.Runner);
 
             if (canCoyoteJump)
             {

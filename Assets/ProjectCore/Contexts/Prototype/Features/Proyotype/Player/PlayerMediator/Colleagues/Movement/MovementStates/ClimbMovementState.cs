@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Domain;
+using UnityEngine;
 
 namespace Prototype.Prototype
 {
@@ -23,7 +24,7 @@ namespace Prototype.Prototype
                 return EMovementState.Idle;
             }
             
-            if (!Context.JumpBufferTimer.ExpiredOrNotRunning(Context.Runner))
+            if (Context.JumpBufferTimer.IsDisabled(Context.Runner))
             {
                 Vector3 jumpDirection = (Context.ClimbingChecker.CurrentWallNormal + Vector3.up).normalized;
                 
