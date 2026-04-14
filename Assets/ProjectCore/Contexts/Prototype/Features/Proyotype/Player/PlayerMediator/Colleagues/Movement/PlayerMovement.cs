@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Prototype.Prototype
 {
-    public class PlayerMovement : NetworkBehaviour, IPlayerColleague
+    public class PlayerMovement : BaseNetworkStateMachine<EMovementState, BaseMovementState, PlayerInputData>, IPlayerColleague
     {
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
         [field: SerializeField] public GroundChecker GroundChecker { get; private set; }
@@ -21,20 +21,24 @@ namespace Prototype.Prototype
         [UnitySerializeField, Networked] public TickTimer CoyoteTimer { get; private set; }
         [UnitySerializeField][Networked] public TickTimer JumpBufferTimer { get; private set; }
         [UnitySerializeField][Networked] public NetworkBool IsJumping { get; private set; }
-        [field:Space]
-        [UnitySerializeField][Networked] private EMovementState CurrentMovementState { get; set; }
-        [UnitySerializeField][Networked] private EMovementState PreviousMovementState { get; set; }
         
-        private Dictionary<EMovementState, BaseMovementState> _movementStates;
+        [UnitySerializeField, Networked] public override EMovementState CurrentState { get; protected set; }
+        [UnitySerializeField, Networked] public override EMovementState PreviousState { get; protected set; }
         
         private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
         
         public override void Spawned()
         {
-            Runner.SetIsSimulated(Object, true);
+            base.Spawned();
             
-            _movementStates = new Dictionary<EMovementState, BaseMovementState>
+            ChangeState(EMovementState.Idle);
+        }
+
+        public override Dictionary<EMovementState, BaseMovementState> CreateStatesDictionary()
+        {
+            return new Dictionary<EMovementState, BaseMovementState>
             {
+                { EMovementState.Default, new DefaultMovementState(this) },
                 { EMovementState.Idle, new IdleMovementState(this) },
                 { EMovementState.Walk, new LocomotionMovementState(this) },
                 { EMovementState.Run, new LocomotionMovementState(this) },
@@ -42,11 +46,8 @@ namespace Prototype.Prototype
                 { EMovementState.Crouch, new CrouchMovementState(this) },
                 { EMovementState.Climb, new ClimbMovementState(this) }
             };
-            
-            CurrentMovementState = EMovementState.Idle;
-            _movementStates[CurrentMovementState].Enter();
         }
-        
+
         public void Initialize(IMediator<IPlayerColleague, EPlayerEventType> mediator)
         {
             _mediator = mediator;
@@ -75,14 +76,7 @@ namespace Prototype.Prototype
                 JumpBufferTimer = TickTimer.CreateFromTicks(Runner, AirborneConfig.JumpBufferTicks);
             }
                 
-            EMovementState nextState = _movementStates[CurrentMovementState].Tick(ref input);
-                
-            if (nextState == CurrentMovementState)
-            {
-                return;
-            }
-                
-            ChangeState(nextState);
+            UpdateStates(input);
         }
         
         public void ExecuteJump()
@@ -103,8 +97,16 @@ namespace Prototype.Prototype
             CoyoteTimer = TickTimer.None;
             
             _mediator.Notify(this, EPlayerEventType.OnPlayerJump, new JumpPayload());
-            
-            _mediator.Notify(this, EPlayerEventType.OnPlayerJump, new JumpPayload());
+        }
+        
+        protected override void BeforePreviousStateExit()
+        {
+            _mediator.Notify(this, EPlayerEventType.OnPlayerMovementStateChange,
+                new MovementStateChangedPayload() 
+                {
+                    MovementState = CurrentState,
+                    PreviousMovementState = PreviousState,
+                });
         }
         
         private void ProcessRotation(float yawDelta)
@@ -115,23 +117,6 @@ namespace Prototype.Prototype
                 Quaternion deltaRotation = Quaternion.Euler(0, rotationStep, 0);
                 Rigidbody.MoveRotation(Rigidbody.rotation * deltaRotation);
             }
-        }
-        
-        private void ChangeState(EMovementState newState)
-        {
-            _movementStates[CurrentMovementState].Exit();
-            
-            PreviousMovementState = CurrentMovementState;
-            CurrentMovementState = newState;
-            
-            _mediator.Notify(this, EPlayerEventType.OnPlayerMovementStateChange,
-                new MovementStateChangedPayload() 
-                {
-                    PreviousMovementState = PreviousMovementState,
-                    MovementState = CurrentMovementState,
-                });
-            
-            _movementStates[CurrentMovementState].Enter();
         }
     }
 }

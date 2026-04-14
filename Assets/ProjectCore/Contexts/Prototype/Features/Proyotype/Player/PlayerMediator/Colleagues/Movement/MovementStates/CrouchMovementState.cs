@@ -13,7 +13,7 @@ namespace Prototype.Prototype
             Context.PoseController.SetPose(PoseTypes.Crouch);
         }
 
-        public override EMovementState Tick(ref PlayerInputData input)
+        public override EMovementState Tick(PlayerInputData input)
         {
             if (!Context.GroundChecker.IsGrounded)
             {

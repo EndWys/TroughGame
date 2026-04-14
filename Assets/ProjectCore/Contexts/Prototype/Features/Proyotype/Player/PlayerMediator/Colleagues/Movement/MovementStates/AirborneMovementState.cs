@@ -8,7 +8,7 @@ namespace Prototype.Prototype
 
         public override void Enter() { }
 
-        public override EMovementState Tick(ref PlayerInputData input)
+        public override EMovementState Tick(PlayerInputData input)
         {
             if (input.MoveDirection.y > 0f && Context.ClimbingChecker.NearValidWall)
             {

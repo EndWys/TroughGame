@@ -2,7 +2,7 @@
 {
     public enum EMovementState : byte
     {
-        None = 0,
+        Default = 0,
         
         Idle = 1,
         Walk = 2,

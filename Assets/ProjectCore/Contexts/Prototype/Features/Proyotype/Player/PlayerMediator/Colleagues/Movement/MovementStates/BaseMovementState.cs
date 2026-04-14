@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Domain;
+using UnityEngine;
 
 namespace Prototype.Prototype
 {
-    public abstract class BaseMovementState
+    public abstract class BaseMovementState : IState<EMovementState, PlayerInputData>
     {
         protected readonly PlayerMovement Context;
 
@@ -13,7 +14,7 @@ namespace Prototype.Prototype
         
         public abstract void Enter();
 
-        public abstract EMovementState Tick(ref PlayerInputData input);
+        public abstract EMovementState Tick(PlayerInputData input);
 
         public abstract void Exit();
         
