@@ -1,7 +1,9 @@
 {
-    "name": "Paterns",
+    "name": "NetworkUtilities",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:1e1211d652a8c174dadf4c64db1425d6"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
