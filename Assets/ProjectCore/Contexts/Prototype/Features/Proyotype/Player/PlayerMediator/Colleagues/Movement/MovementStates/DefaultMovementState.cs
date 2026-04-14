@@ -11,7 +11,7 @@
 
         public override EMovementState Tick(PlayerInputData input)
         {
-            return EMovementState.Idle;
+            return EMovementState.Default;
         }
 
         public override void Exit()
