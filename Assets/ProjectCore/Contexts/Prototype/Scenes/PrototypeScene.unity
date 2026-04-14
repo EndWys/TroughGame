@@ -471,7 +471,7 @@ MonoBehaviour:
   _rotationDamping: 0.1
   _collisionLayers:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 192
   _collisionRadius: 0.2
   _collisionBuffer: 0.2
 --- !u!1 &376331425
