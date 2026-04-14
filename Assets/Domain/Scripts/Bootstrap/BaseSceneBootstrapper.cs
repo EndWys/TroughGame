@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ProjectCore.Domain.Bootstrap
+namespace Domain
 {
     public abstract class BaseSceneBootstrapper : MonoBehaviour
     {

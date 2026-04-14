@@ -1,7 +1,6 @@
-using ProjectCore.Domain.Bootstrap;
 using UnityEngine;
 
-namespace ProjectCore.Domain.Scripts.Bootstrap
+namespace Domain
 {
     public class PrototypeSceneBootstrapper : BaseSceneBootstrapper
     {
