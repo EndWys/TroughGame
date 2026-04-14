@@ -1,4 +1,4 @@
-﻿namespace ProjectCore.Features.Prototype.Player.PlayerMediator
+﻿namespace Prototype.Prototype
 {
     public enum PoseTypes : byte
     {

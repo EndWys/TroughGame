@@ -1,7 +1,7 @@
 ﻿using Fusion;
 using UnityEngine;
 
-namespace ProjectCore.Features.Proyotype.Player
+namespace Prototype.Prototype
 {
     public class GroundChecker : NetworkBehaviour
     {

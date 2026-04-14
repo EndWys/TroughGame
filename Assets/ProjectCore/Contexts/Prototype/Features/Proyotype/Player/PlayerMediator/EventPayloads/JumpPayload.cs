@@ -1,4 +1,4 @@
-﻿namespace ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads
+﻿namespace Prototype.Prototype
 {
     public struct JumpPayload
     {

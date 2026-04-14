@@ -1,7 +1,7 @@
 ﻿using Fusion;
 using UnityEngine;
 
-namespace ProjectCore.Features.Prototype.Player.PlayerMediator
+namespace Prototype.Prototype
 {
     public class ClimbingChecker : NetworkBehaviour
     {

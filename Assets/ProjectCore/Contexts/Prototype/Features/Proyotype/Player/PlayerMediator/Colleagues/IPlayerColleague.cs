@@ -1,7 +1,6 @@
 ﻿using Domain;
-using ProjectCore.Features.Prototype.Player.PlayerMediator;
 
-namespace ProjectCore.Features.Prototype.Player
+namespace Prototype.Prototype
 {
     public interface IPlayerColleague : IColleague<IPlayerColleague, EPlayerEventType>  
     {

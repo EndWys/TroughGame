@@ -1,8 +1,7 @@
 ﻿using Domain;
 using Fusion;
-using ProjectCore.Features.Prototype.Player.PlayerMediator;
 
-namespace ProjectCore.Features.Prototype.Player
+namespace Prototype.Prototype
 {
     public class PlayerHealth : NetworkBehaviour, IPlayerColleague
     {

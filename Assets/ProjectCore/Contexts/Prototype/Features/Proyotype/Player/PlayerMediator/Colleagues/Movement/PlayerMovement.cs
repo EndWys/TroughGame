@@ -1,14 +1,9 @@
 using System.Collections.Generic;
 using Domain;
 using Fusion;
-using ProjectCore.Features.Prototype.Player.Configs;
-using ProjectCore.Features.Prototype.Player.PlayerMediator;
-using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
-using ProjectCore.Features.Proyotype.Player;
-using ProjectCore.Features.Proyotype.Player.PlayerMediator.Colleagues;
 using UnityEngine;
 
-namespace ProjectCore.Features.Prototype.Player
+namespace Prototype.Prototype
 {
     public class PlayerMovement : NetworkBehaviour, IPlayerColleague
     {

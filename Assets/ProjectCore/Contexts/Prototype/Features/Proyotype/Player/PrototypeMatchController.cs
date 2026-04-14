@@ -2,7 +2,7 @@
 using Fusion;
 using UnityEngine;
 
-namespace ProjectCore.Features.Prototype.Player
+namespace Prototype.Prototype
 {
     public class PrototypeMatchController : BaseNetworkCallbacksBehaviour
     {

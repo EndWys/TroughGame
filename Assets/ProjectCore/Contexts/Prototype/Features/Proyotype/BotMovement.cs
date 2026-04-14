@@ -1,36 +1,39 @@
 using Fusion;
 using UnityEngine;
 
-public class BotMovement : NetworkBehaviour
+namespace Prototype.Prototype
 {
-    [SerializeField] private float _speed = 3f;
-
-    private Vector3 _target;
-
-    public override void Spawned()
+    public class BotMovement : NetworkBehaviour
     {
-        if (HasStateAuthority)
-            SetNewTarget();
-    }
+        [SerializeField] private float _speed = 3f;
 
-    public override void FixedUpdateNetwork()
-    {
-        if (!HasStateAuthority) return;
+        private Vector3 _target;
 
-        Vector3 dir = (_target - transform.position);
-
-        if (dir.sqrMagnitude < 0.5f * 0.5f)
+        public override void Spawned()
         {
-            SetNewTarget();
+            if (HasStateAuthority)
+                SetNewTarget();
         }
-        else
-        {
-            transform.position += dir.normalized * _speed * Runner.DeltaTime;
-        }
-    }
 
-    private void SetNewTarget()
-    {
-        _target = new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
+        public override void FixedUpdateNetwork()
+        {
+            if (!HasStateAuthority) return;
+
+            Vector3 dir = (_target - transform.position);
+
+            if (dir.sqrMagnitude < 0.5f * 0.5f)
+            {
+                SetNewTarget();
+            }
+            else
+            {
+                transform.position += dir.normalized * _speed * Runner.DeltaTime;
+            }
+        }
+
+        private void SetNewTarget()
+        {
+            _target = new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
+        }
     }
 }

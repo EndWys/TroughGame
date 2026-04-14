@@ -1,18 +1,21 @@
 using Fusion;
 using UnityEngine;
 
-public class BotNetworkSpawnController : NetworkBehaviour
+namespace Prototype.Prototype
 {
-    [SerializeField] private NetworkPrefabRef _botPrefab;
-    
-    public void SpawnBot(int count)
+    public class BotNetworkSpawnController : NetworkBehaviour
     {
-        if (HasStateAuthority)
+        [SerializeField] private NetworkPrefabRef _botPrefab;
+    
+        public void SpawnBot(int count)
         {
-            for (int i = 0; i < count; i++)
+            if (HasStateAuthority)
             {
-                var pos = Random.insideUnitSphere * 50;
-                Runner.Spawn(_botPrefab, pos, Quaternion.identity);
+                for (int i = 0; i < count; i++)
+                {
+                    var pos = Random.insideUnitSphere * 50;
+                    Runner.Spawn(_botPrefab, pos, Quaternion.identity);
+                }
             }
         }
     }

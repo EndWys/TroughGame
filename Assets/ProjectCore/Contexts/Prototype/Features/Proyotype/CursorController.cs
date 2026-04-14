@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ProjectCore.Features.Proyotype
+namespace Prototype.Prototype
 {
     public class CursorController : MonoBehaviour
     {

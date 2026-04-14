@@ -1,11 +1,8 @@
 using Domain;
 using Fusion;
-using ProjectCore.Features.Prototype.Player;
-using ProjectCore.Features.Prototype.Player.PlayerMediator;
-using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
 using UnityEngine;
 
-namespace ProjectCore.Features.Proyotype.Player
+namespace Prototype.Prototype
 {
     public class PlayerCameraTracker : NetworkBehaviour, IPlayerColleague
     {

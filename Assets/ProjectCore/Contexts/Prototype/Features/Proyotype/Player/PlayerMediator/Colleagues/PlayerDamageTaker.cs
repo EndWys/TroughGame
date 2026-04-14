@@ -1,10 +1,8 @@
 ﻿using Domain;
 using Fusion;
-using ProjectCore.Features.Prototype.Player.PlayerMediator;
-using ProjectCore.Features.Prototype.Player.PlayerMediator.EventPayloads;
 using UnityEngine;
 
-namespace ProjectCore.Features.Prototype.Player
+namespace Prototype.Prototype
 {
     public class PlayerDamageTaker : NetworkBehaviour, IPlayerColleague
     {

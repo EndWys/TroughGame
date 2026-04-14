@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Fusion;
-using ProjectCore.Features.Prototype.Player.PlayerMediator;
 using UnityEngine;
 
-namespace ProjectCore.Features.Proyotype.Player.PlayerMediator.Colleagues
+namespace Prototype.Prototype
 {
     public class PoseController : NetworkBehaviour
     {

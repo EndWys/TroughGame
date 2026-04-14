@@ -1,6 +1,6 @@
 using Domain;
 
-namespace ProjectCore.Domain.DITools
+namespace Project
 {
     public class ProjectFeatureInstaller : BaseFeatureInstaller
     {
