@@ -4,9 +4,7 @@ namespace Prototype.Prototype
 {
     public class ClimbMovementState : BaseMovementState
     {
-        public ClimbMovementState(PlayerMovement context) : base(context)
-        {
-        }
+        public ClimbMovementState(PlayerMovement context) : base(context) { }
 
         public override void Enter()
         {

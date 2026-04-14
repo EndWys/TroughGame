@@ -6,6 +6,6 @@ namespace Domain
         where TColleague : IColleague<TColleague, TEventKey>
         where TEventKey : Enum
     {
-        public void Initialize(IMediator<TColleague, TEventKey> mediator);
+        public void Init(IMediator<TColleague, TEventKey> mediator);
     }
 }

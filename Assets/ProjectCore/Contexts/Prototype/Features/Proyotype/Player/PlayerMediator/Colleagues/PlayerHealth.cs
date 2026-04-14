@@ -9,7 +9,7 @@ namespace Prototype.Prototype
 
         [UnitySerializeField][Networked] private int Health { get; set; } = 100;
         
-        public void Initialize(IMediator<IPlayerColleague, EPlayerEventType> mediator)
+        public void Init(IMediator<IPlayerColleague, EPlayerEventType> mediator)
         {
             _mediator = mediator;
         }

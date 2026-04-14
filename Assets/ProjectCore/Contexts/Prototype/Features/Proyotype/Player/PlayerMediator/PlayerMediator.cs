@@ -17,10 +17,10 @@ namespace Prototype.Prototype
 
         public override void Spawned()
         {
-            _playerCameraTracker.Initialize(this);
-            _playerMovement.Initialize(this);
-            _playerDamageTaker.Initialize(this);
-            _playerHealth.Initialize(this);
+            _playerCameraTracker.Init(this);
+            _playerMovement.Init(this);
+            _playerDamageTaker.Init(this);
+            _playerHealth.Init(this);
             
             _handlers = new Dictionary<EPlayerEventType, Action<IPlayerColleague, object>>
             {

@@ -48,7 +48,7 @@ namespace Prototype.Prototype
             };
         }
 
-        public void Initialize(IMediator<IPlayerColleague, EPlayerEventType> mediator)
+        public void Init(IMediator<IPlayerColleague, EPlayerEventType> mediator)
         {
             _mediator = mediator;
         }

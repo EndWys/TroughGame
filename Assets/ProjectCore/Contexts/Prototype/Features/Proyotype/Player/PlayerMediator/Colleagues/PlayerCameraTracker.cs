@@ -18,7 +18,7 @@ namespace Prototype.Prototype
         
         private FollowCameraController _cameraController;
         
-        public void Initialize(IMediator<IPlayerColleague, EPlayerEventType> mediator)
+        public void Init(IMediator<IPlayerColleague, EPlayerEventType> mediator)
         {
             _mediator = mediator;
         }
