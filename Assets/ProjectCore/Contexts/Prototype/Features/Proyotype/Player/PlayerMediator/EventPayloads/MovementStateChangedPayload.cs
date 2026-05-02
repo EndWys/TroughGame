@@ -2,7 +2,7 @@
 {
     public struct MovementStateChangedPayload
     {
-        public EMovementState MovementState { get; set; }
-        public EMovementState PreviousMovementState { get; set; }
+        public MovementStates MovementStates { get; set; }
+        public MovementStates PreviousMovementStates { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Prototype.Prototype
 {
-    public interface IPlayerColleague : IColleague<IPlayerColleague, EPlayerEventType>  
+    public interface IPlayerColleague : IColleague<IPlayerColleague, PlayerEventTypes>
     {
         
     }

@@ -1,79 +1,100 @@
 using System.Collections.Generic;
+using AYellowpaper.SerializedCollections;
 using Domain;
-using Fusion;
 using UnityEngine;
+using Zenject;
 
 namespace Prototype.Prototype
 {
-    public class PlayerMovement : BaseNetworkStateMachine<EMovementState, BaseMovementState, PlayerInputData>, IPlayerColleague
+    public class PlayerMovement : 
+        BaseNetworkEntityStateMachine<MovementStates, BasePlayerMovementState, PlayerInputData>, IPlayerColleague
     {
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
-        [field: SerializeField] public GroundChecker GroundChecker { get; private set; }
-        [field: SerializeField] public PoseController PoseController { get; private set; }
-        [field: SerializeField] public ClimbingChecker ClimbingChecker { get; private set; }
         
         [field:Space]
         [field:SerializeField] public LocomotionMovementConfig LocomotionConfig { get; private set; }
         [field:SerializeField] public AirborneMovementConfig AirborneConfig { get; private set; }
         [field:SerializeField] public CrouchMovementConfig CrouchConfig { get; private set; }
 
-        [Header("NETWORKED DATA")]
-        [UnitySerializeField, Networked] public TickTimer CoyoteTimer { get; private set; }
-        [UnitySerializeField][Networked] public TickTimer JumpBufferTimer { get; private set; }
-        [UnitySerializeField][Networked] public NetworkBool IsJumping { get; private set; }
+        [Space]
+        [SerializedDictionary("State Type", "State Object")]
+        [SerializeField] private SerializedDictionary<MovementStates, BasePlayerMovementState> _movementStates;
         
-        [UnitySerializeField, Networked] public override EMovementState CurrentState { get; protected set; }
-        [UnitySerializeField, Networked] public override EMovementState PreviousState { get; protected set; }
+        private GroundChecker _groundChecker;
+        private PoseController _poseController;
+        private ClimbingChecker _climbingChecker;
         
-        private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
-        
-        public override void Spawned()
+        private INetworkBehaviourAccessor _networkBehaviourAccessor;
+
+        private IMediator<IPlayerColleague, PlayerEventTypes> _mediator;
+        private IMovementStateDataChanger<MovementStates> _movementStateDataChanger;
+        private IGroundDetectorDataChanger _groundDetectorDataChanger;
+        private IJumpDataChanger _jumpDataChanger;
+
+        [Inject]
+        private void Construct(GroundChecker groundChecker,
+            PoseController poseController,
+            ClimbingChecker climbingChecker,
+            INetworkBehaviourAccessor networkBehaviourAccessor,
+            IMovementStateDataChanger<MovementStates> movementStateDataChanger,
+            IJumpDataChanger jumpDataChanger,
+            IGroundDetectorDataChanger groundDetectorDataChanger)
         {
-            base.Spawned();
+            _groundChecker = groundChecker;
+            _poseController = poseController;
+            _climbingChecker = climbingChecker;
             
-            ChangeState(EMovementState.Idle);
+            _networkBehaviourAccessor = networkBehaviourAccessor;
+            _movementStateDataChanger = movementStateDataChanger;
+            _jumpDataChanger = jumpDataChanger;
+            _groundDetectorDataChanger = groundDetectorDataChanger;
         }
-
-        public override Dictionary<EMovementState, BaseMovementState> CreateStatesDictionary()
+        
+        protected override void Init()
         {
-            return new Dictionary<EMovementState, BaseMovementState>
+            base.Init();
+
+            foreach (var states in _movementStates.Values)
             {
-                { EMovementState.Default, new DefaultMovementState(this) },
-                { EMovementState.Idle, new IdleMovementState(this) },
-                { EMovementState.Walk, new LocomotionMovementState(this) },
-                { EMovementState.Run, new LocomotionMovementState(this) },
-                { EMovementState.Airborne, new AirborneMovementState(this) },
-                { EMovementState.Crouch, new CrouchMovementState(this) },
-                { EMovementState.Climb, new ClimbMovementState(this) }
-            };
+                states.Init(this);
+            }
+            
+            _poseController.Init();
+            
+            ChangeState(MovementStates.Idle);
         }
 
-        public void Init(IMediator<IPlayerColleague, EPlayerEventType> mediator)
+        public override Dictionary<MovementStates, BasePlayerMovementState> CreateStatesDictionary()
+        {
+            return _movementStates;
+        }
+
+        public void SetMediator(IMediator<IPlayerColleague, PlayerEventTypes> mediator)
         {
             _mediator = mediator;
         }
-        
-        public override void FixedUpdateNetwork()
+
+        public override void NetworkTick()
         {
-            GroundChecker.PerformGroundCheck();
-            ClimbingChecker.PerformWallCheck();
+            _groundChecker.PerformGroundCheck();
+            _climbingChecker.PerformWallCheck();
             
-            if (!GetInput(out PlayerInputData input))
+            if (!_networkBehaviourAccessor.ParentNetworkBehaviour.GetInput(out PlayerInputData input))
             {
                 return;
             }
             
             ProcessRotation(input.LookYawDelta);
             
-            if (GroundChecker.IsGrounded)
+            if (_groundDetectorDataChanger.IsGrounded)
             {
-                CoyoteTimer = TickTimer.CreateFromTicks(Runner, AirborneConfig.CoyoteTimeTicks);
-                IsJumping = false;
+                _jumpDataChanger.RestartCoyoteTimer(AirborneConfig.CoyoteTimeTicks);
+                _jumpDataChanger.ChangeJumpingStatus(false);
             }
                 
             if (input.IsJumpPressed)
             {
-                JumpBufferTimer = TickTimer.CreateFromTicks(Runner, AirborneConfig.JumpBufferTicks);
+                _jumpDataChanger.RestartJumpBufferTimer(AirborneConfig.JumpBufferTicks);
             }
                 
             UpdateStates(input);
@@ -91,21 +112,21 @@ namespace Prototype.Prototype
         public void ExecuteJump(Vector3 direction)
         {
             Rigidbody.AddForce(direction * AirborneConfig.JumpForce, ForceMode.Impulse);
-            IsJumping = true;
-
-            JumpBufferTimer = TickTimer.None;
-            CoyoteTimer = TickTimer.None;
             
-            _mediator.Notify(this, EPlayerEventType.OnPlayerJump, new JumpPayload());
+            _jumpDataChanger.ChangeJumpingStatus(true);
+            _jumpDataChanger.StopCoyoteTimer();
+            _jumpDataChanger.StopJumpBufferTimer();
+            
+            _mediator.Notify(this, PlayerEventTypes.OnPlayerJump, new JumpPayload());
         }
         
         protected override void BeforePreviousStateExit()
         {
-            _mediator.Notify(this, EPlayerEventType.OnPlayerMovementStateChange,
+            _mediator.Notify(this, PlayerEventTypes.OnPlayerMovementStateChange,
                 new MovementStateChangedPayload() 
                 {
-                    MovementState = CurrentState,
-                    PreviousMovementState = PreviousState,
+                    MovementStates = _movementStateDataChanger.CurrentMovementStates,
+                    PreviousMovementStates = _movementStateDataChanger.PreviousMovementStates,
                 });
         }
         
@@ -113,9 +134,11 @@ namespace Prototype.Prototype
         {
             if (Mathf.Abs(yawDelta) > 0.01f)
             {
-                float rotationStep = yawDelta * LocomotionConfig.RotationSpeed * Runner.DeltaTime;
+                float rotationStep = yawDelta 
+                                     * LocomotionConfig.RotationSpeed 
+                                     * _networkBehaviourAccessor.ParentNetworkBehaviour.Runner.DeltaTime;
                 Quaternion deltaRotation = Quaternion.Euler(0, rotationStep, 0);
-                Rigidbody.MoveRotation(Rigidbody.rotation * deltaRotation);
+                Rigidbody.rotation *= deltaRotation;
             }
         }
     }

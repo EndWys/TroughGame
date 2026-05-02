@@ -1,3 +1,5 @@
+using Zenject;
+
 namespace Fusion {
   using System;
   using Fusion.Sockets;
@@ -182,6 +184,7 @@ namespace Fusion {
     protected bool UsingMultiPeerMode => NetworkProjectConfig.Global.PeerMode == NetworkProjectConfig.PeerModes.Multiple;
     protected bool ShowAutoClients    => UsingMultiPeerMode && (StartMode == StartModes.UserInterface || (StartMode == StartModes.Automatic && AutoStartAs != GameMode.Single));
 
+    [Inject] private INetworkObjectProvider _objectProvider;
 
 #if UNITY_EDITOR
     protected virtual void Reset() {
@@ -642,11 +645,13 @@ namespace Fusion {
         sceneManager = runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
       }
 
-      var objectProvider = runner.GetComponent<INetworkObjectProvider>();
+      var objectProvider = _objectProvider;
+      
+      /*var objectProvider = runner.GetComponent<INetworkObjectProvider>();
       if (objectProvider == null) {
         Debug.Log($"NetworkRunner does not have any component implementing {nameof(INetworkObjectProvider)} interface, adding {nameof(NetworkObjectProviderDefault)}.", runner);
         objectProvider = runner.gameObject.AddComponent<NetworkObjectProviderDefault>();
-      }
+      }*/
 
       var sceneInfo = new NetworkSceneInfo();
       if (scene.IsValid) {

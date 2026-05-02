@@ -1,9 +1,9 @@
-﻿using Fusion;
-using UnityEngine;
+﻿using UnityEngine;
+using Zenject;
 
 namespace Prototype.Prototype
 {
-    public class ClimbingChecker : NetworkBehaviour
+    public class ClimbingChecker : MonoBehaviour
     {
         [Header("Climb Check Settings")]
         [SerializeField] private Transform _climbCheckPivot;
@@ -11,13 +11,12 @@ namespace Prototype.Prototype
         [SerializeField] private float _checkRadius = 0.3f;
         [SerializeField] private float _checkDistance = 0.5f;
         
-        [Header("NETWORKED DATA")]
-        [UnitySerializeField][Networked] public NetworkBool NearValidWall { get; private set; }
-        [UnitySerializeField][Networked] public Vector3 CurrentWallNormal { get; private set; }
-        
-        public override void Spawned()
+        private IClimbDetectorDataChanger _climbDetectorDataChanger;
+
+        [Inject]
+        private void Constructor(IClimbDetectorDataChanger climbDetectorDataChanger)
         {
-            Runner.SetIsSimulated(Object, true);
+            _climbDetectorDataChanger = climbDetectorDataChanger;
         }
         
         public void PerformWallCheck()
@@ -33,8 +32,8 @@ namespace Prototype.Prototype
                 _climbableLayer
             );
 
-            NearValidWall = hit;
-            CurrentWallNormal = hit ? hitInfo.normal : Vector3.zero;
+            _climbDetectorDataChanger.ChangeWallAvailability(hit);
+            _climbDetectorDataChanger.ChangeCurrentWallNormal(hit ? hitInfo.normal : Vector3.zero);
         }
 
 #if UNITY_EDITOR

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
+using Zenject;
 
 namespace Prototype.Prototype
 {
-    public class PoseController : NetworkBehaviour
+    public class PoseController : MonoBehaviour
     {
         [SerializeField] private CapsuleCollider _playerCollider;
         [Space]
@@ -12,17 +13,22 @@ namespace Prototype.Prototype
         
         [Header("POSES HIGH")]
         [SerializeField] private float _crouchHeightMultiplier = 0.6f;
-        
-        [Header("NETWORKED DATA")]
-        [UnitySerializeField, Networked] private PoseTypes CurrentPose { get; set; }
 
+        private IPoseDataChanger _poseDataChanger;
+        
         private Dictionary<PoseTypes, float> _posesHigh;
         
         private float _originalHigh;
-        
-        public override void Spawned()
+
+        [Inject]
+        private void Construct(IPoseDataChanger poseDataChanger)
         {
-            CurrentPose = PoseTypes.Stand;
+            _poseDataChanger = poseDataChanger;
+        }
+        
+        public void Init()
+        {
+            _poseDataChanger.ChangePose(PoseTypes.Stand);
             _originalHigh = _playerCollider.height;
 
             _posesHigh = new Dictionary<PoseTypes, float>()
@@ -31,7 +37,6 @@ namespace Prototype.Prototype
                 { PoseTypes.Crouch , _originalHigh * _crouchHeightMultiplier }, 
             };
             
-            base.Spawned();
         }
         
         public bool CanChangePose(PoseTypes newPose)
@@ -54,7 +59,7 @@ namespace Prototype.Prototype
 
         public void SetPose(PoseTypes newPose)
         {
-            if (CurrentPose == newPose)
+            if (_poseDataChanger.CurrentPose == newPose)
             {
                 return;
             }
@@ -64,7 +69,7 @@ namespace Prototype.Prototype
                 return;
             }
             
-            CurrentPose = newPose;
+            _poseDataChanger.ChangePose(newPose);
             
             float bottomYOffset = _playerCollider.center.y - (_playerCollider.height / 2f);
             

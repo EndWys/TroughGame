@@ -1,25 +1,35 @@
 ﻿using Domain;
-using Fusion;
 using UnityEngine;
 
 namespace Prototype.Prototype
 {
-    public class PlayerDamageTaker : NetworkBehaviour, IPlayerColleague
+    public class PlayerDamageTaker : 
+        BaseNetworkEntityComponent, 
+        IPlayerColleague
     {
-        [SerializeField] private int _defaultDamage = 10;
+        [SerializeField] private byte _defaultDamage = 10;
         
-        private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
+        private IMediator<IPlayerColleague, PlayerEventTypes> _mediator;
+        private INetworkBehaviourAccessor _networkBehaviourAccessor;
+
+        private void Construct(INetworkBehaviourAccessor networkBehaviourAccessor)
+        {
+            _networkBehaviourAccessor = networkBehaviourAccessor;
+        }
         
-        public void Init(IMediator<IPlayerColleague, EPlayerEventType> mediator)
+        public void SetMediator(IMediator<IPlayerColleague, PlayerEventTypes> mediator)
         {
             _mediator = mediator;
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!HasStateAuthority) return;
+            if (!_networkBehaviourAccessor.ParentNetworkBehaviour.HasStateAuthority)
+            {
+                return;
+            }
             
-            _mediator.Notify(this, EPlayerEventType.OnPlayerTakeDamage, new DamageTakePayload()
+            _mediator.Notify(this, PlayerEventTypes.OnPlayerTakeDamage, new DamageTakePayload()
             {
                 Amount = _defaultDamage,
                 DamageType = "Fire",

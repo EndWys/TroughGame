@@ -1,10 +1,12 @@
 using Domain;
-using Fusion;
 using UnityEngine;
+using Zenject;
 
 namespace Prototype.Prototype
 {
-    public class PlayerCameraTracker : NetworkBehaviour, IPlayerColleague
+    public class PlayerCameraTracker : 
+        BaseNetworkEntityComponent, 
+        IPlayerColleague
     {
         [Header("REFERENCES")]
         [SerializeField] private Transform _playerTarget;
@@ -14,28 +16,34 @@ namespace Prototype.Prototype
         [SerializeField] private float _baseFOV = 60f;
         [SerializeField] private float _bustedFOVBonus = 10f;
         
-        private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
-        
+        private INetworkBehaviourAccessor _networkBehaviourAccessor;
+        private IMediator<IPlayerColleague, PlayerEventTypes> _mediator;
         private FollowCameraController _cameraController;
-        
-        public void Init(IMediator<IPlayerColleague, EPlayerEventType> mediator)
+
+        [Inject]
+        private void Construct(INetworkBehaviourAccessor networkBehaviourAccessor)
         {
-            _mediator = mediator;
+            _networkBehaviourAccessor = networkBehaviourAccessor;
         }
         
-        public override void Spawned()
+        protected override void Init()
         {
-            if (!HasInputAuthority)
+            if (!_networkBehaviourAccessor.ParentNetworkBehaviour.HasInputAuthority)
             {
                 return;
             }
-
+            
             _cameraController = FindAnyObjectByType<FollowCameraController>();
             
             if (_cameraController != null)
             {
                 _cameraController.SetTarget(_playerTarget, _cameraLookTarget);
             }
+        }
+        
+        public void SetMediator(IMediator<IPlayerColleague, PlayerEventTypes> mediator)
+        {
+            _mediator = mediator;
         }
 
         public void ChangeFieldOfView(MovementStateChangedPayload movementStateChangedPayload)
@@ -45,7 +53,7 @@ namespace Prototype.Prototype
                 return;
             }
             
-            _cameraController.ChangeFov(movementStateChangedPayload.MovementState == EMovementState.Run ? _baseFOV + _bustedFOVBonus : _baseFOV);
+            _cameraController.ChangeFov(movementStateChangedPayload.MovementStates == MovementStates.Run ? _baseFOV + _bustedFOVBonus : _baseFOV);
         }
     }
 }

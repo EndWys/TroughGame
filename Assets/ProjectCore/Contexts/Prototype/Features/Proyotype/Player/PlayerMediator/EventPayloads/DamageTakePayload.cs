@@ -2,7 +2,7 @@
 {
     public struct DamageTakePayload
     {
-        public int Amount { get; set; }
+        public byte Amount { get; set; }
         public string DamageType { get; set; }
     }
 }

@@ -1,23 +1,22 @@
-﻿using Fusion;
-using UnityEngine;
+﻿using UnityEngine;
+using Zenject;
 
 namespace Prototype.Prototype
 {
-    public class GroundChecker : NetworkBehaviour
+    public class GroundChecker : MonoBehaviour
     {
         [Header("Ground Check Settings")] 
         [SerializeField] private Transform _groundCheckPivot;
         [SerializeField] private LayerMask _groundLayer;
         [SerializeField] private float _groundCheckRadius = 0.3f;
         [SerializeField] private float _groundCheckDistance = 0.2f;
-
-        [Header("NETWORKED DATA")]
-        [UnitySerializeField][Networked] public bool IsGrounded { get; private set; }
-        [UnitySerializeField][Networked] public Vector3 GroundNormal { get; private set; }
         
-        public override void Spawned()
+        private IGroundDetectorDataChanger _groundDetectorDataChanger;
+
+        [Inject]
+        private void Constructor(IGroundDetectorDataChanger groundDetectorDataChanger)
         {
-            Runner.SetIsSimulated(Object, true);
+            _groundDetectorDataChanger = groundDetectorDataChanger;
         }
 
         public void PerformGroundCheck()
@@ -31,8 +30,8 @@ namespace Prototype.Prototype
                 _groundLayer
             );
 
-            IsGrounded = hit;
-            GroundNormal = hit ? hitInfo.normal : Vector3.up;
+            _groundDetectorDataChanger.ChangeGroundedStatus(hit);
+            _groundDetectorDataChanger.ChangeGroundNormal(hit ? hitInfo.normal : Vector3.up);
         }
 
 #if UNITY_EDITOR

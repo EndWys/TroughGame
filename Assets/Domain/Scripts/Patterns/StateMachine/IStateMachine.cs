@@ -9,9 +9,6 @@ namespace Domain
         where TStatePayload : struct
     {
         public IReadOnlyDictionary<TStatesType, TState> States { get; }
-        public TStatesType CurrentState { get; }
-        public TStatesType PreviousState { get; }
-        
         public Dictionary<TStatesType, TState> CreateStatesDictionary();
         public void ChangeState(TStatesType newState);
         public void UpdateStates(TStatePayload payload);

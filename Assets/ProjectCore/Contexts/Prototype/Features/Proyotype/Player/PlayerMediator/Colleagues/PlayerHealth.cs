@@ -1,22 +1,29 @@
 ﻿using Domain;
-using Fusion;
+using Zenject;
 
 namespace Prototype.Prototype
 {
-    public class PlayerHealth : NetworkBehaviour, IPlayerColleague
+    public class PlayerHealth : 
+        BaseNetworkEntityComponent,
+        IPlayerColleague
     {
-        private IMediator<IPlayerColleague, EPlayerEventType> _mediator;
+        private IMediator<IPlayerColleague, PlayerEventTypes> _mediator;
+        private IHealthDataChanger _healthDataChanger;
 
-        [UnitySerializeField][Networked] private int Health { get; set; } = 100;
+        [Inject]
+        private void Construct(IHealthDataChanger healthDataChanger)
+        {
+            _healthDataChanger = healthDataChanger;
+        }
         
-        public void Init(IMediator<IPlayerColleague, EPlayerEventType> mediator)
+        public void SetMediator(IMediator<IPlayerColleague, PlayerEventTypes> mediator)
         {
             _mediator = mediator;
         }
         
-        public void ApplyDamage(int amount)
+        public void ApplyDamage(byte amount)
         {
-            Health -= amount;
+            _healthDataChanger.ReduceHealth(amount);
         }
     }
 }
