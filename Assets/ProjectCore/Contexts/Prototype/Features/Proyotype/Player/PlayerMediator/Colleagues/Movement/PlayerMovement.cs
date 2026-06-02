@@ -23,8 +23,6 @@ namespace Prototype.Prototype
         private GroundChecker _groundChecker;
         private PoseController _poseController;
         private ClimbingChecker _climbingChecker;
-        
-        private INetworkBehaviourAccessor _networkBehaviourAccessor;
 
         private IPlayerMediator _mediator;
         private IMovementStateDataChanger<MovementStates> _movementStateDataChanger;
@@ -35,7 +33,6 @@ namespace Prototype.Prototype
         private void Construct(GroundChecker groundChecker,
             PoseController poseController,
             ClimbingChecker climbingChecker,
-            INetworkBehaviourAccessor networkBehaviourAccessor,
             IMovementStateDataChanger<MovementStates> movementStateDataChanger,
             IJumpDataChanger jumpDataChanger,
             IGroundDetectorDataChanger groundDetectorDataChanger,
@@ -45,16 +42,20 @@ namespace Prototype.Prototype
             _poseController = poseController;
             _climbingChecker = climbingChecker;
             
-            _networkBehaviourAccessor = networkBehaviourAccessor;
             _movementStateDataChanger = movementStateDataChanger;
             _jumpDataChanger = jumpDataChanger;
             _groundDetectorDataChanger = groundDetectorDataChanger;
             _mediator = mediator;
         }
         
-        protected override void Init()
+        public override void Init()
         {
-            base.Init();
+            if (!ShouldPerformMovement())
+            {
+                return;
+            }
+
+            InitializeStateMachine();
 
             foreach (var states in _movementStates.Values)
             {
@@ -73,10 +74,15 @@ namespace Prototype.Prototype
 
         public override void NetworkTick()
         {
+            if (!ShouldPerformMovement())
+            {
+                return;
+            }
+
             _groundChecker.PerformGroundCheck();
             _climbingChecker.PerformWallCheck();
             
-            if (!_networkBehaviourAccessor.ParentNetworkBehaviour.GetInput(out PlayerInputData input))
+            if (!ParentNetworkBehaviour.GetInput(out PlayerInputData input))
             {
                 return;
             }
@@ -137,10 +143,15 @@ namespace Prototype.Prototype
             {
                 float rotationStep = yawDelta 
                                      * LocomotionConfig.RotationSpeed 
-                                     * _networkBehaviourAccessor.ParentNetworkBehaviour.Runner.DeltaTime;
+                                     * ParentNetworkBehaviour.Runner.DeltaTime;
                 Quaternion deltaRotation = Quaternion.Euler(0, rotationStep, 0);
                 Rigidbody.rotation *= deltaRotation;
             }
+        }
+
+        private bool ShouldPerformMovement()
+        {
+            return ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
         }
     }
 }

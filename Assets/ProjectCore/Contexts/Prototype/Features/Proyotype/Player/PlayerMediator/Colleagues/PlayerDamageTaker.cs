@@ -11,18 +11,16 @@ namespace Prototype.Prototype
         [SerializeField] private byte _defaultDamage = 10;
         
         private IPlayerMediator _mediator;
-        private INetworkBehaviourAccessor _networkBehaviourAccessor;
 
         [Inject]
-        private void Construct(INetworkBehaviourAccessor networkBehaviourAccessor, IPlayerMediator mediator)
+        private void Construct(IPlayerMediator mediator)
         {
-            _networkBehaviourAccessor = networkBehaviourAccessor;
             _mediator = mediator;
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!_networkBehaviourAccessor.ParentNetworkBehaviour.HasStateAuthority)
+            if (!ParentNetworkBehaviour.HasStateAuthority)
             {
                 return;
             }

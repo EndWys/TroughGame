@@ -23,7 +23,7 @@ namespace Prototype.Prototype
             _movementStateDataChanger = movementStateDataChanger;
         }
 
-        protected override void Init()
+        protected void InitializeStateMachine()
         {
             _states = CreateStatesDictionary();
         }

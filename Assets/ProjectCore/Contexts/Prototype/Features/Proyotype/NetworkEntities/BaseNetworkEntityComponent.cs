@@ -1,19 +1,23 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
+using Zenject;
 
 namespace Prototype.Prototype
 {
     public abstract class BaseNetworkEntityComponent : MonoBehaviour, INetworkEntityComponent
     {
-        public void Init(NetworkBehaviour parentNetworkBehaviour)
+        public NetworkBehaviour ParentNetworkBehaviour { get; private set; }
+
+        [Inject]
+        private void ConstructBaseNetworkEntityComponent(INetworkBehaviourAccessor networkBehaviourAccessor)
         {
-            Init();
+            ParentNetworkBehaviour = networkBehaviourAccessor.ParentNetworkBehaviour;
         }
+
+        public virtual void Init() { }
 
         public virtual void NetworkTick() { }
 
         public virtual void ClientRender() { }
-        
-        protected virtual void Init() { }
     }
 }

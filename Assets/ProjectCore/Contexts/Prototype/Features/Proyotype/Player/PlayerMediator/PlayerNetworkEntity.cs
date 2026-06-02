@@ -38,44 +38,50 @@ namespace Prototype.Prototype
         [UnitySerializeField, Networked] public MovementStates PreviousMovementStates { get; private set; }
 
         private List<Action<HandlerPayload>> _handlers;
+        private INetworkEntityComponent[] _components;
         public NetworkBehaviour ParentNetworkBehaviour => this;
 
         public override void Spawned()
         {
+            if (HasStateAuthority || HasInputAuthority)
+            {
+                Runner.SetIsSimulated(Object, true);
+            }
+            
             _handlers = new List<Action<HandlerPayload>>
             {
                 HandleMovementStateChange,
                 HandleDamageTaken,
             };
-            
-            _playerCameraTracker.Init(this);
-            
-            _playerMovement.Init(this);
-            
-            _playerDamageTaker.Init(this);
-            
-            _playerHealth.Init(this);
+
+            _components = new INetworkEntityComponent[]
+            {
+                _playerCameraTracker,
+                _playerMovement,
+                _playerDamageTaker,
+                _playerHealth,
+            };
+
+            foreach (INetworkEntityComponent component in _components)
+            {
+                component.Init();
+            }
         }
 
         public override void FixedUpdateNetwork()
         {
-            if (!HasStateAuthority)
+            foreach (INetworkEntityComponent component in _components)
             {
-                return;
+                component.NetworkTick();
             }
-            
-            _playerCameraTracker.NetworkTick();
-            _playerMovement.NetworkTick();
-            _playerDamageTaker.NetworkTick();
-            _playerHealth.NetworkTick();
         }
 
         public override void Render()
         {
-            _playerCameraTracker.ClientRender();
-            _playerMovement.ClientRender();
-            _playerDamageTaker.ClientRender();
-            _playerHealth.ClientRender();
+            foreach (INetworkEntityComponent component in _components)
+            {
+                component.ClientRender();
+            }
         }
 
         public void Notify(HandlerPayload payload)
