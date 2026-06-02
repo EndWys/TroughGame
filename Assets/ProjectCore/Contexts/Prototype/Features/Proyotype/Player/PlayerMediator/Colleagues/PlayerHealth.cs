@@ -1,4 +1,4 @@
-﻿using Domain;
+using Domain;
 using Zenject;
 
 namespace Prototype.Prototype
@@ -7,7 +7,7 @@ namespace Prototype.Prototype
         BaseNetworkEntityComponent,
         IPlayerColleague
     {
-        private IMediator<IPlayerColleague, PlayerEventTypes> _mediator;
+        private IMediator _mediator;
         private IHealthDataChanger _healthDataChanger;
 
         [Inject]
@@ -16,7 +16,7 @@ namespace Prototype.Prototype
             _healthDataChanger = healthDataChanger;
         }
         
-        public void SetMediator(IMediator<IPlayerColleague, PlayerEventTypes> mediator)
+        public void SetMediator(IMediator mediator)
         {
             _mediator = mediator;
         }

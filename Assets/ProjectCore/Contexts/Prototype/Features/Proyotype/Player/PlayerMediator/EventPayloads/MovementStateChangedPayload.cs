@@ -1,6 +1,8 @@
-﻿namespace Prototype.Prototype
+using Domain;
+
+namespace Prototype.Prototype
 {
-    public struct MovementStateChangedPayload
+    public class MovementStateChangedPayload : HandlerPayload
     {
         public MovementStates MovementStates { get; set; }
         public MovementStates PreviousMovementStates { get; set; }

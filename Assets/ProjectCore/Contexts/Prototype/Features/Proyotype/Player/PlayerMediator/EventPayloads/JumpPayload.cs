@@ -1,7 +1,8 @@
-﻿namespace Prototype.Prototype
+using Domain;
+
+namespace Prototype.Prototype
 {
-    public struct JumpPayload
+    public class JumpPayload : HandlerPayload
     {
-        
     }
 }

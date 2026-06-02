@@ -1,9 +1,8 @@
-﻿using Domain;
+using Domain;
 
 namespace Prototype.Prototype
 {
-    public interface IPlayerColleague : IColleague<IPlayerColleague, PlayerEventTypes>
+    public interface IPlayerColleague : IColleague
     {
-        
     }
 }

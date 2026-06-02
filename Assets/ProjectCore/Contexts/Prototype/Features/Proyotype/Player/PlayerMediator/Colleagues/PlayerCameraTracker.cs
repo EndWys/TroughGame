@@ -17,7 +17,7 @@ namespace Prototype.Prototype
         [SerializeField] private float _bustedFOVBonus = 10f;
         
         private INetworkBehaviourAccessor _networkBehaviourAccessor;
-        private IMediator<IPlayerColleague, PlayerEventTypes> _mediator;
+        private IMediator _mediator;
         private FollowCameraController _cameraController;
 
         [Inject]
@@ -41,7 +41,7 @@ namespace Prototype.Prototype
             }
         }
         
-        public void SetMediator(IMediator<IPlayerColleague, PlayerEventTypes> mediator)
+        public void SetMediator(IMediator mediator)
         {
             _mediator = mediator;
         }

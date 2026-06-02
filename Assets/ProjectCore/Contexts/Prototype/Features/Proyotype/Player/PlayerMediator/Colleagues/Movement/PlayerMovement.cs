@@ -26,7 +26,7 @@ namespace Prototype.Prototype
         
         private INetworkBehaviourAccessor _networkBehaviourAccessor;
 
-        private IMediator<IPlayerColleague, PlayerEventTypes> _mediator;
+        private IMediator _mediator;
         private IMovementStateDataChanger<MovementStates> _movementStateDataChanger;
         private IGroundDetectorDataChanger _groundDetectorDataChanger;
         private IJumpDataChanger _jumpDataChanger;
@@ -69,7 +69,7 @@ namespace Prototype.Prototype
             return _movementStates;
         }
 
-        public void SetMediator(IMediator<IPlayerColleague, PlayerEventTypes> mediator)
+        public void SetMediator(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -117,14 +117,18 @@ namespace Prototype.Prototype
             _jumpDataChanger.StopCoyoteTimer();
             _jumpDataChanger.StopJumpBufferTimer();
             
-            _mediator.Notify(this, PlayerEventTypes.OnPlayerJump, new JumpPayload());
+            _mediator.Notify(new JumpPayload()
+            {
+                Sender = this,
+            });
         }
         
         protected override void BeforePreviousStateExit()
         {
-            _mediator.Notify(this, PlayerEventTypes.OnPlayerMovementStateChange,
-                new MovementStateChangedPayload() 
+            _mediator.Notify(
+                new MovementStateChangedPayload()
                 {
+                    Sender = this,
                     MovementStates = _movementStateDataChanger.CurrentMovementStates,
                     PreviousMovementStates = _movementStateDataChanger.PreviousMovementStates,
                 });

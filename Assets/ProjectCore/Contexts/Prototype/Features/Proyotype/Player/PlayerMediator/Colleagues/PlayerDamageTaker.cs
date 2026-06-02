@@ -1,4 +1,4 @@
-﻿using Domain;
+using Domain;
 using UnityEngine;
 
 namespace Prototype.Prototype
@@ -9,7 +9,7 @@ namespace Prototype.Prototype
     {
         [SerializeField] private byte _defaultDamage = 10;
         
-        private IMediator<IPlayerColleague, PlayerEventTypes> _mediator;
+        private IMediator _mediator;
         private INetworkBehaviourAccessor _networkBehaviourAccessor;
 
         private void Construct(INetworkBehaviourAccessor networkBehaviourAccessor)
@@ -17,7 +17,7 @@ namespace Prototype.Prototype
             _networkBehaviourAccessor = networkBehaviourAccessor;
         }
         
-        public void SetMediator(IMediator<IPlayerColleague, PlayerEventTypes> mediator)
+        public void SetMediator(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -29,8 +29,9 @@ namespace Prototype.Prototype
                 return;
             }
             
-            _mediator.Notify(this, PlayerEventTypes.OnPlayerTakeDamage, new DamageTakePayload()
+            _mediator.Notify(new DamageTakePayload()
             {
+                Sender = this,
                 Amount = _defaultDamage,
                 DamageType = "Fire",
             });

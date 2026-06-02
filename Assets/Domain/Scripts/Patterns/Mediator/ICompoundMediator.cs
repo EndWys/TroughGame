@@ -1,12 +1,9 @@
-﻿using System;
 using System.Collections.Generic;
 
 namespace Domain
 {
-    public interface ICompoundMediator<TColleague, TEventKey> : IMediator<TColleague, TEventKey> 
-        where TColleague : IColleague<TColleague, TEventKey> 
-        where TEventKey : Enum
+    public interface ICompoundMediator : IMediator
     {
-        protected Dictionary<TEventKey, IMediatorEventStrategy<TColleague,TEventKey>> Strategies { get; }
+        protected List<MemberHandler> Handlers { get; }
     }
 }

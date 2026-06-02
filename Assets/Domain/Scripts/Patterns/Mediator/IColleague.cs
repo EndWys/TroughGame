@@ -1,11 +1,7 @@
-﻿using System;
-
 namespace Domain
 {
-    public interface IColleague<out TColleague, out TEventKey>  
-        where TColleague : IColleague<TColleague, TEventKey>
-        where TEventKey : Enum
+    public interface IColleague
     {
-        public void SetMediator(IMediator<TColleague, TEventKey> mediator);
+        public void SetMediator(IMediator mediator);
     }
 }

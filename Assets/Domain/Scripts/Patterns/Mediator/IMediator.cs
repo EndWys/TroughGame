@@ -1,11 +1,7 @@
-using System;
-
 namespace Domain
 {
-    public interface IMediator<in TColleague, in TEventKey> 
-        where TColleague : IColleague<TColleague, TEventKey> 
-        where TEventKey : Enum
+    public interface IMediator
     {
-        public void Notify(TColleague sender, TEventKey eventKey, object args = null);
+        public void Notify(HandlerPayload payload);
     }
 }

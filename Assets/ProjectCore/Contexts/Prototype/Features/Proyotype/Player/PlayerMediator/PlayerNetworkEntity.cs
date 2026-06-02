@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Domain;
 using Fusion;
@@ -8,7 +8,7 @@ namespace Prototype.Prototype
 {
     public class PlayerNetworkEntity : 
         NetworkBehaviour, INetworkBehaviourAccessor,
-        IMediator<IPlayerColleague, PlayerEventTypes>,
+        IMediator,
         IClimbDetectorDataChanger, IPoseDataChanger, IGroundDetectorDataChanger,
         IHealthDataChanger, IJumpDataChanger, IMovementStateDataChanger<MovementStates>
     {
@@ -37,15 +37,15 @@ namespace Prototype.Prototype
         [UnitySerializeField, Networked] public MovementStates CurrentMovementStates { get; private set; }
         [UnitySerializeField, Networked] public MovementStates PreviousMovementStates { get; private set; }
 
-        private Dictionary<PlayerEventTypes, Action<IPlayerColleague, object>> _handlers;
+        private List<Action<HandlerPayload>> _handlers;
         public NetworkBehaviour ParentNetworkBehaviour => this;
 
         public override void Spawned()
         {
-            _handlers = new Dictionary<PlayerEventTypes, Action<IPlayerColleague, object>>
+            _handlers = new List<Action<HandlerPayload>>
             {
-                { PlayerEventTypes.OnPlayerMovementStateChange, HandleMovementStateChange },
-                { PlayerEventTypes.OnPlayerTakeDamage, HandleDamageTaken },
+                HandleMovementStateChange,
+                HandleDamageTaken,
             };
             
             _playerCameraTracker.SetMediator(this);
@@ -82,27 +82,27 @@ namespace Prototype.Prototype
             _playerHealth.ClientRender();
         }
 
-        public void Notify(IPlayerColleague sender, PlayerEventTypes eventKey, object args = null)
+        public void Notify(HandlerPayload payload)
         {
-            if (_handlers.TryGetValue(eventKey, out var handler))
+            foreach (Action<HandlerPayload> handler in _handlers)
             {
-                handler.Invoke(sender, args);
+                handler.Invoke(payload);
             }
         }
 
-        private void HandleMovementStateChange(IPlayerColleague sender, object args = null)
+        private void HandleMovementStateChange(HandlerPayload payload)
         {
-            if (args is MovementStateChangedPayload payload)
+            if (payload is MovementStateChangedPayload movementStateChangedPayload)
             {
-                _playerCameraTracker.ChangeFieldOfView(payload);
+                _playerCameraTracker.ChangeFieldOfView(movementStateChangedPayload);
             }
         }
 
-        private void HandleDamageTaken(IPlayerColleague sender, object args = null)
+        private void HandleDamageTaken(HandlerPayload payload)
         {
-            if (args is DamageTakePayload payload)
+            if (payload is DamageTakePayload damageTakePayload)
             {
-                _playerHealth.ApplyDamage(payload.Amount);
+                _playerHealth.ApplyDamage(damageTakePayload.Amount);
             }
         }
         
