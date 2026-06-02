@@ -1,4 +1,3 @@
-using Domain;
 using UnityEngine;
 using Zenject;
 
@@ -17,7 +16,6 @@ namespace Prototype.Prototype
         [SerializeField] private float _bustedFOVBonus = 10f;
         
         private INetworkBehaviourAccessor _networkBehaviourAccessor;
-        private IMediator _mediator;
         private FollowCameraController _cameraController;
 
         [Inject]
@@ -41,11 +39,6 @@ namespace Prototype.Prototype
             }
         }
         
-        public void SetMediator(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         public void ChangeFieldOfView(MovementStateChangedPayload movementStateChangedPayload)
         {
             if (_cameraController == null)

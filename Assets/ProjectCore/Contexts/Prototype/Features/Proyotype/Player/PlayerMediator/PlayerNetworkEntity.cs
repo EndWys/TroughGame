@@ -8,7 +8,7 @@ namespace Prototype.Prototype
 {
     public class PlayerNetworkEntity : 
         NetworkBehaviour, INetworkBehaviourAccessor,
-        IMediator,
+        IPlayerMediator,
         IClimbDetectorDataChanger, IPoseDataChanger, IGroundDetectorDataChanger,
         IHealthDataChanger, IJumpDataChanger, IMovementStateDataChanger<MovementStates>
     {
@@ -48,16 +48,12 @@ namespace Prototype.Prototype
                 HandleDamageTaken,
             };
             
-            _playerCameraTracker.SetMediator(this);
             _playerCameraTracker.Init(this);
             
-            _playerMovement.SetMediator(this);
             _playerMovement.Init(this);
             
             _playerDamageTaker.Init(this);
-            _playerDamageTaker.SetMediator(this);
             
-            _playerHealth.SetMediator(this);
             _playerHealth.Init(this);
         }
 

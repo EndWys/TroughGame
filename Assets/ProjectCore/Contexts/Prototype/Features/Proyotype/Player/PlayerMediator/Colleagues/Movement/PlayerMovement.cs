@@ -26,7 +26,7 @@ namespace Prototype.Prototype
         
         private INetworkBehaviourAccessor _networkBehaviourAccessor;
 
-        private IMediator _mediator;
+        private IPlayerMediator _mediator;
         private IMovementStateDataChanger<MovementStates> _movementStateDataChanger;
         private IGroundDetectorDataChanger _groundDetectorDataChanger;
         private IJumpDataChanger _jumpDataChanger;
@@ -38,7 +38,8 @@ namespace Prototype.Prototype
             INetworkBehaviourAccessor networkBehaviourAccessor,
             IMovementStateDataChanger<MovementStates> movementStateDataChanger,
             IJumpDataChanger jumpDataChanger,
-            IGroundDetectorDataChanger groundDetectorDataChanger)
+            IGroundDetectorDataChanger groundDetectorDataChanger,
+            IPlayerMediator mediator)
         {
             _groundChecker = groundChecker;
             _poseController = poseController;
@@ -48,6 +49,7 @@ namespace Prototype.Prototype
             _movementStateDataChanger = movementStateDataChanger;
             _jumpDataChanger = jumpDataChanger;
             _groundDetectorDataChanger = groundDetectorDataChanger;
+            _mediator = mediator;
         }
         
         protected override void Init()
@@ -67,11 +69,6 @@ namespace Prototype.Prototype
         public override Dictionary<MovementStates, BasePlayerMovementState> CreateStatesDictionary()
         {
             return _movementStates;
-        }
-
-        public void SetMediator(IMediator mediator)
-        {
-            _mediator = mediator;
         }
 
         public override void NetworkTick()

@@ -1,5 +1,6 @@
 using Domain;
 using UnityEngine;
+using Zenject;
 
 namespace Prototype.Prototype
 {
@@ -9,16 +10,13 @@ namespace Prototype.Prototype
     {
         [SerializeField] private byte _defaultDamage = 10;
         
-        private IMediator _mediator;
+        private IPlayerMediator _mediator;
         private INetworkBehaviourAccessor _networkBehaviourAccessor;
 
-        private void Construct(INetworkBehaviourAccessor networkBehaviourAccessor)
+        [Inject]
+        private void Construct(INetworkBehaviourAccessor networkBehaviourAccessor, IPlayerMediator mediator)
         {
             _networkBehaviourAccessor = networkBehaviourAccessor;
-        }
-        
-        public void SetMediator(IMediator mediator)
-        {
             _mediator = mediator;
         }
 
