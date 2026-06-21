@@ -1,5 +1,4 @@
-﻿using Domain;
-using UnityEngine;
+using System.Collections.Generic;
 
 namespace Prototype.Prototype
 {
@@ -7,33 +6,18 @@ namespace Prototype.Prototype
     {
         public override void Enter() { }
 
-        public override MovementStates Tick(PlayerInputData input)
+        protected override IReadOnlyList<IPlayerMovementStateProcessor> CreateProcessors()
         {
-            if (JumpDataAccessor.JumpBufferTimer.IsDisabled(NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner))
+            return new IPlayerMovementStateProcessor[]
             {
-                Context.ExecuteJump();
-                return MovementStates.Airborne;
-            }
-
-            if (!GroundDetectorDataAccessor.IsGrounded)
-            {
-                return MovementStates.Airborne;
-            }
-            
-            if (input.IsCrouchPressed && PoseController.CanChangePose(PoseTypes.Crouch))
-            {
-                return MovementStates.Crouch;
-            }
-            
-            if (input.MoveDirection.sqrMagnitude > 0f)
-            {
-                return input.IsRunning ? MovementStates.Run : MovementStates.Walk;
-            }
-            
-            ApplyVelocityChange(Vector3.zero);
-
-            return MovementStates.Idle;
+                new BufferedJumpProcessor(this),
+                new FallTransitionProcessor(this),
+                new CrouchTransitionProcessor(this),
+                new GroundedLocomotionProcessor(this),
+            };
         }
+
+        protected override MovementStates FallbackState => MovementStates.Idle;
 
         public override void Exit() { }
     }

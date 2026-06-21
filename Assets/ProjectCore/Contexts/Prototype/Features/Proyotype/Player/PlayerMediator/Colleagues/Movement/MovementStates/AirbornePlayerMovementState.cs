@@ -1,4 +1,4 @@
-﻿using Domain;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Prototype.Prototype
@@ -7,53 +7,25 @@ namespace Prototype.Prototype
     {
         public override void Enter() { }
 
-        public override MovementStates Tick(PlayerInputData input)
+        protected override IReadOnlyList<IPlayerMovementStateProcessor> CreateProcessors()
         {
-            if (input.MoveDirection.y > 0f && ClimbDetectorDataChanger.IsNearValidWall)
+            return new IPlayerMovementStateProcessor[]
             {
-                return MovementStates.Climb;
-            }
-            
-            if (GroundDetectorDataAccessor.IsGrounded && Context.Rigidbody.linearVelocity.y <= 0f)
-            {
-                Vector3 baseDirectionCheck = new Vector3(input.MoveDirection.y, 0f, input.MoveDirection.x);
-                return baseDirectionCheck.sqrMagnitude > 0f 
-                    ? (input.IsRunning ? MovementStates.Run : MovementStates.Walk) 
-                    : MovementStates.Idle;
-            }
-            
-            bool canCoyoteJump = !JumpDataAccessor.IsJumping 
-                                 && JumpDataAccessor.CoyoteTimer.IsDisabled(NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner) 
-                                 && JumpDataAccessor.JumpBufferTimer.IsDisabled(NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner);
-
-            if (canCoyoteJump)
-            {
-                Context.ExecuteJump();
-            }
-            
-            Context.Rigidbody.AddForce(Physics.gravity * Context.AirborneConfig.GravityMultiplier, ForceMode.Acceleration);
-            
-            Vector3 baseDirection = (Context.Rigidbody.transform.forward * input.MoveDirection.y + Context.transform.right * input.MoveDirection.x).normalized;
-
-            if (baseDirection.sqrMagnitude > 0f)
-            {
-                float targetSpeed = Context.LocomotionConfig.WalkSpeed * Context.AirborneConfig.GravityMultiplier;
-                ApplyVelocityChange(baseDirection * targetSpeed);
-            }
-            else
-            {
-                ApplyVelocityChange(Vector3.zero);
-            }
-
-            return MovementStates.Airborne;
+                new WallClingTransitionProcessor(this),
+                new AirborneLandingProcessor(this),
+                new CoyoteJumpProcessor(this),
+                new AirborneMovementProcessor(this),
+            };
         }
+
+        protected override MovementStates FallbackState => MovementStates.Airborne;
 
         public override void Exit() { }
 
-        protected override Vector3 ApplyVelocityChangeModifier(Vector3 velocityChange)
+        public override Vector3 ApplyVelocityChangeModifier(Vector3 velocityChange)
         {
             velocityChange.y = 0;
-            
+
             return velocityChange;
         }
     }

@@ -1,20 +1,22 @@
-﻿namespace Prototype.Prototype
+using System.Collections.Generic;
+
+namespace Prototype.Prototype
 {
     public class DefaultPlayerMovementState : BasePlayerMovementState
     {
         public override void Enter()
         {
-            
         }
 
-        public override MovementStates Tick(PlayerInputData input)
+        protected override IReadOnlyList<IPlayerMovementStateProcessor> CreateProcessors()
         {
-            return MovementStates.Default;
+            return new IPlayerMovementStateProcessor[] { };
         }
+
+        protected override MovementStates FallbackState => MovementStates.Default;
 
         public override void Exit()
         {
-            
         }
     }
 }

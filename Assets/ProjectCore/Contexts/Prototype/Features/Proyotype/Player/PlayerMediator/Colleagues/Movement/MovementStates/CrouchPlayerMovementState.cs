@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using System.Collections.Generic;
 
 namespace Prototype.Prototype
 {
@@ -9,33 +9,17 @@ namespace Prototype.Prototype
             PoseController.SetPose(PoseTypes.Crouch);
         }
 
-        public override MovementStates Tick(PlayerInputData input)
+        protected override IReadOnlyList<IPlayerMovementStateProcessor> CreateProcessors()
         {
-            if (!GroundDetectorDataAccessor.IsGrounded)
+            return new IPlayerMovementStateProcessor[]
             {
-                return MovementStates.Airborne;
-            }
-            
-            if (!input.IsCrouchPressed && PoseController.CanChangePose(PoseTypes.Stand))
-            {
-                return input.MoveDirection.sqrMagnitude > 0f ? MovementStates.Walk : MovementStates.Idle;
-            }
-
-            Vector3 baseDirection = (Context.Rigidbody.transform.forward * input.MoveDirection.y + Context.transform.right * input.MoveDirection.x).normalized;
-
-            if (baseDirection.sqrMagnitude <= 0f)
-            {
-                ApplyVelocityChange(Vector3.zero);
-                return MovementStates.Crouch;
-            }
-
-            Vector3 projectedDirection = Vector3.ProjectOnPlane(baseDirection, 
-                GroundDetectorDataAccessor.GroundNormal).normalized;
-            
-            ApplyVelocityChange(projectedDirection * Context.CrouchConfig.CrouchSpeed);
-
-            return MovementStates.Crouch;
+                new FallTransitionProcessor(this),
+                new StandUpTransitionProcessor(this),
+                new CrouchMovementProcessor(this),
+            };
         }
+
+        protected override MovementStates FallbackState => MovementStates.Crouch;
 
         public override void Exit()
         {

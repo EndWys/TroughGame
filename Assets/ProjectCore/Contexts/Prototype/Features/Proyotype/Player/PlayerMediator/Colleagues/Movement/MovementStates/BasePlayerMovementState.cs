@@ -1,4 +1,5 @@
 ﻿using Domain;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -6,14 +7,16 @@ namespace Prototype.Prototype
 {
     public abstract class BasePlayerMovementState : MonoBehaviour, IState<MovementStates, PlayerInputData>
     {
-        protected PlayerMovement Context;
+        private IReadOnlyList<IPlayerMovementStateProcessor> _processors;
 
-        protected PoseController PoseController;
+        public PlayerMovement Context { get; private set; }
+
+        public PoseController PoseController { get; private set; }
         
-        protected INetworkBehaviourAccessor NetworkBehaviourAccessor;
-        protected IJumpDataAccessor JumpDataAccessor;
-        protected IGroundDetectorDataAccessor GroundDetectorDataAccessor;
-        protected IClimbDetectorDataChanger ClimbDetectorDataChanger;
+        public INetworkBehaviourAccessor NetworkBehaviourAccessor { get; private set; }
+        public IJumpDataAccessor JumpDataAccessor { get; private set; }
+        public IGroundDetectorDataAccessor GroundDetectorDataAccessor { get; private set; }
+        public IClimbDetectorDataChanger ClimbDetectorDataChanger { get; private set; }
         
         [Inject]
         private void Construct(PoseController poseController,
@@ -32,13 +35,29 @@ namespace Prototype.Prototype
         public void Init(PlayerMovement context)
         {
             Context = context;
+            _processors = CreateProcessors();
         }
 
         public abstract void Enter();
 
-        public abstract MovementStates Tick(PlayerInputData input);
+        public virtual MovementStates Tick(PlayerInputData input)
+        {
+            foreach (IPlayerMovementStateProcessor processor in _processors)
+            {
+                if (processor.Execute(input, out MovementStates resultState))
+                {
+                    return resultState;
+                }
+            }
+
+            return FallbackState;
+        }
 
         public abstract void Exit();
+
+        protected abstract IReadOnlyList<IPlayerMovementStateProcessor> CreateProcessors();
+
+        protected abstract MovementStates FallbackState { get; }
         
         protected virtual void ApplyVelocityChange(Vector3 targetVelocity)
         {
@@ -60,7 +79,7 @@ namespace Prototype.Prototype
             }
         }
 
-        protected virtual Vector3 ApplyVelocityChangeModifier(Vector3 velocityChange)
+        public virtual Vector3 ApplyVelocityChangeModifier(Vector3 velocityChange)
         {
             return velocityChange;
         }

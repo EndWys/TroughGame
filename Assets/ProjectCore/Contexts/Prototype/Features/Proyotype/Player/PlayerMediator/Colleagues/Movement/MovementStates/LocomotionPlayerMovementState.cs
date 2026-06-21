@@ -1,5 +1,4 @@
-﻿using Domain;
-using UnityEngine;
+using System.Collections.Generic;
 
 namespace Prototype.Prototype
 {
@@ -7,40 +6,18 @@ namespace Prototype.Prototype
     {
         public override void Enter() { }
 
-        public override MovementStates Tick(PlayerInputData input)
+        protected override IReadOnlyList<IPlayerMovementStateProcessor> CreateProcessors()
         {
-            if (JumpDataAccessor.JumpBufferTimer.IsDisabled(NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner))
+            return new IPlayerMovementStateProcessor[]
             {
-                Context.ExecuteJump();
-                return MovementStates.Airborne;
-            }
-            
-            if (!GroundDetectorDataAccessor.IsGrounded)
-            {
-                return MovementStates.Airborne;
-            }
-            
-            if (input.IsCrouchPressed && PoseController.CanChangePose(PoseTypes.Crouch))
-            {
-                return MovementStates.Crouch;
-            }
-            
-            Vector3 baseDirection = (Context.Rigidbody.transform.forward * input.MoveDirection.y + Context.Rigidbody.transform.right * input.MoveDirection.x).normalized;
-            
-            if (baseDirection.sqrMagnitude <= 0f)
-            {
-                ApplyVelocityChange(Vector3.zero);
-                return MovementStates.Idle;
-            }
-            
-            Vector3 projectedDirection = Vector3.ProjectOnPlane(baseDirection, 
-                GroundDetectorDataAccessor.GroundNormal).normalized;
-            
-            float targetSpeed = input.IsRunning ? Context.LocomotionConfig.RunSpeed : Context.LocomotionConfig.WalkSpeed;
-            ApplyVelocityChange(projectedDirection * targetSpeed);
-
-            return input.IsRunning ? MovementStates.Run : MovementStates.Walk;
+                new BufferedJumpProcessor(this),
+                new FallTransitionProcessor(this),
+                new CrouchTransitionProcessor(this),
+                new GroundedLocomotionProcessor(this),
+            };
         }
+
+        protected override MovementStates FallbackState => MovementStates.Walk;
 
         public override void Exit() { }
     }
