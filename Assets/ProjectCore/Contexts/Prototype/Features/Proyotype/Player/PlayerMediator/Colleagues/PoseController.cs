@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Fusion;
+using Domain;
 using UnityEngine;
 using Zenject;
 
 namespace Prototype.Prototype
 {
-    public class PoseController : MonoBehaviour
+    public class PoseController : BaseNetworkEntityComponent
     {
         [SerializeField] private CapsuleCollider _playerCollider;
         [Space]
@@ -26,8 +26,13 @@ namespace Prototype.Prototype
             _poseDataChanger = poseDataChanger;
         }
         
-        public void Init()
+        public override void Init()
         {
+            if (!ShouldPerformPoseControl())
+            {
+                return;
+            }
+
             _poseDataChanger.ChangePose(PoseTypes.Stand);
             _originalHigh = _playerCollider.height;
 
@@ -87,6 +92,11 @@ namespace Prototype.Prototype
             Vector3 up = _playerCollider.transform.up;
             
             return  colliderPosition + colliderCenter + up * (_playerCollider.height / 2f - radius);
+        }
+
+        private bool ShouldPerformPoseControl()
+        {
+            return ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
         }
     }
 }

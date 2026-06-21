@@ -2,7 +2,7 @@ using Fusion;
 using UnityEngine;
 using Zenject;
 
-namespace Prototype.Prototype
+namespace Domain
 {
     public abstract class BaseNetworkEntityComponent : MonoBehaviour, INetworkEntityComponent
     {

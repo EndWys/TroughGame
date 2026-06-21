@@ -658,6 +658,7 @@ MonoBehaviour:
   _groundChecker: {fileID: 2258215284134407499}
   _poseController: {fileID: 8611510632839045147}
   _climbingChecker: {fileID: 208372194302430936}
+  _playerMediator: {fileID: 410250387091284517}
 --- !u!1 &5434771861568622331
 GameObject:
   m_ObjectHideFlags: 0
@@ -668,6 +669,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3032902217201715772}
   - component: {fileID: 6388893341330629145}
+  - component: {fileID: 410250387091284517}
   m_Layer: 0
   m_Name: ComponentsContainer
   m_TagString: Untagged
@@ -705,11 +707,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 154b8dda91884e19971f5feec2123f91, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Prototype.Player.PlayerMediator.PlayerMediator
-  _playerCameraTracker: {fileID: 7908898045725241603}
-  _playerMovement: {fileID: 1600629106705967912}
-  _playerDamageTaker: {fileID: 4500386298023570675}
-  _playerHealth: {fileID: 6306576875225163355}
+  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerNetworkEntity
+  _groundChecker: {fileID: 2258215284134407499}
+  _climbingChecker: {fileID: 208372194302430936}
+  _poseController: {fileID: 8611510632839045147}
+  _playerMediator: {fileID: 410250387091284517}
   _Health: 0
   _IsGrounded: 0
   _GroundNormal: {x: 0, y: 0, z: 0}
@@ -719,6 +721,22 @@ MonoBehaviour:
   _IsJumping: 0
   _CurrentMovementStates: 0
   _PreviousMovementStates: 0
+--- !u!114 &410250387091284517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5434771861568622331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410ac25d3f814a87b842b46c2c9f8c17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerMediator
+  _playerCameraTracker: {fileID: 7908898045725241603}
+  _playerMovement: {fileID: 1600629106705967912}
+  _playerDamageTaker: {fileID: 4500386298023570675}
+  _playerHealth: {fileID: 6306576875225163355}
 --- !u!1 &5902347965636678683
 GameObject:
   m_ObjectHideFlags: 0

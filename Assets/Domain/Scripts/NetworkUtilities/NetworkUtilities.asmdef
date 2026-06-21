@@ -2,7 +2,8 @@
     "name": "NetworkUtilities",
     "rootNamespace": "",
     "references": [
-        "GUID:1e1211d652a8c174dadf4c64db1425d6"
+        "GUID:1e1211d652a8c174dadf4c64db1425d6",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -20,28 +20,17 @@ namespace Prototype.Prototype
         [SerializedDictionary("State Type", "State Object")]
         [SerializeField] private SerializedDictionary<MovementStates, BasePlayerMovementState> _movementStates;
         
-        private GroundChecker _groundChecker;
-        private PoseController _poseController;
-        private ClimbingChecker _climbingChecker;
-
         private IPlayerMediator _mediator;
         private IMovementStateDataChanger<MovementStates> _movementStateDataChanger;
         private IGroundDetectorDataChanger _groundDetectorDataChanger;
         private IJumpDataChanger _jumpDataChanger;
 
         [Inject]
-        private void Construct(GroundChecker groundChecker,
-            PoseController poseController,
-            ClimbingChecker climbingChecker,
-            IMovementStateDataChanger<MovementStates> movementStateDataChanger,
+        private void Construct(IMovementStateDataChanger<MovementStates> movementStateDataChanger,
             IJumpDataChanger jumpDataChanger,
             IGroundDetectorDataChanger groundDetectorDataChanger,
             IPlayerMediator mediator)
         {
-            _groundChecker = groundChecker;
-            _poseController = poseController;
-            _climbingChecker = climbingChecker;
-            
             _movementStateDataChanger = movementStateDataChanger;
             _jumpDataChanger = jumpDataChanger;
             _groundDetectorDataChanger = groundDetectorDataChanger;
@@ -61,9 +50,7 @@ namespace Prototype.Prototype
             {
                 states.Init(this);
             }
-            
-            _poseController.Init();
-            
+
             ChangeState(MovementStates.Idle);
         }
 
@@ -79,9 +66,6 @@ namespace Prototype.Prototype
                 return;
             }
 
-            _groundChecker.PerformGroundCheck();
-            _climbingChecker.PerformWallCheck();
-            
             if (!ParentNetworkBehaviour.GetInput(out PlayerInputData input))
             {
                 return;

@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using Zenject;
+using Domain;
 
 namespace Prototype.Prototype
 {
-    public class ClimbingChecker : MonoBehaviour
+    public class ClimbingChecker : BaseNetworkEntityComponent
     {
         [Header("Climb Check Settings")]
         [SerializeField] private Transform _climbCheckPivot;
@@ -34,6 +35,21 @@ namespace Prototype.Prototype
 
             _climbDetectorDataChanger.ChangeWallAvailability(hit);
             _climbDetectorDataChanger.ChangeCurrentWallNormal(hit ? hitInfo.normal : Vector3.zero);
+        }
+
+        public override void NetworkTick()
+        {
+            if (!ShouldPerformCheck())
+            {
+                return;
+            }
+
+            PerformWallCheck();
+        }
+
+        private bool ShouldPerformCheck()
+        {
+            return ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
         }
 
 #if UNITY_EDITOR

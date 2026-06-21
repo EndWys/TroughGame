@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using Zenject;
+using Domain;
 
 namespace Prototype.Prototype
 {
-    public class GroundChecker : MonoBehaviour
+    public class GroundChecker : BaseNetworkEntityComponent
     {
         [Header("Ground Check Settings")] 
         [SerializeField] private Transform _groundCheckPivot;
@@ -32,6 +33,21 @@ namespace Prototype.Prototype
 
             _groundDetectorDataChanger.ChangeGroundedStatus(hit);
             _groundDetectorDataChanger.ChangeGroundNormal(hit ? hitInfo.normal : Vector3.up);
+        }
+
+        public override void NetworkTick()
+        {
+            if (!ShouldPerformCheck())
+            {
+                return;
+            }
+
+            PerformGroundCheck();
+        }
+
+        private bool ShouldPerformCheck()
+        {
+            return ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
         }
 
 #if UNITY_EDITOR

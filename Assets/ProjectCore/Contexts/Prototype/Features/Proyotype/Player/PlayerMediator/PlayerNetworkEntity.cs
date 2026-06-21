@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Domain;
 using Fusion;
@@ -7,16 +6,14 @@ using UnityEngine;
 namespace Prototype.Prototype
 {
     public class PlayerNetworkEntity : 
-        NetworkBehaviour, INetworkBehaviourAccessor,
-        IPlayerMediator,
-        IClimbDetectorDataChanger, IPoseDataChanger, IGroundDetectorDataChanger,
-        IHealthDataChanger, IJumpDataChanger, IMovementStateDataChanger<MovementStates>
+        BaseNetworkEntityRoot,
+        IPlayerDataHolder
     {
         [Header("COMPONENTS")]
-        [SerializeField] private PlayerCameraTracker _playerCameraTracker;
-        [SerializeField] private PlayerMovement _playerMovement;
-        [SerializeField] private PlayerDamageTaker _playerDamageTaker;
-        [SerializeField] private PlayerHealth _playerHealth;
+        [SerializeField] private GroundChecker _groundChecker;
+        [SerializeField] private ClimbingChecker _climbingChecker;
+        [SerializeField] private PoseController _poseController;
+        [SerializeField] private PlayerMediator _playerMediator;
 
         [Header("NETWORKED DATA")]
         
@@ -37,75 +34,23 @@ namespace Prototype.Prototype
         [UnitySerializeField, Networked] public MovementStates CurrentMovementStates { get; private set; }
         [UnitySerializeField, Networked] public MovementStates PreviousMovementStates { get; private set; }
 
-        private List<Action<HandlerPayload>> _handlers;
-        private INetworkEntityComponent[] _components;
-        public NetworkBehaviour ParentNetworkBehaviour => this;
-
-        public override void Spawned()
+        protected override void BeforeComponentsInitialized()
         {
             if (HasStateAuthority || HasInputAuthority)
             {
                 Runner.SetIsSimulated(Object, true);
             }
-            
-            _handlers = new List<Action<HandlerPayload>>
+        }
+
+        protected override IEnumerable<INetworkEntityComponent> CreateComponents()
+        {
+            return new INetworkEntityComponent[]
             {
-                HandleMovementStateChange,
-                HandleDamageTaken,
+                _groundChecker,
+                _climbingChecker,
+                _poseController,
+                _playerMediator,
             };
-
-            _components = new INetworkEntityComponent[]
-            {
-                _playerCameraTracker,
-                _playerMovement,
-                _playerDamageTaker,
-                _playerHealth,
-            };
-
-            foreach (INetworkEntityComponent component in _components)
-            {
-                component.Init();
-            }
-        }
-
-        public override void FixedUpdateNetwork()
-        {
-            foreach (INetworkEntityComponent component in _components)
-            {
-                component.NetworkTick();
-            }
-        }
-
-        public override void Render()
-        {
-            foreach (INetworkEntityComponent component in _components)
-            {
-                component.ClientRender();
-            }
-        }
-
-        public void Notify(HandlerPayload payload)
-        {
-            foreach (Action<HandlerPayload> handler in _handlers)
-            {
-                handler.Invoke(payload);
-            }
-        }
-
-        private void HandleMovementStateChange(HandlerPayload payload)
-        {
-            if (payload is MovementStateChangedPayload movementStateChangedPayload)
-            {
-                _playerCameraTracker.ChangeFieldOfView(movementStateChangedPayload);
-            }
-        }
-
-        private void HandleDamageTaken(HandlerPayload payload)
-        {
-            if (payload is DamageTakePayload damageTakePayload)
-            {
-                _playerHealth.ApplyDamage(damageTakePayload.Amount);
-            }
         }
         
         public void ChangePose(PoseTypes newPose)

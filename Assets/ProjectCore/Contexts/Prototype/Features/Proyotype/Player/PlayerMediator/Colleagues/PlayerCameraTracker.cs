@@ -1,3 +1,4 @@
+using Domain;
 using UnityEngine;
 
 namespace Prototype.Prototype
