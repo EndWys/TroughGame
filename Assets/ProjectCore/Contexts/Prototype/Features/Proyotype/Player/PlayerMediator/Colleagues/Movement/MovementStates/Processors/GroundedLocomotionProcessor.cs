@@ -18,7 +18,7 @@ namespace Prototype.Prototype
 
         protected override float GetTargetSpeed(PlayerInputData input)
         {
-            return input.IsRunning ? Context.LocomotionConfig.RunSpeed : Context.LocomotionConfig.WalkSpeed;
+            return input.IsRunning ? State.Context.LocomotionConfig.RunSpeed : State.Context.LocomotionConfig.WalkSpeed;
         }
     }
 }

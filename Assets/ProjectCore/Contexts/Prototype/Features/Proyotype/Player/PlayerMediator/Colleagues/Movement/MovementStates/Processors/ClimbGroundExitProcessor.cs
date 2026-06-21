@@ -8,7 +8,7 @@ namespace Prototype.Prototype
 
         public override bool Execute(PlayerInputData input, out MovementStates resultState)
         {
-            if (GroundDetectorDataAccessor.IsGrounded && input.MoveDirection.y <= 0f)
+            if (State.GroundDetectorDataAccessor.IsGrounded && input.MoveDirection.y <= 0f)
             {
                 return Complete(MovementStates.Idle, out resultState);
             }

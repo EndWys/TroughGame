@@ -10,7 +10,7 @@ namespace Prototype.Prototype
 
         public override bool Execute(PlayerInputData input, out MovementStates resultState)
         {
-            if (GroundDetectorDataAccessor.IsGrounded && Context.Rigidbody.linearVelocity.y <= 0f)
+            if (State.GroundDetectorDataAccessor.IsGrounded && State.Context.Rigidbody.linearVelocity.y <= 0f)
             {
                 Vector3 baseDirectionCheck = new Vector3(input.MoveDirection.y, 0f, input.MoveDirection.x);
 

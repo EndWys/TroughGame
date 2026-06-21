@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Domain;
 
 namespace Prototype.Prototype
 {
@@ -9,9 +10,9 @@ namespace Prototype.Prototype
             PoseController.SetPose(PoseTypes.Crouch);
         }
 
-        protected override IReadOnlyList<IPlayerMovementStateProcessor> CreateProcessors()
+        protected override IReadOnlyList<IMovementStateProcessor<PlayerInputData>> CreateMovementProcessors()
         {
-            return new IPlayerMovementStateProcessor[]
+            return new IMovementStateProcessor<PlayerInputData>[]
             {
                 new FallTransitionProcessor(this),
                 new StandUpTransitionProcessor(this),

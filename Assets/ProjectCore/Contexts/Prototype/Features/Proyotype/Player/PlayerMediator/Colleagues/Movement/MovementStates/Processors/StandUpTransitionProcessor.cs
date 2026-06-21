@@ -8,7 +8,7 @@ namespace Prototype.Prototype
 
         public override bool Execute(PlayerInputData input, out MovementStates resultState)
         {
-            if (!input.IsCrouchPressed && PoseController.CanChangePose(PoseTypes.Stand))
+            if (!input.IsCrouchPressed && State.PoseController.CanChangePose(PoseTypes.Stand))
             {
                 return Complete(input.MoveDirection.sqrMagnitude > 0f ? MovementStates.Walk : MovementStates.Idle, out resultState);
             }

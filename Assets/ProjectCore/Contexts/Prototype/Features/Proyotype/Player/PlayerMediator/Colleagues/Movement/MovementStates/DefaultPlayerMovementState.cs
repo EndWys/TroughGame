@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Domain;
 
 namespace Prototype.Prototype
 {
@@ -8,9 +9,9 @@ namespace Prototype.Prototype
         {
         }
 
-        protected override IReadOnlyList<IPlayerMovementStateProcessor> CreateProcessors()
+        protected override IReadOnlyList<IMovementStateProcessor<PlayerInputData>> CreateMovementProcessors()
         {
-            return new IPlayerMovementStateProcessor[] { };
+            return new IMovementStateProcessor<PlayerInputData>[] { };
         }
 
         protected override MovementStates FallbackState => MovementStates.Default;

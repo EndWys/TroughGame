@@ -8,7 +8,7 @@ namespace Prototype.Prototype
 
         public override bool Execute(PlayerInputData input, out MovementStates resultState)
         {
-            if (input.MoveDirection.y > 0f && ClimbDetectorDataChanger.IsNearValidWall)
+            if (input.MoveDirection.y > 0f && State.ClimbDetectorDataChanger.IsNearValidWall)
             {
                 return Complete(MovementStates.Climb, out resultState);
             }

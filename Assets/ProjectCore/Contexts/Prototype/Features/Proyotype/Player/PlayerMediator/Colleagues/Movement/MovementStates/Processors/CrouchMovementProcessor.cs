@@ -18,7 +18,7 @@ namespace Prototype.Prototype
 
         protected override float GetTargetSpeed(PlayerInputData input)
         {
-            return Context.CrouchConfig.CrouchSpeed;
+            return State.Context.CrouchConfig.CrouchSpeed;
         }
     }
 }

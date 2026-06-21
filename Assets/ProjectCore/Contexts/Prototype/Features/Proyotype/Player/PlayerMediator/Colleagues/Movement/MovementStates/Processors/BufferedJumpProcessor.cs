@@ -10,9 +10,9 @@ namespace Prototype.Prototype
 
         public override bool Execute(PlayerInputData input, out MovementStates resultState)
         {
-            if (JumpDataAccessor.JumpBufferTimer.IsDisabled(NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner))
+            if (State.JumpDataAccessor.JumpBufferTimer.IsDisabled(State.NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner))
             {
-                Context.ExecuteJump();
+                State.Context.ExecuteJump();
                 return Complete(MovementStates.Airborne, out resultState);
             }
 

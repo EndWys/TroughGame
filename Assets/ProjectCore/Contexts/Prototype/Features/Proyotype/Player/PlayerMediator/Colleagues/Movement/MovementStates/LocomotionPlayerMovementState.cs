@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Domain;
 
 namespace Prototype.Prototype
 {
@@ -6,9 +7,9 @@ namespace Prototype.Prototype
     {
         public override void Enter() { }
 
-        protected override IReadOnlyList<IPlayerMovementStateProcessor> CreateProcessors()
+        protected override IReadOnlyList<IMovementStateProcessor<PlayerInputData>> CreateMovementProcessors()
         {
-            return new IPlayerMovementStateProcessor[]
+            return new IMovementStateProcessor<PlayerInputData>[]
             {
                 new BufferedJumpProcessor(this),
                 new FallTransitionProcessor(this),

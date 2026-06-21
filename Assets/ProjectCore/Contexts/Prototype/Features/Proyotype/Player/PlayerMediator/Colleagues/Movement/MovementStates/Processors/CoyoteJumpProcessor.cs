@@ -10,13 +10,13 @@ namespace Prototype.Prototype
 
         public override bool Execute(PlayerInputData input, out MovementStates resultState)
         {
-            bool canCoyoteJump = !JumpDataAccessor.IsJumping
-                                 && JumpDataAccessor.CoyoteTimer.IsDisabled(NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner)
-                                 && JumpDataAccessor.JumpBufferTimer.IsDisabled(NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner);
+            bool canCoyoteJump = !State.JumpDataAccessor.IsJumping
+                                 && State.JumpDataAccessor.CoyoteTimer.IsDisabled(State.NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner)
+                                 && State.JumpDataAccessor.JumpBufferTimer.IsDisabled(State.NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner);
 
             if (canCoyoteJump)
             {
-                Context.ExecuteJump();
+                State.Context.ExecuteJump();
             }
 
             return Continue(out resultState);

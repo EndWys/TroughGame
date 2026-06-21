@@ -1,14 +1,12 @@
 ﻿using Domain;
-using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
 namespace Prototype.Prototype
 {
-    public abstract class BasePlayerMovementState : MonoBehaviour, IState<MovementStates, PlayerInputData>
+    public abstract class BasePlayerMovementState :
+        BaseMovementState<PlayerInputData>
     {
-        private IReadOnlyList<IPlayerMovementStateProcessor> _processors;
-
         public PlayerMovement Context { get; private set; }
 
         public PoseController PoseController { get; private set; }
@@ -32,32 +30,11 @@ namespace Prototype.Prototype
             ClimbDetectorDataChanger = climbDetectorDataChanger;
         }
 
-        public void Init(PlayerMovement context)
+        public virtual void Init(PlayerMovement context)
         {
             Context = context;
-            _processors = CreateProcessors();
+            Init();
         }
-
-        public abstract void Enter();
-
-        public virtual MovementStates Tick(PlayerInputData input)
-        {
-            foreach (IPlayerMovementStateProcessor processor in _processors)
-            {
-                if (processor.Execute(input, out MovementStates resultState))
-                {
-                    return resultState;
-                }
-            }
-
-            return FallbackState;
-        }
-
-        public abstract void Exit();
-
-        protected abstract IReadOnlyList<IPlayerMovementStateProcessor> CreateProcessors();
-
-        protected abstract MovementStates FallbackState { get; }
         
         protected virtual void ApplyVelocityChange(Vector3 targetVelocity)
         {
