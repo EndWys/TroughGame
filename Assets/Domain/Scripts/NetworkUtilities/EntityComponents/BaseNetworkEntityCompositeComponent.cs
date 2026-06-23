@@ -1,45 +1,34 @@
 using System;
 using System.Collections.Generic;
-using Fusion;
 
 namespace Domain
 {
-    public abstract class BaseNetworkEntityRoot :
-        NetworkBehaviour,
-        INetworkBehaviourAccessor,
-        IComposite<INetworkEntityComponent>
+    public abstract class BaseNetworkEntityCompositeComponent :
+        BaseNetworkEntityComponent
     {
-        private readonly List<INetworkEntityComponent> _components = new();
+        private readonly List<INetworkEntityComponent> _components = new List<INetworkEntityComponent>();
 
-        public IReadOnlyList<INetworkEntityComponent> Components => _components;
+        public override IReadOnlyList<INetworkEntityComponent> Components => _components;
 
-        public NetworkBehaviour ParentNetworkBehaviour => this;
-
-        public override void Spawned()
+        public override void Init()
         {
-            BeforeComponentsInitialized();
             SetComponents(CreateComponents());
             InitComponents();
-            AfterComponentsInitialized();
         }
 
-        public override void FixedUpdateNetwork()
+        public override void NetworkTick()
         {
             NetworkTickComponents();
         }
 
-        public override void Render()
+        public override void ClientRender()
         {
             ClientRenderComponents();
         }
 
         protected abstract IEnumerable<INetworkEntityComponent> CreateComponents();
 
-        protected virtual void BeforeComponentsInitialized() { }
-
-        protected virtual void AfterComponentsInitialized() { }
-
-        private void SetComponents(IEnumerable<INetworkEntityComponent> components)
+        protected void SetComponents(IEnumerable<INetworkEntityComponent> components)
         {
             if (components == null)
             {
@@ -54,7 +43,7 @@ namespace Domain
             }
         }
 
-        private void AddComponent(INetworkEntityComponent component)
+        protected void AddComponent(INetworkEntityComponent component)
         {
             if (component == null)
             {
@@ -64,7 +53,7 @@ namespace Domain
             _components.Add(component);
         }
 
-        private void InitComponents()
+        protected void InitComponents()
         {
             foreach (INetworkEntityComponent component in _components)
             {
@@ -72,7 +61,7 @@ namespace Domain
             }
         }
 
-        private void NetworkTickComponents()
+        protected void NetworkTickComponents()
         {
             foreach (INetworkEntityComponent component in _components)
             {
@@ -80,7 +69,7 @@ namespace Domain
             }
         }
 
-        private void ClientRenderComponents()
+        protected void ClientRenderComponents()
         {
             foreach (INetworkEntityComponent component in _components)
             {

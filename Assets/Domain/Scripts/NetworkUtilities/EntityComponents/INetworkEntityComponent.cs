@@ -1,6 +1,6 @@
 namespace Domain
 {
-    public interface INetworkEntityComponent
+    public interface INetworkEntityComponent : IComposite<INetworkEntityComponent>
     {
         void Init();
 
