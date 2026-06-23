@@ -508,6 +508,7 @@ GameObject:
   - component: {fileID: 3536249357014696911}
   - component: {fileID: 3412028430203029834}
   - component: {fileID: 2794469982551755558}
+  - component: {fileID: 4012494795114079193}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -599,7 +600,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3536249357014696911}
-  - {fileID: 6388893341330629145}
+  - {fileID: 4012494795114079193}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &3536249357014696911
 MonoBehaviour:
@@ -654,11 +655,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fa86155074f42da902f894dfb34f768, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerNetworkEntityInstaller
-  _networkEntity: {fileID: 6388893341330629145}
+  _networkEntity: {fileID: 4012494795114079193}
   _groundDetectorComponent: {fileID: 2258215284134407499}
   _playerPoseComponent: {fileID: 8611510632839045147}
   _climbDetectorComponent: {fileID: 208372194302430936}
   _playerMediator: {fileID: 410250387091284517}
+--- !u!114 &4012494795114079193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5296368440522977987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 154b8dda91884e19971f5feec2123f91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerNetworkEntity
+  _groundDetectorComponent: {fileID: 2258215284134407499}
+  _climbDetectorComponent: {fileID: 208372194302430936}
+  _playerPoseComponent: {fileID: 8611510632839045147}
+  _playerMediator: {fileID: 410250387091284517}
+  _Health: 0
+  _IsGrounded: 0
+  _GroundNormal: {x: 0, y: 0, z: 0}
+  _IsNearValidWall: 0
+  _CurrentWallNormal: {x: 0, y: 0, z: 0}
+  _CurrentPose: 0
+  _IsJumping: 0
+  _CurrentMovementStates: 0
+  _PreviousMovementStates: 0
 --- !u!1 &5434771861568622331
 GameObject:
   m_ObjectHideFlags: 0
@@ -668,7 +694,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3032902217201715772}
-  - component: {fileID: 6388893341330629145}
   - component: {fileID: 410250387091284517}
   m_Layer: 0
   m_Name: ComponentsContainer
@@ -696,31 +721,6 @@ Transform:
   - {fileID: 97862283140817993}
   m_Father: {fileID: 8614388571397523945}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6388893341330629145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5434771861568622331}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 154b8dda91884e19971f5feec2123f91, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerNetworkEntity
-  _groundDetectorComponent: {fileID: 2258215284134407499}
-  _climbDetectorComponent: {fileID: 208372194302430936}
-  _playerPoseComponent: {fileID: 8611510632839045147}
-  _playerMediator: {fileID: 410250387091284517}
-  _Health: 0
-  _IsGrounded: 0
-  _GroundNormal: {x: 0, y: 0, z: 0}
-  _IsNearValidWall: 0
-  _CurrentWallNormal: {x: 0, y: 0, z: 0}
-  _CurrentPose: 0
-  _IsJumping: 0
-  _CurrentMovementStates: 0
-  _PreviousMovementStates: 0
 --- !u!114 &410250387091284517
 MonoBehaviour:
   m_ObjectHideFlags: 0

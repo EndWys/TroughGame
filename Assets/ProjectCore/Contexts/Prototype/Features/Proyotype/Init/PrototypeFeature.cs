@@ -19,6 +19,7 @@ namespace Prototype.Prototype.Init
         {
             _container.Bind<NetworkEntityRegistry>().AsSingle();
             _container.Bind<NetworkEntityIdFactory>().AsSingle();
+            _container.Bind<NetworkEntitySpawner>().AsSingle();
 
             _container.BindInterfacesAndSelfTo<ZenjectNetworkObjectProvider>()
                 .FromComponentInHierarchy()

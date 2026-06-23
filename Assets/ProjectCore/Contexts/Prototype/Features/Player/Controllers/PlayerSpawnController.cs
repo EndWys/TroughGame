@@ -9,32 +9,25 @@ namespace Prototype.Prototype
     {
         [SerializeField] private NetworkPrefabRef _playerPrefab;
 
-        private NetworkEntityIdFactory _networkEntityIdFactory;
+        private NetworkEntitySpawner _networkEntitySpawner;
 
         [Inject]
-        private void Construct(NetworkEntityIdFactory networkEntityIdFactory)
+        private void Construct(NetworkEntitySpawner networkEntitySpawner)
         {
-            _networkEntityIdFactory = networkEntityIdFactory;
+            _networkEntitySpawner = networkEntitySpawner;
         }
 
         public override void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
             if (HasStateAuthority)
             {
-                NetworkEntityId entityId = _networkEntityIdFactory.Create(PlayerNetworkEntityTypes.Player);
-
-                runner.Spawn(
-                    _playerPrefab,
-                    Vector3.zero,
-                    Quaternion.identity,
-                    player,
-                    (_, networkObject) =>
-                    {
-                        if (networkObject.TryGetComponent(out PlayerNetworkEntity playerNetworkEntity))
-                        {
-                            playerNetworkEntity.SetEntityId(entityId);
-                        }
-                    });
+                _networkEntitySpawner.Spawn(
+                    new PlayerSpawnPayload(
+                        runner,
+                        _playerPrefab,
+                        player,
+                        Vector3.zero,
+                        Quaternion.identity));
             }
         }
     }
