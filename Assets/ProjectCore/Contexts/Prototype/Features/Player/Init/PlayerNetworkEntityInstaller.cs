@@ -1,12 +1,16 @@
 using Domain;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Prototype.Prototype
 {
     public class PlayerNetworkEntityInstaller : BaseNetworkEntityInstaller<PlayerNetworkEntity>
     {
+        [FormerlySerializedAs("_groundChecker")]
         [SerializeField] private GroundDetectorComponent _groundDetectorComponent;
+        [FormerlySerializedAs("_poseController")]
         [SerializeField] private PlayerPoseComponent _playerPoseComponent;
+        [FormerlySerializedAs("_climbingChecker")]
         [SerializeField] private ClimbDetectorComponent _climbDetectorComponent;
         [SerializeField] private PlayerMediator _playerMediator;
 

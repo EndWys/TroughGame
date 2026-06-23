@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Domain;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Prototype.Prototype
 {
@@ -10,9 +11,13 @@ namespace Prototype.Prototype
         IPlayerMediator
     {
         [Header("COMPONENTS")]
+        [FormerlySerializedAs("_playerCameraTracker")]
+        [FormerlySerializedAs("_playerCameraController")]
         [SerializeField] private PlayerCameraComponent _playerCameraComponent;
         [SerializeField] private PlayerMovementStateMachine _playerMovement;
+        [FormerlySerializedAs("_playerDamageTaker")]
         [SerializeField] private PlayerDamageTrigger _playerDamageTrigger;
+        [FormerlySerializedAs("_playerHealth")]
         [SerializeField] private PlayerHealthComponent _playerHealthComponent;
 
         private List<Action<HandlerPayload>> _handlers;

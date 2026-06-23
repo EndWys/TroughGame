@@ -28,9 +28,10 @@ namespace Domain
 
         protected void AddFeature<T>() where T : IBaseFeature
         {
-            T feature = Container.Instantiate<T>(new[] { Container });
+            T feature = Container.Instantiate<T>();
             _features.Add(feature);
         }
+
         protected virtual UniTask DoBeforeInitialization()
         {
             return UniTask.CompletedTask;

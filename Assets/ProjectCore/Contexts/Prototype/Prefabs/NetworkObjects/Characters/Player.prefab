@@ -655,9 +655,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerNetworkEntityInstaller
   _networkEntity: {fileID: 6388893341330629145}
-  _groundChecker: {fileID: 2258215284134407499}
-  _poseController: {fileID: 8611510632839045147}
-  _climbingChecker: {fileID: 208372194302430936}
+  _groundDetectorComponent: {fileID: 2258215284134407499}
+  _playerPoseComponent: {fileID: 8611510632839045147}
+  _climbDetectorComponent: {fileID: 208372194302430936}
   _playerMediator: {fileID: 410250387091284517}
 --- !u!1 &5434771861568622331
 GameObject:
@@ -708,9 +708,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 154b8dda91884e19971f5feec2123f91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerNetworkEntity
-  _groundChecker: {fileID: 2258215284134407499}
-  _climbingChecker: {fileID: 208372194302430936}
-  _poseController: {fileID: 8611510632839045147}
+  _groundDetectorComponent: {fileID: 2258215284134407499}
+  _climbDetectorComponent: {fileID: 208372194302430936}
+  _playerPoseComponent: {fileID: 8611510632839045147}
   _playerMediator: {fileID: 410250387091284517}
   _Health: 0
   _IsGrounded: 0
@@ -733,10 +733,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 410ac25d3f814a87b842b46c2c9f8c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerMediator
-  _playerCameraTracker: {fileID: 7908898045725241603}
+  _playerCameraComponent: {fileID: 7908898045725241603}
   _playerMovement: {fileID: 1600629106705967912}
-  _playerDamageTaker: {fileID: 4500386298023570675}
-  _playerHealth: {fileID: 6306576875225163355}
+  _playerDamageTrigger: {fileID: 4500386298023570675}
+  _playerHealthComponent: {fileID: 6306576875225163355}
 --- !u!1 &5902347965636678683
 GameObject:
   m_ObjectHideFlags: 0

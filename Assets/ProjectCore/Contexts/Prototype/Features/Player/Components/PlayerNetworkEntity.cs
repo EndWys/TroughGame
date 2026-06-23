@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Domain;
 using Fusion;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Prototype.Prototype
 {
@@ -10,8 +11,11 @@ namespace Prototype.Prototype
         IPlayerDataHolder
     {
         [Header("COMPONENTS")]
+        [FormerlySerializedAs("_groundChecker")]
         [SerializeField] private GroundDetectorComponent _groundDetectorComponent;
+        [FormerlySerializedAs("_climbingChecker")]
         [SerializeField] private ClimbDetectorComponent _climbDetectorComponent;
+        [FormerlySerializedAs("_poseController")]
         [SerializeField] private PlayerPoseComponent _playerPoseComponent;
         [SerializeField] private PlayerMediator _playerMediator;
 
