@@ -1,4 +1,5 @@
 using System;
+using Fusion;
 
 namespace Domain
 {
@@ -8,7 +9,11 @@ namespace Domain
         public Type PayloadType => typeof(TPayload);
         public abstract NetworkEntityType EntityType { get; }
 
-        public BaseNetworkEntityRoot Spawn(INetworkEntitySpawnPayload payload)
+        public BaseNetworkEntityRoot Spawn(
+            NetworkRunner runner,
+            NetworkPrefabRef prefab,
+            PlayerRef? inputAuthority,
+            INetworkEntitySpawnPayload payload)
         {
             if (payload is not TPayload typedPayload)
             {
@@ -17,10 +22,14 @@ namespace Domain
                     nameof(payload));
             }
 
-            return Spawn(typedPayload);
+            return Spawn(runner, prefab, inputAuthority, typedPayload);
         }
 
-        public abstract BaseNetworkEntityRoot Spawn(TPayload payload);
+        public abstract BaseNetworkEntityRoot Spawn(
+            NetworkRunner runner,
+            NetworkPrefabRef prefab,
+            PlayerRef? inputAuthority,
+            TPayload payload);
 
         public abstract void Despawn(BaseNetworkEntityRoot entity);
     }

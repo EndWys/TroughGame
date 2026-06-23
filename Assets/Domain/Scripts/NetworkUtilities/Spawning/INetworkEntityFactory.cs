@@ -1,4 +1,5 @@
 using System;
+using Fusion;
 
 namespace Domain
 {
@@ -7,7 +8,11 @@ namespace Domain
         Type PayloadType { get; }
         NetworkEntityType EntityType { get; }
 
-        BaseNetworkEntityRoot Spawn(INetworkEntitySpawnPayload payload);
+        BaseNetworkEntityRoot Spawn(
+            NetworkRunner runner,
+            NetworkPrefabRef prefab,
+            PlayerRef? inputAuthority,
+            INetworkEntitySpawnPayload payload);
 
         void Despawn(BaseNetworkEntityRoot entity);
     }
@@ -15,6 +20,10 @@ namespace Domain
     public interface INetworkEntityFactory<in TPayload> : INetworkEntityFactory
         where TPayload : INetworkEntitySpawnPayload
     {
-        BaseNetworkEntityRoot Spawn(TPayload payload);
+        BaseNetworkEntityRoot Spawn(
+            NetworkRunner runner,
+            NetworkPrefabRef prefab,
+            PlayerRef? inputAuthority,
+            TPayload payload);
     }
 }

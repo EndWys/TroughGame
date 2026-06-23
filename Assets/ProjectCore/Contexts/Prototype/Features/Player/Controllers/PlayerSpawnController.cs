@@ -22,12 +22,12 @@ namespace Prototype.Prototype
             if (HasStateAuthority)
             {
                 _networkEntitySpawner.Spawn(
+                    runner,
+                    _playerPrefab,
                     new PlayerSpawnPayload(
-                        runner,
-                        _playerPrefab,
-                        player,
                         Vector3.zero,
-                        Quaternion.identity));
+                        Quaternion.identity),
+                    player);
             }
         }
     }

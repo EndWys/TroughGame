@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Fusion;
 using Zenject;
 
 namespace Domain
@@ -22,7 +23,11 @@ namespace Domain
             }
         }
 
-        public BaseNetworkEntityRoot Spawn<TPayload>(TPayload payload)
+        public BaseNetworkEntityRoot Spawn<TPayload>(
+            NetworkRunner runner,
+            NetworkPrefabRef prefab,
+            TPayload payload,
+            PlayerRef? inputAuthority = null)
             where TPayload : INetworkEntitySpawnPayload
         {
             if (!_factoriesByPayloadType.TryGetValue(typeof(TPayload), out INetworkEntityFactory factory))
@@ -30,7 +35,7 @@ namespace Domain
                 throw new InvalidOperationException($"No network entity factory registered for payload '{typeof(TPayload).Name}'.");
             }
 
-            return factory.Spawn(payload);
+            return factory.Spawn(runner, prefab, inputAuthority, payload);
         }
 
         public void Despawn(BaseNetworkEntityRoot entity)
