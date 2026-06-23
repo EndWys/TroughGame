@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Domain;
 using PhotonZenjectBridge;
 using Zenject;
