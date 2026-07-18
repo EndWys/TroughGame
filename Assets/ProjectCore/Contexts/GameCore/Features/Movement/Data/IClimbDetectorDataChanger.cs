@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Prototype.Prototype
+namespace GameCore.Movement
 {
     public interface IClimbDetectorDataChanger : IClimbDetectorDataAccessor
     {

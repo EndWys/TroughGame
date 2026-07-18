@@ -1,7 +1,7 @@
 using Domain;
 using System.Collections.Generic;
 
-namespace Prototype.Prototype
+namespace GameCore.Movement
 {
     public abstract class BaseMovementState<TStatePayload> :
         BaseProcessorsBasedMonoBehaviourState<MovementStates, TStatePayload>

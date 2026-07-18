@@ -1,6 +1,6 @@
 using Domain;
 using GameCore.NetworkSpawn.Init;
-using Prototype.Movement.Init;
+using GameCore.Movement.Init;
 using Prototype.Player.Init;
 using Prototype.Prototype.Init;
 

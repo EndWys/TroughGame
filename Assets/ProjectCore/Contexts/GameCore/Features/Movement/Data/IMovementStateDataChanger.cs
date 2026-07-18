@@ -1,6 +1,6 @@
 using Domain;
 
-namespace Prototype.Prototype
+namespace GameCore.Movement
 {
     public interface IMovementStateDataChanger :
         IMovementStateDataAccessor,

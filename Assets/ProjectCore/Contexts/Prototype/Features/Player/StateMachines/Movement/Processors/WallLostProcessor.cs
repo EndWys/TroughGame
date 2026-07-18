@@ -1,3 +1,5 @@
+using GameCore.Movement;
+
 namespace Prototype.Prototype
 {
     public class WallLostProcessor : BasePlayerMovementStateProcessor

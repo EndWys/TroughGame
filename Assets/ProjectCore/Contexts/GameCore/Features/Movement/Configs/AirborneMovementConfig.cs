@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Prototype.Prototype
+namespace GameCore.Movement
 {
     [Serializable]
     public class AirborneMovementConfig

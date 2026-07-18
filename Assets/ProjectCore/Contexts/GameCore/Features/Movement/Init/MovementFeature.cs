@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Domain;
 
-namespace Prototype.Movement.Init
+namespace GameCore.Movement.Init
 {
     public class MovementFeature : IBaseFeature
     {

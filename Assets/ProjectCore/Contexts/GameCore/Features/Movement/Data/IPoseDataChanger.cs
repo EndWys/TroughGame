@@ -1,4 +1,4 @@
-namespace Prototype.Prototype
+namespace GameCore.Movement
 {
     public interface IPoseDataChanger : IPoseDataAccessor
     {

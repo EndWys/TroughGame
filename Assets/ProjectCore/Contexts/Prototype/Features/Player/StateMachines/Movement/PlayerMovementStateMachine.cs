@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using AYellowpaper.SerializedCollections;
-using Domain;
+using GameCore.Movement;
 using UnityEngine;
 using Zenject;
 
 namespace Prototype.Prototype
 {
     public class PlayerMovementStateMachine : 
-        BaseNetworkEntityStateMachine<MovementStates, BasePlayerMovementState, PlayerInputData>, IPlayerColleague
+        BaseMovementStateMachine<BasePlayerMovementState, PlayerInputData>, IPlayerColleague
     {
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
         
@@ -36,55 +36,38 @@ namespace Prototype.Prototype
             _groundDetectorDataChanger = groundDetectorDataChanger;
             _mediator = mediator;
         }
-        
-        public override void Init()
-        {
-            if (!ShouldPerformMovement())
-            {
-                return;
-            }
 
-            InitializeStateMachine();
+        protected override MovementStates InitialState => MovementStates.Idle;
 
-            foreach (var states in _movementStates.Values)
-            {
-                states.Init(this);
-            }
-
-            ChangeState(MovementStates.Idle);
-        }
-
-        public override Dictionary<MovementStates, BasePlayerMovementState> CreateStatesDictionary()
+        protected override Dictionary<MovementStates, BasePlayerMovementState> CreateMovementStatesDictionary()
         {
             return _movementStates;
         }
 
-        public override void NetworkTick()
+        protected override void InitMovementState(BasePlayerMovementState state)
         {
-            if (!ShouldPerformMovement())
-            {
-                return;
-            }
+            state.Init(this);
+        }
 
-            if (!ParentNetworkBehaviour.GetInput(out PlayerInputData input))
-            {
-                return;
-            }
-            
-            ProcessRotation(input.LookYawDelta);
-            
+        protected override bool TryGetMovementPayload(out PlayerInputData payload)
+        {
+            return ParentNetworkBehaviour.GetInput(out payload);
+        }
+
+        protected override void BeforeMovementUpdate(PlayerInputData payload)
+        {
+            ProcessRotation(payload.LookYawDelta);
+
             if (_groundDetectorDataChanger.IsGrounded)
             {
                 _jumpDataChanger.RestartCoyoteTimer(AirborneConfig.CoyoteTimeTicks);
                 _jumpDataChanger.ChangeJumpingStatus(false);
             }
-                
-            if (input.IsJumpPressed)
+
+            if (payload.IsJumpPressed)
             {
                 _jumpDataChanger.RestartJumpBufferTimer(AirborneConfig.JumpBufferTicks);
             }
-                
-            UpdateStates(input);
         }
         
         public void ExecuteJump()
@@ -133,9 +116,5 @@ namespace Prototype.Prototype
             }
         }
 
-        private bool ShouldPerformMovement()
-        {
-            return ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
-        }
     }
 }

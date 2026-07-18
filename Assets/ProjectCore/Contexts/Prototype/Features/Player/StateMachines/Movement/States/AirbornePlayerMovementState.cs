@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Domain;
+using GameCore.Movement;
 using UnityEngine;
 
 namespace Prototype.Prototype
