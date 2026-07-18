@@ -1,5 +1,5 @@
 using Domain;
-using GameCore.NetworkEntites.Init;
+using GameCore.NetworkEntities.Init;
 using GameCore.Movement.Init;
 using Prototype.Player.Init;
 using Prototype.Prototype.Init;
@@ -10,7 +10,7 @@ namespace Prototype.Prototype
     {
         protected override void AddFeatures()
         {
-            AddFeature<NetworkEntitesFeature>();
+            AddFeature<NetworkEntitiesFeature>();
             AddFeature<PrototypeFeature>();
             AddFeature<MovementFeature>();
             AddFeature<PlayerFeature>();
