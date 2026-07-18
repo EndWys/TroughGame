@@ -3,14 +3,14 @@ using Domain;
 using PhotonZenjectBridge;
 using Zenject;
 
-namespace GameCore.NetworkSpawn.Init
+namespace GameCore.NetworkEntites.Init
 {
-    public class NetworkSpawnFeature : IBaseFeature
+    public class NetworkEntitesFeature : IBaseFeature
     {
         private readonly DiContainer _container;
 
         [Inject]
-        public NetworkSpawnFeature(DiContainer container)
+        public NetworkEntitesFeature(DiContainer container)
         {
             _container = container;
         }
