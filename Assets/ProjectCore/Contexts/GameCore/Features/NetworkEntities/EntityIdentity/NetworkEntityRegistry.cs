@@ -106,6 +106,21 @@ namespace Domain
             return results;
         }
 
+        public void FillComponents<TComponent>(
+            ICollection<TComponent> results)
+            where TComponent : class
+        {
+            if (results == null)
+            {
+                throw new ArgumentNullException(nameof(results));
+            }
+
+            foreach (BaseNetworkEntityRoot entity in _entitiesById.Values)
+            {
+                entity.FillEntityComponents(results);
+            }
+        }
+
         public void FillComponentsByType<TComponent>(
             NetworkEntityType entityType,
             ICollection<TComponent> results)
@@ -124,6 +139,53 @@ namespace Domain
             foreach (BaseNetworkEntityRoot entity in entities)
             {
                 entity.FillEntityComponents(results);
+            }
+        }
+
+        public void FillEntityIdsWithComponent<TComponent>(
+            ICollection<NetworkEntityId> results)
+            where TComponent : class
+        {
+            if (results == null)
+            {
+                throw new ArgumentNullException(nameof(results));
+            }
+
+            foreach (KeyValuePair<NetworkEntityId, BaseNetworkEntityRoot> registeredEntity in _entitiesById)
+            {
+                if (registeredEntity.Value.TryGetEntityComponent<TComponent>(out _))
+                {
+                    results.Add(registeredEntity.Key);
+                }
+            }
+        }
+
+        public void FillEntityIdsWithComponent<TComponent>(
+            Predicate<TComponent> predicate,
+            ICollection<NetworkEntityId> results)
+            where TComponent : class
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (results == null)
+            {
+                throw new ArgumentNullException(nameof(results));
+            }
+
+            var componentBuffer = new List<TComponent>();
+
+            foreach (KeyValuePair<NetworkEntityId, BaseNetworkEntityRoot> registeredEntity in _entitiesById)
+            {
+                componentBuffer.Clear();
+                registeredEntity.Value.FillEntityComponents(componentBuffer);
+
+                if (componentBuffer.Exists(predicate))
+                {
+                    results.Add(registeredEntity.Key);
+                }
             }
         }
     }
