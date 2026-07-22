@@ -42,6 +42,10 @@ Assets/
     Contexts/
       Template/
         Features/
+          Bridges/
+          Implementations/
+          Infrastructure/
+          Modules/
         Plugins/
         Scripts/
 
@@ -66,6 +70,7 @@ Assets/
         Features/
           Bridges/
           Implementations/
+          Infrastructure/
           Modules/
         GraphicResources/
         Scripts/
@@ -75,6 +80,7 @@ Assets/
         Features/
           Bridges/
           Implementations/
+          Infrastructure/
           Modules/
         GraphicResources/
           Scenes/
@@ -296,7 +302,7 @@ Startup rules:
 
 ## Feature Architecture
 
-Every feature has one of three architectural roles.
+Every feature has one of four architectural roles.
 
 ### Module Features
 
@@ -323,9 +329,10 @@ Rules:
 
 ### Implementation Features
 
-Implementation features compose one or more modules into a concrete game
-concept. `Player`, for example, can implement movement, combat, health, input,
-and network-entity module contracts.
+Implementation features provide a complete concrete game concept. They may
+compose several modules, use one module, or be fully independent when no
+reusable module is required. `Player`, for example, can implement movement,
+combat, health, input, and network-entity module contracts.
 
 Rules:
 
@@ -337,19 +344,47 @@ Rules:
 - Shared behavior discovered inside an implementation must be extracted into a
   module instead of being consumed through a direct implementation dependency.
 
-### Bridge Features
+### Infrastructure Features
 
-Bridge features provide neutral communication infrastructure between otherwise
-independent implementation features. All interested features may depend on a
-bridge, while the bridge itself does not depend on any implementation feature.
+Infrastructure features are complete, reusable technical systems shared by
+multiple features or contexts. Injection into other features, generic APIs,
+and payload-based communication do not make a feature a bridge when it owns a
+complete system and its lifecycle.
 
-`SignalBusFeature` is the primary example: one feature publishes a signal and
-another subscribes through the shared bus, without either feature knowing the
-other exists.
+Examples:
+
+- `PopupNavigation`;
+- `ScreenNavigation`;
+- `SignalBus`;
+- `Audio`;
+- `Save`;
+- `Pooling`;
+- `Localization`.
 
 Rules:
 
-- A bridge depends only on lower-level contracts and infrastructure.
+- Reusable cross-context infrastructure normally belongs to
+  `Template/Features/Infrastructure/<Feature>`.
+- Infrastructure must not depend on concrete gameplay implementation features.
+- Other features consume infrastructure through DI and narrow public contracts.
+- Code ownership and runtime lifetime are separate: Template infrastructure may
+  be installed into Project, Preloader, or scene containers as required.
+- A complete reusable system remains Infrastructure even when every consumer
+  injects it directly.
+
+### Bridge Features
+
+Bridge features are small adapters that connect two otherwise independent
+systems through their public contracts. They do not provide either connected
+system and do not own business logic.
+
+Examples include `PopupSignalBusBridge`, `SaveCloudBridge`, and
+`AnalyticsNavigationBridge`. `SignalBus` itself is Infrastructure; a feature
+that adapts popup events to that bus is a Bridge.
+
+Rules:
+
+- A bridge depends only on the public contracts of the systems it connects.
 - A bridge must not resolve or call a concrete implementation feature.
 - Signals and messages describe neutral domain or integration events, not the
   internal implementation of their publisher.
@@ -361,12 +396,16 @@ Rules:
 The allowed feature dependency direction is:
 
 ```text
-Bridge infrastructure <- Module contracts <- Implementation features
-          ^                       ^                    ^
-          +-----------------------+--------------------+
+Domain <- Infrastructure <- Modules <- Implementations
+              ^               ^              ^
+              +---- Bridges ---+--------------+
 
 Implementation A -X-> Implementation B
 ```
+
+Bridges are installed by a composition root and adapt public contracts without
+creating a direct dependency between concrete implementations. Cyclic feature
+dependencies are forbidden.
 
 ## Feature Structure
 
@@ -461,7 +500,7 @@ config instance passed through DI remains a `DataHolder`.
 Every feature must have:
 
 - a folder named after the feature;
-- an explicit `Modules`, `Implementations`, or `Bridges` role;
+- an explicit `Modules`, `Implementations`, `Infrastructure`, or `Bridges` role;
 - a clear owner context;
 - `Scripts/Init/<Feature>Feature.cs` when it participates in the feature
   lifecycle;
@@ -473,7 +512,9 @@ Examples:
 ```text
 Contexts/GameCore/Features/Modules/Movement
 Contexts/GameCore/Features/Implementations/Player
-Contexts/Template/Features/Bridges/SignalBus
+Contexts/Template/Features/Infrastructure/PopupNavigation
+Contexts/Template/Features/Infrastructure/SignalBus
+Contexts/Template/Features/Bridges/PopupSignalBusBridge
 ```
 
 The role folders affect ownership and dependency direction but do not extend
@@ -1032,7 +1073,7 @@ missing from TroughGame:
 4. Adapt copied project-owned code to TroughGame conventions before treating
    the stage as complete:
    - `Domain` or `ProjectCore.<Context>` namespaces;
-   - Modules, Implementations, or Bridges ownership;
+   - Modules, Implementations, Infrastructure, or Bridges ownership;
    - the closed `Scripts` taxonomy and suffix rules;
    - DI-provided dependencies;
    - the single `ApplicationEntryPoint` initialization flow;

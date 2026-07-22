@@ -205,12 +205,12 @@ function Test-FeatureScriptPath {
     }
 
     $segments = @($match.Groups['rest'].Value.Split('/'))
-    $featureKinds = @('Modules', 'Implementations', 'Bridges')
+    $featureKinds = @('Modules', 'Implementations', 'Infrastructure', 'Bridges')
 
     if ($segments.Count -lt 1 -or $segments[0] -notin $featureKinds) {
         Add-Diagnostic -Severity 'Error' -Rule 'FEATURE001' `
             -Path $FileRecord.RelativePath -Line 1 `
-            -Message 'Feature must be placed under Features/Modules, Features/Implementations, or Features/Bridges.'
+            -Message 'Feature must be placed under Features/Modules, Features/Implementations, Features/Infrastructure, or Features/Bridges.'
         return $true
     }
 
