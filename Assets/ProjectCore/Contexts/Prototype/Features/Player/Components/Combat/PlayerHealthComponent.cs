@@ -1,10 +1,11 @@
 using Domain;
+using GameCore.Combat;
 using Zenject;
 
 namespace Prototype.Prototype
 {
     public class PlayerHealthComponent : 
-        BaseNetworkEntityComponent,
+        BaseDamageableComponent,
         IPlayerColleague
     {
         private IHealthDataChanger _healthDataChanger;
@@ -14,8 +15,12 @@ namespace Prototype.Prototype
         {
             _healthDataChanger = healthDataChanger;
         }
+
+        public override int Durability => _healthDataChanger.Health;
+
+        public override bool IsDestroyed => Durability <= 0;
         
-        public void ApplyDamage(byte amount)
+        public override void ApplyDamage(byte amount)
         {
             _healthDataChanger.ReduceHealth(amount);
         }

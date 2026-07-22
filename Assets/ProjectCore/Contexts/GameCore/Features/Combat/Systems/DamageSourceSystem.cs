@@ -2,52 +2,46 @@ using System;
 using System.Collections.Generic;
 using Domain;
 
-namespace GameCore.Movement
+namespace GameCore.Combat
 {
-    public sealed class MovementSystem : IMovementSystem
+    public sealed class DamageSourceSystem : IDamageSourceSystem
     {
         private readonly IGameEntityComponentAccessor _gameEntityComponentAccessor;
 
-        public MovementSystem(NetworkEntityRegistry networkEntityRegistry)
+        public DamageSourceSystem(NetworkEntityRegistry networkEntityRegistry)
         {
             _gameEntityComponentAccessor = new GameEntityComponentAccessor(networkEntityRegistry);
         }
 
-        public void FillEntityIds<TMovementComponent>(
-            Predicate<TMovementComponent> predicate,
+        public void FillEntityIds(
+            Predicate<BaseDamageSourceComponent> predicate,
             ICollection<NetworkEntityId> results)
-            where TMovementComponent : class
         {
             _gameEntityComponentAccessor.FillEntityIds(predicate, results);
         }
 
-        public bool TryFindEntityId<TMovementComponent>(
-            Predicate<TMovementComponent> predicate,
+        public bool TryFindEntityId(
+            Predicate<BaseDamageSourceComponent> predicate,
             out NetworkEntityId entityId)
-            where TMovementComponent : class
         {
             return _gameEntityComponentAccessor.TryFindEntityId(predicate, out entityId);
         }
 
-        public void FillEntityIdsSortedBy<TMovementComponent, TSortKey>(
-            Func<TMovementComponent, TSortKey> sortKeySelector,
+        public void FillEntityIdsSortedBy<TSortKey>(
+            Func<BaseDamageSourceComponent, TSortKey> sortKeySelector,
             ICollection<NetworkEntityId> results)
-            where TMovementComponent : class
         {
             _gameEntityComponentAccessor.FillEntityIdsSortedBy(sortKeySelector, results);
         }
 
-        public bool TryFindFirstEntityIdSortedBy<TMovementComponent, TSortKey>(
-            Func<TMovementComponent, TSortKey> sortKeySelector,
+        public bool TryFindFirstEntityIdSortedBy<TSortKey>(
+            Func<BaseDamageSourceComponent, TSortKey> sortKeySelector,
             out NetworkEntityId entityId)
-            where TMovementComponent : class
         {
             return _gameEntityComponentAccessor.TryFindFirstEntityIdSortedBy(sortKeySelector, out entityId);
         }
 
-        public void ApplyToAll<TMovementComponent>(
-            Action<TMovementComponent> action)
-            where TMovementComponent : class
+        public void ApplyToAll(Action<BaseDamageSourceComponent> action)
         {
             _gameEntityComponentAccessor.ApplyToAll(action);
         }
