@@ -1,9 +1,10 @@
 using Domain;
 using Fusion;
+using ProjectCore.GameCore;
 using UnityEngine;
 using Zenject;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class PlayerSpawnController : BaseNetworkCallbacksBehaviour
     {

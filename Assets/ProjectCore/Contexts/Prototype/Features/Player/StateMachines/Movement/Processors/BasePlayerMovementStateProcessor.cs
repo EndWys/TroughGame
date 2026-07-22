@@ -1,8 +1,8 @@
 using Domain;
-using GameCore.Movement;
+using ProjectCore.GameCore;
 using UnityEngine;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public abstract class BasePlayerMovementStateProcessor :
         BaseMovementStateProcessor<BasePlayerMovementState, PlayerInputData>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Fusion;
 using Zenject;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public sealed class NetworkEntitySpawner
     {

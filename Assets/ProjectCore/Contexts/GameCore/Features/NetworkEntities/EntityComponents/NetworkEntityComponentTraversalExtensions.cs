@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Domain;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public static class NetworkEntityComponentTraversalExtensions
     {

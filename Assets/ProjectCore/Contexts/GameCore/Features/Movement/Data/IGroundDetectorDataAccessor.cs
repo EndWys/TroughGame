@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GameCore.Movement
+namespace ProjectCore.GameCore
 {
     public interface IGroundDetectorDataAccessor
     {

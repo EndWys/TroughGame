@@ -1,8 +1,9 @@
 using System;
 using Domain;
 using Fusion;
+using ProjectCore.GameCore;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public sealed class PlayerNetworkEntityFactory :
         BaseNetworkEntityFactory<PlayerSpawnPayload>

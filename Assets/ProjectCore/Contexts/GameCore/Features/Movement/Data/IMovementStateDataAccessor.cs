@@ -1,6 +1,7 @@
 using Domain;
+using ProjectCore.GameCore;
 
-namespace GameCore.Movement
+namespace ProjectCore.GameCore
 {
     public interface IMovementStateDataAccessor : IStateDataAccessor<MovementStates>
     {

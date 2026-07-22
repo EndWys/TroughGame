@@ -1,14 +1,14 @@
-using GameCore.Movement;
+using ProjectCore.GameCore;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public interface IPlayerDataHolder :
-        IClimbDetectorDataChanger,
-        IPoseDataChanger,
-        IGroundDetectorDataChanger,
-        IHealthDataChanger,
-        IJumpDataChanger,
-        IMovementStateDataChanger
+        IClimbDetectorDataMutator,
+        IPoseDataMutator,
+        IGroundDetectorDataMutator,
+        IHealthDataMutator,
+        IJumpDataMutator,
+        IMovementStateDataMutator
     {
     }
 }

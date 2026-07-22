@@ -1,11 +1,11 @@
-using Domain;
-using GameCore.Combat.Init;
-using GameCore.NetworkEntities.Init;
-using GameCore.Movement.Init;
-using Prototype.Player.Init;
-using Prototype.Prototype.Init;
+using ProjectCore.GameCore;
+using ProjectCore.GameCore;
+using ProjectCore.GameCore;
+using ProjectCore.Template;
+using ProjectCore.Prototype;
+using ProjectCore.Prototype;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class PrototypeFeatureInstaller : BaseFeatureInstaller
     {

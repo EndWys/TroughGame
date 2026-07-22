@@ -1,7 +1,7 @@
 using UnityEngine;
-using GameCore.Movement;
+using ProjectCore.GameCore;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class ClimbMovementProcessor : BasePlayerMovementStateProcessor
     {
@@ -13,7 +13,7 @@ namespace Prototype.Prototype
 
         public override bool Execute(PlayerInputData input, out MovementStates resultState)
         {
-            Vector3 wallNormal = State.ClimbDetectorDataChanger.CurrentWallNormal;
+            Vector3 wallNormal = State.ClimbDetectorDataMutator.CurrentWallNormal;
             Vector3 wallRight = Vector3.Cross(wallNormal, Vector3.up).normalized;
             Vector3 wallUp = Vector3.Cross(wallRight, wallNormal).normalized;
             Vector3 climbDirection = (wallRight * input.MoveDirection.x + wallUp * input.MoveDirection.y).normalized;

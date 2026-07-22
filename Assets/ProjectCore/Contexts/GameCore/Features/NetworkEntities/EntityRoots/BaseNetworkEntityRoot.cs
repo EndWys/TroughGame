@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Domain;
 using Fusion;
 using Zenject;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public abstract class BaseNetworkEntityRoot :
         NetworkBehaviour,

@@ -4,7 +4,7 @@ using Fusion;
 using UnityEngine;
 using Zenject;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public abstract class BaseNetworkEntityComponent : MonoBehaviour, INetworkEntityComponent
     {

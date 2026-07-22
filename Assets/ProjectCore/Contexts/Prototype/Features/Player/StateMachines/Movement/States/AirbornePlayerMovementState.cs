@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using GameCore.Movement;
+using ProjectCore.GameCore;
 using UnityEngine;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class AirbornePlayerMovementState : BasePlayerMovementState
     {

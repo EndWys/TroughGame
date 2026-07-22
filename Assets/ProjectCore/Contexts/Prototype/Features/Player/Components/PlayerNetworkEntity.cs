@@ -1,11 +1,12 @@
 using System.Collections.Generic;
-using GameCore.Movement;
+using ProjectCore.GameCore;
 using Domain;
 using Fusion;
+using ProjectCore.GameCore;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class PlayerNetworkEntity : 
         BaseNetworkEntityRoot,

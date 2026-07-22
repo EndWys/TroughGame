@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Domain;
+using ProjectCore.GameCore;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class PlayerMediator :
         BaseNetworkEntityCompositeComponent,

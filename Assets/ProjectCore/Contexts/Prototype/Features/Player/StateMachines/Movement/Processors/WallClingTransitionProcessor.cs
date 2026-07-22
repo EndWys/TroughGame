@@ -1,6 +1,6 @@
-using GameCore.Movement;
+using ProjectCore.GameCore;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class WallClingTransitionProcessor : BasePlayerMovementStateProcessor
     {
@@ -10,7 +10,7 @@ namespace Prototype.Prototype
 
         public override bool Execute(PlayerInputData input, out MovementStates resultState)
         {
-            if (input.MoveDirection.y > 0f && State.ClimbDetectorDataChanger.IsNearValidWall)
+            if (input.MoveDirection.y > 0f && State.ClimbDetectorDataMutator.IsNearValidWall)
             {
                 return Complete(MovementStates.Climb, out resultState);
             }

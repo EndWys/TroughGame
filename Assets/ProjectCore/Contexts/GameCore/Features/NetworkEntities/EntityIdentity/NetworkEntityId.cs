@@ -1,6 +1,6 @@
 using System;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public readonly struct NetworkEntityId : IEquatable<NetworkEntityId>
     {

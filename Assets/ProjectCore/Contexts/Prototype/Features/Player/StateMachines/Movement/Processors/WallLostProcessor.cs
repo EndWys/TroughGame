@@ -1,6 +1,6 @@
-using GameCore.Movement;
+using ProjectCore.GameCore;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class WallLostProcessor : BasePlayerMovementStateProcessor
     {
@@ -10,7 +10,7 @@ namespace Prototype.Prototype
 
         public override bool Execute(PlayerInputData input, out MovementStates resultState)
         {
-            if (!State.ClimbDetectorDataChanger.IsNearValidWall)
+            if (!State.ClimbDetectorDataMutator.IsNearValidWall)
             {
                 return Complete(MovementStates.Airborne, out resultState);
             }

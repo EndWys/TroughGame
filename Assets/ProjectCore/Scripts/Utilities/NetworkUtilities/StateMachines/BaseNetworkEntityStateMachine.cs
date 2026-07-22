@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Domain;
 using Zenject;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public abstract class BaseNetworkEntityStateMachine<TStatesType, TState, TStatePayload> :
         BaseNetworkEntityComponent, 
@@ -11,12 +12,12 @@ namespace Domain
         where TStatePayload : struct
     {
         private Dictionary<TStatesType, TState> _states;
-        private IStateDataChanger<TStatesType> _stateDataChanger;
+        private IStateDataMutator<TStatesType> _stateDataMutator;
 
         [Inject]
-        private void Construct(IStateDataChanger<TStatesType> stateDataChanger)
+        private void Construct(IStateDataMutator<TStatesType> stateDataMutator)
         {
-            _stateDataChanger = stateDataChanger;
+            _stateDataMutator = stateDataMutator;
         }
 
         public IReadOnlyDictionary<TStatesType, TState> States => _states;
@@ -32,24 +33,24 @@ namespace Domain
         {
             BeforePreviousStateExit();
                 
-            _states[_stateDataChanger.CurrentState].Exit();
+            _states[_stateDataMutator.CurrentState].Exit();
     
             AfterPreviousStateExit();
             
-            _stateDataChanger.ChangeState(newState);
+            _stateDataMutator.ChangeState(newState);
     
             BeforeNextStateEnter();
                 
-            _states[_stateDataChanger.CurrentState].Enter();
+            _states[_stateDataMutator.CurrentState].Enter();
     
             AfterNextStateEnter();
         }
     
         public void UpdateStates(TStatePayload payload)
         {
-            TStatesType nextState = _states[_stateDataChanger.CurrentState].Tick(payload);
+            TStatesType nextState = _states[_stateDataMutator.CurrentState].Tick(payload);
                     
-            if (EqualityComparer<TStatesType>.Default.Equals(nextState, _stateDataChanger.CurrentState))
+            if (EqualityComparer<TStatesType>.Default.Equals(nextState, _stateDataMutator.CurrentState))
             {
                 return;
             }

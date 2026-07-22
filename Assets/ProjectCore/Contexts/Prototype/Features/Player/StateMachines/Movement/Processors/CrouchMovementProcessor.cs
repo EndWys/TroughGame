@@ -1,6 +1,6 @@
-using GameCore.Movement;
+using ProjectCore.GameCore;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class CrouchMovementProcessor : BaseGroundedMovementProcessor
     {

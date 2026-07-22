@@ -4,7 +4,7 @@ using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public class NetworkCallbacksDebugger : MonoBehaviour, INetworkRunnerCallbacks
     {

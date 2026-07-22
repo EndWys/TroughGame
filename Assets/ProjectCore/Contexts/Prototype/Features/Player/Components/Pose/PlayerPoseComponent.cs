@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using GameCore.Movement;
+using ProjectCore.GameCore;
 using Domain;
+using ProjectCore.GameCore;
 using UnityEngine;
 using Zenject;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class PlayerPoseComponent : BaseNetworkEntityComponent
     {
@@ -15,16 +16,16 @@ namespace Prototype.Prototype
         [Header("POSES HIGH")]
         [SerializeField] private float _crouchHeightMultiplier = 0.6f;
 
-        private IPoseDataChanger _poseDataChanger;
+        private IPoseDataMutator _poseDataMutator;
         
         private Dictionary<PoseTypes, float> _posesHigh;
         
         private float _originalHigh;
 
         [Inject]
-        private void Construct(IPoseDataChanger poseDataChanger)
+        private void Construct(IPoseDataMutator poseDataMutator)
         {
-            _poseDataChanger = poseDataChanger;
+            _poseDataMutator = poseDataMutator;
         }
         
         public override void Init()
@@ -34,7 +35,7 @@ namespace Prototype.Prototype
                 return;
             }
 
-            _poseDataChanger.ChangePose(PoseTypes.Stand);
+            _poseDataMutator.ChangePose(PoseTypes.Stand);
             _originalHigh = _playerCollider.height;
 
             _posesHigh = new Dictionary<PoseTypes, float>()
@@ -65,7 +66,7 @@ namespace Prototype.Prototype
 
         public void SetPose(PoseTypes newPose)
         {
-            if (_poseDataChanger.CurrentPose == newPose)
+            if (_poseDataMutator.CurrentPose == newPose)
             {
                 return;
             }
@@ -75,7 +76,7 @@ namespace Prototype.Prototype
                 return;
             }
             
-            _poseDataChanger.ChangePose(newPose);
+            _poseDataMutator.ChangePose(newPose);
             
             float bottomYOffset = _playerCollider.center.y - (_playerCollider.height / 2f);
             

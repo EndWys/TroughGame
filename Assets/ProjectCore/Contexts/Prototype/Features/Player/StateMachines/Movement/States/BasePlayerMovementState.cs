@@ -1,9 +1,10 @@
 using Domain;
-using GameCore.Movement;
+using ProjectCore.GameCore;
+using ProjectCore.GameCore;
 using UnityEngine;
 using Zenject;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public abstract class BasePlayerMovementState :
         BaseMovementState<PlayerInputData>
@@ -15,20 +16,20 @@ namespace Prototype.Prototype
         public INetworkBehaviourAccessor NetworkBehaviourAccessor { get; private set; }
         public IJumpDataAccessor JumpDataAccessor { get; private set; }
         public IGroundDetectorDataAccessor GroundDetectorDataAccessor { get; private set; }
-        public IClimbDetectorDataChanger ClimbDetectorDataChanger { get; private set; }
+        public IClimbDetectorDataMutator ClimbDetectorDataMutator { get; private set; }
         
         [Inject]
         private void Construct(PlayerPoseComponent playerPoseComponent,
             INetworkBehaviourAccessor networkBehaviourAccessor,
             IJumpDataAccessor jumpDataAccessor,
             IGroundDetectorDataAccessor groundDetectorDataAccessor,
-            IClimbDetectorDataChanger climbDetectorDataChanger)
+            IClimbDetectorDataMutator climbDetectorDataMutator)
         {
             PlayerPoseComponent = playerPoseComponent;
             NetworkBehaviourAccessor = networkBehaviourAccessor;
             JumpDataAccessor = jumpDataAccessor;
             GroundDetectorDataAccessor = groundDetectorDataAccessor;
-            ClimbDetectorDataChanger = climbDetectorDataChanger;
+            ClimbDetectorDataMutator = climbDetectorDataMutator;
         }
 
         public virtual void Init(PlayerMovementStateMachine context)

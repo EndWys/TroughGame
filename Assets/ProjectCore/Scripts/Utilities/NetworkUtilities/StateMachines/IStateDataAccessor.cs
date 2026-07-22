@@ -1,6 +1,6 @@
 using System;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public interface IStateDataAccessor<out TStatesType> where TStatesType : Enum
     {

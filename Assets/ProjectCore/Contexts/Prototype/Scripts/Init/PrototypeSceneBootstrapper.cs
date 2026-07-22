@@ -1,6 +1,7 @@
+using ProjectCore.Template;
 using UnityEngine;
 
-namespace Domain
+namespace ProjectCore.Prototype
 {
     public class PrototypeSceneBootstrapper : BaseSceneBootstrapper
     {

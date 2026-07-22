@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace GameCore.Movement
+namespace ProjectCore.GameCore
 {
     [Serializable]
     public class LocomotionMovementConfig

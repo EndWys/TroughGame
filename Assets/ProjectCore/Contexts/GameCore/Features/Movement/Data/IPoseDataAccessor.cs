@@ -1,6 +1,6 @@
 using Fusion;
 
-namespace GameCore.Movement
+namespace ProjectCore.GameCore
 {
     public interface IPoseDataAccessor
     {

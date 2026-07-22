@@ -1,9 +1,9 @@
 using Domain;
-using GameCore.Combat;
+using ProjectCore.GameCore;
 using UnityEngine;
 using Zenject;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class PlayerDamageTrigger : 
         BaseDamageSourceComponent, 

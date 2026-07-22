@@ -1,4 +1,4 @@
-namespace GameCore.Movement
+namespace ProjectCore.GameCore
 {
     public enum MovementStates : byte
     {

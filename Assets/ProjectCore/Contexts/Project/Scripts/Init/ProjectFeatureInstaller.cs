@@ -1,6 +1,6 @@
-using Domain;
+using ProjectCore.Template;
 
-namespace Project
+namespace ProjectCore.Project
 {
     public class ProjectFeatureInstaller : BaseFeatureInstaller
     {

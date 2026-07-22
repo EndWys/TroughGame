@@ -1,8 +1,8 @@
 using Cysharp.Threading.Tasks;
-using Domain;
+using ProjectCore.Template;
 using Zenject;
 
-namespace GameCore.Combat.Init
+namespace ProjectCore.GameCore
 {
     public sealed class CombatFeature : IBaseFeature
     {

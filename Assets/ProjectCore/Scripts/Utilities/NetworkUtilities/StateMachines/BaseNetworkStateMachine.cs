@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Domain;
 using Fusion;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public abstract class BaseNetworkStateMachine<TStatesType, TState, TStatePayload> : NetworkBehaviour,
         IStateMachine<TStatesType, TState, TStatePayload> where TStatesType : Enum

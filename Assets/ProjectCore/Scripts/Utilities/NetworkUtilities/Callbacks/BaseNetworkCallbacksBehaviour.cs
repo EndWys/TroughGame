@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public class BaseNetworkCallbacksBehaviour  : NetworkBehaviour, INetworkRunnerCallbacks
     {

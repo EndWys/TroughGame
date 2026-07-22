@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public sealed class NetworkEntityRegistry
     {

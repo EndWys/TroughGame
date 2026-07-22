@@ -1,6 +1,6 @@
 ﻿using Fusion;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public static class TickTimerExtension
     {

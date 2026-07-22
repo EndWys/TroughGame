@@ -2,7 +2,7 @@
 using UnityEngine;
 using Zenject;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public abstract class BaseNetworkEntityInstaller<TNetworkEntity> : MonoInstaller where TNetworkEntity : NetworkBehaviour
     {

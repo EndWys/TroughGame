@@ -1,8 +1,8 @@
 using Cysharp.Threading.Tasks;
-using Domain;
+using ProjectCore.Template;
 using Zenject;
 
-namespace GameCore.Movement.Init
+namespace ProjectCore.GameCore
 {
     public class MovementFeature : IBaseFeature
     {

@@ -1,6 +1,6 @@
 using Domain;
 
-namespace GameCore.Movement
+namespace ProjectCore.GameCore
 {
     public abstract class BaseMovementStateProcessor<TState, TStatePayload> :
         BaseStateProcessor<MovementStates, TState, TStatePayload>,

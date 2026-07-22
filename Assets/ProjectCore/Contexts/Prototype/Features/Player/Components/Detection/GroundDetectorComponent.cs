@@ -1,9 +1,10 @@
 using UnityEngine;
-using GameCore.Movement;
+using ProjectCore.GameCore;
 using Zenject;
 using Domain;
+using ProjectCore.GameCore;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class GroundDetectorComponent : BaseNetworkEntityComponent
     {
@@ -13,12 +14,12 @@ namespace Prototype.Prototype
         [SerializeField] private float _groundCheckRadius = 0.3f;
         [SerializeField] private float _groundCheckDistance = 0.2f;
         
-        private IGroundDetectorDataChanger _groundDetectorDataChanger;
+        private IGroundDetectorDataMutator _groundDetectorDataMutator;
 
         [Inject]
-        private void Constructor(IGroundDetectorDataChanger groundDetectorDataChanger)
+        private void Constructor(IGroundDetectorDataMutator groundDetectorDataMutator)
         {
-            _groundDetectorDataChanger = groundDetectorDataChanger;
+            _groundDetectorDataMutator = groundDetectorDataMutator;
         }
 
         public void PerformGroundCheck()
@@ -32,8 +33,8 @@ namespace Prototype.Prototype
                 _groundLayer
             );
 
-            _groundDetectorDataChanger.ChangeGroundedStatus(hit);
-            _groundDetectorDataChanger.ChangeGroundNormal(hit ? hitInfo.normal : Vector3.up);
+            _groundDetectorDataMutator.ChangeGroundedStatus(hit);
+            _groundDetectorDataMutator.ChangeGroundNormal(hit ? hitInfo.normal : Vector3.up);
         }
 
         public override void NetworkTick()

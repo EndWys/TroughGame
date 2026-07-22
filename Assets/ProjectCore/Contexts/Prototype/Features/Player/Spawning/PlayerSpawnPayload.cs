@@ -1,7 +1,8 @@
 using Domain;
+using ProjectCore.GameCore;
 using UnityEngine;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public readonly struct PlayerSpawnPayload : INetworkEntitySpawnPayload
     {

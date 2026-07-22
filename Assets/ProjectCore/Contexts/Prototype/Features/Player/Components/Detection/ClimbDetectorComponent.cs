@@ -1,9 +1,10 @@
 using UnityEngine;
-using GameCore.Movement;
+using ProjectCore.GameCore;
 using Zenject;
 using Domain;
+using ProjectCore.GameCore;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class ClimbDetectorComponent : BaseNetworkEntityComponent
     {
@@ -13,12 +14,12 @@ namespace Prototype.Prototype
         [SerializeField] private float _checkRadius = 0.3f;
         [SerializeField] private float _checkDistance = 0.5f;
         
-        private IClimbDetectorDataChanger _climbDetectorDataChanger;
+        private IClimbDetectorDataMutator _climbDetectorDataMutator;
 
         [Inject]
-        private void Constructor(IClimbDetectorDataChanger climbDetectorDataChanger)
+        private void Constructor(IClimbDetectorDataMutator climbDetectorDataMutator)
         {
-            _climbDetectorDataChanger = climbDetectorDataChanger;
+            _climbDetectorDataMutator = climbDetectorDataMutator;
         }
         
         public void PerformWallCheck()
@@ -34,8 +35,8 @@ namespace Prototype.Prototype
                 _climbableLayer
             );
 
-            _climbDetectorDataChanger.ChangeWallAvailability(hit);
-            _climbDetectorDataChanger.ChangeCurrentWallNormal(hit ? hitInfo.normal : Vector3.zero);
+            _climbDetectorDataMutator.ChangeWallAvailability(hit);
+            _climbDetectorDataMutator.ChangeCurrentWallNormal(hit ? hitInfo.normal : Vector3.zero);
         }
 
         public override void NetworkTick()

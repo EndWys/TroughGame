@@ -1,7 +1,7 @@
 ﻿using Fusion;
 using Zenject;
 
-namespace PhotonZenjectBridge
+namespace ProjectCore.GameCore
 {
     public class ZenjectNetworkObjectProvider : NetworkObjectProviderDefault
     {

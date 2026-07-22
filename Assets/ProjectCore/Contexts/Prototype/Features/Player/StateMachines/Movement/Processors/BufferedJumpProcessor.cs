@@ -1,7 +1,8 @@
 using Domain;
-using GameCore.Movement;
+using ProjectCore.GameCore;
+using ProjectCore.GameCore;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class BufferedJumpProcessor : BasePlayerMovementStateProcessor
     {

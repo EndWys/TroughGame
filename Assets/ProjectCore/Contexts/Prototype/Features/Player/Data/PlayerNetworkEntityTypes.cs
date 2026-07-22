@@ -1,6 +1,7 @@
 using Domain;
+using ProjectCore.GameCore;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public static class PlayerNetworkEntityTypes
     {

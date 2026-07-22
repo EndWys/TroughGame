@@ -1,9 +1,10 @@
 using Cysharp.Threading.Tasks;
-using Domain;
-using PhotonZenjectBridge;
+using ProjectCore.GameCore;
+using ProjectCore.GameCore;
+using ProjectCore.Template;
 using Zenject;
 
-namespace GameCore.NetworkEntities.Init
+namespace ProjectCore.GameCore
 {
     public class NetworkEntitiesFeature : IBaseFeature
     {

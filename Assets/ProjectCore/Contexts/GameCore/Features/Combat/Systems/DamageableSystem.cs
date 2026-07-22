@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Domain;
+using ProjectCore.GameCore;
 
-namespace GameCore.Combat
+namespace ProjectCore.GameCore
 {
     public sealed class DamageableSystem : IDamageableSystem
     {

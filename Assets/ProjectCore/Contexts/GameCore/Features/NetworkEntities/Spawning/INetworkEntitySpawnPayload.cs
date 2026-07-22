@@ -1,4 +1,4 @@
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public interface INetworkEntitySpawnPayload
     {

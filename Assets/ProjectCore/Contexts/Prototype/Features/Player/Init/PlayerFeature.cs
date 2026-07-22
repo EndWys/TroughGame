@@ -1,9 +1,10 @@
 using Cysharp.Threading.Tasks;
 using Domain;
-using Prototype.Prototype;
+using ProjectCore.Template;
+using ProjectCore.Prototype;
 using Zenject;
 
-namespace Prototype.Player.Init
+namespace ProjectCore.Prototype
 {
     public class PlayerFeature : IBaseFeature
     {

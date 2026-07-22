@@ -1,7 +1,7 @@
 using System;
 using Fusion;
 
-namespace Domain
+namespace ProjectCore.GameCore
 {
     public abstract class BaseNetworkEntityFactory<TPayload> : INetworkEntityFactory<TPayload>
         where TPayload : INetworkEntitySpawnPayload

@@ -1,8 +1,9 @@
 using Domain;
 using Fusion;
+using ProjectCore.GameCore;
 using UnityEngine;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class PlayerCharacterNetworkInputController : BaseNetworkCallbacksBehaviour
     {

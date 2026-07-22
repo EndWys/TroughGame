@@ -1,4 +1,6 @@
-namespace Domain
+using Domain;
+
+namespace ProjectCore.GameCore
 {
     public interface INetworkEntityComponent : IComposite<INetworkEntityComponent>
     {

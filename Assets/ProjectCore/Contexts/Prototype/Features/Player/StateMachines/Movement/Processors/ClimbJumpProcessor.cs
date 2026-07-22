@@ -1,8 +1,9 @@
 using Domain;
-using GameCore.Movement;
+using ProjectCore.GameCore;
+using ProjectCore.GameCore;
 using UnityEngine;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class ClimbJumpProcessor : BasePlayerMovementStateProcessor
     {
@@ -14,7 +15,7 @@ namespace Prototype.Prototype
         {
             if (State.JumpDataAccessor.JumpBufferTimer.IsDisabled(State.NetworkBehaviourAccessor.ParentNetworkBehaviour.Runner))
             {
-                Vector3 jumpDirection = (State.ClimbDetectorDataChanger.CurrentWallNormal + Vector3.up).normalized;
+                Vector3 jumpDirection = (State.ClimbDetectorDataMutator.CurrentWallNormal + Vector3.up).normalized;
 
                 State.Context.Rigidbody.linearVelocity = Vector3.zero;
                 State.Context.ExecuteJump(jumpDirection);

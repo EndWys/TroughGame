@@ -1,6 +1,7 @@
 using Domain;
+using ProjectCore.GameCore;
 
-namespace GameCore.Combat
+namespace ProjectCore.GameCore
 {
     public abstract class BaseDamageableComponent : BaseNetworkEntityComponent
     {

@@ -1,7 +1,7 @@
 using Fusion;
 using UnityEngine;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public struct PlayerInputData : INetworkInput
     {

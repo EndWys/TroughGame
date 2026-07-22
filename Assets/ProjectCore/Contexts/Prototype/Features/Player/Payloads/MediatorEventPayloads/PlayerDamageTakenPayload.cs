@@ -1,6 +1,6 @@
 using Domain;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class PlayerDamageTakenPayload : HandlerPayload
     {

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using AYellowpaper.SerializedCollections;
-using GameCore.Movement;
+using ProjectCore.GameCore;
 using UnityEngine;
 using Zenject;
 
-namespace Prototype.Prototype
+namespace ProjectCore.Prototype
 {
     public class PlayerMovementStateMachine : 
         BaseMovementStateMachine<BasePlayerMovementState, PlayerInputData>, IPlayerColleague
@@ -21,19 +21,19 @@ namespace Prototype.Prototype
         [SerializeField] private SerializedDictionary<MovementStates, BasePlayerMovementState> _movementStates;
         
         private IPlayerMediator _mediator;
-        private IMovementStateDataChanger _movementStateDataChanger;
-        private IGroundDetectorDataChanger _groundDetectorDataChanger;
-        private IJumpDataChanger _jumpDataChanger;
+        private IMovementStateDataMutator _movementStateDataMutator;
+        private IGroundDetectorDataMutator _groundDetectorDataMutator;
+        private IJumpDataMutator _jumpDataMutator;
 
         [Inject]
-        private void Construct(IMovementStateDataChanger movementStateDataChanger,
-            IJumpDataChanger jumpDataChanger,
-            IGroundDetectorDataChanger groundDetectorDataChanger,
+        private void Construct(IMovementStateDataMutator movementStateDataMutator,
+            IJumpDataMutator jumpDataMutator,
+            IGroundDetectorDataMutator groundDetectorDataMutator,
             IPlayerMediator mediator)
         {
-            _movementStateDataChanger = movementStateDataChanger;
-            _jumpDataChanger = jumpDataChanger;
-            _groundDetectorDataChanger = groundDetectorDataChanger;
+            _movementStateDataMutator = movementStateDataMutator;
+            _jumpDataMutator = jumpDataMutator;
+            _groundDetectorDataMutator = groundDetectorDataMutator;
             _mediator = mediator;
         }
 
@@ -58,15 +58,15 @@ namespace Prototype.Prototype
         {
             ProcessRotation(payload.LookYawDelta);
 
-            if (_groundDetectorDataChanger.IsGrounded)
+            if (_groundDetectorDataMutator.IsGrounded)
             {
-                _jumpDataChanger.RestartCoyoteTimer(AirborneConfig.CoyoteTimeTicks);
-                _jumpDataChanger.ChangeJumpingStatus(false);
+                _jumpDataMutator.RestartCoyoteTimer(AirborneConfig.CoyoteTimeTicks);
+                _jumpDataMutator.ChangeJumpingStatus(false);
             }
 
             if (payload.IsJumpPressed)
             {
-                _jumpDataChanger.RestartJumpBufferTimer(AirborneConfig.JumpBufferTicks);
+                _jumpDataMutator.RestartJumpBufferTimer(AirborneConfig.JumpBufferTicks);
             }
         }
         
@@ -83,9 +83,9 @@ namespace Prototype.Prototype
         {
             Rigidbody.AddForce(direction * AirborneConfig.JumpForce, ForceMode.Impulse);
             
-            _jumpDataChanger.ChangeJumpingStatus(true);
-            _jumpDataChanger.StopCoyoteTimer();
-            _jumpDataChanger.StopJumpBufferTimer();
+            _jumpDataMutator.ChangeJumpingStatus(true);
+            _jumpDataMutator.StopCoyoteTimer();
+            _jumpDataMutator.StopJumpBufferTimer();
             
             _mediator.Notify(new PlayerJumpedPayload()
             {
@@ -99,8 +99,8 @@ namespace Prototype.Prototype
                 new PlayerMovementStateChangedPayload()
                 {
                     Sender = this,
-                    MovementStates = _movementStateDataChanger.CurrentMovementStates,
-                    PreviousMovementStates = _movementStateDataChanger.PreviousMovementStates,
+                    MovementStates = _movementStateDataMutator.CurrentMovementStates,
+                    PreviousMovementStates = _movementStateDataMutator.PreviousMovementStates,
                 });
         }
         

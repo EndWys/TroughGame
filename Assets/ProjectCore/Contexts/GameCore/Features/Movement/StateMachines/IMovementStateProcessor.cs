@@ -1,6 +1,6 @@
 using Domain;
 
-namespace GameCore.Movement
+namespace ProjectCore.GameCore
 {
     public interface IMovementStateProcessor<in TStatePayload> :
         IStateProcessor<MovementStates, TStatePayload>
