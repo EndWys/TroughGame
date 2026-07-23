@@ -138,10 +138,24 @@ following are true:
 - it clearly belongs to one context;
 - it is shared by the context composition or by more than one feature in that
   context;
+- it does not represent an independently connectable gameplay or technical
+  capability;
 - it has no independent feature lifecycle;
-- it does not require registration and initialization as a DI `AsSingle`;
+- it does not require DI registration, resolution, or initialization;
+- it does not own context-level runtime state;
+- it does not coordinate feature-owned services, systems, managers, factories,
+  or views;
+- it does not depend on internal types of a concrete feature;
+- it does not own feature resources such as configs, prefabs, scenes, or
+  feature-specific data assets;
 - wrapping it in a feature would add structure without adding ownership or
   lifecycle meaning.
+
+Typical context-owned scripts are shared base classes, interfaces, enums,
+extensions, utilities, validation helpers, constants, passive data, and generic
+MonoBehaviour components. The absence of DI alone is not sufficient: a
+standalone capability with its own responsibility, state, resources, or
+lifecycle is still a feature.
 
 Common examples are:
 
@@ -151,6 +165,11 @@ Contexts/GameCore/Scripts/Errors/
 Contexts/GameCore/Scripts/Extensions/
 Contexts/GameCore/Scripts/Utilities/
 Contexts/GameCore/Scripts/Validation/
+Contexts/GameCore/Scripts/Abstract/Networking/
+Contexts/GameCore/Scripts/Enums/Networking/
+Contexts/GameCore/Scripts/DataHolders/Data/
+Contexts/GameCore/Scripts/Other/Strategies/
+Contexts/GameCore/Scripts/Views/Components/Networking/
 ```
 
 Context-owned folders still follow the folder/suffix rule documented below.
@@ -161,9 +180,30 @@ Use the narrowest valid owner:
 
 - code used by one feature stays in that feature;
 - code shared by several features in one context may move to context `Scripts`;
-- code shared across contexts moves to `Template` or `Domain`, depending on its
-  dependencies and responsibility;
+- code shared across contexts may move to `Template/Scripts`, but only when its
+  responsibility is genuinely context-independent;
+- networking foundations that describe the game runtime remain in
+  `GameCore/Scripts`, even when several gameplay contexts consume them;
+- code independent from project contexts and external APIs moves to `Domain`;
 - behavioral objects requiring DI lifetime or initialization remain features.
+
+Context-shared dependencies are one-way:
+
+```text
+Feature -> Context Scripts -> Template Scripts -> Domain
+```
+
+Context `Scripts` must not depend on concrete features. If a shared type needs
+a feature-internal contract, it remains owned by that feature or the contract
+is extracted to a lower-level owner first.
+
+A script must remain feature-owned when any of the following is true:
+
+- it implements a complete capability or business rule;
+- it participates in feature installation, initialization, shutdown, or DI;
+- it owns runtime state or coordinates other behavioral objects;
+- it depends on concrete feature internals;
+- it owns feature-specific resources or configuration.
 
 Context `Scripts` must not become a substitute for `Features`, `Template`, or
 `Domain`.

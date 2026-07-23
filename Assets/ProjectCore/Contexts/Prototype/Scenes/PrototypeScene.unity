@@ -210,7 +210,7 @@ GameObject:
   - component: {fileID: 109534165}
   - component: {fileID: 109534164}
   m_Layer: 0
-  m_Name: PrototypeMatchController
+  m_Name: PrototypeMatchComponent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -463,7 +463,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41e03aae0a30bda41849ee2591c21bc4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.FollowCameraController
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.FollowCameraComponent
   _fovSmoothTime: 0.2
   _distance: 4
   _heightOffset: 1.5
@@ -1053,7 +1053,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0403ff641b1b4850b25a9ea05e2c9617, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PrototypeFeatureInstaller
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PrototypeFeatureInstaller
 --- !u!114 &811430724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1065,7 +1065,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7ed001ce0fa543deb6cbbd40de56a632, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PhotonZenjectBridge::PhotonZenjectBridge.ZenjectNetworkObjectProvider
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.GameCore.ZenjectNetworkObjectProvider
   DelayIfSceneManagerIsBusy: 1
 --- !u!1 &832575517
 GameObject:
@@ -1127,7 +1127,7 @@ GameObject:
   - component: {fileID: 1067644281}
   - component: {fileID: 1067644282}
   m_Layer: 0
-  m_Name: PrototypeSceneBootstrapper
+  m_Name: PrototypeSceneInitializer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1542,7 +1542,7 @@ GameObject:
   - component: {fileID: 1653014124}
   - component: {fileID: 1653014125}
   m_Layer: 0
-  m_Name: BotNetworkSpawnController
+  m_Name: BotNetworkSpawnComponent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1607,7 +1607,7 @@ GameObject:
   - component: {fileID: 1737118208}
   - component: {fileID: 1737118209}
   m_Layer: 0
-  m_Name: CursorController
+  m_Name: CursorComponent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1639,7 +1639,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b514b89fde9021943b466dabfafe2912, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.CursorController
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.CursorComponent
   _lockOnStart: 0
 --- !u!1 &1740739404
 GameObject:

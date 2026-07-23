@@ -410,21 +410,20 @@ function Test-ContextSharedScriptPath {
     }
 
     $category = $segments[0]
-    $knownSuffixes = @{
+    $primary = $FileRecord.TypeInfo.PrimaryType
+    $staticSuffixes = @{
         Constants = @('Constants', 'Keys', 'Defaults')
         Errors = @('Errors')
         Extensions = @('Extensions')
         Utilities = @('Utility')
         Validation = @('Validation')
-        Init = @('FeatureGroup', 'Feature', 'Installer', 'Initializer', 'EntryPoint')
     }
 
-    if ($knownSuffixes.ContainsKey($category)) {
+    if ($staticSuffixes.ContainsKey($category)) {
         Add-SuffixDiagnostic -FileRecord $FileRecord `
-            -Suffixes $knownSuffixes[$category] -Folder ("Context/Scripts/{0}" -f $category)
+            -Suffixes $staticSuffixes[$category] -Folder ("Context/Scripts/{0}" -f $category)
 
-        if ($category -in @('Constants', 'Errors', 'Extensions', 'Utilities', 'Validation') -and
-            -not (Test-StaticClass -TypeInfo $FileRecord.TypeInfo)) {
+        if (-not (Test-StaticClass -TypeInfo $FileRecord.TypeInfo)) {
             $line = if ($null -ne $FileRecord.TypeInfo.PrimaryType) {
                 $FileRecord.TypeInfo.PrimaryType.Line
             } else {
@@ -434,20 +433,117 @@ function Test-ContextSharedScriptPath {
                 -Path $FileRecord.RelativePath -Line $line `
                 -Message ("Shared context category '{0}' contains only static classes." -f $category)
         }
-    } else {
-        $derivedSuffix = $category
-        if ($derivedSuffix.EndsWith('ies')) {
-            $derivedSuffix = $derivedSuffix.Substring(0, $derivedSuffix.Length - 3) + 'y'
-        } elseif ($derivedSuffix.EndsWith('s')) {
-            $derivedSuffix = $derivedSuffix.Substring(0, $derivedSuffix.Length - 1)
+        return $true
+    }
+
+    if ($category -eq 'Init') {
+        Add-SuffixDiagnostic -FileRecord $FileRecord `
+            -Suffixes @('FeatureGroup', 'Feature', 'Installer', 'Initializer', 'EntryPoint') `
+            -Folder 'Context/Scripts/Init'
+        return $true
+    }
+
+    if ($category -eq 'Abstract') {
+        if ($null -ne $primary) {
+            $isInterface = $primary.Kind -eq 'interface'
+            $isAbstract = $primary.Kind -eq 'class' -and
+                $primary.Modifiers -match '(^|\s)abstract($|\s)'
+
+            if (-not $isInterface -and -not $isAbstract) {
+                Add-Diagnostic -Severity 'Error' -Rule 'ABSTRACT002' `
+                    -Path $FileRecord.RelativePath -Line $primary.Line `
+                    -Message 'Context Scripts/Abstract contains only interfaces and abstract classes.'
+            }
+
+            if ($isInterface -and -not $primary.Name.StartsWith('I')) {
+                Add-Diagnostic -Severity 'Error' -Rule 'NAME002' `
+                    -Path $FileRecord.RelativePath -Line $primary.Line `
+                    -Message 'Interface names must start with I.'
+            }
+
+            if ($isAbstract -and -not $primary.Name.StartsWith('Base')) {
+                Add-Diagnostic -Severity 'Error' -Rule 'NAME003' `
+                    -Path $FileRecord.RelativePath -Line $primary.Line `
+                    -Message 'Abstract class names must start with Base.'
+            }
+        }
+    } elseif ($category -eq 'Enums') {
+        if ($null -ne $primary -and $primary.Kind -ne 'enum') {
+            Add-Diagnostic -Severity 'Error' -Rule 'ENUM002' `
+                -Path $FileRecord.RelativePath -Line $primary.Line `
+                -Message 'Context Scripts/Enums contains only enum declarations.'
+        }
+    } elseif ($category -in @('DataHolders', 'Other', 'Views', 'Tests')) {
+        if ($segments.Count -lt 3) {
+            Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
+                -Path $FileRecord.RelativePath -Line 1 `
+                -Message ("Context Scripts/{0} requires a documented subfolder." -f $category)
+            return $true
         }
 
-        Add-Diagnostic -Severity 'Warning' -Rule 'CONTEXT002' `
-            -Path $FileRecord.RelativePath -Line 1 `
-            -Message ("Undocumented context Scripts category '{0}'. Review its ownership and suffix." -f $category)
+        $subfolder = $segments[1]
+        $contextSuffixMaps = @{
+            DataHolders = @{
+                Configs = @('Config')
+                Data = @('Data')
+                DTOs = @('Dto')
+                Payloads = @('Payload')
+            }
+            Other = @{
+                Adapters = @('Adapter')
+                Builders = @('Builder')
+                Commands = @('Command')
+                Converters = @('Converter')
+                Decorators = @('Decorator')
+                Mappers = @('Mapper')
+                Processors = @('Processor')
+                StateMachines = @('StateMachine')
+                States = @('State')
+                Strategies = @('Strategy')
+            }
+            Views = @{
+                Components = @('Component')
+                Navigation = @('NavigationView')
+                Popups = @('PopupView')
+                Screens = @('ScreenView')
+                Widgets = @('WidgetView')
+            }
+        }
 
-        Add-SuffixDiagnostic -FileRecord $FileRecord `
-            -Suffixes @($derivedSuffix) -Folder ("Context/Scripts/{0}" -f $category)
+        if ($category -eq 'Tests') {
+            if ($subfolder -notin @('Editor', 'Play')) {
+                Add-Diagnostic -Severity 'Error' -Rule 'TEST001' `
+                    -Path $FileRecord.RelativePath -Line 1 `
+                    -Message 'Context tests must be placed under Tests/Editor or Tests/Play.'
+            }
+            Add-SuffixDiagnostic -FileRecord $FileRecord -Suffixes @('Tests') -Folder 'Context/Tests'
+        } elseif (-not $contextSuffixMaps[$category].ContainsKey($subfolder)) {
+            Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
+                -Path $FileRecord.RelativePath -Line 1 `
+                -Message ("Unsupported Context Scripts/{0} subfolder '{1}'." -f $category, $subfolder)
+        } else {
+            Add-SuffixDiagnostic -FileRecord $FileRecord `
+                -Suffixes $contextSuffixMaps[$category][$subfolder] `
+                -Folder ("Context/Scripts/{0}/{1}" -f $category, $subfolder)
+
+            if ($category -eq 'Views' -and -not (Test-IsMonoBehaviourType -TypeName $primary.Name -Visited @{})) {
+                Add-Diagnostic -Severity 'Error' -Rule 'VIEW002' `
+                    -Path $FileRecord.RelativePath -Line $primary.Line `
+                    -Message 'Context Views must inherit from MonoBehaviour.'
+            }
+        }
+    } else {
+        Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
+            -Path $FileRecord.RelativePath -Line 1 `
+            -Message ("Unsupported Context Scripts category '{0}'." -f $category)
+        return $true
+    }
+
+    if ($category -ne 'Init' -and $FileRecord.Text -match
+        '(?m)^\s*using\s+Zenject\s*;|\[\s*Inject\s*\]|\bDiContainer\b|\.Bind(?:Interfaces|InterfacesAndSelf|InterfacesTo)?\s*[<(]') {
+        Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT003' `
+            -Path $FileRecord.RelativePath -Line 1 `
+            -Message 'Context-shared scripts outside Init must not participate in DI.'
     }
 
     return $true

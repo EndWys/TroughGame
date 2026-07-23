@@ -75,7 +75,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9f7801ae4d8941f38627b018d1cbff81, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Prototype.Player.PlayerMediator.ClimbingSurfaceController
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.ClimbDetectorComponent
   _climbCheckPivot: {fileID: 1164326711719840234}
   _climbableLayer:
     serializedVersion: 2
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6850a0e714d140d28af752f371ffcd8f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.GroundChecker
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.GroundDetectorComponent
   _groundCheckPivot: {fileID: 7437003551126467619}
   _groundLayer:
     serializedVersion: 2
@@ -207,7 +207,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0cd9331c5b64ff49ae38432b4ac4a82, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Prototype.Player.PlayerHealth
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PlayerHealthComponent
 --- !u!1 &2591857200620994476
 GameObject:
   m_ObjectHideFlags: 0
@@ -251,7 +251,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d4c4dea93854619bda39b331ff88904, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.DefaultPlayerMovementState
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.DefaultPlayerMovementState
 --- !u!1 &3061793787705278247
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,7 +295,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 216544f5affc4fb282db415d04bd37a9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.PlayerMediator.Colleagues.PoseController
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PlayerPoseComponent
   _playerCollider: {fileID: 2754202969061472908}
   _obstaclesLayer:
     serializedVersion: 2
@@ -413,7 +413,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1e5beec59737bd44acf34ad66061910, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.IdlePlayerMovementState
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.IdlePlayerMovementState
 --- !u!1 &4920453006672402350
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,7 +463,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fcce9cdf13a321949b6e38d2db4ab7eb, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Prototype.Player.PlayerMovement
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PlayerMovementStateMachine
   <Rigidbody>k__BackingField: {fileID: 7389111313936471077}
   <LocomotionConfig>k__BackingField:
     <WalkSpeed>k__BackingField: 5
@@ -654,7 +654,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0fa86155074f42da902f894dfb34f768, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerNetworkEntityInstaller
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PlayerNetworkEntityInstaller
   _networkEntity: {fileID: 4012494795114079193}
   _groundDetectorComponent: {fileID: 2258215284134407499}
   _playerPoseComponent: {fileID: 8611510632839045147}
@@ -671,7 +671,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 154b8dda91884e19971f5feec2123f91, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerNetworkEntity
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PlayerNetworkEntityComponent
   _groundDetectorComponent: {fileID: 2258215284134407499}
   _climbDetectorComponent: {fileID: 208372194302430936}
   _playerPoseComponent: {fileID: 8611510632839045147}
@@ -732,7 +732,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 410ac25d3f814a87b842b46c2c9f8c17, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.PlayerMediator
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PlayerMediatorComponent
   _playerCameraComponent: {fileID: 7908898045725241603}
   _playerMovement: {fileID: 1600629106705967912}
   _playerDamageTrigger: {fileID: 4500386298023570675}
@@ -780,7 +780,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 783d5a5b1347af84c8cdd1d6a6cb022c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Proyotype.Player.PlayerCameraTracker
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PlayerCameraComponent
   _playerTarget: {fileID: 4171049332368208140}
   _cameraLookTarget: {fileID: 4171049332368208140}
   _baseFOV: 60
@@ -918,7 +918,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 819b991af51741629e4fb0e1a7311a3a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.AirbornePlayerMovementState
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.AirbornePlayerMovementState
 --- !u!1 &7233962068252934282
 GameObject:
   m_ObjectHideFlags: 0
@@ -962,7 +962,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a218fa1691a54c7a8fd0ec72bfc88bb3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.ClimbPlayerMovementState
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.ClimbPlayerMovementState
 --- !u!1 &7360018400572468869
 GameObject:
   m_ObjectHideFlags: 0
@@ -1037,7 +1037,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c53139c4b7a0674fb06f5110271f631, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.LocomotionPlayerMovementState
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.LocomotionPlayerMovementState
 --- !u!1 &8990642255802207931
 GameObject:
   m_ObjectHideFlags: 0
@@ -1081,7 +1081,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2434ae924985495484f0c35f62464ebb, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Features.Prototype.Player.PlayerDamageTaker
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PlayerDamageTriggerComponent
   _defaultDamage: 10
 --- !u!1 &9098304976476273542
 GameObject:
@@ -1126,4 +1126,4 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6e03a2a92314bc48fa04583a2de93cd, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: PrototypeContext::Prototype.Prototype.CrouchPlayerMovementState
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.CrouchPlayerMovementState

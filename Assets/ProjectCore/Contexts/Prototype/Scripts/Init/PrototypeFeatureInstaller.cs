@@ -1,8 +1,5 @@
 using ProjectCore.GameCore;
-using ProjectCore.GameCore;
-using ProjectCore.GameCore;
 using ProjectCore.Template;
-using ProjectCore.Prototype;
 using ProjectCore.Prototype;
 
 namespace ProjectCore.Prototype

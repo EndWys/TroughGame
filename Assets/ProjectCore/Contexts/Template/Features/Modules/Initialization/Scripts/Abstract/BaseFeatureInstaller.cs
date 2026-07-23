@@ -5,21 +5,29 @@ using Zenject;
 
 namespace ProjectCore.Template
 {
-    public abstract class BaseFeatureInstaller : MonoInstaller
+    public abstract class BaseFeatureInstaller : MonoInstaller, IFeatureInitializer
     {
-        private List<IBaseFeature> _features = new List<IBaseFeature>();
+        private readonly List<IBaseFeature> _features = new List<IBaseFeature>();
+        private bool _isInitialized;
 
-        public override async void Start()
+        public async UniTask InitializeAsync()
         {
-            base.Start();
+            if (_isInitialized)
+            {
+                return;
+            }
 
             await DoBeforeInitialization();
             await InitFeatures();
             await DoAfterInitialization();
+
+            _isInitialized = true;
         }
 
         public override void InstallBindings()
         {
+            Container.Bind<IFeatureInitializer>().FromInstance(this).AsSingle();
+
             AddFeatures();
             BindFeatures();
         }

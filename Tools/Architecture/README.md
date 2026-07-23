@@ -91,6 +91,11 @@ The baseline is historical and is not an allowlist. Report mode must decrease
 as migration proceeds; new diagnostics must not be accepted merely because the
 project is not strict yet.
 
+Context-owned scripts use the documented non-feature categories such as
+`Abstract`, `Enums`, `Extensions`, `DataHolders`, `Other`, and `Views`. Outside
+`Init`, these scripts must not participate in DI. A complete capability,
+stateful service, or lifecycle participant remains feature-owned.
+
 ## Static Analysis Limits
 
 - MonoBehaviour inheritance is resolved from project-owned types and the known
