@@ -1,9 +1,6 @@
-using Cysharp.Threading.Tasks;
-
 namespace ProjectCore.Template
 {
-    public interface ISceneInitializer
+    public interface ISceneInitializer : IContextInitializer
     {
-        UniTask InitializeAsync();
     }
 }

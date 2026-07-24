@@ -7,7 +7,7 @@ TroughGame is a multiplayer friends-slope game about dungeons.
 | Item | Value |
 | --- | --- |
 | Unity version | `6000.3.14f1` |
-| Current main scene | `Assets/ProjectCore/Contexts/Prototype/Scenes/PrototypeScene.unity` |
+| Current main scene | `Assets/ProjectCore/Contexts/Preloader/GraphicResources/Scenes/Scene_Preloader.unity` |
 | Target entry point | `Assets/ProjectCore/Contexts/Preloader/GraphicResources/Scenes/Scene_Preloader.unity` |
 | Project code root | `Assets/ProjectCore` |
 | Dependency injection | Zenject |
@@ -292,20 +292,25 @@ Scene_Preloader
   PreloaderContextInstaller.InstallBindings()
     bind transient startup features
     bind the single ApplicationEntryPoint
-  ApplicationEntryPoint
-    run the one application initialization pipeline
-    initialize Project features in explicit order
-    initialize Preloader features in explicit order
+  ApplicationEntryPoint.Start()
+    enter the application flow once, after Zenject injection is complete
+  ApplicationInitializationFlow
+    ProjectContextInitializer
+      FeatureInitializationFlow(Project features)
+    PreloaderContextInitializer
+      FeatureInitializationFlow(Preloader features)
     await GDPR flow, third-party SDKs, and other startup-only work
-    navigate to the configured first gameplay scene
+    ask ApplicationFlowCoordinator to open the first gameplay scene
   unload Scene_Preloader and destroy all Preloader-scoped objects
 
 Scene_Prototype (initial gameplay destination)
   PrototypeContextInstaller
     bind only scene-owned features
     compose shared GameCore features for the scene
-  persistent GameFlow coordinator
-    explicitly initialize scene features after loading
+  persistent ApplicationFlowCoordinator
+    resolve PrototypeContextInitializer from the scene container
+    FeatureInitializationFlow(Prototype features)
+    expose the scene as ready only after initialization completes
 ```
 
 Startup rules:
@@ -328,9 +333,12 @@ Startup rules:
   entry scene in Build Settings.
 - Installers only register bindings. They do not start asynchronous work or
   initialize features.
-- `ApplicationEntryPoint` is the only application-start trigger. Zenject calls
-  it once through one explicit initialization contract; it then owns and awaits
-  the complete asynchronous startup pipeline.
+- `ApplicationEntryPoint.Start()` is the only project-owned Unity lifecycle
+  callback allowed to trigger application startup. `Start` is used so Zenject
+  has completed scene injection before the asynchronous pipeline begins.
+- `ApplicationEntryPoint` only crosses the Unity-to-application boundary. It
+  delegates ordering to `ApplicationInitializationFlow` and attaches root
+  cancellation and error handling to the returned async operation.
 - Features, services, components, and scene initializers must not create
   independent initialization chains from `Awake`, `OnEnable`, or `Start`.
 - Scene transitions go through one persistent flow coordinator. That
@@ -471,6 +479,7 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Kind>/<Feature>/
       Controllers/
       Coordinators/
       Factories/
+      Flows/
       Handlers/
       Mediators/
       Providers/
@@ -594,6 +603,7 @@ instance for the whole application.
 | `Controllers` | `Controller` | Coordinates one non-visual use case or translates input into calls to domain/module contracts. Visual MonoBehaviour controllers belong to `Views/Components`. |
 | `Coordinators` | `Coordinator` | Orchestrates a multi-step workflow involving several services or systems. Application and scene flow coordinators belong here. |
 | `Factories` | `Factory` | Creates injected objects or aggregates and hides construction details. The factory is a singleton even when the objects it creates are transient. |
+| `Flows` | `Flow` | Executes one explicitly ordered, awaitable lifecycle or use-case pipeline. A Flow is invoked by its owner and never starts itself from a Unity callback. |
 | `Handlers` | `Handler` | Handles one command, request, callback, or message contract. A handler should have one clear input responsibility. |
 | `Mediators` | `Mediator` | Mediates several contracts without exposing their concrete implementations. Cross-feature mediation must still follow the Bridge rules. |
 | `Providers` | `Provider` | Supplies a value, resource, environment capability, or strategy-selected implementation without owning the consumer workflow. |
@@ -811,15 +821,35 @@ Registration and initialization are separate operations:
    bindings.
 2. Unity loads `Scene_Preloader`; its installer registers Preloader bindings
    and the single `ApplicationEntryPoint`.
-3. Zenject invokes `ApplicationEntryPoint` once through the selected entry
-   initialization contract.
-4. The entry point awaits Project feature initialization in an explicit order.
-5. It awaits transient Preloader feature initialization in an explicit order.
-6. It asks the persistent game-flow coordinator to navigate to the initial
-   gameplay scene.
-7. The coordinator loads the scene, obtains the scene initialization contract
-   through DI, and awaits its feature pipeline.
-8. The scene is marked ready only after that pipeline succeeds.
+3. Unity invokes the single `ApplicationEntryPoint.Start()` after Zenject has
+   injected its dependencies.
+4. The entry point starts and root-observes `ApplicationInitializationFlow`.
+5. `IProjectContextInitializer` awaits
+   `FeatureInitializationFlow` for application-lifetime features.
+6. `IPreloaderContextInitializer` awaits the same reusable flow for transient
+   startup features.
+7. `ApplicationInitializationFlow` asks the persistent
+   `ApplicationFlowCoordinator` to navigate to the initial gameplay scene.
+8. The coordinator loads the scene, resolves its `ISceneInitializer` from the
+   scene container, and awaits its local `FeatureInitializationFlow`.
+9. The scene is marked ready only after that pipeline succeeds.
+
+Initialization responsibilities are deliberately separated:
+
+- `ApplicationEntryPoint` is the single Unity lifecycle trigger.
+- `ApplicationInitializationFlow` owns the Project -> Preloader -> first-scene
+  startup order.
+- `FeatureInitializationFlow` is a reusable DI service that sequentially
+  initializes the explicitly ordered features of one owning context. It never
+  starts itself from a Unity callback.
+- `ApplicationFlowCoordinator` owns all later scene transitions and invokes
+  each scene initializer explicitly.
+- Context-specific contracts (`IProjectContextInitializer`,
+  `IPreloaderContextInitializer`, and `ISceneInitializer`) prevent ambiguous
+  resolution of a generic initializer across parent and child Zenject
+  containers.
+- Installers register features and flows only; an installer must not also act
+  as the asynchronous feature initialization flow.
 
 Feature initialization rules:
 
@@ -827,6 +857,13 @@ Feature initialization rules:
   initialization contract.
 - Initialization order is declared explicitly by the owning context or feature
   group. It is not discovered through Unity callback timing or reflection.
+- `InitializeAsync(DiContainer, CancellationToken)` receives the owning context
+  container after every feature has registered its bindings. A feature may
+  resolve and initialize its DI-managed services at this point; resolving them
+  while bindings are still being installed is forbidden.
+- `FeatureInitializationFlow` is registered as one context-local singleton and
+  is conditionally injectable only into `BaseContextInitializer` descendants.
+  Other services and Feature must not invoke it directly.
 - Each initialization method completes only when the feature is ready for its
   consumers.
 - Initialization failures propagate to the root flow, which logs and handles
@@ -1095,6 +1132,44 @@ regression fixture are documented in
 ## Migration Safety
 
 The architecture migration must be performed context by context.
+
+### Stage 7 - Unified Application Entry Point
+
+Status: implemented. `Scene_Preloader` is the first Build Settings scene and
+the runtime flow reaches `Scene_Prototype` only through the persistent
+`ApplicationFlowCoordinator`.
+
+Stage 7 must complete the unfinished feature initialization system rather than
+replace or bypass it. Its target implementation is:
+
+1. Create `Scene_Preloader` and make it the first enabled Build Settings scene.
+2. Add `PreloaderContextInstaller` and one `ApplicationEntryPoint` component.
+3. Keep exactly one startup lifecycle trigger:
+   `ApplicationEntryPoint.Start()`.
+4. Split the current `BaseFeatureInstaller.InitializeAsync()` responsibility:
+   installers register bindings, while a dedicated `FeatureInitializationFlow`
+   initializes an explicitly ordered feature list.
+5. Add `ApplicationInitializationFlow` to await the Project flow, then the
+   Preloader flow, then request the first scene from
+   `ApplicationFlowCoordinator`.
+6. Introduce distinct `IProjectContextInitializer`,
+   `IPreloaderContextInitializer`, and `ISceneInitializer` contracts so parent
+   and child Zenject containers cannot resolve the wrong flow.
+7. Make `ApplicationFlowCoordinator` persist in `ProjectContext`, load gameplay
+   scenes, resolve their scene initializer, await their feature flow, and only
+   then report the scene as ready.
+8. Route cancellation and initialization failures to the application root;
+   feature initialization tasks must never be silently detached.
+9. Remove any remaining independent application or feature initialization
+   chains from `Awake`, `OnEnable`, and `Start`. Local MonoBehaviour setup
+   remains allowed.
+10. Validate startup from Preloader through Prototype, scene unloading,
+    Project lifetime, repeated scene navigation, and initialization failure.
+
+The BG Games Platform provides the reference Preloader -> Project -> navigation
+concept. Its current `BaseProjectBootstrapper` and per-context bootstrapper
+lifecycle code must not be copied literally because TroughGame requires one
+startup trigger and a separately testable feature flow.
 
 ### BG Games Platform As Migration Source
 

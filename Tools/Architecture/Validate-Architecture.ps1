@@ -300,6 +300,7 @@ function Test-FeatureScriptPath {
             Controllers = @('Controller')
             Coordinators = @('Coordinator')
             Factories = @('Factory')
+            Flows = @('Flow')
             Handlers = @('Handler')
             Mediators = @('Mediator')
             Providers = @('Provider')
@@ -724,7 +725,8 @@ foreach ($record in $fileRecords) {
         '(?:Awake|Start|OnEnable)\s*\('
 
     for ($index = 0; $index -lt $lines.Count; $index++) {
-        if ($lines[$index] -match $lifecycleDeclarationPattern) {
+        if ($lines[$index] -match $lifecycleDeclarationPattern -and
+            $record.BaseName -ne 'ApplicationEntryPoint') {
             $last = [Math]::Min($lines.Count - 1, $index + 30)
             $window = ($lines[$index..$last] -join "`n")
             if ($window -match '\b(?:Init|Initialize|Setup|Resolve|AddFeature)[A-Za-z0-9_]*\s*\(' -or

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Threading;
 using ProjectCore.Template;
 using Zenject;
 
@@ -6,21 +7,15 @@ namespace ProjectCore.GameCore
 {
     public sealed class CombatFeature : IBaseFeature
     {
-        private readonly DiContainer _container;
-
-        [Inject]
-        public CombatFeature(DiContainer container)
+        public void InstallBindings(DiContainer container)
         {
-            _container = container;
+            container.BindInterfacesTo<DamageableSystem>().AsSingle();
+            container.BindInterfacesTo<DamageSourceSystem>().AsSingle();
         }
 
-        public void InstallBindings()
-        {
-            _container.BindInterfacesTo<DamageableSystem>().AsSingle();
-            _container.BindInterfacesTo<DamageSourceSystem>().AsSingle();
-        }
-
-        public UniTask Init()
+        public UniTask InitializeAsync(
+            DiContainer container,
+            CancellationToken cancellationToken)
         {
             return UniTask.CompletedTask;
         }

@@ -826,7 +826,6 @@ Transform:
   - {fileID: 811430722}
   - {fileID: 92576523}
   - {fileID: 1737118208}
-  - {fileID: 1067644281}
   - {fileID: 1347537687}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -986,8 +985,8 @@ GameObject:
   m_Component:
   - component: {fileID: 811430722}
   - component: {fileID: 811430721}
-  - component: {fileID: 811430723}
   - component: {fileID: 811430724}
+  - component: {fileID: 811430725}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -1009,7 +1008,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers: []
   _monoInstallers:
-  - {fileID: 811430723}
+  - {fileID: 811430725}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -1042,18 +1041,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 489340044}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &811430723
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 811430720}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0403ff641b1b4850b25a9ea05e2c9617, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PrototypeFeatureInstaller
 --- !u!114 &811430724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1067,6 +1054,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.GameCore.ZenjectNetworkObjectProvider
   DelayIfSceneManagerIsBusy: 1
+--- !u!114 &811430725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 811430720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0403ff641b1b4850b25a9ea05e2c9617, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Prototype.PrototypeContextInstaller
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1116,50 +1115,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1505669026}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1067644280
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1067644281}
-  - component: {fileID: 1067644282}
-  m_Layer: 0
-  m_Name: PrototypeSceneInitializer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1067644281
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1067644280}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 489340044}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1067644282
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1067644280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70b3c4e9f759bee4e856d27cab71a05b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1130018613
 GameObject:
   m_ObjectHideFlags: 0

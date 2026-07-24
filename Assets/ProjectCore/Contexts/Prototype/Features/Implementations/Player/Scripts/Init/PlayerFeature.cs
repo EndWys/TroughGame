@@ -1,27 +1,20 @@
 using Cysharp.Threading.Tasks;
-using Domain;
+using System.Threading;
 using ProjectCore.Template;
-using ProjectCore.Prototype;
 using Zenject;
 
 namespace ProjectCore.Prototype
 {
     public class PlayerFeature : IBaseFeature
     {
-        private readonly DiContainer _container;
-
-        [Inject]
-        public PlayerFeature(DiContainer container)
+        public void InstallBindings(DiContainer container)
         {
-            _container = container;
+            container.BindInterfacesTo<PlayerNetworkEntityFactory>().AsSingle();
         }
 
-        public void InstallBindings()
-        {
-            _container.BindInterfacesTo<PlayerNetworkEntityFactory>().AsSingle();
-        }
-
-        public UniTask Init()
+        public UniTask InitializeAsync(
+            DiContainer container,
+            CancellationToken cancellationToken)
         {
             return UniTask.CompletedTask;
         }

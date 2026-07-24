@@ -1,70 +1,35 @@
-using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
 
 namespace ProjectCore.Template
 {
-    public abstract class BaseFeatureInstaller : MonoInstaller, IFeatureInitializer
+    public abstract class BaseFeatureInstaller : MonoInstaller
     {
         private readonly List<IBaseFeature> _features = new List<IBaseFeature>();
-        private bool _isInitialized;
-
-        public async UniTask InitializeAsync()
-        {
-            if (_isInitialized)
-            {
-                return;
-            }
-
-            await DoBeforeInitialization();
-            await InitFeatures();
-            await DoAfterInitialization();
-
-            _isInitialized = true;
-        }
 
         public override void InstallBindings()
         {
-            Container.Bind<IFeatureInitializer>().FromInstance(this).AsSingle();
-
             AddFeatures();
             BindFeatures();
+
+            var featureInitializationFlow = new FeatureInitializationFlow(_features, Container);
+
+            Container.Bind<IFeatureInitializationFlow>().FromInstance(featureInitializationFlow)
+                .WhenInjectedInto<BaseContextInitializer>();
         }
 
         protected abstract void AddFeatures();
 
-        protected void AddFeature<T>() where T : IBaseFeature
+        protected void AddFeature<T>() where T : IBaseFeature, new()
         {
-            T feature = Container.Instantiate<T>();
-            _features.Add(feature);
-        }
-
-        protected virtual UniTask DoBeforeInitialization()
-        {
-            return UniTask.CompletedTask;
-        }
-
-        protected virtual UniTask DoAfterInitialization()
-        {
-            Application.targetFrameRate = 60;
-
-            return UniTask.CompletedTask;
-        }
-
-        private async UniTask InitFeatures()
-        {
-            foreach (var feature in _features)
-            {
-                await feature.Init();
-            }
+            _features.Add(new T());
         }
 
         private void BindFeatures()
         {
             foreach (var feature in _features)
             {
-                feature.InstallBindings();
+                feature.InstallBindings(Container);
             }
         }
     }

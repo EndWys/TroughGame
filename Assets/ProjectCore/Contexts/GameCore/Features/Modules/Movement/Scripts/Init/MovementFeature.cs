@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Threading;
 using ProjectCore.Template;
 using Zenject;
 
@@ -6,20 +7,14 @@ namespace ProjectCore.GameCore
 {
     public class MovementFeature : IBaseFeature
     {
-        private readonly DiContainer _container;
-
-        [Inject]
-        public MovementFeature(DiContainer container)
+        public void InstallBindings(DiContainer container)
         {
-            _container = container;
+            container.BindInterfacesTo<MovementSystem>().AsSingle();
         }
 
-        public void InstallBindings()
-        {
-            _container.BindInterfacesTo<MovementSystem>().AsSingle();
-        }
-
-        public UniTask Init()
+        public UniTask InitializeAsync(
+            DiContainer container,
+            CancellationToken cancellationToken)
         {
             return UniTask.CompletedTask;
         }

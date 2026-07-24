@@ -1,5 +1,5 @@
 using Cysharp.Threading.Tasks;
-using ProjectCore.GameCore;
+using System.Threading;
 using ProjectCore.Template;
 using Zenject;
 
@@ -7,29 +7,23 @@ namespace ProjectCore.GameCore
 {
     public class NetworkEntitiesFeature : IBaseFeature
     {
-        private readonly DiContainer _container;
-
-        [Inject]
-        public NetworkEntitiesFeature(DiContainer container)
+        public void InstallBindings(DiContainer container)
         {
-            _container = container;
-        }
-
-        public void InstallBindings()
-        {
-            _container.Bind<NetworkEntityRegistry>().AsSingle();
-            _container.Bind<NetworkEntityIdFactory>().AsSingle();
-            _container.Bind<NetworkEntitySpawner>().AsSingle();
-            _container.Bind<IGameEntityComponentAccessor>()
+            container.Bind<NetworkEntityRegistry>().AsSingle();
+            container.Bind<NetworkEntityIdFactory>().AsSingle();
+            container.Bind<NetworkEntitySpawner>().AsSingle();
+            container.Bind<IGameEntityComponentAccessor>()
                 .To<GameEntityComponentAccessorService>()
                 .AsSingle();
 
-            _container.BindInterfacesAndSelfTo<ZenjectNetworkObjectProvider>()
+            container.BindInterfacesAndSelfTo<ZenjectNetworkObjectProvider>()
                 .FromComponentInHierarchy()
                 .AsSingle();
         }
 
-        public UniTask Init()
+        public UniTask InitializeAsync(
+            DiContainer container,
+            CancellationToken cancellationToken)
         {
             return UniTask.CompletedTask;
         }

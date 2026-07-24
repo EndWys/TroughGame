@@ -4,8 +4,15 @@ using ProjectCore.Prototype;
 
 namespace ProjectCore.Prototype
 {
-    public class PrototypeFeatureInstaller : BaseFeatureInstaller
+    public sealed class PrototypeContextInstaller : BaseFeatureInstaller
     {
+        public override void InstallBindings()
+        {
+            base.InstallBindings();
+
+            Container.BindInterfacesAndSelfTo<PrototypeContextInitializer>().AsSingle();
+        }
+
         protected override void AddFeatures()
         {
             AddFeature<NetworkEntitiesFeature>();

@@ -1,9 +1,12 @@
 using Cysharp.Threading.Tasks;
+using System.Threading;
+using Zenject;
+
 namespace ProjectCore.Template
 {
     public interface IBaseFeature
     {
-        public void InstallBindings();
-        public UniTask Init();
+        void InstallBindings(DiContainer container);
+        UniTask InitializeAsync(DiContainer container, CancellationToken cancellationToken);
     }
 }
