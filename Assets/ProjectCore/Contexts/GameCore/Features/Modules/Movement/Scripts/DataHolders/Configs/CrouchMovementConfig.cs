@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectCore.GameCore
 {
     [Serializable]
-    public class CrouchMovementConfig
+    public sealed class CrouchMovementConfig
     {
         [Header("CROUCH SETTINGS")] 
         [field:SerializeField] public float CrouchSpeed { get; private set; } = 2.5f;

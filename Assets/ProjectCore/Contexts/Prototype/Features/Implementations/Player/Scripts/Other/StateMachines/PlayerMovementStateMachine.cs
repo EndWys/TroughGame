@@ -6,7 +6,7 @@ using Zenject;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerMovementStateMachine : 
+    public sealed class PlayerMovementStateMachine :
         BaseMovementStateMachine<BasePlayerMovementState, PlayerInputData>, IPlayerColleague
     {
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }

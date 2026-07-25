@@ -1,4 +1,3 @@
-using Domain;
 using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype

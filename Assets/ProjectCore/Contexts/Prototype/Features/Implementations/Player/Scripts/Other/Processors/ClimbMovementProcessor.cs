@@ -3,7 +3,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class ClimbMovementProcessor : BasePlayerMovementStateProcessor
+    public sealed class ClimbMovementProcessor : BasePlayerMovementStateProcessor
     {
         private const float ClimbSpeed = 3f;
 

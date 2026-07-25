@@ -1,10 +1,9 @@
-using Domain;
 using ProjectCore.GameCore;
 using UnityEngine;
 
 namespace ProjectCore.Prototype
 {
-    public class ClimbJumpProcessor : BasePlayerMovementStateProcessor
+    public sealed class ClimbJumpProcessor : BasePlayerMovementStateProcessor
     {
         public ClimbJumpProcessor(BasePlayerMovementState state) : base(state)
         {

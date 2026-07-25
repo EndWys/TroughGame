@@ -1,11 +1,10 @@
-using Domain;
 using Fusion;
 using ProjectCore.GameCore;
 using UnityEngine;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerCharacterNetworkInputComponent : BaseNetworkCallbacksBehaviour
+    public sealed class PlayerCharacterNetworkInputComponent : BaseNetworkCallbacksBehaviour
     {
         public override void OnInput(NetworkRunner runner, NetworkInput input)
         {

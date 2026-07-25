@@ -1,8 +1,9 @@
 using Cysharp.Threading.Tasks;
+using ProjectCore.Template;
 using System.Threading;
 using Zenject;
 
-namespace ProjectCore.Template
+namespace ProjectCore.Preloader
 {
     public sealed class ApplicationInitializationFeature : IBaseFeature
     {

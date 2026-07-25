@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using ProjectCore.Template;
 using System.Threading;
 using Zenject;
 

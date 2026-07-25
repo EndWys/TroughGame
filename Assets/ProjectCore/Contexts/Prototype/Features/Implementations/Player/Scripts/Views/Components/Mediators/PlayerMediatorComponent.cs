@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerMediatorComponent :
+    public sealed class PlayerMediatorComponent :
         BaseNetworkEntityCompositeComponent,
         IPlayerMediator
     {

@@ -1,10 +1,9 @@
-using Domain;
 using ProjectCore.GameCore;
 using Zenject;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerHealthComponent : 
+    public sealed class PlayerHealthComponent :
         BaseDamageableComponent,
         IPlayerColleague
     {

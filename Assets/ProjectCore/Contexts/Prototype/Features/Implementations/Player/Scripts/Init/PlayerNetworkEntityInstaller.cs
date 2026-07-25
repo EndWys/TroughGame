@@ -1,11 +1,10 @@
-using Domain;
 using ProjectCore.GameCore;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerNetworkEntityInstaller : BaseNetworkEntityInstaller<PlayerNetworkEntityComponent>
+    public sealed class PlayerNetworkEntityInstaller : BaseNetworkEntityInstaller<PlayerNetworkEntityComponent>
     {
         [FormerlySerializedAs("_groundChecker")]
         [SerializeField] private GroundDetectorComponent _groundDetectorComponent;

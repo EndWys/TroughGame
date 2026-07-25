@@ -5,7 +5,7 @@ using Zenject;
 
 namespace ProjectCore.GameCore
 {
-    public class MovementFeature : IBaseFeature
+    public sealed class MovementFeature : IBaseFeature
     {
         public void InstallBindings(DiContainer container)
         {

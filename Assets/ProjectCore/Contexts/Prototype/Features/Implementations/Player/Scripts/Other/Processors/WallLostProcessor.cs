@@ -2,7 +2,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class WallLostProcessor : BasePlayerMovementStateProcessor
+    public sealed class WallLostProcessor : BasePlayerMovementStateProcessor
     {
         public WallLostProcessor(BasePlayerMovementState state) : base(state)
         {

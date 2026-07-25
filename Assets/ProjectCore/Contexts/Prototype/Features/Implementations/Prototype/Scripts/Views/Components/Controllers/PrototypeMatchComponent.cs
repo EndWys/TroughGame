@@ -1,11 +1,10 @@
-using Domain;
 using Fusion;
 using ProjectCore.GameCore;
 using UnityEngine;
 
 namespace ProjectCore.Prototype
 {
-    public class PrototypeMatchComponent : BaseNetworkCallbacksBehaviour
+    public sealed class PrototypeMatchComponent : BaseNetworkCallbacksBehaviour
     {
         [Header("REFERENCES")]
         [SerializeField] private BotNetworkSpawnComponent _botNetworkSpawnController;

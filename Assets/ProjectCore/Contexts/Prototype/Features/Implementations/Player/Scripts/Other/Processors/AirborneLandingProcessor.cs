@@ -3,7 +3,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class AirborneLandingProcessor : BasePlayerMovementStateProcessor
+    public sealed class AirborneLandingProcessor : BasePlayerMovementStateProcessor
     {
         public AirborneLandingProcessor(BasePlayerMovementState state) : base(state)
         {

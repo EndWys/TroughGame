@@ -5,7 +5,7 @@ using Zenject;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerFeature : IBaseFeature
+    public sealed class PlayerFeature : IBaseFeature
     {
         public void InstallBindings(DiContainer container)
         {

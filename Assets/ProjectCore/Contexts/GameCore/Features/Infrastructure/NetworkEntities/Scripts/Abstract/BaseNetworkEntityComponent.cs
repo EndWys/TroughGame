@@ -8,18 +8,18 @@ namespace ProjectCore.GameCore
 {
     public abstract class BaseNetworkEntityComponent : MonoBehaviour, INetworkEntityComponent
     {
-        private static readonly IReadOnlyList<INetworkEntityComponent> EmptyComponents =
+        private static readonly IReadOnlyList<INetworkEntityComponent> _emptyComponents =
             Array.Empty<INetworkEntityComponent>();
-
-        public NetworkBehaviour ParentNetworkBehaviour { get; private set; }
-
-        public virtual IReadOnlyList<INetworkEntityComponent> Components => EmptyComponents;
 
         [Inject]
         private void ConstructBaseNetworkEntityComponent(INetworkBehaviourAccessor networkBehaviourAccessor)
         {
             ParentNetworkBehaviour = networkBehaviourAccessor.ParentNetworkBehaviour;
         }
+
+        public NetworkBehaviour ParentNetworkBehaviour { get; private set; }
+
+        public virtual IReadOnlyList<INetworkEntityComponent> Components => _emptyComponents;
 
         public virtual void Init() { }
 

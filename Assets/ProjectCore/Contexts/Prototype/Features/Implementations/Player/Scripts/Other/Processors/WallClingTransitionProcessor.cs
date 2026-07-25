@@ -2,7 +2,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class WallClingTransitionProcessor : BasePlayerMovementStateProcessor
+    public sealed class WallClingTransitionProcessor : BasePlayerMovementStateProcessor
     {
         public WallClingTransitionProcessor(BasePlayerMovementState state) : base(state)
         {

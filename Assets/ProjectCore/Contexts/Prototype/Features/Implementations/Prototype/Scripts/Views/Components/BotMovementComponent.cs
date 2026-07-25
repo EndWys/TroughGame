@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProjectCore.Prototype
 {
-    public class BotMovementComponent : NetworkBehaviour
+    public sealed class BotMovementComponent : NetworkBehaviour
     {
         [SerializeField] private float _speed = 3f;
 

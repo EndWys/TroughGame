@@ -2,7 +2,7 @@ using Domain;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerJumpedPayload : HandlerPayload
+    public sealed class PlayerJumpedPayload : HandlerPayload
     {
     }
 }

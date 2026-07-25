@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectCore.GameCore
 {
     [Serializable]
-    public class LocomotionMovementConfig
+    public sealed class LocomotionMovementConfig
     {
         [Header("LOCOMOTION SETTINGS")]
         [field:SerializeField] public float WalkSpeed { get; private set; } = 5f;

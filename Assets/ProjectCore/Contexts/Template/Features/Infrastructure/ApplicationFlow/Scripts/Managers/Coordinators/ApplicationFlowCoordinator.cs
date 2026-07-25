@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
-using UnityEngine.SceneManagement;
 using Zenject;
 
 namespace ProjectCore.Template
@@ -45,7 +44,6 @@ namespace ProjectCore.Template
             {
                 var operation = _sceneLoader.LoadSceneAsync(
                     sceneName,
-                    LoadSceneMode.Single,
                     extraBindingsLate: container => sceneContainer = container);
 
                 await operation.ToUniTask(cancellationToken: cancellationToken);

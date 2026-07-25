@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using ProjectCore.GameCore;
-using Domain;
 using Fusion;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerNetworkEntityComponent :
+    public sealed class PlayerNetworkEntityComponent :
         BaseNetworkEntityRoot,
-        IPlayerDataHolder
+        IPlayerDataMutator
     {
         [Header("COMPONENTS")]
         [FormerlySerializedAs("_groundChecker")]

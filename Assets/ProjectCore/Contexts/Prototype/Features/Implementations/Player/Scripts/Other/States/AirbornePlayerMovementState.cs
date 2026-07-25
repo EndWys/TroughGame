@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ProjectCore.Prototype
 {
-    public class AirbornePlayerMovementState : BasePlayerMovementState
+    public sealed class AirbornePlayerMovementState : BasePlayerMovementState
     {
         public override void Enter() { }
 

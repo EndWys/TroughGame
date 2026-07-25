@@ -1,9 +1,8 @@
-using Domain;
 using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class CoyoteJumpProcessor : BasePlayerMovementStateProcessor
+    public sealed class CoyoteJumpProcessor : BasePlayerMovementStateProcessor
     {
         public CoyoteJumpProcessor(BasePlayerMovementState state) : base(state)
         {

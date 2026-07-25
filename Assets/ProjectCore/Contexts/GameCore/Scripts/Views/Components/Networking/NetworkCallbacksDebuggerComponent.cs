@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ProjectCore.GameCore
 {
-    public class NetworkCallbacksDebuggerComponent : MonoBehaviour, INetworkRunnerCallbacks
+    public sealed class NetworkCallbacksDebuggerComponent : MonoBehaviour, INetworkRunnerCallbacks
     {
         [Header("Settings")]
         [SerializeField] private bool _logInputEvents = false;

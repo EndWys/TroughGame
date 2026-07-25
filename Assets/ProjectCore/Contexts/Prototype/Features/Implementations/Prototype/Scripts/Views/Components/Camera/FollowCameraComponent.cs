@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ProjectCore.Prototype
 {
     [RequireComponent(typeof(Camera))]
-    public class FollowCameraComponent : MonoBehaviour
+    public sealed class FollowCameraComponent : MonoBehaviour
     {
         [Header("FOV SETTINGS")]
         [SerializeField] private float _fovSmoothTime = 0.2f;
@@ -41,22 +41,6 @@ namespace ProjectCore.Prototype
                 _targetFOV = _cameraComponent.fieldOfView;
             }
         }
-        
-        public void SetTarget(Transform playerTransform, Transform lookAtTarget)
-        {
-            _targetTransform = playerTransform;
-            _lookTarget = lookAtTarget;
-            
-            if (_targetTransform != null)
-            {
-                UpdateCameraPosition(true);
-            }
-        }
-
-        public void ChangeFov(float newFovValue)
-        {
-            _targetFOV = newFovValue;
-        }
 
         private void LateUpdate()
         {
@@ -67,6 +51,22 @@ namespace ProjectCore.Prototype
 
             UpdateCameraPosition(false);
             UpdateFOV();
+        }
+
+        public void SetTarget(Transform playerTransform, Transform lookAtTarget)
+        {
+            _targetTransform = playerTransform;
+            _lookTarget = lookAtTarget;
+
+            if (_targetTransform != null)
+            {
+                UpdateCameraPosition(true);
+            }
+        }
+
+        public void ChangeFov(float newFovValue)
+        {
+            _targetFOV = newFovValue;
         }
 
         private void UpdateCameraPosition(bool immediate)

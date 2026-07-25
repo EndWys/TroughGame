@@ -1,11 +1,10 @@
 using UnityEngine;
 using ProjectCore.GameCore;
 using Zenject;
-using Domain;
 
 namespace ProjectCore.Prototype
 {
-    public class ClimbDetectorComponent : BaseNetworkEntityComponent
+    public sealed class ClimbDetectorComponent : BaseNetworkEntityComponent
     {
         [Header("Climb Check Settings")]
         [SerializeField] private Transform _climbCheckPivot;

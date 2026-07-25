@@ -1,10 +1,9 @@
-using Domain;
 using ProjectCore.GameCore;
 using UnityEngine;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerCameraComponent :
+    public sealed class PlayerCameraComponent :
         BaseNetworkEntityComponent,
         IPlayerColleague
     {

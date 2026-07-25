@@ -1,6 +1,5 @@
 using ProjectCore.GameCore;
 using ProjectCore.Template;
-using ProjectCore.Prototype;
 
 namespace ProjectCore.Prototype
 {

@@ -3,7 +3,7 @@ using Zenject;
 
 namespace ProjectCore.GameCore
 {
-    public class ZenjectNetworkObjectProvider : NetworkObjectProviderDefault
+    public sealed class ZenjectNetworkObjectProvider : NetworkObjectProviderDefault
     {
         [Inject] private DiContainer _container;
 

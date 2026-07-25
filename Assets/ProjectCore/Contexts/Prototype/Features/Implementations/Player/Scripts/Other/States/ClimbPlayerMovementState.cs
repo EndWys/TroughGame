@@ -3,7 +3,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class ClimbPlayerMovementState : BasePlayerMovementState
+    public sealed class ClimbPlayerMovementState : BasePlayerMovementState
     {
         public override void Enter()
         {

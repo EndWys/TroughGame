@@ -1,4 +1,3 @@
-using Domain;
 using Fusion;
 using ProjectCore.GameCore;
 using UnityEngine;
@@ -6,7 +5,7 @@ using Zenject;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerSpawnComponent : BaseNetworkCallbacksBehaviour
+    public sealed class PlayerSpawnComponent : BaseNetworkCallbacksBehaviour
     {
         [SerializeField] private NetworkPrefabRef _playerPrefab;
 

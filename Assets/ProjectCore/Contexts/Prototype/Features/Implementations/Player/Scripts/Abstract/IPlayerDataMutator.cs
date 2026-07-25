@@ -2,7 +2,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public interface IPlayerDataHolder :
+    public interface IPlayerDataMutator :
         IClimbDetectorDataMutator,
         IPoseDataMutator,
         IGroundDetectorDataMutator,

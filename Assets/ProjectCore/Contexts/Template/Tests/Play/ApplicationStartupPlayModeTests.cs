@@ -2,6 +2,7 @@ using System.Collections;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
+using ProjectCore.Preloader;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProjectCore.Prototype
 {
-    public class BotNetworkSpawnComponent : NetworkBehaviour
+    public sealed class BotNetworkSpawnComponent : NetworkBehaviour
     {
         [SerializeField] private NetworkPrefabRef _botPrefab;
     

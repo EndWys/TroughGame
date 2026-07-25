@@ -2,7 +2,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class StandUpTransitionProcessor : BasePlayerMovementStateProcessor
+    public sealed class StandUpTransitionProcessor : BasePlayerMovementStateProcessor
     {
         public StandUpTransitionProcessor(BasePlayerMovementState state) : base(state)
         {

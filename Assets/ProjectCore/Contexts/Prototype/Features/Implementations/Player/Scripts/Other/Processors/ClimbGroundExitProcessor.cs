@@ -2,7 +2,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class ClimbGroundExitProcessor : BasePlayerMovementStateProcessor
+    public sealed class ClimbGroundExitProcessor : BasePlayerMovementStateProcessor
     {
         public ClimbGroundExitProcessor(BasePlayerMovementState state) : base(state)
         {

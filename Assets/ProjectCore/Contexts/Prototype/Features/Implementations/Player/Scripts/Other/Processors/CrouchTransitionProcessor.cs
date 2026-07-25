@@ -2,7 +2,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class CrouchTransitionProcessor : BasePlayerMovementStateProcessor
+    public sealed class CrouchTransitionProcessor : BasePlayerMovementStateProcessor
     {
         public CrouchTransitionProcessor(BasePlayerMovementState state) : base(state)
         {

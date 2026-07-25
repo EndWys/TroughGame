@@ -293,7 +293,7 @@ function Test-FeatureScriptPath {
         DataHolders = @{
             Configs = @('Config')
             Data = @('Data')
-            DTOs = @('Dto')
+            DTOs = @('DTO')
             Payloads = @('Payload')
         }
         Managers = @{
@@ -524,7 +524,7 @@ function Test-ContextSharedScriptPath {
             DataHolders = @{
                 Configs = @('Config')
                 Data = @('Data')
-                DTOs = @('Dto')
+                DTOs = @('DTO')
                 Payloads = @('Payload')
             }
             Other = @{

@@ -1,11 +1,10 @@
-using Domain;
 using ProjectCore.GameCore;
 using UnityEngine;
 using Zenject;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerDamageTriggerComponent :
+    public sealed class PlayerDamageTriggerComponent :
         BaseDamageSourceComponent, 
         IPlayerColleague
     {

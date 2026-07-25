@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using ProjectCore.GameCore;
-using Domain;
 using UnityEngine;
 using Zenject;
 
 namespace ProjectCore.Prototype
 {
-    public class PlayerPoseComponent : BaseNetworkEntityComponent
+    public sealed class PlayerPoseComponent : BaseNetworkEntityComponent
     {
         [SerializeField] private CapsuleCollider _playerCollider;
         [Space]

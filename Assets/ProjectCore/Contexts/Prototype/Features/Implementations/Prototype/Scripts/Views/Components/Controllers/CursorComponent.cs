@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ProjectCore.Prototype
 {
-    public class CursorComponent : MonoBehaviour
+    public sealed class CursorComponent : MonoBehaviour
     {
         [Header("Settings")]
         [SerializeField] private bool _lockOnStart = true;
@@ -13,18 +13,6 @@ namespace ProjectCore.Prototype
             {
                 SetGameplayMode();
             }
-        }
-        
-        public void SetGameplayMode()
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-        
-        public void SetUIMode()
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
         }
 
         private void Update()
@@ -48,6 +36,18 @@ namespace ProjectCore.Prototype
             {
                 SetGameplayMode();
             }
+        }
+
+        public void SetGameplayMode()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        public void SetUIMode()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
     }
 }

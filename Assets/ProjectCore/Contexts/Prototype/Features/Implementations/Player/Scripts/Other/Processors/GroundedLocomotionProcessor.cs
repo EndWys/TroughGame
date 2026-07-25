@@ -2,7 +2,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class GroundedLocomotionProcessor : BaseGroundedMovementProcessor
+    public sealed class GroundedLocomotionProcessor : BaseGroundedMovementProcessor
     {
         public GroundedLocomotionProcessor(BasePlayerMovementState state) : base(state)
         {

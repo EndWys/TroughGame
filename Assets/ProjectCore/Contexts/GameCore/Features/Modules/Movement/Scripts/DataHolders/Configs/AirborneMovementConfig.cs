@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectCore.GameCore
 {
     [Serializable]
-    public class AirborneMovementConfig
+    public sealed class AirborneMovementConfig
     {
         [Header("AIRBORNE & JUMP SETTINGS")]
         [field:SerializeField] public float JumpForce { get; private set; } = 7f;

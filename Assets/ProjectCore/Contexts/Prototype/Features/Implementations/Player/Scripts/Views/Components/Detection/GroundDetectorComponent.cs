@@ -1,11 +1,10 @@
 using UnityEngine;
 using ProjectCore.GameCore;
 using Zenject;
-using Domain;
 
 namespace ProjectCore.Prototype
 {
-    public class GroundDetectorComponent : BaseNetworkEntityComponent
+    public sealed class GroundDetectorComponent : BaseNetworkEntityComponent
     {
         [Header("Ground Check Settings")] 
         [SerializeField] private Transform _groundCheckPivot;

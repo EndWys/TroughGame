@@ -2,7 +2,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class ClimbCancelProcessor : BasePlayerMovementStateProcessor
+    public sealed class ClimbCancelProcessor : BasePlayerMovementStateProcessor
     {
         public ClimbCancelProcessor(BasePlayerMovementState state) : base(state)
         {

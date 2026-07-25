@@ -1,6 +1,6 @@
 namespace ProjectCore.GameCore
 {
-    public class MovementDto
+    public sealed class MovementDTO
     {
     }
 }

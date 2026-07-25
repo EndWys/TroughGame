@@ -5,7 +5,7 @@ using Zenject;
 
 namespace ProjectCore.GameCore
 {
-    public class NetworkEntitiesFeature : IBaseFeature
+    public sealed class NetworkEntitiesFeature : IBaseFeature
     {
         public void InstallBindings(DiContainer container)
         {

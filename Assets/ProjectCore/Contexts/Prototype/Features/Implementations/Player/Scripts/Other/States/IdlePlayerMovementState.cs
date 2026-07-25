@@ -3,7 +3,7 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.Prototype
 {
-    public class IdlePlayerMovementState : BasePlayerMovementState
+    public sealed class IdlePlayerMovementState : BasePlayerMovementState
     {
         public override void Enter() { }
 

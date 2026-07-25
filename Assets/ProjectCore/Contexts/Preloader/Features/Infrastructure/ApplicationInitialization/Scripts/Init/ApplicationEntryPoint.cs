@@ -4,7 +4,7 @@ using System.Threading;
 using UnityEngine;
 using Zenject;
 
-namespace ProjectCore.Template
+namespace ProjectCore.Preloader
 {
     public sealed class ApplicationEntryPoint : MonoBehaviour
     {
