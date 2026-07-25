@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ProjectCore.Prototype
 {
-    public sealed class PrototypeContextInitializer : BaseContextInitializer, ISceneInitializer
+    public sealed class PrototypeContextInitializer : BaseContextInitializer, IGameSceneInitializer
     {
         public PrototypeContextInitializer(IFeatureInitializationFlow featureInitializationFlow)
             : base(featureInitializationFlow)

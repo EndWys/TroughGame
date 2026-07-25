@@ -3,13 +3,13 @@ using ProjectCore.Template;
 using System.Threading;
 using Zenject;
 
-namespace ProjectCore.Preloader
+namespace ProjectCore.Template
 {
-    public sealed class ApplicationInitializationFeature : IBaseFeature
+    public sealed class ApplicationFlowFeature : IBaseFeature
     {
         public void InstallBindings(DiContainer container)
         {
-            container.BindInterfacesAndSelfTo<ApplicationInitializationFlow>().AsSingle();
+            container.BindInterfacesAndSelfTo<ApplicationFlowCoordinator>().AsSingle();
         }
 
         public UniTask InitializeAsync(

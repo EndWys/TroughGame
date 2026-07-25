@@ -420,6 +420,43 @@ function Test-ContextSharedScriptPath {
         Validation = @('Validation')
     }
 
+    if ($category -eq 'Initialization') {
+        if ($segments.Count -lt 3) {
+            Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
+                -Path $FileRecord.RelativePath -Line 1 `
+                -Message 'Context Scripts/Initialization requires a semantic subfolder.'
+            return $true
+        }
+
+        $subfolder = $segments[1]
+        if ($subfolder -eq 'Abstract') {
+            if ($null -ne $primary) {
+                $isInterface = $primary.Kind -eq 'interface'
+                $isAbstract = $primary.Kind -eq 'class' -and
+                    $primary.Modifiers -match '(^|\s)abstract($|\s)'
+
+                if (-not $isInterface -and -not $isAbstract) {
+                    Add-Diagnostic -Severity 'Error' -Rule 'ABSTRACT002' `
+                        -Path $FileRecord.RelativePath -Line $primary.Line `
+                        -Message 'Context Scripts/Initialization/Abstract contains only interfaces and abstract classes.'
+                }
+            }
+        } elseif ($subfolder -eq 'Init') {
+            Add-SuffixDiagnostic -FileRecord $FileRecord `
+                -Suffixes @('FeatureGroup', 'Feature', 'Installer', 'Initializer', 'EntryPoint') `
+                -Folder 'Context/Scripts/Initialization/Init'
+        } elseif ($subfolder -eq 'Managers' -and $segments[2] -eq 'Flows') {
+            Add-SuffixDiagnostic -FileRecord $FileRecord `
+                -Suffixes @('Flow') -Folder 'Context/Scripts/Initialization/Managers/Flows'
+        } else {
+            Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
+                -Path $FileRecord.RelativePath -Line 1 `
+                -Message ("Unsupported Context Scripts/Initialization subfolder '{0}'." -f $subfolder)
+        }
+
+        return $true
+    }
+
     if ($staticSuffixes.ContainsKey($category)) {
         Add-SuffixDiagnostic -FileRecord $FileRecord `
             -Suffixes $staticSuffixes[$category] -Folder ("Context/Scripts/{0}" -f $category)
@@ -540,7 +577,7 @@ function Test-ContextSharedScriptPath {
         return $true
     }
 
-    if ($category -ne 'Init' -and $FileRecord.Text -match
+    if ($category -notin @('Init', 'Initialization') -and $FileRecord.Text -match
         '(?m)^\s*using\s+Zenject\s*;|\[\s*Inject\s*\]|\bDiContainer\b|\.Bind(?:Interfaces|InterfacesAndSelf|InterfacesTo)?\s*[<(]') {
         Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT003' `
             -Path $FileRecord.RelativePath -Line 1 `

@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
-namespace ProjectCore.Preloader
+namespace ProjectCore.Template
 {
     public interface IApplicationInitializationFlow
     {

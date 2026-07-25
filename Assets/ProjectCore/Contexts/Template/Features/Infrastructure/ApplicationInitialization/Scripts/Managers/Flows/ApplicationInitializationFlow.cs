@@ -1,9 +1,10 @@
 using Cysharp.Threading.Tasks;
 using ProjectCore.Project;
+using ProjectCore.Preloader;
 using System.Threading;
 using UnityEngine;
 
-namespace ProjectCore.Preloader
+namespace ProjectCore.Template
 {
     public sealed class ApplicationInitializationFlow : IApplicationInitializationFlow
     {

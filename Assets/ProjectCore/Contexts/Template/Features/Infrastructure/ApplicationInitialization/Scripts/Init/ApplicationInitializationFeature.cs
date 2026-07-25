@@ -1,15 +1,14 @@
 using Cysharp.Threading.Tasks;
-using ProjectCore.Template;
 using System.Threading;
 using Zenject;
 
-namespace ProjectCore.Project
+namespace ProjectCore.Template
 {
-    public sealed class ApplicationFlowFeature : IBaseFeature
+    public sealed class ApplicationInitializationFeature : IBaseFeature
     {
         public void InstallBindings(DiContainer container)
         {
-            container.BindInterfacesAndSelfTo<ApplicationFlowCoordinator>().AsSingle();
+            container.BindInterfacesAndSelfTo<ApplicationInitializationFlow>().AsSingle();
         }
 
         public UniTask InitializeAsync(

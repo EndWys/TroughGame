@@ -1,11 +1,10 @@
 using Cysharp.Threading.Tasks;
-using ProjectCore.Template;
 using System;
 using System.Threading;
 using UnityEngine.SceneManagement;
 using Zenject;
 
-namespace ProjectCore.Project
+namespace ProjectCore.Template
 {
     public sealed class ApplicationFlowCoordinator : IApplicationFlowCoordinator, IDisposable
     {
@@ -59,7 +58,8 @@ namespace ProjectCore.Project
 
                 _sceneCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                ISceneInitializer sceneInitializer = sceneContainer.Resolve<ISceneInitializer>();
+                IGameSceneInitializer sceneInitializer =
+                    sceneContainer.Resolve<IGameSceneInitializer>();
                 
                 await sceneInitializer.InitializeAsync(_sceneCancellation.Token);
 

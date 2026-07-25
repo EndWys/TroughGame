@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
-namespace ProjectCore.Project
+namespace ProjectCore.Template
 {
     public interface IApplicationFlowCoordinator
     {

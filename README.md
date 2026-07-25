@@ -830,7 +830,7 @@ Registration and initialization are separate operations:
    startup features.
 7. `ApplicationInitializationFlow` asks the persistent
    `ApplicationFlowCoordinator` to navigate to the initial gameplay scene.
-8. The coordinator loads the scene, resolves its `ISceneInitializer` from the
+8. The coordinator loads the scene, resolves its `IGameSceneInitializer` from the
    scene container, and awaits its local `FeatureInitializationFlow`.
 9. The scene is marked ready only after that pipeline succeeds.
 
@@ -845,7 +845,7 @@ Initialization responsibilities are deliberately separated:
 - `ApplicationFlowCoordinator` owns all later scene transitions and invokes
   each scene initializer explicitly.
 - Context-specific contracts (`IProjectContextInitializer`,
-  `IPreloaderContextInitializer`, and `ISceneInitializer`) prevent ambiguous
+  `IPreloaderContextInitializer`, and `IGameSceneInitializer`) prevent ambiguous
   resolution of a generic initializer across parent and child Zenject
   containers.
 - Installers register features and flows only; an installer must not also act
@@ -1153,7 +1153,7 @@ replace or bypass it. Its target implementation is:
    Preloader flow, then request the first scene from
    `ApplicationFlowCoordinator`.
 6. Introduce distinct `IProjectContextInitializer`,
-   `IPreloaderContextInitializer`, and `ISceneInitializer` contracts so parent
+   `IPreloaderContextInitializer`, and `IGameSceneInitializer` contracts so parent
    and child Zenject containers cannot resolve the wrong flow.
 7. Make `ApplicationFlowCoordinator` persist in `ProjectContext`, load gameplay
    scenes, resolve their scene initializer, await their feature flow, and only
@@ -1170,6 +1170,21 @@ The BG Games Platform provides the reference Preloader -> Project -> navigation
 concept. Its current `BaseProjectBootstrapper` and per-context bootstrapper
 lifecycle code must not be copied literally because TroughGame requires one
 startup trigger and a separately testable feature flow.
+
+### Stage 8 - Move Initialization Infrastructure out of Features
+
+Status: implemented. Generic initialization infrastructure is located under
+`Assets/ProjectCore/Contexts/Template/Scripts/Initialization` rather than under
+`Template/Features`.
+
+The moved infrastructure contains Feature contracts, context initializer
+contracts, `BaseFeatureInstaller`, and `FeatureInitializationFlow`. It is a
+framework for composing and initializing Features, not a Feature or Module
+itself. Application startup execution remains Preloader-owned through
+`PreloaderContextInstaller`, while the reusable `ApplicationInitialization`
+Feature itself is owned by `Template`. The reusable `ApplicationFlow` Feature
+is owned by `Template` as well, while both Features keep their runtime owners:
+Preloader and Project respectively.
 
 ### BG Games Platform As Migration Source
 

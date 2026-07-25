@@ -1,9 +1,10 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Threading;
 using UnityEngine;
 using Zenject;
 
-namespace ProjectCore.Preloader
+namespace ProjectCore.Template
 {
     public sealed class ApplicationEntryPoint : MonoBehaviour
     {
@@ -22,16 +23,27 @@ namespace ProjectCore.Preloader
         {
             if (_isStarted)
             {
-                return;
+                throw new InvalidOperationException(
+                    "ApplicationEntryPoint can start only once.");
             }
 
             _isStarted = true;
 
-            _applicationInitializationFlow.RunAsync(
-                    _initialSceneName,
-                    Application.exitCancellationToken,
-                    destroyCancellationToken)
+            RunInitializationAsync()
                 .Forget(HandleInitializationException);
+        }
+
+        private async UniTask RunInitializationAsync()
+        {
+            using var linkedPreloaderCancellation =
+                CancellationTokenSource.CreateLinkedTokenSource(
+                    Application.exitCancellationToken,
+                    destroyCancellationToken);
+
+            await _applicationInitializationFlow.RunAsync(
+                _initialSceneName,
+                Application.exitCancellationToken,
+                linkedPreloaderCancellation.Token);
         }
 
         private static void HandleInitializationException(Exception exception)
