@@ -13,7 +13,7 @@ TroughGame is a multiplayer friends-slope game about dungeons.
 | Dependency injection | Zenject |
 | Networking | Photon Fusion |
 | Async runtime | UniTask |
-| Compilation model | Unity default assemblies; no project-owned `.asmdef` files |
+| Compilation model | `ProjectCore.Runtime` production assembly and separate Editor/Play test assemblies |
 
 ## Architecture
 
@@ -774,10 +774,10 @@ Test rules:
 - Editor tests must not be used to hide logic that belongs in a Play test.
 - Play tests must enter scenes through the supported flow when testing
   application initialization.
-- The project currently has no project-owned `.asmdef`; test discovery and
-  compilation must be verified against that constraint before the first test
-  suite is introduced. Do not add a test `.asmdef` without an explicit change
-  to the project policy.
+- Production code is compiled into `ProjectCore.Runtime`. Editor and Play tests
+  use separate test assemblies and reference the runtime assembly explicitly.
+- Test assemblies are excluded from normal player builds and must not be used
+  as production dependencies.
 
 ### Enums
 
@@ -1183,8 +1183,48 @@ framework for composing and initializing Features, not a Feature or Module
 itself. Application startup execution remains Preloader-owned through
 `PreloaderContextInstaller`, while the reusable `ApplicationInitialization`
 Feature itself is owned by `Template`. The reusable `ApplicationFlow` Feature
-is owned by `Template` as well, while both Features keep their runtime owners:
+ is owned by `Template` as well, while both Features keep their runtime owners:
 Preloader and Project respectively.
+
+### Stage 9 - Feature Service Initialization
+
+Status: implemented after audit. The current DI-managed services do not expose
+an independent asynchronous initialization contract, so no additional service
+initialization is required at this stage. In future, identify DI-managed
+services that have an explicit initialization contract or require asynchronous
+startup. Only those services
+are resolved and initialized from the owning Feature's
+`InitializeAsync(DiContainer, CancellationToken)`.
+
+`InitializeAsync` remains a mandatory part of `IBaseFeature` for every Feature.
+It is the common lifecycle extension point, even when a particular Feature has
+no service initialization work. No-op implementations may remain explicit or
+be provided by a shared base Feature implementation, but the contract itself
+must not be removed.
+
+Feature initialization rules for this stage:
+
+1. Register all services during `InstallBindings`.
+2. Resolve services only from `InitializeAsync`, after all Feature bindings are
+   complete.
+3. Initialize only services with an explicit initialization requirement.
+4. Await every initialization operation and propagate failures and cancellation.
+5. Keep Feature initialization order explicit in the owning context.
+
+Audit result: all current Feature implementations satisfy the mandatory
+`IBaseFeature.InitializeAsync` contract, and their empty implementations are
+intentional because their registered services have no separate initialization
+step. This stage must be revisited when a service introduces an async
+initialization contract.
+
+### Stage 10.0 - Runtime and Test Assemblies
+
+Status: implemented. Production code under `Assets/ProjectCore` is isolated in
+`ProjectCore.Runtime`. Tests are isolated in `ProjectCore.Tests.Editor` and
+`ProjectCore.Tests.Play` under `Assets/ProjectCore/Contexts/Template/Tests`.
+Both reference the runtime assembly by GUID, while the test assemblies are
+excluded from normal player builds and separated for Edit Mode and Play Mode
+integration tests.
 
 ### BG Games Platform As Migration Source
 
