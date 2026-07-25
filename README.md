@@ -1226,6 +1226,19 @@ Both reference the runtime assembly by GUID, while the test assemblies are
 excluded from normal player builds and separated for Edit Mode and Play Mode
 integration tests.
 
+### Stage 11 - Startup and Navigation Tests
+
+Status: baseline implemented. Play Mode coverage verifies the
+Preloader -> Prototype transition, destruction of the temporary Preloader
+entry point, creation of the Project scene, and preservation of
+`ProjectContext`. A second scenario reloads Prototype through
+`IApplicationFlowCoordinator` and verifies that the scene context is recreated
+while the Project context remains the same instance.
+
+Cancellation and initialization-failure scenarios require dedicated test
+fixtures with controllable async initialization. They should be added without
+changing production startup behavior.
+
 ### BG Games Platform As Migration Source
 
 `D:\Repositories\BG-Games-Platform` is the mandatory upstream implementation
