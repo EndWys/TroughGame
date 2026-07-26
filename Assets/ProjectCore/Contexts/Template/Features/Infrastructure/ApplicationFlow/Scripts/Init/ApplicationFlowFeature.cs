@@ -1,21 +1,10 @@
-using Cysharp.Threading.Tasks;
-using System.Threading;
-using Zenject;
-
 namespace ProjectCore.Template
 {
-    public sealed class ApplicationFlowFeature : IBaseFeature
+    public sealed class ApplicationFlowFeature : BaseFeature
     {
-        public void InstallBindings(DiContainer container)
+        protected override void InstallBindings()
         {
-            container.BindInterfacesAndSelfTo<ApplicationFlowCoordinator>().AsSingle();
-        }
-
-        public UniTask InitializeAsync(
-            DiContainer container,
-            CancellationToken cancellationToken)
-        {
-            return UniTask.CompletedTask;
+            BindInterfacesAndSelfAsSingle<ApplicationFlowCoordinator>();
         }
     }
 }

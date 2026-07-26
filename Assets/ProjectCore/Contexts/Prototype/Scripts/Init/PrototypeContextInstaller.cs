@@ -14,11 +14,8 @@ namespace ProjectCore.Prototype
 
         protected override void AddFeatures()
         {
-            AddFeature<NetworkEntitiesFeature>();
-            AddFeature<PrototypeFeature>();
-            AddFeature<MovementFeature>();
-            AddFeature<CombatFeature>();
-            AddFeature<PlayerFeature>();
+            AddFeature<GameCoreFeatureGroup>();
+            AddFeature<PrototypeFeatureGroup>();
         }
     }
 }

@@ -372,11 +372,15 @@ function Test-FeatureScriptPath {
                 -Message 'Managers must not inherit from MonoBehaviour.'
         }
 
-        $bindingPattern = '(?s)' + [regex]::Escape($primary.Name) + '.{0,500}?\.AsSingle\s*\('
-        if (-not [regex]::IsMatch($script:allSourceText, $bindingPattern)) {
+        $typeNamePattern = [regex]::Escape($primary.Name)
+        $directBindingPattern = '(?s)' + $typeNamePattern + '.{0,500}?\.AsSingle\s*\('
+        $baseFeatureBindingPattern = '(?s)Bind(?:InterfacesAndSelf)?(?:FromComponentInHierarchy)?AsSingle\s*<[^>]*\b' + $typeNamePattern + '\b[^>]*>'
+
+        if (-not [regex]::IsMatch($script:allSourceText, $directBindingPattern) -and
+            -not [regex]::IsMatch($script:allSourceText, $baseFeatureBindingPattern)) {
             Add-Diagnostic -Severity 'Warning' -Rule 'DI001' `
                 -Path $FileRecord.RelativePath -Line $primary.Line `
-                -Message 'Manager type was not found in a nearby AsSingle binding. Verify its DI lifetime.'
+                -Message 'Manager type was not found in a nearby AsSingle or BaseFeature binding. Verify its DI lifetime.'
         }
     }
 

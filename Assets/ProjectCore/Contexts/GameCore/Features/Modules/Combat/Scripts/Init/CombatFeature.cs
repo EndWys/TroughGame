@@ -1,23 +1,13 @@
-using Cysharp.Threading.Tasks;
-using System.Threading;
 using ProjectCore.Template;
-using Zenject;
 
 namespace ProjectCore.GameCore
 {
-    public sealed class CombatFeature : IBaseFeature
+    public sealed class CombatFeature : BaseFeature
     {
-        public void InstallBindings(DiContainer container)
+        protected override void InstallBindings()
         {
-            container.BindInterfacesTo<DamageableSystem>().AsSingle();
-            container.BindInterfacesTo<DamageSourceSystem>().AsSingle();
-        }
-
-        public UniTask InitializeAsync(
-            DiContainer container,
-            CancellationToken cancellationToken)
-        {
-            return UniTask.CompletedTask;
+            BindAsSingle<IDamageableSystem, DamageableSystem>();
+            BindAsSingle<IDamageSourceSystem, DamageSourceSystem>();
         }
     }
 }

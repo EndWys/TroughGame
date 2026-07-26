@@ -7,6 +7,6 @@ namespace ProjectCore.Template
     public interface IBaseFeature
     {
         void InstallBindings(DiContainer container);
-        UniTask InitializeAsync(DiContainer container, CancellationToken cancellationToken);
+        UniTask InitializeAsync(CancellationToken cancellationToken);
     }
 }

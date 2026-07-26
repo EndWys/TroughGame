@@ -1,22 +1,12 @@
-using Cysharp.Threading.Tasks;
-using System.Threading;
 using ProjectCore.Template;
-using Zenject;
 
 namespace ProjectCore.GameCore
 {
-    public sealed class MovementFeature : IBaseFeature
+    public sealed class MovementFeature : BaseFeature
     {
-        public void InstallBindings(DiContainer container)
+        protected override void InstallBindings()
         {
-            container.BindInterfacesTo<MovementSystem>().AsSingle();
-        }
-
-        public UniTask InitializeAsync(
-            DiContainer container,
-            CancellationToken cancellationToken)
-        {
-            return UniTask.CompletedTask;
+            BindAsSingle<IMovementSystem, MovementSystem>();
         }
     }
 }

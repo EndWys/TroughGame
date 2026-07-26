@@ -1,21 +1,11 @@
-using Cysharp.Threading.Tasks;
-using System.Threading;
 using ProjectCore.Template;
-using Zenject;
 
 namespace ProjectCore.Prototype
 {
-    public sealed class PrototypeFeature : IBaseFeature
+    public sealed class PrototypeFeature : BaseFeature
     {
-        public void InstallBindings(DiContainer container)
+        protected override void InstallBindings()
         {
-        }
-
-        public UniTask InitializeAsync(
-            DiContainer container,
-            CancellationToken cancellationToken)
-        {
-            return UniTask.CompletedTask;
         }
     }
 }

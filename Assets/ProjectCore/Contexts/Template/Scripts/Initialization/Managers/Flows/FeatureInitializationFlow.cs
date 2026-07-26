@@ -2,20 +2,17 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Zenject;
 
 namespace ProjectCore.Template
 {
     public sealed class FeatureInitializationFlow : IFeatureInitializationFlow
     {
         private readonly IReadOnlyList<IBaseFeature> _features;
-        private readonly DiContainer _container;
         private InitializationState _state;
 
-        public FeatureInitializationFlow(List<IBaseFeature> features, DiContainer container)
+        public FeatureInitializationFlow(List<IBaseFeature> features)
         {
             _features = features;
-            _container = container;
         }
 
         public async UniTask InitializeFeaturesAsync(CancellationToken cancellationToken)
@@ -38,7 +35,7 @@ namespace ProjectCore.Template
                 foreach (IBaseFeature feature in _features)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    await feature.InitializeAsync(_container, cancellationToken);
+                    await feature.InitializeAsync(cancellationToken);
                 }
 
                 _state = InitializationState.Initialized;

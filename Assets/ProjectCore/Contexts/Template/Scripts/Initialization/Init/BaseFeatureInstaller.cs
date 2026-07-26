@@ -12,7 +12,7 @@ namespace ProjectCore.Template
             AddFeatures();
             BindFeatures();
 
-            var featureInitializationFlow = new FeatureInitializationFlow(_features, Container);
+            var featureInitializationFlow = new FeatureInitializationFlow(_features);
 
             Container.Bind<IFeatureInitializationFlow>().FromInstance(featureInitializationFlow)
                 .WhenInjectedInto<BaseContextInitializer>();

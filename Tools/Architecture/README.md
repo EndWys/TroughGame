@@ -100,8 +100,8 @@ stateful service, or lifecycle participant remains feature-owned.
 
 - MonoBehaviour inheritance is resolved from project-owned types and the known
   Unity/Fusion roots. An external custom base type may require manual review.
-- Manager `AsSingle` discovery is heuristic and produces a Warning when the
-  binding cannot be found statically.
+- Manager `AsSingle` and BaseFeature binding discovery is heuristic and
+  produces a Warning when the binding cannot be found statically.
 - Lifecycle callback inspection intentionally produces Warnings because local
   component setup may be valid.
 - The validator does not replace Unity compilation, Test Runner, scene loading,

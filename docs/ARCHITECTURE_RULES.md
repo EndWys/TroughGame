@@ -341,6 +341,17 @@ Startup rules:
 
 Every feature has one of four architectural roles.
 
+### Feature Groups
+
+`FeatureGroup` is an explicitly ordered composition of related features. It
+does not introduce a DI scope, own business logic, or replace a feature role.
+Its child features are installed and initialized in declaration order.
+
+Use a group when a context needs to keep a coherent set of related features
+together, such as GameCore modules or a scene's implementation features. A
+group may contain another group. Context installers compose top-level groups
+and standalone features only.
+
 ### Module Features
 
 Modules are reusable capabilities that can be consumed and implemented by
@@ -850,12 +861,21 @@ Feature initialization rules:
 
 - Every asynchronously initialized feature exposes one common async
   initialization contract.
+- `BaseFeature` is the standard implementation of that contract. Features
+  override its protected `InstallBindings()` method and override protected
+  `InitializeAsync(CancellationToken)` only when they have startup work.
+- `BindAsSingle`, `Resolve`, and `ResolveAs` are protected BaseFeature DI
+  helpers. Feature implementations must not access `DiContainer` directly.
+  Use `ResolveAs` only during feature initialization to invoke
+  implementation-only startup work; do not add `InitializeAsync` to a public
+  service or system interface solely for feature lifecycle orchestration.
 - Initialization order is declared explicitly by the owning context or feature
   group. It is not discovered through Unity callback timing or reflection.
-- `InitializeAsync(DiContainer, CancellationToken)` receives the owning context
-  container after every feature has registered its bindings. A feature may
-  resolve and initialize its DI-managed services at this point; resolving them
-  while bindings are still being installed is forbidden.
+- A BaseFeature receives its owning context container exactly once through
+  `InstallBindings(DiContainer)`. After every feature has registered bindings,
+  `InitializeAsync(CancellationToken)` may resolve and initialize its
+  DI-managed services; resolving them while bindings are still being installed
+  is forbidden.
 - `FeatureInitializationFlow` is registered as one context-local singleton and
   is conditionally injectable only into `BaseContextInitializer` descendants.
   Other services and Feature must not invoke it directly.
