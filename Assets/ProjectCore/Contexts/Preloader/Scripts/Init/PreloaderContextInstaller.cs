@@ -16,6 +16,7 @@ namespace ProjectCore.Preloader
 
         protected override void AddFeatures()
         {
+            AddFeature<ObjectFactoryFeature>();
             AddFeature<ApplicationInitializationFeature>();
         }
     }

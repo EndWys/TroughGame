@@ -924,6 +924,10 @@ Rules:
   the bus or one another globally.
 - Object creation that requires injected dependencies goes through an injected
   factory.
+- `IClassFactory` is the shared Template infrastructure factory for runtime
+  object creation that must use Zenject injection. It is installed separately
+  into every context that needs runtime creation, so each resolved factory owns
+  the current context container through constructor injection.
 - Optional dependencies must be represented explicitly by an optional contract
   or null-object implementation, not by runtime searches.
 

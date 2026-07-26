@@ -14,6 +14,7 @@ namespace ProjectCore.Prototype
 
         protected override void AddFeatures()
         {
+            AddFeature<ObjectFactoryFeature>();
             AddFeature<GameCoreFeatureGroup>();
             AddFeature<PrototypeFeatureGroup>();
         }
