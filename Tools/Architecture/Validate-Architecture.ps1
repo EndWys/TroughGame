@@ -68,7 +68,7 @@ function Get-TypeInfo {
 
     $typePattern = '(?m)^[ \t]{0,4}(?<mods>(?:(?:public|internal|private|protected|abstract|sealed|static|partial|readonly)\s+)*)' +
         '(?<kind>class|interface|struct|enum|record(?:\s+class|\s+struct)?)\s+' +
-        '(?<name>[A-Za-z_][A-Za-z0-9_]*)(?:\s*<[^\r\n{]+?>)?' +
+        '(?<name>[A-Za-z_][A-Za-z0-9_]*)(?<generic>\s*<[^\r\n{]+?>)?' +
         '(?:\s*:\s*(?<bases>[^\r\n{]+))?'
 
     $typeMatches = [regex]::Matches($Text, $typePattern)
@@ -94,6 +94,7 @@ function Get-TypeInfo {
             Kind = $match.Groups['kind'].Value
             Modifiers = $match.Groups['mods'].Value.Trim()
             Bases = $bases
+            IsGeneric = $match.Groups['generic'].Success
             Line = Get-LineNumber -Text $Text -Index $match.Index
         }
     }
@@ -672,7 +673,10 @@ foreach ($record in $fileRecords) {
             -Path $record.RelativePath -Line 1 `
             -Message 'No top-level type declaration was found.'
     } else {
-        if ($typeInfo.PrimaryType.Name -ne $record.BaseName) {
+        $isGenericFileName = $typeInfo.PrimaryType.IsGeneric -and
+            $record.BaseName -eq ($typeInfo.PrimaryType.Name + 'T')
+
+        if ($typeInfo.PrimaryType.Name -ne $record.BaseName -and -not $isGenericFileName) {
             Add-Diagnostic -Severity 'Error' -Rule 'TYPE002' `
                 -Path $record.RelativePath -Line $typeInfo.PrimaryType.Line `
                 -Message ("File name must match primary type '{0}'." -f $typeInfo.PrimaryType.Name)

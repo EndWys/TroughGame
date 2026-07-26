@@ -218,6 +218,9 @@ startup boundary.
   `CancellationToken` and are passed explicitly.
 - Event names use past-tense notifications (`Initialized`, `SceneLoaded`).
 - File name equals primary type name; one top-level type per file.
+- Generic type files may append `T` to the primary type name when the generic
+  arity cannot be represented in the file name, for example `ResultT.cs` for
+  `Result<TValue>`.
 - Feature entries use `<Feature>Feature`; context installers use
   `<Context>ContextInstaller`; context initializers use
   `<Context>ContextInitializer`.
