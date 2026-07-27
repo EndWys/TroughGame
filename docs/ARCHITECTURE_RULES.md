@@ -518,9 +518,7 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Kind>/<Feature>/
       Validation/
     Tests/
       Editor/
-        <ProductionCategory>/
       Play/
-        <ProductionCategory>/
     Views/
       Components/
       Navigation/
@@ -757,16 +755,14 @@ Static rules:
 ### Tests
 
 Feature-owned tests live under `Scripts/Tests` and are separated by execution
-environment:
+environment. No additional category hierarchy is used:
 
 ```text
 Scripts/Tests/
   Editor/
-    <ProductionCategory>/
-      <Subject>Tests.cs
+    <Subject>Tests.cs
   Play/
-    <ProductionCategory>/
-      <Subject>Tests.cs
+    <Subject>Tests.cs
 ```
 
 | Folder | Required suffix | Role and usage |
@@ -776,8 +772,10 @@ Scripts/Tests/
 
 Test rules:
 
-- Test subfolders mirror the production category being tested when practical,
-  for example `Tests/Editor/Managers/Services/MovementServiceTests.cs`.
+- Tests are placed directly in `Tests/Editor` or `Tests/Play`; do not create
+  nested production-category folders.
+- Domain types do not have dedicated test fixtures. Test feature behavior and
+  integration contracts instead of duplicating tests for `Domain` primitives.
 - Test fixture files and fixture types end with `Tests`, not `Test`.
 - Tests use the same flat context namespace as their production feature. The
   required `Tests` type suffix and the `Tests` path distinguish test code; test

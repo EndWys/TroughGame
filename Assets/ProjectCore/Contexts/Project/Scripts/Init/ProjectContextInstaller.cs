@@ -13,6 +13,7 @@ namespace ProjectCore.Project
 
         protected override void AddFeatures()
         {
+            AddFeature<AppTimeFeature>();
             AddFeature<ObjectFactoryFeature>();
             AddFeature<ApplicationFlowFeature>();
         }

@@ -175,11 +175,12 @@ injected service, make it a Manager or an `Other` strategy instead.
 
 ### Tests
 
-Test fixtures end with `Tests` and are stored under `Tests/Editor` or
-`Tests/Play`. Editor tests cover plain C# and editor-safe DI/data logic. Play
-tests cover scenes, prefabs, Unity lifecycle, frame progression, and runtime
-integration. Test assemblies reference the runtime assembly and are never
-production dependencies.
+Test fixtures end with `Tests` and are stored directly under `Tests/Editor` or
+`Tests/Play`; nested test-category folders are not used. Editor tests cover
+feature services, DI bindings, and editor-safe logic. Play tests cover scenes,
+prefabs, Unity lifecycle, frame progression, and runtime integration. Domain
+primitives do not receive dedicated test fixtures. Test assemblies reference
+the runtime assembly and are never production dependencies.
 
 ### Enums
 

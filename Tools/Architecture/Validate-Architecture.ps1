@@ -345,6 +345,11 @@ function Test-FeatureScriptPath {
                 -Path $FileRecord.RelativePath -Line 1 `
                 -Message 'Tests must be placed under Tests/Editor or Tests/Play.'
         }
+        if ($segments.Count -gt 3) {
+            Add-Diagnostic -Severity 'Error' -Rule 'TEST002' `
+                -Path $FileRecord.RelativePath -Line 1 `
+                -Message 'Tests must be placed directly under Tests/Editor or Tests/Play.'
+        }
         Add-SuffixDiagnostic -FileRecord $FileRecord -Suffixes @('Tests') -Folder 'Tests'
         return $true
     }
@@ -558,6 +563,11 @@ function Test-ContextSharedScriptPath {
                 Add-Diagnostic -Severity 'Error' -Rule 'TEST001' `
                     -Path $FileRecord.RelativePath -Line 1 `
                     -Message 'Context tests must be placed under Tests/Editor or Tests/Play.'
+            }
+            if ($segments.Count -gt 3) {
+                Add-Diagnostic -Severity 'Error' -Rule 'TEST002' `
+                    -Path $FileRecord.RelativePath -Line 1 `
+                    -Message 'Context tests must be placed directly under Tests/Editor or Tests/Play.'
             }
             Add-SuffixDiagnostic -FileRecord $FileRecord -Suffixes @('Tests') -Folder 'Context/Tests'
         } elseif (-not $contextSuffixMaps[$category].ContainsKey($subfolder)) {
