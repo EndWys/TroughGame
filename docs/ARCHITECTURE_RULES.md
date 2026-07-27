@@ -77,6 +77,8 @@ Assets/
           Init/
 
     Domain/
+      Attributes/
+        Editor/
     ThirdParty/
 ```
 
@@ -222,6 +224,10 @@ the owning context rather than `Domain`.
 
 `Domain` must not become a general-purpose utilities folder. Feature behavior
 belongs to its feature even when the implementation itself is small.
+
+Reusable attributes and their editor-only drawers belong to `Domain` when they
+depend only on .NET and Unity APIs. Runtime attributes stay outside contexts;
+editor drawers are isolated in a nested `Editor` folder.
 
 ### ThirdParty
 

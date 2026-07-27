@@ -17,6 +17,8 @@ Assets/ProjectCore/
     Scripts/                 # context-shared scripts, no feature lifecycle
     Features/<Role>/<Feature>/
   Domain/
+    Attributes/
+      Editor/
   ThirdParty/
 ```
 
