@@ -59,10 +59,14 @@ The valid fixture must report `0 errors, 0 warnings`.
 | `MANAGER`, `VIEW`, `DI` | DI-managed and MonoBehaviour placement |
 | `NAME` | Known spelling and legacy suffix rules |
 | `INIT` | Initialization callback and `async void` checks |
-| `TEST` | Editor and Play test placement |
+| `TEST` | Flat Editor and Play test placement |
 
 Errors are deterministic convention violations and fail Strict mode. Warnings
 are heuristic findings that require manual review.
+
+`TEST001` requires every test fixture to live directly in `Tests/Editor` or
+`Tests/Play`. Other environment names and nested test-category folders are
+invalid.
 
 ## Initial Migration Baseline
 

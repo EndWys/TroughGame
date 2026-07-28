@@ -38,6 +38,9 @@ Assets/
           Modules/
         Plugins/
         Scripts/
+        Tests/
+          Editor/
+          Play/
 
       Project/
         Features/
@@ -79,6 +82,8 @@ Assets/
     Domain/
       Attributes/
         Editor/
+      Modifiers/
+      Results/
     ThirdParty/
 ```
 
@@ -228,6 +233,17 @@ belongs to its feature even when the implementation itself is small.
 Reusable attributes and their editor-only drawers belong to `Domain` when they
 depend only on .NET and Unity APIs. Runtime attributes stay outside contexts;
 editor drawers are isolated in a nested `Editor` folder.
+
+Current shared Domain categories are:
+
+- `Attributes` for reusable declarative metadata such as subclass selection
+  and former-name mappings;
+- `Modifiers` for context-independent sequential value transformations;
+- `Results` for success/failure values and errors. Results are standalone
+  primitives rather than a `Patterns` category.
+
+Domain primitives do not receive dedicated test fixtures. Feature and
+integration tests verify behavior at the owning application boundary.
 
 ### ThirdParty
 
@@ -407,6 +423,7 @@ complete system and its lifecycle.
 
 Examples:
 
+- `AppTime`;
 - `PopupNavigation`;
 - `ScreenNavigation`;
 - `SignalBus`;
@@ -425,6 +442,10 @@ Rules:
   be installed into Project, Preloader, or scene containers as required.
 - A complete reusable system remains Infrastructure even when every consumer
   injects it directly.
+- `AppTime` is owned by Template Infrastructure but installed once in the
+  persistent Project context. Consumers inject `IAppTimeService`; static access
+  is forbidden. Its public time values use UTC, network synchronization is
+  asynchronous, and local UTC time remains the fallback.
 
 ### Bridge Features
 

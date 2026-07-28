@@ -14,7 +14,7 @@ TroughGame is a multiplayer friends-slope game about dungeons.
 The runtime flow is:
 
 ```text
-Preloader -> ProjectContext -> Gameplay Scene
+ProjectContext -> Preloader -> Gameplay Scene
 ```
 
 `ProjectContext` persists for the entire application lifetime. Preloader is a

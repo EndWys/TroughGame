@@ -340,13 +340,8 @@ function Test-FeatureScriptPath {
     }
 
     if ($category -eq 'Tests') {
-        if ($subfolder -notin @('Editor', 'Play')) {
+        if ($subfolder -notin @('Editor', 'Play') -or $scriptSegments.Count -gt 3) {
             Add-Diagnostic -Severity 'Error' -Rule 'TEST001' `
-                -Path $FileRecord.RelativePath -Line 1 `
-                -Message 'Tests must be placed under Tests/Editor or Tests/Play.'
-        }
-        if ($segments.Count -gt 3) {
-            Add-Diagnostic -Severity 'Error' -Rule 'TEST002' `
                 -Path $FileRecord.RelativePath -Line 1 `
                 -Message 'Tests must be placed directly under Tests/Editor or Tests/Play.'
         }
@@ -559,13 +554,8 @@ function Test-ContextSharedScriptPath {
         }
 
         if ($category -eq 'Tests') {
-            if ($subfolder -notin @('Editor', 'Play')) {
+            if ($subfolder -notin @('Editor', 'Play') -or $segments.Count -gt 3) {
                 Add-Diagnostic -Severity 'Error' -Rule 'TEST001' `
-                    -Path $FileRecord.RelativePath -Line 1 `
-                    -Message 'Context tests must be placed under Tests/Editor or Tests/Play.'
-            }
-            if ($segments.Count -gt 3) {
-                Add-Diagnostic -Severity 'Error' -Rule 'TEST002' `
                     -Path $FileRecord.RelativePath -Line 1 `
                     -Message 'Context tests must be placed directly under Tests/Editor or Tests/Play.'
             }
@@ -599,6 +589,28 @@ function Test-ContextSharedScriptPath {
             -Message 'Context-shared scripts outside Init must not participate in DI.'
     }
 
+    return $true
+}
+
+function Test-ContextTestPath {
+    param([pscustomobject]$FileRecord)
+
+    $match = [regex]::Match(
+        $FileRecord.RelativePath,
+        '^Assets/ProjectCore/Contexts/(?<context>[^/]+)/Tests/(?<rest>.+)$')
+
+    if (-not $match.Success) {
+        return $false
+    }
+
+    $segments = @($match.Groups['rest'].Value.Split('/'))
+    if ($segments.Count -ne 2 -or $segments[0] -notin @('Editor', 'Play')) {
+        Add-Diagnostic -Severity 'Error' -Rule 'TEST001' `
+            -Path $FileRecord.RelativePath -Line 1 `
+            -Message 'Context tests must be placed directly under Tests/Editor or Tests/Play.'
+    }
+
+    Add-SuffixDiagnostic -FileRecord $FileRecord -Suffixes @('Tests') -Folder 'Context/Tests'
     return $true
 }
 
@@ -794,6 +806,9 @@ foreach ($record in $fileRecords) {
     }
 
     $handled = Test-FeatureScriptPath -FileRecord $record
+    if (-not $handled) {
+        $handled = Test-ContextTestPath -FileRecord $record
+    }
     if (-not $handled) {
         [void](Test-ContextSharedScriptPath -FileRecord $record)
     }

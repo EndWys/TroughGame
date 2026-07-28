@@ -16,9 +16,14 @@ Assets/ProjectCore/
     Resources/
     Scripts/                 # context-shared scripts, no feature lifecycle
     Features/<Role>/<Feature>/
+    Tests/
+      Editor/
+      Play/
   Domain/
     Attributes/
       Editor/
+    Modifiers/
+    Results/
   ThirdParty/
 ```
 
@@ -57,8 +62,10 @@ same naming and suffix rules.
     Static/
       Constants/ Errors/ Extensions/ Utilities/ Validation/
     Tests/
-      Editor/<ProductionCategory>/
-      Play/<ProductionCategory>/
+      Editor/
+        <Subject>Tests.cs
+      Play/
+        <Subject>Tests.cs
     Views/
       Components/ Navigation/ Popups/ Screens/ Widgets/
 ```
