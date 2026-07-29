@@ -137,7 +137,14 @@ function Add-SuffixDiagnostic {
         [string]$Folder
     )
 
-    if (-not (Test-EndsWithAny -Name $FileRecord.BaseName -Suffixes $Suffixes)) {
+    $name = $FileRecord.BaseName
+    if ($null -ne $FileRecord.TypeInfo.PrimaryType -and
+        $FileRecord.TypeInfo.PrimaryType.IsGeneric -and
+        $name -eq ($FileRecord.TypeInfo.PrimaryType.Name + 'T')) {
+        $name = $FileRecord.TypeInfo.PrimaryType.Name
+    }
+
+    if (-not (Test-EndsWithAny -Name $name -Suffixes $Suffixes)) {
         $line = if ($null -ne $FileRecord.TypeInfo.PrimaryType) {
             $FileRecord.TypeInfo.PrimaryType.Line
         } else {
@@ -376,9 +383,11 @@ function Test-FeatureScriptPath {
         $typeNamePattern = [regex]::Escape($primary.Name)
         $directBindingPattern = '(?s)' + $typeNamePattern + '.{0,500}?\.AsSingle\s*\('
         $baseFeatureBindingPattern = '(?s)Bind(?:InterfacesAndSelf)?(?:FromComponentInHierarchy)?AsSingle\s*<[^>]*\b' + $typeNamePattern + '\b[^>]*>'
+        $cachedGenericBindingPattern = '(?s)\.To\s*\(\s*typeof\s*\(\s*' + $typeNamePattern + '<>\s*\)\s*\).{0,100}?\.AsCached\s*\('
 
         if (-not [regex]::IsMatch($script:allSourceText, $directBindingPattern) -and
-            -not [regex]::IsMatch($script:allSourceText, $baseFeatureBindingPattern)) {
+            -not [regex]::IsMatch($script:allSourceText, $baseFeatureBindingPattern) -and
+            -not [regex]::IsMatch($script:allSourceText, $cachedGenericBindingPattern)) {
             Add-Diagnostic -Severity 'Warning' -Rule 'DI001' `
                 -Path $FileRecord.RelativePath -Line $primary.Line `
                 -Message 'Manager type was not found in a nearby AsSingle or BaseFeature binding. Verify its DI lifetime.'

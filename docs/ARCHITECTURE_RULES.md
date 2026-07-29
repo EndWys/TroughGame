@@ -424,6 +424,7 @@ complete system and its lifecycle.
 Examples:
 
 - `AppTime`;
+- `Logging`;
 - `PopupNavigation`;
 - `ScreenNavigation`;
 - `SignalBus`;
@@ -446,6 +447,11 @@ Rules:
   persistent Project context. Consumers inject `IAppTimeService`; static access
   is forbidden. Its public time values use UTC, network synchronization is
   asynchronous, and local UTC time remains the fallback.
+- `Logging` is owned by Template Infrastructure and installed once in the
+  persistent Project context. Consumers use the injected `IDebugLogger` or a
+  context-scoped `IDebugLogger<TFeature>`; log handlers connect through
+  `ILogService`. Usage and lifetime details are documented in
+  [`features/LOGGING.md`](features/LOGGING.md).
 
 ### Bridge Features
 

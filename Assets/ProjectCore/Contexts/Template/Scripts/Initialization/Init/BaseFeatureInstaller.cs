@@ -9,6 +9,10 @@ namespace ProjectCore.Template
 
         public override void InstallBindings()
         {
+            Container.Bind(typeof(IDebugLogger<>))
+                .To(typeof(FeatureDebugLoggerService<>))
+                .AsCached();
+
             AddFeatures();
             BindFeatures();
 
