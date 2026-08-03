@@ -424,6 +424,7 @@ complete system and its lifecycle.
 Examples:
 
 - `AppTime`;
+- `LocalConfig`;
 - `Logging`;
 - `PopupNavigation`;
 - `ScreenNavigation`;
@@ -447,6 +448,13 @@ Rules:
   persistent Project context. Consumers inject `IAppTimeService`; static access
   is forbidden. Its public time values use UTC, network synchronization is
   asynchronous, and local UTC time remains the fallback.
+- `LocalConfig` is owned by Template Infrastructure and installed separately
+  in every DI context that owns a flat local config catalog. Lookup checks the
+  current context first and then parent contexts; nested provider catalogs and
+  mutable global provider registries are forbidden. Its MonoBehaviour feature
+  privately owns the serialized catalog and passes it directly to its service;
+  the catalog is not bound in DI. Usage and lifetime details are documented in
+  [`features/LOCAL_CONFIG.md`](features/LOCAL_CONFIG.md).
 - `Logging` is owned by Template Infrastructure and installed once in the
   persistent Project context. Consumers use the injected `IDebugLogger` or a
   context-scoped `IDebugLogger<TFeature>`; log handlers connect through
@@ -543,9 +551,6 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Kind>/<Feature>/
       Extensions/
       Utilities/
       Validation/
-    Tests/
-      Editor/
-      Play/
     Views/
       Components/
       Navigation/
@@ -557,10 +562,10 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Kind>/<Feature>/
 Only create folders that the feature actually needs.
 
 `Scripts` is a closed taxonomy. Its direct children may only be `Abstract`,
-`DataHolders`, `Enums`, `Init`, `Managers`, `Other`, `Static`, `Tests`, and
-`Views`. Do not put C# files directly in `Scripts`.
+`DataHolders`, `Enums`, `Init`, `Managers`, `Other`, `Static`, and `Views`. Do
+not put C# files directly in `Scripts`.
 
-`DataHolders`, `Managers`, `Other`, `Static`, `Tests`, and `Views` are category
+`DataHolders`, `Managers`, `Other`, `Static`, and `Views` are category
 roots and also do not contain C# files directly. Their scripts must be placed
 in one of the documented suffix-specific subfolders. Additional organizational
 subfolders are allowed when they preserve the suffix rule.
@@ -570,7 +575,8 @@ Use the following decision order for every script:
 1. Interface or abstract base type -> `Abstract`.
 2. Enum -> `Enums`.
 3. Feature composition or explicitly invoked initialization -> `Init`.
-4. Test fixture or test-only support type -> `Tests/Editor` or `Tests/Play`.
+4. Test fixture or test-only support type -> the owning context's
+   `Tests/Editor` or `Tests/Play`.
 5. Any `static class` -> the matching `Static` subfolder.
 6. Passive data-only type -> the matching `DataHolders` subfolder.
 7. `MonoBehaviour` or a descendant -> the matching `Views` subfolder.
@@ -781,11 +787,11 @@ Static rules:
 
 ### Tests
 
-Feature-owned tests live under `Scripts/Tests` and are separated by execution
-environment. No additional category hierarchy is used:
+Tests are owned by their context rather than stored inside production Feature
+folders. They are separated only by execution environment:
 
 ```text
-Scripts/Tests/
+Contexts/<Context>/Tests/
   Editor/
     <Subject>Tests.cs
   Play/
@@ -799,8 +805,9 @@ Scripts/Tests/
 
 Test rules:
 
-- Tests are placed directly in `Tests/Editor` or `Tests/Play`; do not create
-  nested production-category folders.
+- Tests are placed directly in `Contexts/<Context>/Tests/Editor` or
+  `Contexts/<Context>/Tests/Play`; do not create `Scripts/Tests` inside a
+  Feature or nested production-category folders.
 - Domain types do not have dedicated test fixtures. Test feature behavior and
   integration contracts instead of duplicating tests for `Domain` primitives.
 - Test fixture files and fixture types end with `Tests`, not `Test`.
@@ -892,21 +899,25 @@ Feature initialization rules:
 
 - Every asynchronously initialized feature exposes one common async
   initialization contract.
-- `BaseFeature` is the standard implementation of that contract. Features
-  override its protected `InstallBindings()` method and override protected
-  `InitializeAsync(CancellationToken)` only when they have startup work.
-- `BindAsSingle`, `Resolve`, and `ResolveAs` are protected BaseFeature DI
-  helpers. Feature implementations must not access `DiContainer` directly.
+- `BaseFeature` is the default implementation of that contract. A feature that
+  requires serialized scene, prefab, or asset references may instead inherit
+  `BaseMonoBehaviourFeature`, live on the same GameObject as its context
+  installer, and be added through `AddFeatureFromComponent<TFeature>()`.
+- Both feature bases expose protected `BindAsSingle`, `Resolve`, and `ResolveAs`
+  DI helpers. Their implementation is centralized in `FeatureLifecycleAdapter`
+  and the bases only delegate to it. Feature implementations must not access
+  `DiContainer` directly.
   Use `ResolveAs` only during feature initialization to invoke
   implementation-only startup work; do not add `InitializeAsync` to a public
   service or system interface solely for feature lifecycle orchestration.
 - Initialization order is declared explicitly by the owning context or feature
   group. It is not discovered through Unity callback timing or reflection.
-- A BaseFeature receives its owning context container exactly once through
+- Every feature base receives its owning context container exactly once through
   `InstallBindings(DiContainer)`. After every feature has registered bindings,
-  `InitializeAsync(CancellationToken)` may resolve and initialize its
-  DI-managed services; resolving them while bindings are still being installed
-  is forbidden.
+  `InitializeAsync(CancellationToken)` may resolve and initialize its DI-managed
+  services; resolving them while bindings are still being installed is
+  forbidden. MonoBehaviour features follow the same flow and must not use
+  Unity callbacks as additional entry points.
 - `FeatureInitializationFlow` is registered as one context-local singleton and
   is conditionally injectable only into `BaseContextInitializer` descendants.
   Other services and Feature must not invoke it directly.

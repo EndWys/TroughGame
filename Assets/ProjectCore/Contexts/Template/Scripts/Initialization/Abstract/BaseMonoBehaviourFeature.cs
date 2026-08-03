@@ -5,7 +5,7 @@ using Zenject;
 
 namespace ProjectCore.Template
 {
-    public abstract class BaseFeature : IBaseFeature
+    public abstract class BaseMonoBehaviourFeature : MonoBehaviour, IBaseFeature
     {
         private readonly FeatureLifecycleAdapter _lifecycleAdapter =
             new FeatureLifecycleAdapter();

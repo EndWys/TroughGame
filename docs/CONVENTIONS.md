@@ -38,6 +38,11 @@ live in `Contexts/<Context>/Scripts/<Category>` (for example extensions,
 utilities, constants, or networking abstractions). They must still follow the
 same naming and suffix rules.
 
+The shared Template initialization framework uses the closed structure
+`Scripts/Initialization/Abstract`, `Init`, `Managers/Flows`, and
+`Other/Adapters`. `Other/Adapters` contains only non-DI `*Adapter` objects that
+adapt reusable feature-framework behavior to its external contracts.
+
 ## Feature Layout
 
 ```text
@@ -61,11 +66,6 @@ same naming and suffix rules.
       Mappers/ Processors/ StateMachines/ States/ Strategies/
     Static/
       Constants/ Errors/ Extensions/ Utilities/ Validation/
-    Tests/
-      Editor/
-        <Subject>Tests.cs
-      Play/
-        <Subject>Tests.cs
     Views/
       Components/ Navigation/ Popups/ Screens/ Widgets/
 ```
@@ -81,6 +81,15 @@ Every feature that participates in the lifecycle has
 `Scripts/Init/<Feature>Feature.cs`. A feature may be independent, may compose
 modules, or may be reusable infrastructure/bridge as defined in the
 architecture rules.
+
+Feature entries inherit `BaseFeature` by default. `BaseMonoBehaviourFeature` is
+allowed only when the feature itself must own serialized scene, prefab, or
+asset references. Such a component lives on the same GameObject as the context
+installer and is added with `AddFeatureFromComponent<TFeature>()`; it follows
+the same explicit initialization flow and does not use `Awake` or `Start`.
+Both bases delegate their lifecycle state and DI operations to the shared
+`FeatureLifecycleAdapter`; new feature helpers must be implemented there
+instead of duplicated between the two bases.
 
 ## Script Categories and Suffixes
 
@@ -182,12 +191,14 @@ injected service, make it a Manager or an `Other` strategy instead.
 
 ### Tests
 
-Test fixtures end with `Tests` and are stored directly under `Tests/Editor` or
-`Tests/Play`; nested test-category folders are not used. Editor tests cover
-feature services, DI bindings, and editor-safe logic. Play tests cover scenes,
-prefabs, Unity lifecycle, frame progression, and runtime integration. Domain
-primitives do not receive dedicated test fixtures. Test assemblies reference
-the runtime assembly and are never production dependencies.
+Test fixtures end with `Tests` and are stored directly under
+`Contexts/<Context>/Tests/Editor` or `Contexts/<Context>/Tests/Play`; they do
+not live inside production Feature folders. Nested test-category folders are
+not used. Editor tests cover feature services, DI bindings, and editor-safe
+logic. Play tests cover scenes, prefabs, Unity lifecycle, frame progression,
+and runtime integration. Domain primitives do not receive dedicated test
+fixtures. Test assemblies reference the runtime assembly and are never
+production dependencies.
 
 ### Enums
 

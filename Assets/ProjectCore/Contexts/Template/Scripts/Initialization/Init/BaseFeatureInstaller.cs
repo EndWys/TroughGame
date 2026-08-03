@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Zenject;
 
 namespace ProjectCore.Template
@@ -27,6 +29,19 @@ namespace ProjectCore.Template
         protected void AddFeature<T>() where T : IBaseFeature, new()
         {
             _features.Add(new T());
+        }
+
+        protected void AddFeatureFromComponent<T>() where T : Component, IBaseFeature
+        {
+            T[] features = GetComponents<T>();
+            if (features.Length != 1)
+            {
+                throw new InvalidOperationException(
+                    $"{GetType().Name} requires exactly one {typeof(T).Name} " +
+                    "on the same GameObject.");
+            }
+
+            _features.Add(features[0]);
         }
 
         private void BindFeatures()

@@ -1,7 +1,9 @@
 # TroughGame Architecture Migration
 
 This document contains the migration stages and their completion status.
-Permanent architecture rules remain in the root `README.md`.
+Permanent architecture and convention rules live in
+`docs/ARCHITECTURE_RULES.md` and `docs/CONVENTIONS.md`. The root `README.md`
+remains a short project overview.
 
 ## Current status
 
@@ -35,11 +37,11 @@ remains a Template Feature with Project as its runtime owner.
 
 Status: completed after audit.
 
-All current Features retain the mandatory
-`IBaseFeature.InitializeAsync(DiContainer, CancellationToken)` contract.
-No current DI-managed service requires an independent asynchronous
-initialization step. Future async services must be resolved and awaited from
-the owning Feature.
+Features use the mandatory `IBaseFeature.InstallBindings(DiContainer)` and
+`IBaseFeature.InitializeAsync(CancellationToken)` lifecycle. Services that
+require explicit initialization are resolved as their concrete implementation
+and invoked from the owning Feature without expanding their consumer-facing
+interface.
 
 ### Stage 10 — Runtime and Test Assemblies
 
@@ -67,7 +69,7 @@ Status: completed.
 - Edit Mode and Play Mode tests pass.
 - Unity scenes and DI lifetime behavior were manually verified.
 - Namespace, naming, folder taxonomy, and Feature placement were audited.
-- Strict architecture validation reports `151 files, 0 errors, 0 warnings`.
+- Strict architecture validation completed with `0 errors, 0 warnings`.
 
 ## Migration source rules
 

@@ -64,9 +64,10 @@ The valid fixture must report `0 errors, 0 warnings`.
 Errors are deterministic convention violations and fail Strict mode. Warnings
 are heuristic findings that require manual review.
 
-`TEST001` requires every test fixture to live directly in `Tests/Editor` or
-`Tests/Play`. Other environment names and nested test-category folders are
-invalid.
+`TEST001` requires every test fixture to live directly in
+`Contexts/<Context>/Tests/Editor` or `Contexts/<Context>/Tests/Play`.
+Feature-local `Scripts/Tests`, other environment names, and nested test-category
+folders are invalid.
 
 ## Initial Migration Baseline
 
@@ -91,9 +92,8 @@ Baseline captured on 2026-07-22 against 131 first-party C# files:
 | `CONTEXT002` | 2 | Undocumented shared context category |
 | `INIT001` | 2 | Lifecycle callbacks appear to start initialization chains |
 
-The baseline is historical and is not an allowlist. Report mode must decrease
-as migration proceeds; new diagnostics must not be accepted merely because the
-project is not strict yet.
+The baseline is historical and is not an allowlist. Current strict validation
+must remain at zero errors and warnings.
 
 Context-owned scripts use the documented non-feature categories such as
 `Abstract`, `Enums`, `Extensions`, `DataHolders`, `Other`, and `Views`. Outside
@@ -104,9 +104,12 @@ stateful service, or lifecycle participant remains feature-owned.
 
 - MonoBehaviour inheritance is resolved from project-owned types and the known
   Unity/Fusion roots. An external custom base type may require manual review.
-- Manager `AsSingle`, open-generic `AsCached`, and BaseFeature binding discovery is heuristic and
-  produces a Warning when the binding cannot be found statically.
+- Manager `AsSingle`, open-generic `AsCached`, and Feature binding discovery is
+  heuristic and produces a Warning when the binding cannot be found statically.
 - Lifecycle callback inspection intentionally produces Warnings because local
   component setup may be valid.
+- Direct `BaseMonoBehaviourFeature` descendants must be registered through
+  `AddFeatureFromComponent<TFeature>()`. Exact GameObject placement and
+  serialized references still require Unity prefab or scene validation.
 - The validator does not replace Unity compilation, Test Runner, scene loading,
   prefab validation, or architecture review.

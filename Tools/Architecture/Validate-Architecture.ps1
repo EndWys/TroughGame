@@ -231,9 +231,16 @@ function Test-FeatureScriptPath {
 
     $scriptSegments = @($segments[3..($segments.Count - 1)])
     $category = $scriptSegments[0]
+    if ($category -eq 'Tests') {
+        Add-Diagnostic -Severity 'Error' -Rule 'TEST001' `
+            -Path $FileRecord.RelativePath -Line 1 `
+            -Message 'Feature tests must be moved to Contexts/<Context>/Tests/Editor or Tests/Play.'
+        return $true
+    }
+
     $allowedRoots = @(
         'Abstract', 'DataHolders', 'Enums', 'Init', 'Managers',
-        'Other', 'Static', 'Tests', 'Views')
+        'Other', 'Static', 'Views')
 
     if ($category -notin $allowedRoots) {
         Add-Diagnostic -Severity 'Error' -Rule 'SCRIPT002' `
@@ -346,16 +353,6 @@ function Test-FeatureScriptPath {
         }
     }
 
-    if ($category -eq 'Tests') {
-        if ($subfolder -notin @('Editor', 'Play') -or $scriptSegments.Count -gt 3) {
-            Add-Diagnostic -Severity 'Error' -Rule 'TEST001' `
-                -Path $FileRecord.RelativePath -Line 1 `
-                -Message 'Tests must be placed directly under Tests/Editor or Tests/Play.'
-        }
-        Add-SuffixDiagnostic -FileRecord $FileRecord -Suffixes @('Tests') -Folder 'Tests'
-        return $true
-    }
-
     if (-not $suffixMaps.ContainsKey($category) -or
         -not $suffixMaps[$category].ContainsKey($subfolder)) {
         Add-Diagnostic -Severity 'Error' -Rule 'SCRIPT004' `
@@ -390,7 +387,7 @@ function Test-FeatureScriptPath {
             -not [regex]::IsMatch($script:allSourceText, $cachedGenericBindingPattern)) {
             Add-Diagnostic -Severity 'Warning' -Rule 'DI001' `
                 -Path $FileRecord.RelativePath -Line $primary.Line `
-                -Message 'Manager type was not found in a nearby AsSingle or BaseFeature binding. Verify its DI lifetime.'
+                -Message 'Manager type was not found in a nearby AsSingle or Feature binding. Verify its DI lifetime.'
         }
     }
 
@@ -462,6 +459,9 @@ function Test-ContextSharedScriptPath {
         } elseif ($subfolder -eq 'Managers' -and $segments[2] -eq 'Flows') {
             Add-SuffixDiagnostic -FileRecord $FileRecord `
                 -Suffixes @('Flow') -Folder 'Context/Scripts/Initialization/Managers/Flows'
+        } elseif ($subfolder -eq 'Other' -and $segments[2] -eq 'Adapters') {
+            Add-SuffixDiagnostic -FileRecord $FileRecord `
+                -Suffixes @('Adapter') -Folder 'Context/Scripts/Initialization/Other/Adapters'
         } else {
             Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
                 -Path $FileRecord.RelativePath -Line 1 `
@@ -793,6 +793,19 @@ foreach ($record in $fileRecords) {
             -Path $record.RelativePath `
             -Line (Get-LineNumber -Text $record.Text -Index $asyncVoidMatch.Index) `
             -Message 'async void is forbidden for project initialization and runtime workflows.'
+    }
+
+    $primary = $record.TypeInfo.PrimaryType
+    if ($null -ne $primary -and
+        $primary.Bases -contains 'BaseMonoBehaviourFeature') {
+        $componentFeaturePattern = 'AddFeatureFromComponent\s*<\s*' +
+            [regex]::Escape($primary.Name) + '\s*>'
+
+        if (-not [regex]::IsMatch($allSourceText, $componentFeaturePattern)) {
+            Add-Diagnostic -Severity 'Error' -Rule 'INIT003' `
+                -Path $record.RelativePath -Line $primary.Line `
+                -Message 'BaseMonoBehaviourFeature must be registered through AddFeatureFromComponent<TFeature>().'
+        }
     }
 
     $lines = @($record.Text -split "`r?`n")

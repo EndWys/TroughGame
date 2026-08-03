@@ -1,6 +1,6 @@
 namespace ProjectCore.GameCore
 {
-    public class MovementServiceTests
+    public sealed class MovementServiceTests
     {
     }
 }
