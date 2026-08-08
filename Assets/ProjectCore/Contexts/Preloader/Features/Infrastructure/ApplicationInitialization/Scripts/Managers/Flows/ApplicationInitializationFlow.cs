@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
+using Domain;
 using ProjectCore.Project;
 using ProjectCore.Template;
+using System;
 using System.Threading;
 using UnityEngine;
 
@@ -10,20 +12,20 @@ namespace ProjectCore.Preloader
     {
         private readonly IProjectContextInitializer _projectContextInitializer;
         private readonly IPreloaderContextInitializer _preloaderContextInitializer;
-        private readonly IApplicationFlowCoordinator _applicationFlowCoordinator;
+        private readonly ISceneFlowService _sceneFlowService;
 
         public ApplicationInitializationFlow(
             IProjectContextInitializer projectContextInitializer,
             IPreloaderContextInitializer preloaderContextInitializer,
-            IApplicationFlowCoordinator applicationFlowCoordinator)
+            ISceneFlowService sceneFlowService)
         {
             _projectContextInitializer = projectContextInitializer;
             _preloaderContextInitializer = preloaderContextInitializer;
-            _applicationFlowCoordinator = applicationFlowCoordinator;
+            _sceneFlowService = sceneFlowService;
         }
 
         public async UniTask RunAsync(
-            string initialSceneName,
+            BaseSceneDefinition initialSceneDefinition,
             CancellationToken applicationCancellationToken,
             CancellationToken preloaderCancellationToken)
         {
@@ -36,9 +38,15 @@ namespace ProjectCore.Preloader
             await _preloaderContextInitializer.InitializeAsync(
                 preloaderCancellationToken);
 
-            await _applicationFlowCoordinator.LoadSceneAsync(
-                initialSceneName,
+            Result result = await _sceneFlowService.LoadAsync(
+                initialSceneDefinition,
+                EmptyScenePayload.Instance,
                 applicationCancellationToken);
+
+            if (result.IsFailure)
+            {
+                throw new InvalidOperationException(result.FirstError.Message);
+            }
         }
     }
 }

@@ -38,6 +38,9 @@ live in `Contexts/<Context>/Scripts/<Category>` (for example extensions,
 utilities, constants, or networking abstractions). They must still follow the
 same naming and suffix rules.
 
+`Scripts/Navigation` is allowed for context-owned scene route types and their
+definitions; it contains only `*Scene` and `*SceneDefinition` scripts.
+
 The shared Template initialization framework uses the closed structure
 `Scripts/Initialization/Abstract`, `Init`, `Managers/Flows`, and
 `Other/Adapters`. `Other/Adapters` contains only non-DI `*Adapter` objects that
@@ -54,7 +57,7 @@ adapt reusable feature-framework behavior to its external contracts.
   Scripts/
     Abstract/
     DataHolders/
-      Configs/ Data/ Descriptors/ DTOs/ Payloads/
+      Configs/ Data/ Definitions/ Descriptors/ DTOs/ Payloads/
     Enums/
     Init/
     Managers/
@@ -62,7 +65,7 @@ adapt reusable feature-framework behavior to its external contracts.
       Mediators/ Providers/ Registries/ Repositories/ Serializers/ Services/ Storages/
       Spawners/ Systems/
     Other/
-      Adapters/ Builders/ Commands/ Converters/ Decorators/
+      Adapters/ Builders/ Commands/ Converters/ Decorators/ Editor/
       Mappers/ Processors/ StateMachines/ States/ Strategies/
     Static/
       Constants/ Errors/ Extensions/ Utilities/ Validation/
@@ -134,6 +137,7 @@ services, load assets, or execute workflows.
 | --- | --- | --- |
 | Configs | `Config` | Authored or loaded configuration values. |
 | Data | `Data` | Internal feature state or value bundles. |
+| Definitions | `Definition` | Authored registration of a typed project resource or route. |
 | Descriptors | `Descriptor` | Immutable description of how another object is identified or processed. |
 | DTOs | `DTO` | Serialization, network, backend, or persistence boundary shape. |
 | Payloads | `Payload` | Parameters for commands, factories, navigation, or signals. |
@@ -167,6 +171,7 @@ view, or special category.
 | Commands | `Command` | Executable operation with explicit inputs. |
 | Converters | `Converter` | Converts between representations. |
 | Decorators | `Decorator` | Wraps a contract while preserving it. |
+| Editor | `Editor` or `EditorWindow` | Editor-only inspectors, drawers, and tooling. |
 | Mappers | `Mapper` | Maps fields between model/data/DTO/view forms. |
 | Processors | `Processor` | Performs one focused pipeline step. |
 | StateMachines | `StateMachine` | Owns bounded transitions and active state. |

@@ -239,7 +239,7 @@ function Test-FeatureScriptPath {
     }
 
     $allowedRoots = @(
-        'Abstract', 'DataHolders', 'Enums', 'Init', 'Managers',
+        'Abstract', 'DataHolders', 'Enums', 'Init', 'Managers', 'Navigation',
         'Other', 'Static', 'Views')
 
     if ($category -notin $allowedRoots) {
@@ -308,6 +308,7 @@ function Test-FeatureScriptPath {
         DataHolders = @{
             Configs = @('Config')
             Data = @('Data')
+            Definitions = @('Definition')
             Descriptors = @('Descriptor')
             DTOs = @('DTO')
             Payloads = @('Payload')
@@ -334,6 +335,7 @@ function Test-FeatureScriptPath {
             Commands = @('Command')
             Converters = @('Converter')
             Decorators = @('Decorator')
+            Editor = @('Editor', 'EditorWindow')
             Mappers = @('Mapper')
             Processors = @('Processor')
             StateMachines = @('StateMachine')
@@ -528,6 +530,9 @@ function Test-ContextSharedScriptPath {
                 -Path $FileRecord.RelativePath -Line $primary.Line `
                 -Message 'Context Scripts/Enums contains only enum declarations.'
         }
+    } elseif ($category -eq 'Navigation') {
+        Add-SuffixDiagnostic -FileRecord $FileRecord `
+            -Suffixes @('Scene', 'SceneDefinition') -Folder 'Context/Scripts/Navigation'
     } elseif ($category -in @('DataHolders', 'Other', 'Views', 'Tests')) {
         if ($segments.Count -lt 3) {
             Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
@@ -541,6 +546,7 @@ function Test-ContextSharedScriptPath {
             DataHolders = @{
                 Configs = @('Config')
                 Data = @('Data')
+                Definitions = @('Definition')
                 DTOs = @('DTO')
                 Payloads = @('Payload')
             }

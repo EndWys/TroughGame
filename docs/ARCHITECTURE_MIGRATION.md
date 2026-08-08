@@ -19,9 +19,9 @@ Status: completed.
 - `Scene_Preloader` is the first Build Settings scene.
 - `ApplicationEntryPoint.Start()` is the only application startup trigger.
 - Startup runs Project initialization, Preloader initialization, then loads the
-  first gameplay scene through `ApplicationFlowCoordinator`.
+  first gameplay scene through `ISceneFlowService`.
 - `ProjectContext` owns persistent application flow; Preloader is temporary.
-- Game scenes resolve `IGameSceneInitializer` and report ready only after their
+- Game scenes resolve `IGameSceneLifecycle` and report ready only after their
   feature flow completes.
 
 ### Stage 8 — Initialization Infrastructure
@@ -30,8 +30,8 @@ Status: completed.
 
 Generic Feature and context initialization infrastructure is located in
 `Assets/ProjectCore/Contexts/Template/Scripts/Initialization`.
-`ApplicationInitializationFeature` is owned by Preloader. `ApplicationFlow`
-remains a Template Feature with Project as its runtime owner.
+`ApplicationInitializationFeature` is owned by Preloader. `SceneFlowFeature`
+is Template infrastructure with Project as its runtime owner.
 
 ### Stage 9 — Feature Service Initialization
 

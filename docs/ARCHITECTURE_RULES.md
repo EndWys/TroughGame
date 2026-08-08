@@ -310,15 +310,15 @@ Scene_Preloader
     PreloaderContextInitializer
       FeatureInitializationFlow(Preloader features)
     await GDPR flow, third-party SDKs, and other startup-only work
-    ask ApplicationFlowCoordinator to open the first gameplay scene
+    ask ISceneFlowService to open the configured first gameplay scene
   unload Scene_Preloader and destroy all Preloader-scoped objects
 
 Scene_Prototype (initial gameplay destination)
   PrototypeContextInstaller
     bind only scene-owned features
     compose shared GameCore features for the scene
-  persistent ApplicationFlowCoordinator
-    resolve PrototypeContextInitializer from the scene container
+  persistent SceneFlowService
+    resolve IGameSceneLifecycle from the scene container
     FeatureInitializationFlow(Prototype features)
     expose the scene as ready only after initialization completes
 ```
@@ -878,10 +878,11 @@ Registration and initialization are separate operations:
    `FeatureInitializationFlow` for application-lifetime features.
 6. `IPreloaderContextInitializer` awaits the same reusable flow for transient
    startup features.
-7. `ApplicationInitializationFlow` asks the persistent
-   `ApplicationFlowCoordinator` to navigate to the initial gameplay scene.
-8. The coordinator loads the scene, resolves its `IGameSceneInitializer` from the
-   scene container, and awaits its local `FeatureInitializationFlow`.
+7. `ApplicationInitializationFlow` asks the persistent `ISceneFlowService` to
+   navigate to the configured initial scene definition.
+8. `SceneFlowService` loads the scene, supplies its typed payload through DI,
+   resolves its `IGameSceneLifecycle`, and awaits its local
+   `FeatureInitializationFlow`.
 9. The scene is marked ready only after that pipeline succeeds.
 
 Initialization responsibilities are deliberately separated:
@@ -892,14 +893,33 @@ Initialization responsibilities are deliberately separated:
 - `FeatureInitializationFlow` is a reusable DI service that sequentially
   initializes the explicitly ordered features of one owning context. It never
   starts itself from a Unity callback.
-- `ApplicationFlowCoordinator` owns all later scene transitions and invokes
-  each scene initializer explicitly.
+- `SceneFlowService` owns all later scene transitions. It invokes
+  `ExitAsync` before Unity unloads the previous scene, then invokes the next
+  scene lifecycle initializer explicitly.
 - Context-specific contracts (`IProjectContextInitializer`,
-  `IPreloaderContextInitializer`, and `IGameSceneInitializer`) prevent ambiguous
+  `IPreloaderContextInitializer`, and `IGameSceneLifecycle`) prevent ambiguous
   resolution of a generic initializer across parent and child Zenject
   containers.
 - Installers register features and flows only; an installer must not also act
   as the asynchronous feature initialization flow.
+
+### Scene Flow
+
+`SceneFlowFeature` is Template infrastructure installed in `ProjectContext`.
+It is the only project-owned path for loading gameplay scenes.
+
+- Consumers use `ISceneFlowService.LoadAsync<TScene, TPayload>`; they never pass
+  scene names, paths, or build indexes.
+- `SceneCatalogConfig` owns the registered `SceneDefinition` assets. A
+  definition maps a typed scene to its validated build index and payload type.
+- A payload is bound only into the new `SceneContext` as
+  `IScenePayloadContext<TPayload>`.
+- A scene implements `IGameSceneLifecycle`. `ExitAsync` is awaited while its
+  container remains alive and before the next single-scene load begins.
+- Scene lifetime cancellation occurs after `ExitAsync` and before the next
+  scene is loaded.
+- Scene flow does not depend on popup or screen-navigation features. Persistent
+  transition UI integrates only through `ISceneTransitionPresenter`.
 
 Feature initialization rules:
 

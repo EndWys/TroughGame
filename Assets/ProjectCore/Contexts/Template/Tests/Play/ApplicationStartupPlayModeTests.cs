@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using ProjectCore.Preloader;
+using ProjectCore.Prototype;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -21,14 +22,13 @@ namespace ProjectCore.Template
             yield return LoadPreloaderAndWaitForPrototype();
 
             ProjectContext projectContext = ProjectContext.Instance;
-            IApplicationFlowCoordinator coordinator =
-                projectContext.Container.Resolve<IApplicationFlowCoordinator>();
+            ISceneFlowService sceneFlowService =
+                projectContext.Container.Resolve<ISceneFlowService>();
 
-            // The coordinator must report the same destination that Unity has
-            // made active. This verifies that navigation is completed only
-            // after the gameplay scene initializer has finished.
+            // SceneFlow reports a destination only after the gameplay scene
+            // lifecycle has completed its initialization phase.
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Scene_Prototype"));
-            Assert.That(coordinator.CurrentSceneName, Is.EqualTo("Scene_Prototype"));
+            Assert.That(sceneFlowService.CurrentSceneDefinition, Is.Not.Null);
 
             // ProjectContext belongs to the whole application and must survive
             // the transition out of the temporary Preloader scene.
@@ -36,7 +36,7 @@ namespace ProjectCore.Template
 
             // ApplicationEntryPoint is owned by PreloaderContext. Its absence
             // proves that temporary startup objects do not leak into gameplay.
-            Assert.That(Object.FindObjectOfType<ApplicationEntryPoint>(), Is.Null,
+            Assert.That(Object.FindFirstObjectByType<ApplicationEntryPoint>(), Is.Null,
                 "The temporary Preloader entry point must be destroyed after startup.");
         }
 
@@ -48,27 +48,27 @@ namespace ProjectCore.Template
             yield return LoadPreloaderAndWaitForPrototype();
 
             ProjectContext projectContext = ProjectContext.Instance;
-            IApplicationFlowCoordinator coordinator =
-                projectContext.Container.Resolve<IApplicationFlowCoordinator>();
-            SceneContext firstSceneContext = Object.FindObjectOfType<SceneContext>();
+            ISceneFlowService sceneFlowService =
+                projectContext.Container.Resolve<ISceneFlowService>();
+            SceneContext firstSceneContext = Object.FindFirstObjectByType<SceneContext>();
 
             // A gameplay scene must provide its own SceneContext. It is scoped
             // to the loaded scene and is not a ProjectContext singleton.
             Assert.That(firstSceneContext, Is.Not.Null);
 
-            // Reloading the scene exercises ApplicationFlowCoordinator rather
-            // than calling SceneManager directly, therefore scene initialization
-            // and readiness are validated as part of the transition.
-            yield return coordinator.LoadSceneAsync(
-                    "Scene_Prototype",
+            // Reloading through the typed SceneFlow API validates payload
+            // binding and scene lifecycle initialization as one transition.
+            yield return sceneFlowService.LoadAsync<PrototypeScene, EmptyScenePayload>(
+                    EmptyScenePayload.Instance,
                     CancellationToken.None)
                 .ToCoroutine();
 
-            SceneContext secondSceneContext = Object.FindObjectOfType<SceneContext>();
+            SceneContext secondSceneContext = Object.FindFirstObjectByType<SceneContext>();
 
             // The old scene scope must be replaced by a new one, while the
             // application scope remains alive and keeps the same instance.
-            Assert.That(coordinator.IsSceneReady, Is.True);
+            Assert.That(sceneFlowService.IsTransitioning, Is.False);
+            Assert.That(sceneFlowService.CurrentSceneDefinition, Is.Not.Null);
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Scene_Prototype"));
             Assert.That(secondSceneContext, Is.Not.Null);
             Assert.That(secondSceneContext, Is.Not.SameAs(firstSceneContext));
@@ -89,11 +89,11 @@ namespace ProjectCore.Template
             }
 
             ProjectContext projectContext = ProjectContext.Instance;
-            IApplicationFlowCoordinator coordinator =
-                projectContext.Container.Resolve<IApplicationFlowCoordinator>();
+            ISceneFlowService sceneFlowService =
+                projectContext.Container.Resolve<ISceneFlowService>();
 
             float timeout = 10f;
-            while (!coordinator.IsSceneReady && timeout > 0f)
+            while (sceneFlowService.CurrentSceneDefinition == null && timeout > 0f)
             {
                 // Initialization is asynchronous. The timeout protects the
                 // test runner from hanging when startup fails to reach Ready.

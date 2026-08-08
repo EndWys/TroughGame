@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using ProjectCore.Template;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace ProjectCore.Preloader
 {
     public sealed class ApplicationEntryPoint : MonoBehaviour
     {
-        [SerializeField] private string _initialSceneName = "Scene_Prototype";
+        [SerializeField] private BaseSceneDefinition _initialSceneDefinition;
 
         private IApplicationInitializationFlow _applicationInitializationFlow;
         private bool _isStarted;
@@ -41,7 +42,7 @@ namespace ProjectCore.Preloader
                     destroyCancellationToken);
 
             await _applicationInitializationFlow.RunAsync(
-                _initialSceneName,
+                _initialSceneDefinition,
                 Application.exitCancellationToken,
                 linkedPreloaderCancellation.Token);
         }

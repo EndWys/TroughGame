@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using ProjectCore.Template;
 using System.Threading;
 
 namespace ProjectCore.Preloader
@@ -6,7 +7,7 @@ namespace ProjectCore.Preloader
     public interface IApplicationInitializationFlow
     {
         UniTask RunAsync(
-            string initialSceneName,
+            BaseSceneDefinition initialSceneDefinition,
             CancellationToken applicationCancellationToken,
             CancellationToken preloaderCancellationToken);
     }
