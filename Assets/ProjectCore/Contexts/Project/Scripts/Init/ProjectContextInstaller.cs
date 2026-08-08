@@ -17,6 +17,7 @@ namespace ProjectCore.Project
             AddFeatureFromComponent<LocalConfigFeature>();
             AddFeature<AppTimeFeature>();
             AddFeature<ObjectFactoryFeature>();
+            AddFeature<LocalSaveFeature>();
             AddFeature<ApplicationFlowFeature>();
         }
     }

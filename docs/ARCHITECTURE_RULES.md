@@ -516,6 +516,7 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Kind>/<Feature>/
     DataHolders/
       Configs/
       Data/
+      Descriptors/
       DTOs/
       Payloads/
     Enums/
@@ -531,7 +532,9 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Kind>/<Feature>/
       Providers/
       Registries/
       Repositories/
+      Serializers/
       Services/
+      Storages/
       Spawners/
       Systems/
     Other/
@@ -652,7 +655,9 @@ instance for the whole application.
 | `Providers` | `Provider` | Supplies a value, resource, environment capability, or strategy-selected implementation without owning the consumer workflow. |
 | `Registries` | `Registry` | Maintains identity-to-instance or key-to-value registration and lookup for runtime objects. |
 | `Repositories` | `Repository` | Provides an abstraction over stored or queryable collections and persistence boundaries. |
+| `Serializers` | `Serializer` | Converts a selected data format to and from its runtime representation. |
 | `Services` | `Service` | Exposes an application or feature capability to multiple consumers and owns the capability's state or operations. |
+| `Storages` | `Storage` | Stores and retrieves raw data through a selected persistence mechanism. |
 | `Spawners` | `Spawner` | Coordinates creation, network spawning, registration, and initial placement of runtime entities. |
 | `Systems` | `System` | Executes ongoing runtime rules over entities, components, or feature state. Use it for runtime behavior rather than storage or external API access. |
 
@@ -682,6 +687,7 @@ resolve dependencies, or mutate unrelated objects.
 | --- | --- | --- |
 | `Configs` | `Config` | Authored or loaded configuration values. A config may be a plain class or `ScriptableObject`, but it contains no runtime service behavior. |
 | `Data` | `Data` | Internal feature state or a value bundle that does not represent a transport contract. Use the most specific name, such as `PlayerInputData`. |
+| `Descriptors` | `Descriptor` | Immutable description of how another object is identified or processed. |
 | `DTOs` | `DTO` | A transport representation used at a serialization, network, backend, or persistence boundary. Its shape follows the external contract. |
 | `Payloads` | `Payload` | Immutable or short-lived parameters for a command, factory, spawn request, navigation request, or signal. |
 
@@ -970,6 +976,12 @@ Rules:
   object creation that must use Zenject injection. It is installed separately
   into every context that needs runtime creation, so each resolved factory owns
   the current context container through constructor injection.
+- `LocalSaveFeature` is shared Template infrastructure registered in the
+  persistent Project context. Consumers inject `ILocalSaveService`; they do not
+  access PlayerPrefs, file paths, serializers, or storages directly.
+- Local saves are client-owned convenience data, never an authority or
+  anti-cheat boundary. Server-owned game state must not depend on local-save
+  integrity or secrecy.
 - Optional dependencies must be represented explicitly by an optional contract
   or null-object implementation, not by runtime searches.
 
@@ -1085,7 +1097,9 @@ Prefabs
 Resources
 Scenes
 Scripts
+Serializers
 Services
+Storages
 StateMachines
 Systems
 UserData

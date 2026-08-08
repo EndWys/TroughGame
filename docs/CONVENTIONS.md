@@ -54,12 +54,12 @@ adapt reusable feature-framework behavior to its external contracts.
   Scripts/
     Abstract/
     DataHolders/
-      Configs/ Data/ DTOs/ Payloads/
+      Configs/ Data/ Descriptors/ DTOs/ Payloads/
     Enums/
     Init/
     Managers/
       Controllers/ Coordinators/ Factories/ Flows/ Handlers/
-      Mediators/ Providers/ Registries/ Repositories/ Services/
+      Mediators/ Providers/ Registries/ Repositories/ Serializers/ Services/ Storages/
       Spawners/ Systems/
     Other/
       Adapters/ Builders/ Commands/ Converters/ Decorators/
@@ -115,7 +115,9 @@ owning container. Interfaces belong in `Abstract`.
 | Providers | `Provider` | Supplies a value, resource, capability, or strategy. |
 | Registries | `Registry` | Maintains keyed runtime registrations and lookup. |
 | Repositories | `Repository` | Abstracts stored/queryable collections or persistence. |
+| Serializers | `Serializer` | Serializes and deserializes a selected data format. |
 | Services | `Service` | Exposes a capability and owns its state/operations. |
+| Storages | `Storage` | Stores and retrieves raw data through a selected persistence mechanism. |
 | Spawners | `Spawner` | Creates, registers, and places runtime entities. |
 | Systems | `System` | Applies ongoing runtime rules to entities or state. |
 
@@ -132,6 +134,7 @@ services, load assets, or execute workflows.
 | --- | --- | --- |
 | Configs | `Config` | Authored or loaded configuration values. |
 | Data | `Data` | Internal feature state or value bundles. |
+| Descriptors | `Descriptor` | Immutable description of how another object is identified or processed. |
 | DTOs | `DTO` | Serialization, network, backend, or persistence boundary shape. |
 | Payloads | `Payload` | Parameters for commands, factories, navigation, or signals. |
 

@@ -308,6 +308,7 @@ function Test-FeatureScriptPath {
         DataHolders = @{
             Configs = @('Config')
             Data = @('Data')
+            Descriptors = @('Descriptor')
             DTOs = @('DTO')
             Payloads = @('Payload')
         }
@@ -321,7 +322,9 @@ function Test-FeatureScriptPath {
             Providers = @('Provider')
             Registries = @('Registry')
             Repositories = @('Repository')
+            Serializers = @('Serializer')
             Services = @('Service')
+            Storages = @('Storage')
             Spawners = @('Spawner')
             Systems = @('System')
         }
