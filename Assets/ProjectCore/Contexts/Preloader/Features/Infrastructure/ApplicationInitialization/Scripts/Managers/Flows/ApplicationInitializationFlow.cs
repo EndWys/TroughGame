@@ -40,7 +40,7 @@ namespace ProjectCore.Preloader
 
             Result result = await _sceneFlowService.LoadAsync(
                 initialSceneDefinition,
-                EmptyScenePayload.Instance,
+                EmptySceneSettings.Instance,
                 applicationCancellationToken);
 
             if (result.IsFailure)

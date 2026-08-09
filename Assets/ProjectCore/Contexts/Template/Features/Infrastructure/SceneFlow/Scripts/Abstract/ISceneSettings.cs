@@ -1,6 +1,6 @@
 namespace ProjectCore.Template
 {
-    public interface IScenePayload
+    public interface ISceneSettings
     {
     }
 }

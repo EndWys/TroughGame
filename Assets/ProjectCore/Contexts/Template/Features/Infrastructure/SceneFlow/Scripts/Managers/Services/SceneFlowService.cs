@@ -64,23 +64,23 @@ namespace ProjectCore.Template
             _isInitialized = true;
         }
 
-        public UniTask<Result> LoadAsync<TScene, TPayload>(
-            TPayload payload,
+        public UniTask<Result> LoadAsync<TScene, TSettings>(
+            TSettings settings,
             CancellationToken cancellationToken)
-            where TScene : IScene<TPayload>
-            where TPayload : IScenePayload
+            where TScene : IScene<TSettings>
+            where TSettings : ISceneSettings
         {
             if (!_definitions.TryGetValue(typeof(TScene), out BaseSceneDefinition definition))
             {
                 return UniTask.FromResult(Result.Failure(SceneFlowErrors.DefinitionNotRegistered(typeof(TScene))));
             }
 
-            return LoadAsync(definition, payload, cancellationToken);
+            return LoadAsync(definition, settings, cancellationToken);
         }
 
         public async UniTask<Result> LoadAsync(
             BaseSceneDefinition sceneDefinition,
-            IScenePayload payload,
+            ISceneSettings settings,
             CancellationToken cancellationToken)
         {
             if (!_isInitialized)
@@ -93,9 +93,9 @@ namespace ProjectCore.Template
                 throw new ArgumentNullException(nameof(sceneDefinition));
             }
 
-            if (payload == null)
+            if (settings == null)
             {
-                throw new ArgumentNullException(nameof(payload));
+                throw new ArgumentNullException(nameof(settings));
             }
 
             if (!_definitions.TryGetValue(sceneDefinition.SceneType, out BaseSceneDefinition registeredDefinition) ||
@@ -104,11 +104,11 @@ namespace ProjectCore.Template
                 return Result.Failure(SceneFlowErrors.DefinitionNotRegistered(sceneDefinition.SceneType));
             }
 
-            if (!sceneDefinition.PayloadType.IsInstanceOfType(payload))
+            if (!sceneDefinition.SettingsType.IsInstanceOfType(settings))
             {
-                return Result.Failure(SceneFlowErrors.InvalidPayload(
-                    sceneDefinition.PayloadType,
-                    payload.GetType()));
+                return Result.Failure(SceneFlowErrors.InvalidSettings(
+                    sceneDefinition.SettingsType,
+                    settings.GetType()));
             }
 
             if (IsTransitioning)
@@ -130,7 +130,7 @@ namespace ProjectCore.Template
                     extraBindingsLate: container =>
                     {
                         sceneContainer = container;
-                        BindPayload(container, sceneDefinition, payload);
+                        BindSettings(container, sceneDefinition, settings);
                     });
 
                 await operation.ToUniTask(cancellationToken: cancellationToken);
@@ -171,17 +171,12 @@ namespace ProjectCore.Template
             CancelCurrentScene();
         }
 
-        private static void BindPayload(
+        private static void BindSettings(
             DiContainer container,
             BaseSceneDefinition sceneDefinition,
-            IScenePayload payload)
+            ISceneSettings settings)
         {
-            Type payloadContextType = typeof(IScenePayloadContext<>).MakeGenericType(
-                sceneDefinition.PayloadType);
-            Type payloadValueType = typeof(ScenePayload<>).MakeGenericType(sceneDefinition.PayloadType);
-            object payloadContext = Activator.CreateInstance(payloadValueType, payload);
-
-            container.Bind(payloadContextType).FromInstance(payloadContext).AsSingle();
+            container.Bind(sceneDefinition.SettingsType).FromInstance(settings).AsSingle();
         }
 
         private async UniTask ExitCurrentSceneAsync(CancellationToken cancellationToken)

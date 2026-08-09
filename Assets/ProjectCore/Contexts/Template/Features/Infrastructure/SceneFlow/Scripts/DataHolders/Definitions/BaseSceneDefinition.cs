@@ -17,7 +17,7 @@ namespace ProjectCore.Template
 
         public int BuildIndex => _buildIndex;
         public abstract Type SceneType { get; }
-        public abstract Type PayloadType { get; }
+        public abstract Type SettingsType { get; }
 
 #if UNITY_EDITOR
         public SceneAsset SceneAsset => _sceneAsset;

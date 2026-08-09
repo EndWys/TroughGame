@@ -908,12 +908,12 @@ Initialization responsibilities are deliberately separated:
 `SceneFlowFeature` is Template infrastructure installed in `ProjectContext`.
 It is the only project-owned path for loading gameplay scenes.
 
-- Consumers use `ISceneFlowService.LoadAsync<TScene, TPayload>`; they never pass
+- Consumers use `ISceneFlowService.LoadAsync<TScene, TSettings>`; they never pass
   scene names, paths, or build indexes.
 - `SceneCatalogConfig` owns the registered `SceneDefinition` assets. A
   definition maps a typed scene to its validated build index and payload type.
-- A payload is bound only into the new `SceneContext` as
-  `IScenePayloadContext<TPayload>`.
+- Immutable scene settings are bound directly into the new `SceneContext` by
+  their concrete `TSettings` type.
 - A scene implements `IGameSceneLifecycle`. `ExitAsync` is awaited while its
   container remains alive and before the next single-scene load begins.
 - Scene lifetime cancellation occurs after `ExitAsync` and before the next

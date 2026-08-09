@@ -2,11 +2,11 @@ using System;
 
 namespace ProjectCore.Template
 {
-    public abstract class SceneDefinition<TScene, TPayload> : BaseSceneDefinition
-        where TScene : IScene<TPayload>
-        where TPayload : IScenePayload
+    public abstract class SceneDefinition<TScene, TSettings> : BaseSceneDefinition
+        where TScene : IScene<TSettings>
+        where TSettings : ISceneSettings
     {
         public override Type SceneType => typeof(TScene);
-        public override Type PayloadType => typeof(TPayload);
+        public override Type SettingsType => typeof(TSettings);
     }
 }

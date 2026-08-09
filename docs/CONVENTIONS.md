@@ -57,7 +57,7 @@ adapt reusable feature-framework behavior to its external contracts.
   Scripts/
     Abstract/
     DataHolders/
-      Configs/ Data/ Definitions/ Descriptors/ DTOs/ Payloads/
+      Configs/ Data/ Definitions/ Descriptors/ DTOs/ Payloads/ Settings/
     Enums/
     Init/
     Managers/
@@ -141,6 +141,7 @@ services, load assets, or execute workflows.
 | Descriptors | `Descriptor` | Immutable description of how another object is identified or processed. |
 | DTOs | `DTO` | Serialization, network, backend, or persistence boundary shape. |
 | Payloads | `Payload` | Parameters for commands, factories, navigation, or signals. |
+| Settings | `Settings` | Immutable settings supplied for an object or context lifetime. |
 
 Use the uppercase `DTO` abbreviation in type names, for example
 `PlayerStateDTO`. Types with `Load`, `Save`, `Spawn`,

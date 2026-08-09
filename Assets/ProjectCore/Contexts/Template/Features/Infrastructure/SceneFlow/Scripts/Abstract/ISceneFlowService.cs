@@ -9,15 +9,15 @@ namespace ProjectCore.Template
         bool IsTransitioning { get; }
         BaseSceneDefinition CurrentSceneDefinition { get; }
 
-        UniTask<Result> LoadAsync<TScene, TPayload>(
-            TPayload payload,
+        UniTask<Result> LoadAsync<TScene, TSettings>(
+            TSettings settings,
             CancellationToken cancellationToken)
-            where TScene : IScene<TPayload>
-            where TPayload : IScenePayload;
+            where TScene : IScene<TSettings>
+            where TSettings : ISceneSettings;
 
         UniTask<Result> LoadAsync(
             BaseSceneDefinition sceneDefinition,
-            IScenePayload payload,
+            ISceneSettings settings,
             CancellationToken cancellationToken);
     }
 }

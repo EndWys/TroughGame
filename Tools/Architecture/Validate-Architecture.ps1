@@ -312,6 +312,7 @@ function Test-FeatureScriptPath {
             Descriptors = @('Descriptor')
             DTOs = @('DTO')
             Payloads = @('Payload')
+            Settings = @('Settings')
         }
         Managers = @{
             Controllers = @('Controller')

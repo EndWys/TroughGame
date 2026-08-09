@@ -58,8 +58,8 @@ namespace ProjectCore.Template
 
             // Reloading through the typed SceneFlow API validates payload
             // binding and scene lifecycle initialization as one transition.
-            yield return sceneFlowService.LoadAsync<PrototypeScene, EmptyScenePayload>(
-                    EmptyScenePayload.Instance,
+            yield return sceneFlowService.LoadAsync<PrototypeScene, EmptySceneSettings>(
+                    EmptySceneSettings.Instance,
                     CancellationToken.None)
                 .ToCoroutine();
 

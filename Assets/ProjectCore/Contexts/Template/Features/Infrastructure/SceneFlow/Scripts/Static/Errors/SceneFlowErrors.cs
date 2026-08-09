@@ -17,11 +17,11 @@ namespace ProjectCore.Template
                 $"No scene definition is registered for {sceneType.Name}.");
         }
 
-        public static Error InvalidPayload(Type expectedPayloadType, Type payloadType)
+        public static Error InvalidSettings(Type expectedSettingsType, Type settingsType)
         {
             return new Error(
-                "SceneFlow.InvalidPayload",
-                $"Scene expects {expectedPayloadType.Name}, but received {payloadType.Name}.");
+                "SceneFlow.InvalidSettings",
+                $"Scene expects {expectedSettingsType.Name}, but received {settingsType.Name}.");
         }
 
         public static Error TransitionFailed(Exception exception)
