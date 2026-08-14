@@ -42,6 +42,7 @@ namespace ProjectCore.Template
             }
 
             ScreenNavigationValidation.ValidateCatalog(screenCatalog);
+            component.Initialize();
 
             _screenRoot = component.RootVisualElement;
 

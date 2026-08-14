@@ -33,6 +33,7 @@ namespace ProjectCore.Template
                 name = "Backdrop"
             };
             backdrop.AddToClassList("popup__backdrop");
+            StretchToParent(backdrop);
 
             _contentRoot = new VisualElement
             {
@@ -40,12 +41,16 @@ namespace ProjectCore.Template
                 pickingMode = PickingMode.Ignore
             };
             _contentRoot.AddToClassList("popup__content-root");
+            StretchToParent(_contentRoot);
+            _contentRoot.style.alignItems = Align.Center;
+            _contentRoot.style.justifyContent = Justify.Center;
 
             _interactionBlocker = new VisualElement
             {
                 name = "InteractionBlocker"
             };
             _interactionBlocker.AddToClassList("popup__interaction-blocker");
+            StretchToParent(_interactionBlocker);
 
             Add(backdrop);
             Add(_contentRoot);
@@ -170,6 +175,18 @@ namespace ProjectCore.Template
             _isCompletionRequested = true;
             SetInteractionEnabled(false);
             _completionHandler?.Invoke(completion);
+        }
+
+        private static void StretchToParent(VisualElement visualElement)
+        {
+            visualElement.style.position = Position.Absolute;
+            visualElement.style.flexGrow = 0;
+            visualElement.style.width = StyleKeyword.Auto;
+            visualElement.style.height = StyleKeyword.Auto;
+            visualElement.style.left = 0;
+            visualElement.style.right = 0;
+            visualElement.style.top = 0;
+            visualElement.style.bottom = 0;
         }
     }
 }

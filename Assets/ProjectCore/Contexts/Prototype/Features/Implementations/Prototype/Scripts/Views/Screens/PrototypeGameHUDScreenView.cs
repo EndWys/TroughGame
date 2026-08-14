@@ -3,6 +3,7 @@ using Domain;
 using ProjectCore.Template;
 using System;
 using System.Threading;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace ProjectCore.Prototype
@@ -15,8 +16,11 @@ namespace ProjectCore.Prototype
         private readonly IPopupSystem _popupSystem;
 
         private CancellationTokenSource _lifetimeCancellation;
+        private IVisualElementScheduledItem _popupShortcutUpdate;
         private Label _hudTitle;
         private Button _openConfirmationPopupButton;
+        private bool _isConfirmationPopupActive;
+        private bool _isConfirmationPopupAborting;
 
         public PrototypeGameHUDScreenView(IPopupSystem popupSystem)
         {
@@ -33,7 +37,9 @@ namespace ProjectCore.Prototype
                 ?? throw new InvalidOperationException(
                     $"HUD requires a {OpenConfirmationPopupButtonName} button.");
             _lifetimeCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            _openConfirmationPopupButton.clicked += HandleOpenConfirmationPopup;
+            _openConfirmationPopupButton.clicked += HandleToggleConfirmationPopup;
+            _popupShortcutUpdate = schedule.Execute(HandlePopupShortcut).Every(1);
+            RefreshPopupControlState();
 
             return UniTask.CompletedTask;
         }
@@ -42,9 +48,11 @@ namespace ProjectCore.Prototype
         {
             if (_openConfirmationPopupButton != null)
             {
-                _openConfirmationPopupButton.clicked -= HandleOpenConfirmationPopup;
+                _openConfirmationPopupButton.clicked -= HandleToggleConfirmationPopup;
             }
 
+            _popupShortcutUpdate?.Pause();
+            _popupShortcutUpdate = null;
             _lifetimeCancellation?.Cancel();
             _lifetimeCancellation?.Dispose();
             _lifetimeCancellation = null;
@@ -52,14 +60,33 @@ namespace ProjectCore.Prototype
             return UniTask.CompletedTask;
         }
 
-        private void HandleOpenConfirmationPopup()
+        private void HandlePopupShortcut()
         {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                HandleToggleConfirmationPopup();
+            }
+        }
+
+        private void HandleToggleConfirmationPopup()
+        {
+            if (_isConfirmationPopupActive)
+            {
+                if (!_isConfirmationPopupAborting)
+                {
+                    AbortConfirmationPopupAsync().Forget();
+                }
+
+                return;
+            }
+
             OpenConfirmationPopupAsync(_lifetimeCancellation.Token).Forget();
         }
 
         private async UniTaskVoid OpenConfirmationPopupAsync(CancellationToken cancellationToken)
         {
-            _openConfirmationPopupButton.SetEnabled(false);
+            _isConfirmationPopupActive = true;
+            RefreshPopupControlState();
 
             try
             {
@@ -67,9 +94,7 @@ namespace ProjectCore.Prototype
                     PrototypeConfirmationPopupView,
                     PrototypeConfirmationPopupPayload,
                     PrototypeConfirmationResponses>(
-                    new PrototypeConfirmationPopupPayload(
-                        "LEAVE PROTOTYPE?",
-                        "This popup returns a typed response to the HUD."),
+                    new PrototypeConfirmationPopupPayload("PopUp Sytem Test"),
                     cancellationToken);
 
                 _hudTitle.text = result.IsSuccess
@@ -81,11 +106,41 @@ namespace ProjectCore.Prototype
             }
             finally
             {
-                if (!cancellationToken.IsCancellationRequested)
-                {
-                    _openConfirmationPopupButton.SetEnabled(true);
-                }
+                _isConfirmationPopupActive = false;
+                _isConfirmationPopupAborting = false;
+                RefreshPopupControlState();
             }
+        }
+
+        private async UniTaskVoid AbortConfirmationPopupAsync()
+        {
+            _isConfirmationPopupAborting = true;
+            RefreshPopupControlState();
+
+            try
+            {
+                await _popupSystem.AbortAsync<PrototypeConfirmationPopupView>();
+            }
+            finally
+            {
+                _isConfirmationPopupAborting = false;
+                RefreshPopupControlState();
+            }
+        }
+
+        private void RefreshPopupControlState()
+        {
+            if (_openConfirmationPopupButton == null)
+            {
+                return;
+            }
+
+            _openConfirmationPopupButton.text = _isConfirmationPopupActive
+                ? _isConfirmationPopupAborting
+                    ? "ABORTING POPUP..."
+                    : "ABORT POPUP [P]"
+                : "OPEN POPUP [P]";
+            _openConfirmationPopupButton.SetEnabled(!_isConfirmationPopupAborting);
         }
     }
 }

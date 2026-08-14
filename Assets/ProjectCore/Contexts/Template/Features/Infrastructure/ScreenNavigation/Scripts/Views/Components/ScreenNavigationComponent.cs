@@ -10,21 +10,39 @@ namespace ProjectCore.Template
 
         [SerializeField] private UIDocument _uiDocument;
 
-        public VisualElement RootVisualElement
+        private VisualElement _screenHost;
+
+        public VisualElement RootVisualElement => _screenHost
+            ?? throw new InvalidOperationException(
+                "ScreenNavigationComponent must be initialized before use.");
+
+        public void Initialize()
         {
-            get
+            if (_uiDocument == null)
             {
-                if (_uiDocument == null)
-                {
-                    throw new InvalidOperationException(
-                        "ScreenNavigationComponent requires a UIDocument.");
-                }
-
-                VisualElement screenHost = _uiDocument.rootVisualElement.Q<VisualElement>(ScreenHostName);
-
-                return screenHost ?? throw new InvalidOperationException(
-                    $"ScreenNavigationComponent requires a {ScreenHostName} element in its UIDocument.");
+                throw new InvalidOperationException(
+                    "ScreenNavigationComponent requires a UIDocument.");
             }
+
+            _screenHost = _uiDocument.rootVisualElement.Q<VisualElement>(ScreenHostName)
+                ?? throw new InvalidOperationException(
+                    $"ScreenNavigationComponent requires a {ScreenHostName} element " +
+                    "in its UIDocument.");
+
+            StretchToParent(_uiDocument.rootVisualElement);
+            StretchToParent(_screenHost);
+        }
+
+        private static void StretchToParent(VisualElement visualElement)
+        {
+            visualElement.style.position = Position.Absolute;
+            visualElement.style.flexGrow = 0;
+            visualElement.style.width = StyleKeyword.Auto;
+            visualElement.style.height = StyleKeyword.Auto;
+            visualElement.style.left = 0;
+            visualElement.style.right = 0;
+            visualElement.style.top = 0;
+            visualElement.style.bottom = 0;
         }
     }
 }

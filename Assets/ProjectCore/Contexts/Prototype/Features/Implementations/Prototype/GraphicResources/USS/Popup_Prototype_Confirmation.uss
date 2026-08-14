@@ -1,6 +1,11 @@
 .prototype-confirmation-popup {
-    width: 38%;
-    min-width: 30%;
+    position: absolute;
+    left: 25%;
+    right: 25%;
+    top: 20%;
+    bottom: 25%;
+    align-items: center;
+    justify-content: center;
     padding-left: 3%;
     padding-right: 3%;
     padding-top: 3%;
@@ -27,46 +32,25 @@
     border-bottom-right-radius: 50%;
 }
 
-.prototype-confirmation-popup__title {
-    margin-bottom: 5%;
-    padding-right: 12%;
-    color: rgb(255, 216, 104);
-    font-size: 30px;
-    -unity-font-style: bold;
-}
-
 .prototype-confirmation-popup__message {
-    margin-bottom: 8%;
+    margin-bottom: 10%;
     color: rgb(226, 236, 249);
-    font-size: 21px;
+    font-size: 28px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
     white-space: normal;
-}
-
-.prototype-confirmation-popup__actions {
-    width: 100%;
-    flex-direction: row;
-    justify-content: flex-end;
 }
 
 .prototype-confirmation-popup__button {
     width: 30%;
-    margin-left: 4%;
     padding-top: 3%;
     padding-bottom: 3%;
+    color: rgb(11, 24, 40);
+    background-color: rgb(255, 216, 104);
     font-size: 20px;
     -unity-font-style: bold;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-}
-
-.prototype-confirmation-popup__button--primary {
-    color: rgb(11, 24, 40);
-    background-color: rgb(255, 216, 104);
-}
-
-.prototype-confirmation-popup__button--secondary {
-    color: rgb(232, 239, 249);
-    background-color: rgba(255, 255, 255, 0.1);
 }

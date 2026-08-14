@@ -13,6 +13,9 @@ namespace ProjectCore.Template
         {
             AddToClassList("screen-navigation__screen");
             style.position = Position.Absolute;
+            style.flexGrow = 0;
+            style.width = StyleKeyword.Auto;
+            style.height = StyleKeyword.Auto;
             style.left = 0;
             style.right = 0;
             style.top = 0;
