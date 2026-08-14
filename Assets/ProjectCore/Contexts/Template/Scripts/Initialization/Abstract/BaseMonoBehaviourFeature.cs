@@ -41,6 +41,11 @@ namespace ProjectCore.Template
             return _lifecycleAdapter.BindAsSingle<TContract, TImplementation>();
         }
 
+        protected ConcreteIdArgConditionCopyNonLazyBinder BindInterfacesAsSingle<T>() where T : class
+        {
+            return _lifecycleAdapter.BindInterfacesAsSingle<T>();
+        }
+
         protected ConcreteIdArgConditionCopyNonLazyBinder BindInterfacesAndSelfAsSingle<T>() where T : class
         {
             return _lifecycleAdapter.BindInterfacesAndSelfAsSingle<T>();

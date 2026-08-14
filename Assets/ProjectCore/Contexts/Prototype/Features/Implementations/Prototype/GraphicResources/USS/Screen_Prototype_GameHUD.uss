@@ -13,12 +13,28 @@
 .prototype-game-hud__header {
     width: 100%;
     align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .prototype-game-hud__title {
     color: rgb(255, 255, 255);
     font-size: 32px;
     -unity-font-style: bold;
+}
+
+.prototype-game-hud__popup-button {
+    width: 16%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    color: rgb(11, 24, 40);
+    background-color: rgb(255, 216, 104);
+    font-size: 17px;
+    -unity-font-style: bold;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 
 .prototype-game-hud__footer {

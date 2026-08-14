@@ -16,6 +16,7 @@ namespace ProjectCore.Prototype
         {
             AddFeature<ObjectFactoryFeature>();
             AddFeatureFromComponent<ScreenNavigationFeature>();
+            AddFeatureFromComponent<PopupFeature>();
             AddFeature<GameCoreFeatureGroup>();
             AddFeature<PrototypeFeatureGroup>();
         }

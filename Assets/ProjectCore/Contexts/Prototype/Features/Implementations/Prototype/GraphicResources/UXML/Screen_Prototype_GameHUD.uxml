@@ -2,7 +2,8 @@
     <Style src="project://database/Assets/ProjectCore/Contexts/Prototype/Features/Implementations/Prototype/GraphicResources/USS/Screen_Prototype_GameHUD.uss?fileID=7433441132597879392&amp;guid=3d1eee1ea11843d8873a6d87ed6068ce&amp;type=3#Screen_Prototype_GameHUD"/>
     <ui:VisualElement class="prototype-game-hud">
         <ui:VisualElement class="prototype-game-hud__header">
-            <ui:Label text="PROTOTYPE RUN" class="prototype-game-hud__title"/>
+            <ui:Label name="HUDTitle" text="PROTOTYPE RUN" class="prototype-game-hud__title"/>
+            <ui:Button name="OpenConfirmationPopupButton" text="OPEN CONFIRMATION" class="prototype-game-hud__popup-button"/>
         </ui:VisualElement>
         <ui:VisualElement class="prototype-game-hud__footer"/>
         <ui:VisualElement class="prototype-game-hud__controls" style="align-items: flex-end; align-self: flex-end; justify-content: center; opacity: 1; width: 12%;">

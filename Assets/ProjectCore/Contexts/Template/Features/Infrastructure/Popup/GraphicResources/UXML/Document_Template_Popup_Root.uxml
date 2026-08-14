@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/ProjectCore/Contexts/Template/Features/Infrastructure/Popup/GraphicResources/USS/Document_Template_Popup_Root.uss?fileID=7433441132597879392&amp;guid=96cada12de7845faa20f051e014a6ecf&amp;type=3#Document_Template_Popup_Root"/>
+    <ui:VisualElement name="PopupHost" class="popup__host">
+        <ui:VisualElement name="PopupInputBlocker" class="popup__input-blocker"/>
+    </ui:VisualElement>
+</ui:UXML>

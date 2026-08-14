@@ -52,6 +52,11 @@ namespace ProjectCore.Template
             return _container.Bind<TContract>().To<TImplementation>().AsSingle();
         }
 
+        public ConcreteIdArgConditionCopyNonLazyBinder BindInterfacesAsSingle<T>() where T : class
+        {
+            return _container.BindInterfacesTo<T>().AsSingle();
+        }
+
         public ConcreteIdArgConditionCopyNonLazyBinder BindInterfacesAndSelfAsSingle<T>() where T : class
         {
             return _container.BindInterfacesAndSelfTo<T>().AsSingle();

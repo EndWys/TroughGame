@@ -414,7 +414,7 @@ function Test-FeatureScriptPath {
 
         $typeNamePattern = [regex]::Escape($primary.Name)
         $directBindingPattern = '(?s)' + $typeNamePattern + '.{0,500}?\.AsSingle\s*\('
-        $baseFeatureBindingPattern = '(?s)Bind(?:InterfacesAndSelf)?(?:FromComponentInHierarchy)?AsSingle\s*<[^>]*\b' + $typeNamePattern + '\b[^>]*>'
+        $baseFeatureBindingPattern = '(?s)Bind(?:Interfaces(?:AndSelf)?)?(?:FromComponentInHierarchy)?AsSingle\s*<[^>]*\b' + $typeNamePattern + '\b[^>]*>'
         $cachedGenericBindingPattern = '(?s)\.To\s*\(\s*typeof\s*\(\s*' + $typeNamePattern + '<>\s*\)\s*\).{0,100}?\.AsCached\s*\('
 
         if (-not [regex]::IsMatch($script:allSourceText, $directBindingPattern) -and

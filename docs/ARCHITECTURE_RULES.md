@@ -426,7 +426,7 @@ Examples:
 - `AppTime`;
 - `LocalConfig`;
 - `Logging`;
-- `PopupNavigation`;
+- `Popup`;
 - `ScreenNavigation`;
 - `SignalBus`;
 - `Audio`;
@@ -607,7 +607,7 @@ Examples:
 ```text
 Contexts/GameCore/Features/Modules/Movement
 Contexts/GameCore/Features/Implementations/Player
-Contexts/Template/Features/Infrastructure/PopupNavigation
+Contexts/Template/Features/Infrastructure/Popup
 Contexts/Template/Features/Infrastructure/SignalBus
 Contexts/Template/Features/Bridges/PopupSignalBusBridge
 ```
@@ -929,10 +929,12 @@ Feature initialization rules:
   requires serialized scene, prefab, or asset references may instead inherit
   `BaseMonoBehaviourFeature`, live on the same GameObject as its context
   installer, and be added through `AddFeatureFromComponent<TFeature>()`.
-- Both feature bases expose protected `BindAsSingle`, `Resolve`, and `ResolveAs`
-  DI helpers. Their implementation is centralized in `FeatureLifecycleAdapter`
-  and the bases only delegate to it. Feature implementations must not access
-  `DiContainer` directly.
+- Both feature bases expose protected `BindAsSingle`, `BindInterfacesAsSingle`,
+  `Resolve`, and `ResolveAs` DI helpers. Their implementation is centralized in
+  `FeatureLifecycleAdapter` and the bases only delegate to it. Use
+  `BindInterfacesAsSingle<T>` when lifecycle contracts such as `IDisposable`
+  must be registered without exposing the concrete implementation as self.
+  Feature implementations must not access `DiContainer` directly.
   Use `ResolveAs` only during feature initialization to invoke
   implementation-only startup work; do not add `InitializeAsync` to a public
   service or system interface solely for feature lifecycle orchestration.
