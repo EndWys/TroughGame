@@ -149,15 +149,18 @@ Use the uppercase `DTO` abbreviation in type names, for example
 
 ### Views
 
-Every type below `Views` must inherit from `MonoBehaviour`. Views render state,
+`Views` contains only C# presentation types. Every view must inherit from
+`MonoBehaviour` or `UnityEngine.UIElements.VisualElement`. Views render state,
 forward Unity/user events to injected contracts, and contain no business rules.
+UXML, USS, textures, fonts, and other non-C# presentation assets belong in the
+feature's `GraphicResources`.
 
 | Folder | Suffix | Meaning |
 | --- | --- | --- |
-| Components | `Component` | General scene/prefab behavior. |
+| Components | `Component` | `MonoBehaviour` scene or prefab behavior. |
 | Navigation | `NavigationView` | Navigation controls and transitions. |
 | Popups | `PopupView` | Popup presentation and serialized references. |
-| Screens | `ScreenView` | Full-screen or major panel presentation. |
+| Screens | `ScreenView` | Full-screen or major panel presentation; may inherit `MonoBehaviour` or `VisualElement`. |
 | Widgets | `WidgetView` | Reusable embedded presentation. |
 
 ### Other

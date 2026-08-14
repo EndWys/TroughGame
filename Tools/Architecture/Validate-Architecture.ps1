@@ -190,6 +190,35 @@ function Test-IsMonoBehaviourType {
     return $false
 }
 
+function Test-IsViewType {
+    param(
+        [string]$TypeName,
+        [hashtable]$Visited
+    )
+
+    if (Test-IsMonoBehaviourType -TypeName $TypeName -Visited @{}) {
+        return $true
+    }
+
+    if ($TypeName -eq 'VisualElement') {
+        return $true
+    }
+
+    if ($Visited.ContainsKey($TypeName) -or -not $script:typeMap.ContainsKey($TypeName)) {
+        return $false
+    }
+
+    $Visited[$TypeName] = $true
+
+    foreach ($baseType in $script:typeMap[$TypeName].Bases) {
+        if (Test-IsViewType -TypeName $baseType -Visited $Visited) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 function Test-StaticClass {
     param([pscustomobject]$TypeInfo)
 
@@ -398,10 +427,10 @@ function Test-FeatureScriptPath {
     }
 
     if ($category -eq 'Views') {
-        if (-not (Test-IsMonoBehaviourType -TypeName $primary.Name -Visited @{})) {
+        if (-not (Test-IsViewType -TypeName $primary.Name -Visited @{})) {
             Add-Diagnostic -Severity 'Error' -Rule 'VIEW001' `
                 -Path $FileRecord.RelativePath -Line $primary.Line `
-                -Message 'Views must inherit from MonoBehaviour, directly or through a known base type.'
+                -Message 'Views must inherit from MonoBehaviour or VisualElement, directly or through a known base type.'
         }
     }
 
@@ -588,10 +617,10 @@ function Test-ContextSharedScriptPath {
                 -Suffixes $contextSuffixMaps[$category][$subfolder] `
                 -Folder ("Context/Scripts/{0}/{1}" -f $category, $subfolder)
 
-            if ($category -eq 'Views' -and -not (Test-IsMonoBehaviourType -TypeName $primary.Name -Visited @{})) {
+            if ($category -eq 'Views' -and -not (Test-IsViewType -TypeName $primary.Name -Visited @{})) {
                 Add-Diagnostic -Severity 'Error' -Rule 'VIEW002' `
                     -Path $FileRecord.RelativePath -Line $primary.Line `
-                    -Message 'Context Views must inherit from MonoBehaviour.'
+                    -Message 'Context Views must inherit from MonoBehaviour or VisualElement.'
             }
         }
     } else {
@@ -666,7 +695,9 @@ foreach ($file in $sourceFiles) {
     }
     [void]$fileRecords.Add($record)
 
-    if ($null -ne $typeInfo.PrimaryType) {
+    if ($null -ne $typeInfo.PrimaryType -and
+        (-not $typeMap.ContainsKey($typeInfo.PrimaryType.Name) -or
+        (-not $typeInfo.PrimaryType.IsGeneric -and $typeMap[$typeInfo.PrimaryType.Name].IsGeneric))) {
         $typeMap[$typeInfo.PrimaryType.Name] = $typeInfo.PrimaryType
     }
 }

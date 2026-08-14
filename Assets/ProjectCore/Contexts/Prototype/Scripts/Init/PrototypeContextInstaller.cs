@@ -15,6 +15,7 @@ namespace ProjectCore.Prototype
         protected override void AddFeatures()
         {
             AddFeature<ObjectFactoryFeature>();
+            AddFeatureFromComponent<ScreenNavigationFeature>();
             AddFeature<GameCoreFeatureGroup>();
             AddFeature<PrototypeFeatureGroup>();
         }
