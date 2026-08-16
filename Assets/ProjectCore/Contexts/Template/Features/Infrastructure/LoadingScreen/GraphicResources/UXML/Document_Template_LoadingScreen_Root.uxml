@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/ProjectCore/Contexts/Template/Features/Infrastructure/LoadingScreen/GraphicResources/USS/Document_Template_LoadingScreen_Root.uss?fileID=7433441132597879392&amp;guid=fa078baf08e44cbc95be369eea3b60ac&amp;type=3#Document_Template_LoadingScreen_Root"/>
+    <ui:VisualElement name="LoadingScreenHost" class="loading-screen__host">
+        <ui:VisualElement name="LoadingScreenInputBlocker" class="loading-screen__input-blocker" style="display: none;"/>
+    </ui:VisualElement>
+</ui:UXML>

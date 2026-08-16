@@ -920,6 +920,16 @@ It is the only project-owned path for loading gameplay scenes.
   scene is loaded.
 - Scene flow does not depend on popup or screen-navigation features. Persistent
   transition UI integrates only through `ISceneTransitionPresenter`.
+- `LoadingScreenFeature` is Template infrastructure installed in the persistent
+  Project context. It owns one scene-independent loading screen without
+  navigation history, hierarchy, or user-controlled completion.
+- `SceneLoadingScreenBridgeFeature` adapts `ILoadingScreenSystem` to
+  `ISceneTransitionPresenter`; neither Scene Flow nor Loading Screen depends on
+  the concrete implementation of the other system.
+- A scene transition shows its presenters before the current scene exits and
+  hides them only after the next scene finishes `IGameSceneLifecycle`
+  initialization. Presenter cleanup remains in `finally`, including failed or
+  cancelled transitions.
 
 Feature initialization rules:
 

@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/ProjectCore/Contexts/Template/Features/Infrastructure/LoadingScreen/GraphicResources/USS/LoadingScreen_Template_Default.uss?fileID=7433441132597879392&amp;guid=2b6770d3d74148219748cb0d0cd87e76&amp;type=3#LoadingScreen_Template_Default"/>
+    <ui:VisualElement class="default-loading-screen">
+        <ui:VisualElement class="default-loading-screen__panel">
+            <ui:Label text="LOADING" class="default-loading-screen__title"/>
+            <ui:VisualElement class="default-loading-screen__progress-track">
+                <ui:VisualElement class="default-loading-screen__progress-value"/>
+            </ui:VisualElement>
+            <ui:Label text="PREPARING SCENE..." class="default-loading-screen__message"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,14 @@
+.loading-screen__host,
+.loading-screen__view,
+.loading-screen__content-root,
+.loading-screen__input-blocker {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.loading-screen__input-blocker {
+    background-color: rgba(0, 0, 0, 0);
+}

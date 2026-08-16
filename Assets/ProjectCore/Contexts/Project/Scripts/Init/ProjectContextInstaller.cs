@@ -17,6 +17,8 @@ namespace ProjectCore.Project
             AddFeatureFromComponent<LocalConfigFeature>();
             AddFeature<AppTimeFeature>();
             AddFeature<ObjectFactoryFeature>();
+            AddFeatureFromComponent<LoadingScreenFeature>();
+            AddFeature<SceneLoadingScreenBridgeFeature>();
             AddFeature<LocalSaveFeature>();
             AddFeatureFromComponent<SceneFlowFeature>();
         }
