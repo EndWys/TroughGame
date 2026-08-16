@@ -16,6 +16,10 @@ GameObject:
   - component: {fileID: 7100000001}
   - component: {fileID: 7100000002}
   - component: {fileID: 7100000003}
+  - component: {fileID: 7100000004}
+  - component: {fileID: 7100000005}
+  - component: {fileID: 7100000006}
+  - component: {fileID: 7100000007}
   m_Layer: 0
   m_Name: ProjectContext
   m_TagString: Untagged
@@ -148,3 +152,59 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _loadingScreenComponent: {fileID: 7100000002}
   _loadingScreenCatalog: {fileID: 11400000, guid: e5411f47227b46e592f36474e44704df, type: 2}
+--- !u!114 &7100000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81103863561744775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0124750bd5b54c9682771121757eaff5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _settingsConfig: {fileID: 11400000, guid: d4628252b1671da438939571fc1c0a11, type: 2}
+  _panelSettings: {fileID: 11400000, guid: 1593fb92073646c7b3018d659f747717, type: 2}
+  _hudStyleSheet: {fileID: 7433441132597879392, guid: 1d8a05e612ce70b49ad3db1c84d7b261, type: 3}
+--- !u!114 &7100000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81103863561744775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5aee82321b0437b8856a3fdcbe5ba5d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _debugConsolePrefab: {fileID: 6290119062807602273, guid: 07b06d55ef52f4349a530680d96b52db, type: 3}
+--- !u!114 &7100000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81103863561744775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1b1a3a5578649519fdfab186b6a338d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _settingsConfig: {fileID: 11400000, guid: 0149976b83574a5eaa05bd3d6104c4c6, type: 2}
+--- !u!114 &7100000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81103863561744775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b886e0e5476c4ac3b8f0379d3c1ef552, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _debugToolsFeature: {fileID: 7100000006}
+  _debugVisualizationFeature: {fileID: 7100000004}
+  _debugConsoleFeature: {fileID: 7100000005}

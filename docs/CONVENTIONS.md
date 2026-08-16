@@ -22,6 +22,7 @@ Assets/ProjectCore/
   Domain/
     Attributes/
       Editor/
+    Collections/
     Modifiers/
     Results/
   ThirdParty/
@@ -57,7 +58,7 @@ adapt reusable feature-framework behavior to its external contracts.
   Scripts/
     Abstract/
     DataHolders/
-      Configs/ Data/ Definitions/ Descriptors/ DTOs/ Payloads/ Settings/
+      Attributes/ Configs/ Data/ Definitions/ Descriptors/ DTOs/ Payloads/ Settings/
     Enums/
     Init/
     Managers/
@@ -135,6 +136,7 @@ services, load assets, or execute workflows.
 
 | Folder | Suffix | Meaning |
 | --- | --- | --- |
+| Attributes | `Attribute` | Declarative metadata owned by one feature. |
 | Configs | `Config` | Authored or loaded configuration values. |
 | Data | `Data` | Internal feature state or value bundles. |
 | Definitions | `Definition` | Authored registration of a typed project resource or route. |
@@ -188,6 +190,12 @@ Do not create `Misc`, `Common`, `Helpers`, or `Utils` escape-hatch folders.
 
 Every type in `Static` is a `static class` with no mutable global runtime
 state, cached services, or service-locator access.
+
+An architecture-documented static facade may keep one replaceable reference
+to its DI-owned backend for call-site convenience. It must use a no-op backend
+while detached and must not own runtime collections, Unity objects, timers, or
+the backend lifecycle. This exception currently applies to Debug
+Visualization only.
 
 | Folder | Suffix | Meaning |
 | --- | --- | --- |

@@ -82,6 +82,7 @@ Assets/
     Domain/
       Attributes/
         Editor/
+      Collections/
       Modifiers/
       Results/
     ThirdParty/
@@ -238,6 +239,7 @@ Current shared Domain categories are:
 
 - `Attributes` for reusable declarative metadata such as subclass selection
   and former-name mappings;
+- `Collections` for small context-independent collection primitives;
 - `Modifiers` for context-independent sequential value transformations;
 - `Results` for success/failure values and errors. Results are standalone
   primitives rather than a `Patterns` category.
@@ -369,6 +371,12 @@ Every feature has one of four architectural roles.
 does not introduce a DI scope, own business logic, or replace a feature role.
 Its child features are installed and initialized in declaration order.
 
+`BaseFeatureGroup` composes code-created features. A group that owns serialized
+references to MonoBehaviour features inherits `BaseMonoBehaviourFeatureGroup`,
+is registered through `AddFeatureFromComponent<TFeatureGroup>()`, and adds those
+children through explicit serialized references. Component searches are not
+used for group composition.
+
 Use a group when a context needs to keep a coherent set of related features
 together, such as GameCore modules or a scene's implementation features. A
 group may contain another group. Context installers compose top-level groups
@@ -460,6 +468,25 @@ Rules:
   context-scoped `IDebugLogger<TFeature>`; log handlers connect through
   `ILogService`. Usage and lifetime details are documented in
   [`features/LOGGING.md`](features/LOGGING.md).
+- `CommandLine` is independent Template Infrastructure installed before Debug
+  Tools in the persistent Project context. It provides an immutable parsed
+  argument snapshot and the dedicated-server cancel request. It remains
+  available in every build type and is not controlled by Debug Tools.
+- `DebugTools` is the persistent Template Infrastructure composition for
+  Cheats, Debug Visualization, and Runtime Console. The systems remain
+  independent features and communicate through public contracts. A single
+  `IDebugToolsService` controls build availability and runtime state; disabling
+  a build target prevents debug UI, cheat reflection, and debug visualization
+  runtime objects from starting. Debug Tools may consume `ICommandLineService`
+  for optional state overrides, but Command Line never depends on Debug Tools.
+  Debug Visualization exposes a stateless static drawing facade for call-site
+  convenience; its runner, registered targets, reflection caches, and cleanup
+  belong to a context-owned DI system and registry. Static visualization
+  collections or Unity-object ownership are forbidden.
+  Runtime Console follows System-Controller-View separation: its System owns
+  logs, history, and command execution independently of the window; its
+  Controller owns presentation state and UI flow; MonoBehaviour and
+  VisualElement Views only render supplied data and forward user input.
 
 ### Bridge Features
 
@@ -939,6 +966,9 @@ Feature initialization rules:
   requires serialized scene, prefab, or asset references may instead inherit
   `BaseMonoBehaviourFeature`, live on the same GameObject as its context
   installer, and be added through `AddFeatureFromComponent<TFeature>()`.
+- Serialized feature groups inherit `BaseMonoBehaviourFeatureGroup`, reference
+  every MonoBehaviour child explicitly, and are themselves added through
+  `AddFeatureFromComponent<TFeatureGroup>()`.
 - Both feature bases expose protected `BindAsSingle`, `BindInterfacesAsSingle`,
   `Resolve`, and `ResolveAs` DI helpers. Their implementation is centralized in
   `FeatureLifecycleAdapter` and the bases only delegate to it. Use

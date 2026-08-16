@@ -335,6 +335,7 @@ function Test-FeatureScriptPath {
     $subfolder = $scriptSegments[1]
     $suffixMaps = @{
         DataHolders = @{
+            Attributes = @('Attribute')
             Configs = @('Config')
             Data = @('Data')
             Definitions = @('Definition')
@@ -838,14 +839,44 @@ foreach ($record in $fileRecords) {
 
     $primary = $record.TypeInfo.PrimaryType
     if ($null -ne $primary -and
-        $primary.Bases -contains 'BaseMonoBehaviourFeature') {
+        ($primary.Bases -contains 'BaseMonoBehaviourFeature' -or
+         $primary.Bases -contains 'BaseMonoBehaviourFeatureGroup')) {
         $componentFeaturePattern = 'AddFeatureFromComponent\s*<\s*' +
             [regex]::Escape($primary.Name) + '\s*>'
+        $isRegisteredInComponentGroup = $false
 
-        if (-not [regex]::IsMatch($allSourceText, $componentFeaturePattern)) {
+        foreach ($groupRecord in $fileRecords) {
+            $groupPrimary = $groupRecord.TypeInfo.PrimaryType
+            if ($null -eq $groupPrimary -or
+                -not ($groupPrimary.Bases -contains 'BaseMonoBehaviourFeatureGroup')) {
+                continue
+            }
+
+            $groupFieldPattern = '\b' + [regex]::Escape($primary.Name) +
+                '\s+(?<field>_[A-Za-z_][A-Za-z0-9_]*)\s*;'
+            $groupFieldMatches = [regex]::Matches($groupRecord.Text, $groupFieldPattern)
+
+            foreach ($groupFieldMatch in $groupFieldMatches) {
+                $fieldName = $groupFieldMatch.Groups['field'].Value
+                $groupRegistrationPattern = 'AddFeature\s*\(\s*' +
+                    [regex]::Escape($fieldName) + '\s*\)'
+
+                if ([regex]::IsMatch($groupRecord.Text, $groupRegistrationPattern)) {
+                    $isRegisteredInComponentGroup = $true
+                    break
+                }
+            }
+
+            if ($isRegisteredInComponentGroup) {
+                break
+            }
+        }
+
+        if (-not [regex]::IsMatch($allSourceText, $componentFeaturePattern) -and
+            -not $isRegisteredInComponentGroup) {
             Add-Diagnostic -Severity 'Error' -Rule 'INIT003' `
                 -Path $record.RelativePath -Line $primary.Line `
-                -Message 'BaseMonoBehaviourFeature must be registered through AddFeatureFromComponent<TFeature>().'
+                -Message 'MonoBehaviour Feature or FeatureGroup must be registered through AddFeatureFromComponent<TFeature>() or a serialized BaseMonoBehaviourFeatureGroup reference.'
         }
     }
 

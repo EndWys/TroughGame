@@ -14,6 +14,8 @@ namespace ProjectCore.Project
         protected override void AddFeatures()
         {
             AddFeature<LoggingFeature>();
+            AddFeature<CommandLineFeature>();
+            AddFeatureFromComponent<DebugToolsFeatureGroup>();
             AddFeatureFromComponent<LocalConfigFeature>();
             AddFeature<AppTimeFeature>();
             AddFeature<ObjectFactoryFeature>();
