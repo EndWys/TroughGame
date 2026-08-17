@@ -1,13 +1,15 @@
+using System;
 using System.Collections.Generic;
 
 namespace ProjectCore.GameCore
 {
-    public abstract class BaseMovementStateMachine<TMovementState, TStatePayload> :
-        BaseNetworkEntityStateMachine<MovementStates, TMovementState, TStatePayload>
-        where TMovementState : BaseMovementState<TStatePayload>
+    public abstract class BaseMovementStateMachine<TStateType, TMovementState, TStatePayload> :
+        BaseNetworkEntityStateMachine<TStateType, TMovementState, TStatePayload>
+        where TStateType : struct, Enum
+        where TMovementState : BaseMovementState<TStateType, TStatePayload>
         where TStatePayload : struct
     {
-        protected abstract MovementStates InitialState { get; }
+        protected abstract TStateType InitialState { get; }
 
         public override void Init()
         {
@@ -26,7 +28,7 @@ namespace ProjectCore.GameCore
             ChangeState(InitialState);
         }
 
-        public sealed override Dictionary<MovementStates, TMovementState> CreateStatesDictionary()
+        public sealed override Dictionary<TStateType, TMovementState> CreateStatesDictionary()
         {
             return CreateMovementStatesDictionary();
         }
@@ -47,7 +49,7 @@ namespace ProjectCore.GameCore
             UpdateStates(payload);
         }
 
-        protected abstract Dictionary<MovementStates, TMovementState> CreateMovementStatesDictionary();
+        protected abstract Dictionary<TStateType, TMovementState> CreateMovementStatesDictionary();
 
         protected abstract bool TryGetMovementPayload(out TStatePayload payload);
 

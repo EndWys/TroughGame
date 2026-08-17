@@ -7,7 +7,7 @@ using Zenject;
 namespace ProjectCore.Prototype
 {
     public sealed class PlayerMovementStateMachine :
-        BaseMovementStateMachine<BasePlayerMovementState, PlayerInputData>, IPlayerColleague
+        BaseMovementStateMachine<MovementStates, BasePlayerMovementState, PlayerInputData>, IPlayerColleague
     {
         [field: SerializeField] public Rigidbody Rigidbody { get; private set; }
         
@@ -21,12 +21,12 @@ namespace ProjectCore.Prototype
         [SerializeField] private SerializedDictionary<MovementStates, BasePlayerMovementState> _movementStates;
         
         private IPlayerMediator _mediator;
-        private IMovementStateDataMutator _movementStateDataMutator;
+        private IMovementStateDataMutator<MovementStates> _movementStateDataMutator;
         private IGroundDetectorDataMutator _groundDetectorDataMutator;
         private IJumpDataMutator _jumpDataMutator;
 
         [Inject]
-        private void Construct(IMovementStateDataMutator movementStateDataMutator,
+        private void Construct(IMovementStateDataMutator<MovementStates> movementStateDataMutator,
             IJumpDataMutator jumpDataMutator,
             IGroundDetectorDataMutator groundDetectorDataMutator,
             IPlayerMediator mediator)

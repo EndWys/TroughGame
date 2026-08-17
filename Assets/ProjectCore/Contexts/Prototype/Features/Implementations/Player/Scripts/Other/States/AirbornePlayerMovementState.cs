@@ -8,9 +8,9 @@ namespace ProjectCore.Prototype
     {
         public override void Enter() { }
 
-        protected override IReadOnlyList<IMovementStateProcessor<PlayerInputData>> CreateMovementProcessors()
+        protected override IReadOnlyList<IMovementStateProcessor<MovementStates, PlayerInputData>> CreateMovementProcessors()
         {
-            return new IMovementStateProcessor<PlayerInputData>[]
+            return new IMovementStateProcessor<MovementStates, PlayerInputData>[]
             {
                 new WallClingTransitionProcessor(this),
                 new AirborneLandingProcessor(this),

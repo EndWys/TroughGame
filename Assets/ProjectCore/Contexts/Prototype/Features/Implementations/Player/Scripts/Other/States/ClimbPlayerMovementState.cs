@@ -10,9 +10,9 @@ namespace ProjectCore.Prototype
             SetClimbingPhysics(true);
         }
 
-        protected override IReadOnlyList<IMovementStateProcessor<PlayerInputData>> CreateMovementProcessors()
+        protected override IReadOnlyList<IMovementStateProcessor<MovementStates, PlayerInputData>> CreateMovementProcessors()
         {
-            return new IMovementStateProcessor<PlayerInputData>[]
+            return new IMovementStateProcessor<MovementStates, PlayerInputData>[]
             {
                 new ClimbCancelProcessor(this),
                 new ClimbGroundExitProcessor(this),
