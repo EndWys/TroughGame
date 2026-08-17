@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4cdfd7663319448afb78e418826c35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Preloader.ApplicationEntryPoint
-  _initialSceneDefinition: {fileID: 11400000, guid: 8e159cc51cd34a0eb603d13e8c14d419, type: 2}
+  _initialSceneDefinition: {fileID: 11400000, guid: 814c88087255429097376a8b3dd666fc, type: 2}
 --- !u!4 &1144903147
 Transform:
   m_ObjectHideFlags: 0
