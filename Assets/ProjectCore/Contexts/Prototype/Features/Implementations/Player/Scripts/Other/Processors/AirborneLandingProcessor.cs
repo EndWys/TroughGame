@@ -1,0 +1,28 @@
+using UnityEngine;
+using ProjectCore.GameCore;
+
+namespace ProjectCore.Prototype
+{
+    public sealed class AirborneLandingProcessor : BasePlayerMovementStateProcessor
+    {
+        public AirborneLandingProcessor(BasePlayerMovementState state) : base(state)
+        {
+        }
+
+        public override bool Execute(PlayerInputData input, out MovementStates resultState)
+        {
+            if (State.GroundDetectorDataAccessor.IsGrounded && State.Context.Rigidbody.linearVelocity.y <= 0f)
+            {
+                Vector3 baseDirectionCheck = new Vector3(input.MoveDirection.y, 0f, input.MoveDirection.x);
+
+                return Complete(
+                    baseDirectionCheck.sqrMagnitude > 0f
+                        ? input.IsRunning ? MovementStates.Run : MovementStates.Walk
+                        : MovementStates.Idle,
+                    out resultState);
+            }
+
+            return Continue(out resultState);
+        }
+    }
+}

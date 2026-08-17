@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4890edcb5bc2e78419074a34fe15c4df, type: 3}
+  m_Name: Config_Template_DebugVisualization_Settings
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.Template.DebugVisualizationSettingsConfig
+  _showHudOnStart: 0
+  _maxTransientDraws: 1024
+  _defaultStyle:
+    Color: {r: 1, g: 1, b: 1, a: 1}
+    FillColor: {r: 1, g: 1, b: 1, a: 0.12}
+    TextSize: 18
+    LineWidth: 0.03
+    Duration: 1
+    DepthTest: 1
+  _channelStyles: []

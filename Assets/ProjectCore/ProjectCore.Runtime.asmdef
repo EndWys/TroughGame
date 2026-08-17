@@ -1,0 +1,20 @@
+{
+    "name": "ProjectCore.Runtime",
+    "rootNamespace": "ProjectCore",
+    "references": [
+        "Zenject",
+        "Fusion.Unity",
+        "AYellowpaper.SerializedCollections",
+        "UniTask",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
