@@ -142,7 +142,6 @@ namespace ProjectCore.Template
             EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_consoleEnabled"), new GUIContent("Runtime Console"));
             EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_cheatsEnabled"), new GUIContent("Cheats"));
             EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_visualizationEnabled"), new GUIContent("Debug Visualization"));
-            EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_commandLineOverridesEnabled"), new GUIContent("Command-line Overrides"));
             EditorGUILayout.Space(8f);
         }
 

@@ -19,7 +19,6 @@ MonoBehaviour:
   _consoleEnabled: 1
   _cheatsEnabled: 1
   _visualizationEnabled: 1
-  _commandLineOverridesEnabled: 1
   _consoleSettings:
     _openOnStart: 1
     _toggleKey: 96

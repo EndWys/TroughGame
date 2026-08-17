@@ -42,8 +42,7 @@ namespace ProjectCore.Template
             ApplyInitialState(DebugToolTypes.Cheats);
             ApplyInitialState(DebugToolTypes.Visualization);
 
-            if (settings.CommandLineOverridesEnabled)
-                ApplyCommandLineOverrides(commandLineService);
+            ApplyCommandLineOverrides(commandLineService);
         }
 
         public bool IsAllowed(DebugToolTypes tool)

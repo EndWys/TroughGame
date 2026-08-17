@@ -17,7 +17,6 @@ namespace ProjectCore.Template
         [SerializeField] private bool _consoleEnabled = true;
         [SerializeField] private bool _cheatsEnabled = true;
         [SerializeField] private bool _visualizationEnabled = true;
-        [SerializeField] private bool _commandLineOverridesEnabled = true;
 
         [Header("Console")]
         [SerializeField] private DebugConsoleSettings _consoleSettings = new();
@@ -26,7 +25,6 @@ namespace ProjectCore.Template
         public bool EnabledInDevelopmentBuild => _enabledInDevelopmentBuild;
         public bool EnabledInReleaseBuild => _enabledInReleaseBuild;
         public bool EnabledOnDedicatedServer => _enabledOnDedicatedServer;
-        public bool CommandLineOverridesEnabled => _commandLineOverridesEnabled;
         public DebugConsoleSettings ConsoleSettings => _consoleSettings;
 
         public bool IsInitiallyEnabled(DebugToolTypes tool)
