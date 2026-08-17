@@ -67,7 +67,20 @@ Assets/
         Scripts/
           Init/
 
-      Prototype/
+      TechnicalPrototype/
+        Features/
+          Bridges/
+          Implementations/
+          Infrastructure/
+          Modules/
+        GraphicResources/
+          Scenes/
+        Resources/
+        Scripts/
+          Init/
+          Navigation/
+
+      Prototype/                 # legacy experiments; not part of runtime flow
         Features/
           Bridges/
           Implementations/
@@ -106,16 +119,21 @@ Contexts define ownership and lifetime boundaries.
 | `Project` | Zenject `ProjectContext`, application-lifetime services, and state that survives every scene change | `ProjectCore.Project` |
 | `Preloader` | The only scene entry point, transient startup initialization, and navigation to the first gameplay scene | `ProjectCore.Preloader` |
 | `GameCore` | Gameplay features reusable by game scenes | `ProjectCore.GameCore` |
-| `Prototype` | One concrete gameplay scene and only the behavior specific to that scene | `ProjectCore.Prototype` |
+| `TechnicalPrototype` | The active technical-prototype gameplay scene and only behavior specific to that scene | `ProjectCore.TechnicalPrototype` |
+| `Prototype` | Legacy experiments retained for reference and excluded from the runtime scene flow | `ProjectCore.Prototype` |
 
 Add a new context when code has a distinct lifetime or composition root. Do
 not create a context merely to group related classes.
 
-`Prototype` is not a special application root. It represents the first
-gameplay-scene context and may later be accompanied or replaced by contexts
-such as `Dungeon`, `Lobby`, or `Tutorial`. Features needed by more than one
-gameplay scene belong to `GameCore`; only scene composition and scene-specific
-behavior belong to the gameplay context.
+`TechnicalPrototype` is not a special application root. It represents the
+current technical-prototype gameplay-scene context and may later be accompanied
+or replaced by contexts such as `Dungeon`, `Lobby`, or `Tutorial`. Features
+needed by more than one gameplay scene belong to `GameCore`; only scene
+composition and scene-specific behavior belong to the gameplay context.
+
+`Prototype` is retained only as legacy experimental source. New runtime code,
+scene definitions, Build Settings, catalogs, and Preloader configuration must
+not depend on it.
 
 `Project` and `Preloader` have deliberately different lifetimes:
 
@@ -287,6 +305,11 @@ validated with static dependency checks in addition to compilation.
 
 ## Runtime Entry Flow
 
+The authored hierarchy for gameplay scenes is standardized separately in
+[`SCENE_HIERARCHY_STANDARD.md`](SCENE_HIERARCHY_STANDARD.md). It defines the
+required scene containers and their ownership without changing the lifecycle
+and DI rules in this document.
+
 `Scene_Preloader` is the only supported application entry point and must be the
 first enabled scene in Build Settings. Gameplay scenes are navigation
 destinations and must not be used to initialize the complete application.
@@ -315,13 +338,13 @@ Scene_Preloader
     ask ISceneFlowService to open the configured first gameplay scene
   unload Scene_Preloader and destroy all Preloader-scoped objects
 
-Scene_Prototype (initial gameplay destination)
-  PrototypeContextInstaller
+Scene_TechnicalPrototype (initial gameplay destination)
+  TechnicalPrototypeContextInstaller
     bind only scene-owned features
     compose shared GameCore features for the scene
   persistent SceneFlowService
     resolve IGameSceneLifecycle from the scene container
-    FeatureInitializationFlow(Prototype features)
+    FeatureInitializationFlow(TechnicalPrototype features)
     expose the scene as ready only after initialization completes
 ```
 
@@ -341,8 +364,8 @@ Startup rules:
   Preloader startup work have completed.
 - Opening a gameplay scene directly is allowed only through a dedicated editor
   development bootstrap that reproduces or redirects through Preloader setup.
-- The initial destination may be `Prototype` during development, but it must be
-  selected by Preloader navigation rather than hard-coded as the application
+- The initial destination is `TechnicalPrototype` during development, and it
+  must be selected by Preloader navigation rather than used as the application
   entry scene in Build Settings.
 - Installers only register bindings. They do not start asynchronous work or
   initialize features.
@@ -1083,6 +1106,9 @@ namespace ProjectCore.Preloader;
 
 // Assets/ProjectCore/Contexts/GameCore/**
 namespace ProjectCore.GameCore;
+
+// Assets/ProjectCore/Contexts/TechnicalPrototype/**
+namespace ProjectCore.TechnicalPrototype;
 
 // Assets/ProjectCore/Contexts/Prototype/**
 namespace ProjectCore.Prototype;

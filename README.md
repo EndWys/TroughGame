@@ -43,5 +43,8 @@ are documented separately in
 Migration stages and their status are documented in
 [`docs/ARCHITECTURE_MIGRATION.md`](docs/ARCHITECTURE_MIGRATION.md).
 
+The standard authored hierarchy for gameplay scenes is documented in
+[`docs/SCENE_HIERARCHY_STANDARD.md`](docs/SCENE_HIERARCHY_STANDARD.md).
+
 The static architecture validator is documented in
 [`Tools/Architecture/README.md`](Tools/Architecture/README.md).

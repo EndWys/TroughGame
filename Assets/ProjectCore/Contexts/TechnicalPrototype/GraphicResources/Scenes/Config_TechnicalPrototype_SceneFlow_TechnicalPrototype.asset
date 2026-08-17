@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20c25ab9a6d94006a4cc40ec757633a1, type: 3}
-  m_Name: Config_Template_SceneFlow_Catalog
+  m_Script: {fileID: 11500000, guid: 683df906d0674aedace92da01786ea3b, type: 3}
+  m_Name: Config_TechnicalPrototype_SceneFlow_TechnicalPrototype
   m_EditorClassIdentifier:
-  _definitions:
-  - {fileID: 11400000, guid: 814c88087255429097376a8b3dd666fc, type: 2}
+  _sceneAsset: {fileID: 102900000, guid: 0f8940161739450f8c0a0404aeebfce2, type: 3}
+  _buildIndex: 1

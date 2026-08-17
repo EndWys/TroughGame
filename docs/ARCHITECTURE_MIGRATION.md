@@ -55,8 +55,8 @@ test assemblies under `Assets/ProjectCore/Contexts/Template/Tests`.
 Status: completed and verified.
 
 Edit Mode and Play Mode tests pass. Play Mode coverage verifies Preloader to
-Prototype startup, Preloader entry-point cleanup, ProjectContext persistence,
-and SceneContext recreation during navigation.
+TechnicalPrototype startup, Preloader entry-point cleanup, ProjectContext
+persistence, and SceneContext recreation during navigation.
 
 Cancellation and initialization-failure fixtures remain optional extensions
 because current production scenes do not provide controllable failure stages.
