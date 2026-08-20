@@ -13,7 +13,7 @@ namespace ProjectCore.GameCore
 
         public override void Init()
         {
-            if (!ShouldPerformMovement())
+            if (!ShouldSimulateMovement())
             {
                 return;
             }
@@ -35,7 +35,7 @@ namespace ProjectCore.GameCore
 
         public override void NetworkTick()
         {
-            if (!ShouldPerformMovement())
+            if (!ShouldSimulateMovement())
             {
                 return;
             }
@@ -60,7 +60,7 @@ namespace ProjectCore.GameCore
 
         protected virtual void BeforeMovementUpdate(TStatePayload payload) { }
 
-        protected virtual bool ShouldPerformMovement()
+        protected virtual bool ShouldSimulateMovement()
         {
             return ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
         }

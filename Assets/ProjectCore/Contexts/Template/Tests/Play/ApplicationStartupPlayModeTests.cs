@@ -45,6 +45,12 @@ namespace ProjectCore.Template
             Assert.That(sceneContext.Container.Resolve<IClassFactory>(), Is.Not.Null);
             Assert.That(sceneContext.Container.Resolve<IScreenNavigationSystem>(), Is.Not.Null);
             Assert.That(sceneContext.Container.Resolve<IPopupSystem>(), Is.Not.Null);
+            Assert.That(
+                sceneContext.Container.Resolve<IMovementSimulationService>(),
+                Is.Not.Null);
+            Assert.That(
+                sceneContext.Container.Resolve<IMovementCollisionStrategy>(),
+                Is.TypeOf<FreeMovementCollisionService>());
             Assert.That(sceneContext.Container.Resolve<IMovementSystem>(), Is.Not.Null);
             Assert.That(sceneContext.Container.Resolve<IDamageableSystem>(), Is.Not.Null);
             Assert.That(sceneContext.Container.Resolve<IDamageSourceSystem>(), Is.Not.Null);
