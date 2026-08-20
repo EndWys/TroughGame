@@ -50,7 +50,7 @@ namespace ProjectCore.Template
                 Is.Not.Null);
             Assert.That(
                 sceneContext.Container.Resolve<IMovementCollisionStrategy>(),
-                Is.TypeOf<FreeMovementCollisionService>());
+                Is.TypeOf<LevelCollisionService>());
             Assert.That(sceneContext.Container.Resolve<IMovementSystem>(), Is.Not.Null);
             Assert.That(sceneContext.Container.Resolve<IDamageableSystem>(), Is.Not.Null);
             Assert.That(sceneContext.Container.Resolve<IDamageSourceSystem>(), Is.Not.Null);

@@ -6,7 +6,7 @@ namespace ProjectCore.GameCore
     {
         protected override void InstallBindings()
         {
-            BindAsSingle<IMovementCollisionStrategy, FreeMovementCollisionService>();
+            BindAsSingle<IMovementCollisionStrategy, LevelCollisionService>();
             BindAsSingle<IMovementSimulationService, MovementSimulationService>();
         }
     }
