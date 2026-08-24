@@ -573,6 +573,7 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Kind>/<Feature>/
     Init/
       <Feature>Feature.cs
     Managers/
+      Accumulators/
       Controllers/
       Coordinators/
       Factories/
@@ -609,6 +610,8 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Kind>/<Feature>/
       Navigation/
       Popups/
       Screens/
+      StateMachines/
+      States/
       Widgets/
 ```
 
@@ -696,6 +699,7 @@ instance for the whole application.
 
 | Folder | Required suffix | Role and usage |
 | --- | --- | --- |
+| `Accumulators` | `Accumulator` | Collects transient values or transitions until an explicit read/consume boundary. The owning feature controls initialization and lifetime. |
 | `Controllers` | `Controller` | Coordinates one non-visual use case or translates input into calls to domain/module contracts. Visual MonoBehaviour controllers belong to `Views/Components`. |
 | `Coordinators` | `Coordinator` | Orchestrates a multi-step workflow involving several services or systems. Application and scene flow coordinators belong here. |
 | `Factories` | `Factory` | Creates injected objects or aggregates and hides construction details. The factory is a singleton even when the objects it creates are transient. |
@@ -760,6 +764,8 @@ class. Plain C# presenters, services, and controllers are not Views.
 | `Navigation` | `NavigationView` | MonoBehaviour presentation for navigation controls, transitions, or scene/screen navigation state. Navigation services remain Managers. |
 | `Popups` | `PopupView` | Popup presentation and serialized popup references. Popup control logic remains an injected Manager. |
 | `Screens` | `ScreenView` | Full-screen or major panel presentation owned by a screen flow. |
+| `StateMachines` | `StateMachine` | MonoBehaviour state machine attached to a scene object or prefab. |
+| `States` | `State` | MonoBehaviour state attached to a scene object or prefab. |
 | `Widgets` | `WidgetView` | Reusable, smaller UI presentation embedded in a screen or popup. |
 
 View rules:
@@ -767,8 +773,10 @@ View rules:
 - Views receive runtime dependencies through DI.
 - Serialized fields reference scene objects, prefabs, assets, and visual
   configuration; they are not service-locator substitutes.
-- A View forwards user or Unity events to an injected contract and renders
-  state. It does not own business rules.
+- A presentation View forwards user or Unity events to an injected contract
+  and renders state. It does not own business rules.
+- A View state machine or state owns only bounded transition/state processing;
+  reusable operations remain in processors, services, or systems.
 - Unity callbacks may update local presentation but must not start feature or
   application initialization.
 
@@ -790,6 +798,10 @@ Every type still lives in a suffix-specific subfolder.
 | `StateMachines` | `StateMachine` | Owns transitions and the active state for a bounded behavior. |
 | `States` | `State` | Implements one behavioral state used by a state machine. Passive stored state remains `Data`. |
 | `Strategies` | `Strategy` | Encapsulates a replaceable algorithm selected by the caller or DI composition. |
+
+`MonoBehaviour` state machines and states belong in `Views/StateMachines` and
+`Views/States`; `Other/StateMachines` and `Other/States` contain only plain C#
+implementations.
 
 If an `Other` object becomes a long-lived DI `AsSingle`, move it to the most
 appropriate Managers role rather than keeping it under `Other`.

@@ -15,9 +15,12 @@ namespace ProjectCore.TechnicalPrototype
         protected override void AddFeatures()
         {
             AddFeature<ObjectFactoryFeature>();
+            AddFeatureFromComponent<InputFeature>();
             AddFeatureFromComponent<ScreenNavigationFeature>();
             AddFeatureFromComponent<PopupFeature>();
             AddFeature<GameCoreFeatureGroup>();
+            AddFeature<PlayerFeature>();
+            AddFeatureFromComponent<LocalCameraFeature>();
         }
     }
 }

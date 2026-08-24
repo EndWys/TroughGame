@@ -77,7 +77,7 @@ namespace ProjectCore.Template
             Assert.That(failedResult.IsFailure, Is.True);
             Assert.That(failedResult.FirstError.Code, Is.EqualTo("Cheat.ExecutionFailed"));
             Assert.That(disabledResult.FirstError.Code, Is.EqualTo("Cheat.Disabled"));
-            Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            Assert.CatchAsync<OperationCanceledException>(async () =>
                 await service.ExecuteAsync("fail", cancellationTokenSource.Token));
             service.Dispose();
             cancellationTokenSource.Dispose();

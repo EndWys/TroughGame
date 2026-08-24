@@ -14,7 +14,8 @@ namespace ProjectCore.GameCore
         private static readonly IReadOnlyList<INetworkEntityComponent> _emptyComponents =
             Array.Empty<INetworkEntityComponent>();
 
-        [SerializeField, Min(0f)] private float _collisionRadius = 0.5f;
+        [SerializeField] private Vector2 _offset = new(0f, 0.2f);
+        [SerializeField, Min(0f)] private float _collisionRadius = 0.4f;
         [SerializeField] private LayerMask _collisionMask = -1;
 
         private IMovementSimulationService _movementSimulationService;
@@ -26,20 +27,32 @@ namespace ProjectCore.GameCore
                 throw new ArgumentNullException(nameof(movementSimulationService));
         }
 
-        [Networked] public Vector2 Velocity { get; set; }
+        public Vector2 Velocity { get; set; }
 
         public Vector2 Position
         {
             get
             {
                 Vector3 position = transform.position;
+                position.x += _offset.x;
+                position.y += _offset.y;
                 return new Vector2(position.x, position.y);
             }
         }
 
         public IReadOnlyList<INetworkEntityComponent> Components => _emptyComponents;
+        public Vector2 Offset => _offset;
         public float CollisionRadius => _collisionRadius;
         public LayerMask CollisionMask => _collisionMask;
+
+        private void OnDrawGizmosSelected()
+        {
+            Color previousColor = Gizmos.color;
+            Gizmos.color = Color.cyan;
+            Vector3 bodyPosition = transform.position + (Vector3)_offset;
+            Gizmos.DrawWireSphere(bodyPosition, _collisionRadius);
+            Gizmos.color = previousColor;
+        }
 
         public void Init()
         {

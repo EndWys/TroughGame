@@ -70,6 +70,20 @@ namespace ProjectCore.Template
                 .AsSingle();
         }
 
+        public void BindFromInstance<TContract, TImplementation>(TImplementation instance)
+            where TImplementation : class, TContract
+        {
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            _container.Bind<TContract>()
+                .To<TImplementation>()
+                .FromInstance(instance)
+                .AsSingle();
+        }
+
         public T Resolve<T>() where T : class
         {
             return _container.Resolve<T>();

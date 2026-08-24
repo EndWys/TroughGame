@@ -93,7 +93,7 @@ namespace ProjectCore.Template
 
         public void ClearAll()
         {
-            _draws.Clear();
+            _draws?.Clear();
             _persistentValues.Clear();
             _persistentWorldLabels.Clear();
             _worldLabelStack.Clear();
@@ -106,7 +106,7 @@ namespace ProjectCore.Template
 
         public void ClearDraws()
         {
-            _draws.Clear();
+            _draws?.Clear();
             _hudController?.Refresh();
         }
 
@@ -125,6 +125,9 @@ namespace ProjectCore.Template
 
         private void LateUpdate()
         {
+            if (_draws == null || _registry == null || _backend == null)
+                return;
+
             _persistentValues.Clear();
             _persistentWorldLabels.Clear();
             _registry.Refresh(_backend);
@@ -139,6 +142,9 @@ namespace ProjectCore.Template
 
         private void OnRenderObject()
         {
+            if (_draws == null)
+                return;
+
             if (_draws.Count == 0)
                 return;
 
@@ -160,6 +166,9 @@ namespace ProjectCore.Template
 
         private void OnGUI()
         {
+            if (_draws == null || _settings == null)
+                return;
+
             DrawWorldLabels();
         }
 

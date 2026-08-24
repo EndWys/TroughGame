@@ -1,5 +1,4 @@
 using System;
-using Domain;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -66,19 +65,58 @@ namespace ProjectCore.GameCore
         public void LocomotionProcessorOnlyAssignsBodyVelocity()
         {
             var body = new FixedMovementBody(Vector2.zero, Vector2.zero);
-            var processor = new TestLocomotionProcessor(
-                new TestMovementState(),
-                body);
+            LocomotionMovementConfig config =
+                ScriptableObject.CreateInstance<LocomotionMovementConfig>();
 
-            bool isCompleted = processor.Execute(
-                new TestMovementPayload(Vector2.up * 5f),
-                out TestMovementStateType resultState);
+            try
+            {
+                var processor = new LocomotionProcessor<
+                    TestMovementStateType,
+                    TestMovementPayload>(body, config);
 
-            Assert.That(isCompleted, Is.False);
-            Assert.That(resultState, Is.EqualTo(TestMovementStateType.Default));
-            AssertVector(body.Velocity, Vector2.up * 5f);
-            AssertVector(body.Position, Vector2.zero);
-            Assert.That(body.AppliedSimulationCount, Is.Zero);
+                bool isCompleted = processor.Execute(
+                    new TestMovementPayload(Vector2.up),
+                    out TestMovementStateType resultState);
+
+                Assert.That(isCompleted, Is.False);
+                Assert.That(resultState, Is.EqualTo(TestMovementStateType.Default));
+                AssertVector(body.Velocity, Vector2.up * config.MaxSpeed);
+                AssertVector(body.Position, Vector2.zero);
+                Assert.That(body.AppliedSimulationCount, Is.Zero);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(config);
+            }
+        }
+
+        [Test]
+        public void LocomotionProcessorPreservesAnalogMagnitudeAndClampsDirection()
+        {
+            var body = new FixedMovementBody(Vector2.zero, Vector2.zero);
+            LocomotionMovementConfig config =
+                ScriptableObject.CreateInstance<LocomotionMovementConfig>();
+
+            try
+            {
+                var processor = new LocomotionProcessor<
+                    TestMovementStateType,
+                    TestMovementPayload>(body, config);
+
+                processor.Execute(
+                    new TestMovementPayload(Vector2.up * 0.5f),
+                    out _);
+                AssertVector(body.Velocity, Vector2.up * config.MaxSpeed * 0.5f);
+
+                processor.Execute(
+                    new TestMovementPayload(Vector2.right * 2f),
+                    out _);
+                AssertVector(body.Velocity, Vector2.right * config.MaxSpeed);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(config);
+            }
         }
 
         [Test]
@@ -128,6 +166,93 @@ namespace ProjectCore.GameCore
 
                 Assert.That(displacement.x, Is.InRange(0.98f, 1f));
                 Assert.That(displacement.y, Is.EqualTo(1f).Within(Tolerance));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(wall);
+            }
+        }
+
+        [Test]
+        public void LevelCollisionPushesBodyOutOfFlatWallOverlap()
+        {
+            GameObject wall = CreateWall();
+
+            try
+            {
+                var body = new FixedMovementBody(
+                    new Vector2(1.01f, 0f),
+                    Vector2.zero,
+                    0.5f,
+                    1 << wall.layer);
+                var service = new LevelCollisionService();
+
+                Vector2 displacement = service.ResolveDisplacement(
+                    body,
+                    Vector2.zero);
+
+                Assert.That(displacement.x, Is.LessThan(-Tolerance));
+                Assert.That(displacement.y, Is.Zero.Within(Tolerance));
+                Assert.That(
+                    body.Position.x + displacement.x,
+                    Is.LessThanOrEqualTo(0.99f + Tolerance));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(wall);
+            }
+        }
+
+        [Test]
+        public void LevelCollisionAllowsMovementOutOfFlatWallOverlap()
+        {
+            GameObject wall = CreateWall();
+
+            try
+            {
+                var body = new FixedMovementBody(
+                    new Vector2(1.01f, 0f),
+                    Vector2.zero,
+                    0.5f,
+                    1 << wall.layer);
+                var service = new LevelCollisionService();
+
+                Vector2 displacement = service.ResolveDisplacement(
+                    body,
+                    Vector2.left * 0.25f);
+
+                Assert.That(displacement.x, Is.LessThan(-0.25f));
+                Assert.That(displacement.y, Is.Zero.Within(Tolerance));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(wall);
+            }
+        }
+
+        [Test]
+        public void LevelCollisionRecoversBodyFromInsideFlatWall()
+        {
+            GameObject wall = CreateWall();
+
+            try
+            {
+                var body = new FixedMovementBody(
+                    new Vector2(2f, 0f),
+                    Vector2.zero,
+                    0.5f,
+                    1 << wall.layer);
+                var service = new LevelCollisionService();
+
+                Vector2 displacement = service.ResolveDisplacement(
+                    body,
+                    Vector2.zero);
+
+                Assert.That(displacement.x, Is.GreaterThan(1f));
+                Assert.That(displacement.y, Is.Zero.Within(Tolerance));
+                Assert.That(
+                    body.Position.x + displacement.x,
+                    Is.GreaterThanOrEqualTo(3.01f - Tolerance));
             }
             finally
             {
@@ -235,57 +360,19 @@ namespace ProjectCore.GameCore
             }
         }
 
-        private sealed class TestLocomotionProcessor :
-            BaseMovementStateProcessor<
-                TestMovementStateType,
-                TestMovementState,
-                TestMovementPayload>
-        {
-            private readonly IMovementBodyVelocityMutator _movementBody;
-
-            public TestLocomotionProcessor(
-                TestMovementState state,
-                IMovementBodyVelocityMutator movementBody) : base(state)
-            {
-                _movementBody = movementBody ??
-                    throw new ArgumentNullException(nameof(movementBody));
-            }
-
-            public override bool Execute(
-                TestMovementPayload payload,
-                out TestMovementStateType resultState)
-            {
-                _movementBody.Velocity = payload.Velocity;
-                return Continue(out resultState);
-            }
-        }
-
-        private sealed class TestMovementState :
-            IState<TestMovementStateType, TestMovementPayload>
-        {
-            public void Enter() { }
-
-            public TestMovementStateType Tick(TestMovementPayload payload)
-            {
-                return TestMovementStateType.Default;
-            }
-
-            public void Exit() { }
-        }
-
         private enum TestMovementStateType
         {
             Default = 0,
         }
 
-        private readonly struct TestMovementPayload
+        private readonly struct TestMovementPayload : ILocomotionPayload
         {
-            public TestMovementPayload(Vector2 velocity)
+            public TestMovementPayload(Vector2 direction)
             {
-                Velocity = velocity;
+                Direction = direction;
             }
 
-            public Vector2 Velocity { get; }
+            public Vector2 Direction { get; }
         }
     }
 }

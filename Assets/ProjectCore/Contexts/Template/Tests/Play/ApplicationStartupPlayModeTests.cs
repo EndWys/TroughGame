@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Domain;
@@ -43,6 +44,9 @@ namespace ProjectCore.Template
             Assert.That(objectProvider, Is.SameAs(providerComponent));
             AssertTechnicalPrototypeHierarchy(sceneContext, providerComponent);
             Assert.That(sceneContext.Container.Resolve<IClassFactory>(), Is.Not.Null);
+            Assert.That(
+                sceneContext.Container.Resolve<ILocalInputAccumulator>(),
+                Is.Not.Null);
             Assert.That(sceneContext.Container.Resolve<IScreenNavigationSystem>(), Is.Not.Null);
             Assert.That(sceneContext.Container.Resolve<IPopupSystem>(), Is.Not.Null);
             Assert.That(
@@ -52,8 +56,12 @@ namespace ProjectCore.Template
                 sceneContext.Container.Resolve<IMovementCollisionStrategy>(),
                 Is.TypeOf<LevelCollisionService>());
             Assert.That(sceneContext.Container.Resolve<IMovementSystem>(), Is.Not.Null);
+            Assert.That(sceneContext.Container.Resolve<IInputBufferSystem>(), Is.Not.Null);
             Assert.That(sceneContext.Container.Resolve<IDamageableSystem>(), Is.Not.Null);
             Assert.That(sceneContext.Container.Resolve<IDamageSourceSystem>(), Is.Not.Null);
+            Assert.That(
+                sceneContext.Container.Resolve<List<INetworkEntityFactory>>(),
+                Has.Exactly(1).TypeOf<PlayerNetworkEntityFactory>());
             Assert.That(Camera.main, Is.Not.Null,
                 "The technical prototype needs a camera to clear UI Toolkit and IMGUI frames.");
 
@@ -200,21 +208,27 @@ namespace ProjectCore.Template
                 "EventSystem",
                 "ScreenNavigationUI",
                 "PopupUI");
-            AssertDirectChildren(gameplayRoot);
-            AssertDirectChildren(environmentRoot);
+            AssertDirectChildren(gameplayRoot, "Player");
+            AssertDirectChildren(environmentRoot, "Level");
 
             Transform sceneFeatures = contextRoot.GetChild(1);
             Transform screenNavigationUI = uiRoot.GetChild(1);
             Transform popupUI = uiRoot.GetChild(2);
+            Transform player = gameplayRoot.GetChild(0);
+            Transform playerSpawnController = player.GetChild(0);
+            Transform spawnPoints = player.GetChild(1);
+            Transform level = environmentRoot.GetChild(0);
 
             Assert.That(sceneContext.transform, Is.SameAs(contextRoot.GetChild(0)));
             Assert.That(providerComponent.transform, Is.SameAs(networkRoot.GetChild(2)));
             Assert.That(
                 sceneFeatures.GetComponent<TechnicalPrototypeContextInstaller>(),
                 Is.Not.Null);
+            Assert.That(sceneFeatures.GetComponent<InputFeature>(), Is.Not.Null);
             Assert.That(sceneFeatures.GetComponent<ScreenNavigationFeature>(), Is.Not.Null);
             Assert.That(sceneFeatures.GetComponent<PopupFeature>(), Is.Not.Null);
             Assert.That(sceneContext.GetComponent<TechnicalPrototypeContextInstaller>(), Is.Null);
+            Assert.That(sceneContext.GetComponent<InputFeature>(), Is.Null);
             Assert.That(sceneContext.GetComponent<ScreenNavigationFeature>(), Is.Null);
             Assert.That(sceneContext.GetComponent<PopupFeature>(), Is.Null);
             Assert.That(
@@ -225,6 +239,23 @@ namespace ProjectCore.Template
                 Is.True);
             Assert.That(HasComponentNamed(popupUI.gameObject, "UIDocument"), Is.True);
             Assert.That(HasComponentNamed(popupUI.gameObject, "PopupComponent"), Is.True);
+            AssertDirectChildren(player, "PlayerSpawnController", "SpawnPoints");
+            Assert.That(
+                playerSpawnController.GetComponent<PlayerSpawnComponent>(),
+                Is.Not.Null);
+            Assert.That(
+                playerSpawnController.GetComponent<PlayerNetworkInputComponent>(),
+                Is.Not.Null);
+            Assert.That(
+                HasComponentNamed(playerSpawnController.gameObject, "NetworkObject"),
+                Is.True);
+            AssertDirectChildren(
+                spawnPoints,
+                "SpawnPoint_01",
+                "SpawnPoint_02",
+                "SpawnPoint_03",
+                "SpawnPoint_04");
+            AssertDirectChildren(level, "Visual", "Collision");
         }
 
         private static void AssertDirectChildren(Transform parent, params string[] childNames)

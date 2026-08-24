@@ -345,6 +345,7 @@ function Test-FeatureScriptPath {
             Settings = @('Settings')
         }
         Managers = @{
+            Accumulators = @('Accumulator')
             Controllers = @('Controller')
             Coordinators = @('Coordinator')
             Factories = @('Factory')
@@ -385,6 +386,8 @@ function Test-FeatureScriptPath {
             Navigation = @('NavigationView')
             Popups = @('PopupView')
             Screens = @('ScreenView')
+            StateMachines = @('StateMachine')
+            States = @('State')
             Widgets = @('WidgetView')
         }
     }
@@ -598,6 +601,8 @@ function Test-ContextSharedScriptPath {
                 Navigation = @('NavigationView')
                 Popups = @('PopupView')
                 Screens = @('ScreenView')
+                StateMachines = @('StateMachine')
+                States = @('State')
                 Widgets = @('WidgetView')
             }
         }

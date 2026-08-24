@@ -13,11 +13,6 @@ namespace ProjectCore.GameCore
 
         public override void Init()
         {
-            if (!ShouldSimulateMovement())
-            {
-                return;
-            }
-
             InitializeStateMachine();
 
             foreach (TMovementState state in States.Values)
@@ -25,7 +20,10 @@ namespace ProjectCore.GameCore
                 InitMovementState(state);
             }
 
-            ChangeState(InitialState);
+            if (ShouldSimulateMovement())
+            {
+                ChangeState(InitialState);
+            }
         }
 
         public sealed override Dictionary<TStateType, TMovementState> CreateStatesDictionary()
