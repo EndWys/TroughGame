@@ -27,7 +27,15 @@ namespace ProjectCore.GameCore
                 throw new ArgumentNullException(nameof(movementSimulationService));
         }
 
-        public Vector2 Velocity { get; set; }
+        private Vector2 _velocity;
+
+        public Vector2 Velocity => _velocity;
+
+        Vector2 IMovementBodyVelocityMutator.Velocity
+        {
+            get => _velocity;
+            set => _velocity = value;
+        }
 
         public Vector2 Position
         {
@@ -72,11 +80,11 @@ namespace ProjectCore.GameCore
         {
         }
 
-        public void ApplySimulation(
+        void IMovementBodyMutator.ApplySimulation(
             Vector2 resolvedVelocity,
             Vector2 resolvedDisplacement)
         {
-            Velocity = resolvedVelocity;
+            _velocity = resolvedVelocity;
 
             Vector3 position = transform.position;
             position.x += resolvedDisplacement.x;

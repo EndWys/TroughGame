@@ -20,15 +20,18 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField, Range(-1f, 1f)]
         private float _zoomFactor;
 
-        private NetworkEntityRegistry _networkEntityRegistry;
+        private ICameraTargetRegistry _cameraTargetRegistry;
         private Transform _target;
         private Vector3 _smoothVelocity;
         private float _initialOrthographicSize;
 
         [Inject]
-        private void Construct(NetworkEntityRegistry networkEntityRegistry)
+        private void Construct(ICameraTargetRegistry cameraTargetRegistry)
         {
-            _networkEntityRegistry = networkEntityRegistry;
+            _cameraTargetRegistry = cameraTargetRegistry ??
+                throw new System.ArgumentNullException(nameof(cameraTargetRegistry));
+            _cameraTargetRegistry.TargetChanged += OnTargetChanged;
+            OnTargetChanged(_cameraTargetRegistry.CurrentTarget);
         }
 
         public float ZoomFactor => _zoomFactor;
@@ -55,7 +58,6 @@ namespace ProjectCore.TechnicalPrototype
 
             UpdateZoom();
             FitViewportToLevelBounds();
-            TryGetLocalPlayerTarget();
 
             if (_target == null)
             {
@@ -84,27 +86,17 @@ namespace ProjectCore.TechnicalPrototype
             _zoomFactor = Mathf.Clamp(zoomFactor, -1f, 1f);
         }
 
-        private void TryGetLocalPlayerTarget()
+        private void OnTargetChanged(ICameraTarget cameraTarget)
         {
-            if (_target != null && _target.gameObject.activeInHierarchy)
-            {
-                return;
-            }
+            _target = cameraTarget?.TargetTransform;
+            _smoothVelocity = Vector3.zero;
+        }
 
-            _target = null;
-
-            if (_networkEntityRegistry == null)
+        private void OnDestroy()
+        {
+            if (_cameraTargetRegistry != null)
             {
-                return;
-            }
-
-            foreach (BaseNetworkEntityRoot entity in _networkEntityRegistry.EntitiesById.Values)
-            {
-                if (entity != null && entity.HasInputAuthority)
-                {
-                    _target = entity.transform;
-                    return;
-                }
+                _cameraTargetRegistry.TargetChanged -= OnTargetChanged;
             }
         }
 

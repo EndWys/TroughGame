@@ -13,6 +13,8 @@ namespace ProjectCore.TechnicalPrototype
         private PlayerMovementStateMachine _movementStateMachine;
         [SerializeField]
         private TransformMovementBodyComponent _movementBodyComponent;
+        [SerializeField]
+        private CameraTargetComponent _cameraTargetComponent;
 
         [Networked] public PlayerMovementState CurrentState { get; private set; }
         [Networked] public PlayerMovementState PreviousState { get; private set; }
@@ -34,6 +36,7 @@ namespace ProjectCore.TechnicalPrototype
             {
                 _movementStateMachine,
                 _movementBodyComponent,
+                _cameraTargetComponent,
             };
         }
 

@@ -33,6 +33,9 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(
                 prefab.GetComponent<PlayerNetworkEntityComponent>(),
                 Is.Not.Null);
+            Assert.That(
+                prefab.GetComponent<CameraTargetComponent>(),
+                Is.Not.Null);
 
             Transform movement = prefab.transform.Find("Movement");
 

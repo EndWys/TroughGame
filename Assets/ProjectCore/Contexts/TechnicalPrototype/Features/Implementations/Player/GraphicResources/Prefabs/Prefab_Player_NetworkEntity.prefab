@@ -106,6 +106,7 @@ GameObject:
   - component: {fileID: 1957437196478259228}
   - component: {fileID: 8489854188152957200}
   - component: {fileID: 7885406040919925618}
+  - component: {fileID: 930001001}
   m_Layer: 0
   m_Name: Prefab_Player_NetworkEntity
   m_TagString: Untagged
@@ -150,6 +151,7 @@ MonoBehaviour:
   - {fileID: 7412723123344737272}
   - {fileID: 8489854188152957200}
   - {fileID: 7885406040919925618}
+  - {fileID: 930001001}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &7412723123344737272
 MonoBehaviour:
@@ -213,6 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerNetworkEntityComponent
   _movementStateMachine: {fileID: 3893509649565096512}
   _movementBodyComponent: {fileID: 7885406040919925618}
+  _cameraTargetComponent: {fileID: 930001001}
   _CurrentState: 0
   _PreviousState: 0
 --- !u!114 &7885406040919925618
@@ -232,6 +235,18 @@ MonoBehaviour:
   _collisionMask:
     serializedVersion: 2
     m_Bits: 512
+--- !u!114 &930001001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309667084643460771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce6f32d7aa134e21b7fea8ba88517787, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.CameraTargetComponent
 --- !u!1 &5577852976947837429
 GameObject:
   m_ObjectHideFlags: 0
