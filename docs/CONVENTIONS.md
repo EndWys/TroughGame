@@ -58,7 +58,7 @@ adapt reusable feature-framework behavior to its external contracts.
   Scripts/
     Abstract/
     DataHolders/
-      Attributes/ Configs/ Data/ Definitions/ Descriptors/ DTOs/ Payloads/ Settings/
+      Attributes/ Configs/ Data/ Definitions/ Descriptors/ DTOs/ Models/ Payloads/ Settings/
     Enums/
     Init/
     Managers/
@@ -143,6 +143,7 @@ services, load assets, or execute workflows.
 | Definitions | `Definition` | Authored registration of a typed project resource or route. |
 | Descriptors | `Descriptor` | Immutable description of how another object is identified or processed. |
 | DTOs | `DTO` | Serialization, network, backend, or persistence boundary shape. |
+| Models | `Model` | Long-lived runtime state representation owned by a feature. |
 | Payloads | `Payload` | Parameters for commands, factories, navigation, or signals. |
 | Settings | `Settings` | Immutable settings supplied for an object or context lifetime. |
 

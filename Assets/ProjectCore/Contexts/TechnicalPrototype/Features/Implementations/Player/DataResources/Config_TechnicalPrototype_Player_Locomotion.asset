@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fed2e59757d70e4499203f5ba2b8fa3, type: 3}
   m_Name: Config_TechnicalPrototype_Player_Locomotion
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.LocomotionMovementConfig
-  _maxSpeed: 5
+  _maxSpeed: 2.5

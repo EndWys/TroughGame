@@ -29,7 +29,9 @@ namespace ProjectCore.GameCore
             Vector2 resolvedDisplacement = _collisionStrategy.ResolveDisplacement(
                 body,
                 desiredDisplacement);
-            Vector2 resolvedVelocity = resolvedDisplacement / deltaTime;
+            Vector2 resolvedVelocity = desiredDisplacement.sqrMagnitude <= Mathf.Epsilon
+                ? Vector2.zero
+                : resolvedDisplacement / deltaTime;
 
             body.ApplySimulation(resolvedVelocity, resolvedDisplacement);
         }

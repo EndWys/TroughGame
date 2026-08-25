@@ -56,7 +56,7 @@ namespace ProjectCore.GameCore
         }
 
         public void BufferCommand(
-            InputBufferCommandData command,
+            InputBufferCommandDescriptor command,
             float lifetimeSeconds)
         {
             if (command.CommandId == 0 || lifetimeSeconds <= 0f || Runner == null)

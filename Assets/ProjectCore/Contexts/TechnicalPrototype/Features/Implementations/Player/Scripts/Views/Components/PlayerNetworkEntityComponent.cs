@@ -24,7 +24,7 @@ namespace ProjectCore.TechnicalPrototype
         [Networked] public PlayerMovementState CurrentState { get; private set; }
         [Networked] public PlayerMovementState PreviousState { get; private set; }
         [Networked] public TickTimer MovementStateTimer { get; private set; }
-        [Networked] private InputBufferStateData InputBufferStateValue { get; set; }
+        [Networked] private InputBufferStateModel InputBufferStateValue { get; set; }
 
         public bool IsStateTimerFinished => MovementStateTimer.IsRunning && MovementStateTimer.ExpiredOrNotRunning(Runner);
 
@@ -47,17 +47,17 @@ namespace ProjectCore.TechnicalPrototype
             MovementStateTimer = TickTimer.None;
         }
 
-        InputBufferCommandData IInputBufferStateAccessor.BufferedCommand =>
-            InputBufferStateValue.BufferedCommand;
+        public InputBufferCommandDescriptor BufferedCommand =>
+            new InputBufferCommandDescriptor(InputBufferStateValue.BufferedCommandId);
 
-        TickTimer IInputBufferStateAccessor.BufferedCommandTimer =>
+        public TickTimer BufferedCommandTimer =>
             InputBufferStateValue.BufferedCommandTimer;
 
-        bool IInputBufferStateAccessor.IsLocked =>
+        public bool IsLocked =>
             InputBufferStateValue.IsLocked;
 
-        void IInputBufferStateMutator.SetBufferedCommand(
-            InputBufferCommandData command,
+        public void SetBufferedCommand(
+            InputBufferCommandDescriptor command,
             TickTimer expirationTimer)
         {
             if (command.CommandId == 0)
@@ -67,30 +67,30 @@ namespace ProjectCore.TechnicalPrototype
                     nameof(command));
             }
 
-            InputBufferStateData state = InputBufferStateValue;
-            state.BufferedCommand = command;
+            InputBufferStateModel state = InputBufferStateValue;
+            state.BufferedCommandId = command.CommandId;
             state.BufferedCommandTimer = expirationTimer;
             InputBufferStateValue = state;
         }
 
-        void IInputBufferStateMutator.ClearBufferedCommand()
+        public void ClearBufferedCommand()
         {
-            InputBufferStateData state = InputBufferStateValue;
-            state.BufferedCommand = default;
+            InputBufferStateModel state = InputBufferStateValue;
+            state.BufferedCommandId = 0;
             state.BufferedCommandTimer = TickTimer.None;
             InputBufferStateValue = state;
         }
 
-        void IInputBufferStateMutator.LockInput()
+        public void LockInput()
         {
-            InputBufferStateData state = InputBufferStateValue;
+            InputBufferStateModel state = InputBufferStateValue;
             state.IsLocked = true;
             InputBufferStateValue = state;
         }
 
-        void IInputBufferStateMutator.UnlockInput()
+        public void UnlockInput()
         {
-            InputBufferStateData state = InputBufferStateValue;
+            InputBufferStateModel state = InputBufferStateValue;
             state.IsLocked = false;
             InputBufferStateValue = state;
         }

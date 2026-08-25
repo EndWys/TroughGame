@@ -46,8 +46,16 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(
                 movement.GetComponent<PlayerMovementStateMachine>(),
                 Is.Not.Null);
+            Assert.That(movement.GetComponent<IdleState>(), Is.Not.Null);
             Assert.That(movement.GetComponent<LocomotionState>(), Is.Not.Null);
             Assert.That(movement.GetComponent<DodgeState>(), Is.Not.Null);
+
+            SerializedObject movementStateMachine = new SerializedObject(
+                movement.GetComponent<PlayerMovementStateMachine>());
+            Assert.That(
+                movementStateMachine.FindProperty("_idleState")
+                    .objectReferenceValue,
+                Is.Not.Null);
 
             TransformMovementBodyComponent movementBody =
                 prefab.GetComponent<TransformMovementBodyComponent>();
@@ -70,18 +78,13 @@ namespace ProjectCore.TechnicalPrototype
             SerializedObject locomotionState = new SerializedObject(
                 movement.GetComponent<LocomotionState>());
             Assert.That(
-                locomotionState.FindProperty("_locomotionConfig")
+                locomotionState.FindProperty("_locomotionMovementConfig")
                     .objectReferenceValue,
                 Is.Not.Null);
             Assert.That(
                 locomotionState.FindProperty("_movementBody")
                     .objectReferenceValue,
                 Is.Not.Null);
-            Assert.That(
-                locomotionState.FindProperty("_dodgeConfig")
-                    .objectReferenceValue,
-                Is.Not.Null);
-
             SerializedObject dodgeState = new SerializedObject(
                 movement.GetComponent<DodgeState>());
             Assert.That(
@@ -89,7 +92,7 @@ namespace ProjectCore.TechnicalPrototype
                     .objectReferenceValue,
                 Is.Not.Null);
             Assert.That(
-                dodgeState.FindProperty("_dodgeConfig")
+                dodgeState.FindProperty("_dodgeMovementConfig")
                     .objectReferenceValue,
                 Is.Not.Null);
         }

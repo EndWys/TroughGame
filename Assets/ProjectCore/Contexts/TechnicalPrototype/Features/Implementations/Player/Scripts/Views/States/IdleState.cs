@@ -6,13 +6,9 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class LocomotionState :
+    public sealed class IdleState :
         BaseMovementState<PlayerMovementState, PlayerMovementPayload>
     {
-        [SerializeField]
-        private LocomotionMovementConfig _locomotionMovementConfig;
-        [SerializeField]
-        private TransformMovementBodyComponent _movementBody;
         private IInputBufferController _inputBufferController;
 
         [Inject]
@@ -25,25 +21,14 @@ namespace ProjectCore.TechnicalPrototype
 
         public override void Exit() { }
 
-        protected override IReadOnlyList<IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>>
+        protected override IReadOnlyList<
+            IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>>
             CreateMovementProcessors()
         {
-            if (_movementBody == null)
-            {
-                throw new InvalidOperationException(
-                    "Locomotion state requires a movement body reference.");
-            }
-
             if (_inputBufferController == null)
             {
                 throw new InvalidOperationException(
-                    "Locomotion state requires an input command controller.");
-            }
-
-            if (_locomotionMovementConfig == null)
-            {
-                throw new InvalidOperationException(
-                    "Locomotion state requires a locomotion movement config reference.");
+                    "Idle state requires an input buffer controller.");
             }
 
             return new IMovementStateProcessor<
@@ -56,19 +41,14 @@ namespace ProjectCore.TechnicalPrototype
                     inputBufferController: _inputBufferController,
                     dodgeCommandId: MovementInputCommandConstants.DodgeCommandId,
                     dodgeMovementState: PlayerMovementState.Dodge),
-                new LocomotionProcessor<
+                new DirectionalLocomotionTransitionProcessor<
                     PlayerMovementState,
                     PlayerMovementPayload>(
-                    movementBodyVelocityMutator: _movementBody,
-                    locomotionMovementConfig: _locomotionMovementConfig),
-                new NoDirectionTransitionProcessor<
-                    PlayerMovementState,
-                    PlayerMovementPayload>(
-                    idleMovementState: PlayerMovementState.Idle),
+                    locomotionMovementState: PlayerMovementState.Locomotion),
             };
         }
 
         protected override PlayerMovementState FallbackState =>
-            PlayerMovementState.Locomotion;
+            PlayerMovementState.Idle;
     }
 }

@@ -8,24 +8,24 @@ namespace ProjectCore.GameCore
         where TStateType : struct, Enum
         where TStatePayload : struct, ILocomotionPayload
     {
-        private readonly IMovementBodyVelocityMutator _movementBody;
+        private readonly IMovementBodyVelocityMutator _movementBodyVelocityMutator;
         private readonly IMovementStateTimerAccessor _movementStateTimerAccessor;
-        private readonly DodgeMovementConfig _dodgeConfig;
-        private readonly TStateType _locomotionState;
+        private readonly DodgeMovementConfig _dodgeMovementConfig;
+        private readonly TStateType _locomotionMovementState;
 
         public DodgeProcessor(
-            IMovementBodyVelocityMutator movementBody,
+            IMovementBodyVelocityMutator movementBodyVelocityMutator,
             IMovementStateTimerAccessor movementStateTimerAccessor,
-            DodgeMovementConfig dodgeConfig,
-            TStateType locomotionState)
+            DodgeMovementConfig dodgeMovementConfig,
+            TStateType locomotionMovementState)
         {
-            _movementBody = movementBody ??
-                throw new ArgumentNullException(nameof(movementBody));
+            _movementBodyVelocityMutator = movementBodyVelocityMutator ??
+                throw new ArgumentNullException(nameof(movementBodyVelocityMutator));
             _movementStateTimerAccessor = movementStateTimerAccessor ??
                 throw new ArgumentNullException(nameof(movementStateTimerAccessor));
-            _dodgeConfig = dodgeConfig ??
-                throw new ArgumentNullException(nameof(dodgeConfig));
-            _locomotionState = locomotionState;
+            _dodgeMovementConfig = dodgeMovementConfig ??
+                throw new ArgumentNullException(nameof(dodgeMovementConfig));
+            _locomotionMovementState = locomotionMovementState;
         }
 
         public bool Execute(
@@ -34,14 +34,14 @@ namespace ProjectCore.GameCore
         {
             if (_movementStateTimerAccessor.IsStateTimerFinished)
             {
-                _movementBody.Velocity = Vector2.zero;
-                resultState = _locomotionState;
+                _movementBodyVelocityMutator.Velocity = Vector2.zero;
+                resultState = _locomotionMovementState;
                 return true;
             }
 
-            _movementBody.Velocity =
+            _movementBodyVelocityMutator.Velocity =
                 Vector2.ClampMagnitude(payload.Direction, 1f) *
-                _dodgeConfig.Speed;
+                _dodgeMovementConfig.Speed;
             resultState = default;
             return false;
         }

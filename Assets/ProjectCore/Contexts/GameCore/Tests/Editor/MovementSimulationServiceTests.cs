@@ -39,6 +39,39 @@ namespace ProjectCore.GameCore
         }
 
         [Test]
+        public void SimulateDoesNotTurnDepenetrationIntoVelocityWithoutInput()
+        {
+            GameObject wall = CreateWall();
+
+            try
+            {
+                var body = new FixedMovementBody(
+                    new Vector2(1.01f, 0f),
+                    Vector2.zero,
+                    0.5f,
+                    1 << wall.layer);
+                var service = new MovementSimulationService(
+                    new LevelCollisionService());
+
+                service.Simulate(body, 0.1f);
+
+                Assert.That(body.Velocity, Is.EqualTo(Vector2.zero));
+                Assert.That(
+                    body.Position.x,
+                    Is.LessThanOrEqualTo(0.99f + Tolerance));
+
+                Vector2 recoveredPosition = body.Position;
+                service.Simulate(body, 0.1f);
+
+                AssertVector(body.Position, recoveredPosition);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(wall);
+            }
+        }
+
+        [Test]
         public void SimulateIgnoresNonPositiveDeltaTime()
         {
             var body = new FixedMovementBody(Vector2.one, Vector2.right);
@@ -72,7 +105,9 @@ namespace ProjectCore.GameCore
             {
                 var processor = new LocomotionProcessor<
                     TestMovementStateType,
-                    TestMovementPayload>(body, config);
+                    TestMovementPayload>(
+                    movementBodyVelocityMutator: body,
+                    locomotionMovementConfig: config);
 
                 bool isCompleted = processor.Execute(
                     new TestMovementPayload(Vector2.up),
@@ -101,7 +136,9 @@ namespace ProjectCore.GameCore
             {
                 var processor = new LocomotionProcessor<
                     TestMovementStateType,
-                    TestMovementPayload>(body, config);
+                    TestMovementPayload>(
+                    movementBodyVelocityMutator: body,
+                    locomotionMovementConfig: config);
 
                 processor.Execute(
                     new TestMovementPayload(Vector2.up * 0.5f),

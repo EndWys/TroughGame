@@ -8,17 +8,17 @@ namespace ProjectCore.GameCore
         where TStateType : struct, Enum
         where TStatePayload : struct, ILocomotionPayload
     {
-        private readonly IMovementBodyVelocityMutator _movementBody;
-        private readonly LocomotionMovementConfig _locomotionConfig;
+        private readonly IMovementBodyVelocityMutator _movementBodyVelocityMutator;
+        private readonly LocomotionMovementConfig _locomotionMovementConfig;
 
         public LocomotionProcessor(
-            IMovementBodyVelocityMutator movementBody,
-            LocomotionMovementConfig locomotionConfig)
+            IMovementBodyVelocityMutator movementBodyVelocityMutator,
+            LocomotionMovementConfig locomotionMovementConfig)
         {
-            _movementBody = movementBody ??
-                throw new ArgumentNullException(nameof(movementBody));
-            _locomotionConfig = locomotionConfig ??
-                throw new ArgumentNullException(nameof(locomotionConfig));
+            _movementBodyVelocityMutator = movementBodyVelocityMutator ??
+                throw new ArgumentNullException(nameof(movementBodyVelocityMutator));
+            _locomotionMovementConfig = locomotionMovementConfig ??
+                throw new ArgumentNullException(nameof(locomotionMovementConfig));
         }
 
         public bool Execute(
@@ -26,7 +26,8 @@ namespace ProjectCore.GameCore
             out TStateType resultState)
         {
             Vector2 direction = Vector2.ClampMagnitude(payload.Direction, 1f);
-            _movementBody.Velocity = direction * _locomotionConfig.MaxSpeed;
+            _movementBodyVelocityMutator.Velocity =
+                direction * _locomotionMovementConfig.MaxSpeed;
 
             resultState = default;
             return false;

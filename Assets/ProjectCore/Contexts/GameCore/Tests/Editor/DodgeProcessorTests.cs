@@ -9,17 +9,17 @@ namespace ProjectCore.GameCore
         public void TransitionProcessorDetectsMatchingBufferedCommandWithoutConsumingIt()
         {
             var inputBufferController = new TestInputBufferController();
-            inputBufferController.BufferCommand(new InputBufferCommandData
-            {
-                CommandId = MovementInputCommandConstants.DodgeCommandId,
-            }, 0.15f);
+            inputBufferController.BufferCommand(
+                new InputBufferCommandDescriptor(
+                    MovementInputCommandConstants.DodgeCommandId),
+                0.15f);
 
             var processor = new DodgeTransitionProcessor<
                 TestState,
                 TestPayload>(
-                inputBufferController,
-                MovementInputCommandConstants.DodgeCommandId,
-                TestState.Dodge);
+                inputBufferController: inputBufferController,
+                dodgeCommandId: MovementInputCommandConstants.DodgeCommandId,
+                dodgeMovementState: TestState.Dodge);
 
             bool transitioned = processor.Execute(
                 default,
@@ -48,10 +48,10 @@ namespace ProjectCore.GameCore
                 var processor = new DodgeProcessor<
                     TestState,
                     TestPayload>(
-                    body,
-                    timerAccessor,
-                    config,
-                    TestState.Locomotion);
+                    movementBodyVelocityMutator: body,
+                    movementStateTimerAccessor: timerAccessor,
+                    dodgeMovementConfig: config,
+                    locomotionMovementState: TestState.Locomotion);
 
                 bool transitioned = processor.Execute(
                     new TestPayload(Vector2.right),
@@ -86,10 +86,10 @@ namespace ProjectCore.GameCore
                 var processor = new DodgeProcessor<
                     TestState,
                     TestPayload>(
-                    body,
-                    timerAccessor,
-                    config,
-                    TestState.Locomotion);
+                    movementBodyVelocityMutator: body,
+                    movementStateTimerAccessor: timerAccessor,
+                    dodgeMovementConfig: config,
+                    locomotionMovementState: TestState.Locomotion);
 
                 bool transitioned = processor.Execute(
                     default,
@@ -125,7 +125,7 @@ namespace ProjectCore.GameCore
             IInputBufferController
         {
             public bool IsLocked { get; set; }
-            public InputBufferCommandData BufferedCommand { get; private set; }
+            public InputBufferCommandDescriptor BufferedCommand { get; private set; }
 
             public bool HasBufferedCommand(ushort commandId)
             {
@@ -133,7 +133,7 @@ namespace ProjectCore.GameCore
             }
 
             public void BufferCommand(
-                InputBufferCommandData command,
+                InputBufferCommandDescriptor command,
                 float lifetimeSeconds)
             {
                 BufferedCommand = command;

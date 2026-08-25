@@ -271,7 +271,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7603317647395305314}
   - component: {fileID: 3893509649565096512}
+  - component: {fileID: 964983221566649931}
   - component: {fileID: 964983221566649929}
+  - component: {fileID: 964983221566649930}
   m_Layer: 0
   m_Name: Movement
   m_TagString: Untagged
@@ -306,6 +308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36006b72287c01f42adcf80ba9b1a4ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerMovementStateMachine
+  _idleState: {fileID: 964983221566649931}
   _locomotionState: {fileID: 964983221566649929}
   _dodgeState: {fileID: 964983221566649930}
   _inputSource: {fileID: 930001002}
@@ -321,9 +324,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82e20762912fef7499245a5a099de624, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.LocomotionState
-  _locomotionConfig: {fileID: 11400000, guid: fbdd22e21efcc03479e35cd0748b2b88, type: 2}
+  _locomotionMovementConfig: {fileID: 11400000, guid: fbdd22e21efcc03479e35cd0748b2b88, type: 2}
   _movementBody: {fileID: 7885406040919925618}
-  _dodgeConfig: {fileID: 11400000, guid: 7b064509350d44c5a34d122b4e0f3a26, type: 2}
 --- !u!114 &964983221566649930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,4 +339,16 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.DodgeState
   _movementBody: {fileID: 7885406040919925618}
-  _dodgeConfig: {fileID: 11400000, guid: 7b064509350d44c5a34d122b4e0f3a26, type: 2}
+  _dodgeMovementConfig: {fileID: 11400000, guid: 7b064509350d44c5a34d122b4e0f3a26, type: 2}
+--- !u!114 &964983221566649931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5577852976947837429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49081024c46c4eaf9acedafcc609088c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.IdleState

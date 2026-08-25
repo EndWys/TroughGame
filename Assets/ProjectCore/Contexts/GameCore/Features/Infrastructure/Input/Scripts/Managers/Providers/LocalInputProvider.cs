@@ -8,10 +8,8 @@ namespace ProjectCore.GameCore
     {
         private readonly Dictionary<string, InputAction> _actions =
             new Dictionary<string, InputAction>(StringComparer.Ordinal);
-        private readonly Dictionary<Guid, ButtonTransitions> _buttonTransitions =
-            new Dictionary<Guid, ButtonTransitions>();
-        private readonly Dictionary<Guid, LocalButtonStateData> _capturedButtons =
-            new Dictionary<Guid, LocalButtonStateData>();
+        private readonly Dictionary<Guid, ButtonInputState> _buttonStates =
+            new Dictionary<Guid, ButtonInputState>();
 
         private InputActionAsset _inputActions;
         private bool _hasCapturedSample;
@@ -42,7 +40,7 @@ namespace ProjectCore.GameCore
                             $"Input action path '{actionPath}' is duplicated.");
                     }
 
-                    _buttonTransitions.Add(action.id, new ButtonTransitions());
+                    _buttonStates.Add(action.id, new ButtonInputState());
                     action.started += OnActionStarted;
                     action.performed += OnActionPerformed;
                     action.canceled += OnActionCanceled;
@@ -58,13 +56,13 @@ namespace ProjectCore.GameCore
 
             foreach (InputAction action in _actions.Values)
             {
-                ButtonTransitions transitions = _buttonTransitions[action.id];
-                _capturedButtons[action.id] = new LocalButtonStateData(
+                ButtonInputState buttonState = _buttonStates[action.id];
+                buttonState.CapturedState = new LocalButtonStateData(
                     action.IsPressed(),
-                    transitions.WasPressed,
-                    transitions.WasReleased,
-                    transitions.WasPerformed);
-                transitions.Reset();
+                    buttonState.WasPressed,
+                    buttonState.WasReleased,
+                    buttonState.WasPerformed);
+                buttonState.ResetTransitions();
             }
 
             _hasCapturedSample = true;
@@ -84,7 +82,7 @@ namespace ProjectCore.GameCore
             }
 
             InputAction action = GetAction(actionPath);
-            return _capturedButtons[action.id];
+            return _buttonStates[action.id].CapturedState;
         }
 
         public void Dispose()
@@ -102,8 +100,7 @@ namespace ProjectCore.GameCore
             }
 
             _inputActions.Disable();
-            _buttonTransitions.Clear();
-            _capturedButtons.Clear();
+            _buttonStates.Clear();
             _actions.Clear();
             _inputActions = null;
             _hasCapturedSample = false;
@@ -141,17 +138,17 @@ namespace ProjectCore.GameCore
 
         private void OnActionStarted(InputAction.CallbackContext context)
         {
-            _buttonTransitions[context.action.id].WasPressed = true;
+            _buttonStates[context.action.id].WasPressed = true;
         }
 
         private void OnActionPerformed(InputAction.CallbackContext context)
         {
-            _buttonTransitions[context.action.id].WasPerformed = true;
+            _buttonStates[context.action.id].WasPerformed = true;
         }
 
         private void OnActionCanceled(InputAction.CallbackContext context)
         {
-            _buttonTransitions[context.action.id].WasReleased = true;
+            _buttonStates[context.action.id].WasReleased = true;
         }
 
         private static string GetActionPath(InputAction action)
@@ -159,13 +156,14 @@ namespace ProjectCore.GameCore
             return $"{action.actionMap.name}/{action.name}";
         }
 
-        private sealed class ButtonTransitions
+        private sealed class ButtonInputState
         {
             public bool WasPressed { get; set; }
             public bool WasReleased { get; set; }
             public bool WasPerformed { get; set; }
+            public LocalButtonStateData CapturedState { get; set; }
 
-            public void Reset()
+            public void ResetTransitions()
             {
                 WasPressed = false;
                 WasReleased = false;

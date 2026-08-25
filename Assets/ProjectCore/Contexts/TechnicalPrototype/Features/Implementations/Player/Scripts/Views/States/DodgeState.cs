@@ -12,7 +12,7 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField]
         private TransformMovementBodyComponent _movementBody;
         [SerializeField]
-        private DodgeMovementConfig _dodgeConfig;
+        private DodgeMovementConfig _dodgeMovementConfig;
 
         private IInputBufferController _inputBufferController;
         private IMovementStateTimerMutator _movementStateTimerMutator;
@@ -30,7 +30,7 @@ namespace ProjectCore.TechnicalPrototype
         {
             if (_inputBufferController == null ||
                 _movementStateTimerMutator == null ||
-                _dodgeConfig == null)
+                _dodgeMovementConfig == null)
             {
                 throw new InvalidOperationException(
                     "Dodge state is not configured for the input command controller.");
@@ -44,7 +44,7 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             _movementStateTimerMutator.StartStateTimer(
-                _dodgeConfig.DurationSeconds);
+                _dodgeMovementConfig.DurationSeconds);
         }
 
         public override void Exit()
@@ -75,7 +75,7 @@ namespace ProjectCore.TechnicalPrototype
                     "Dodge state requires movement state timing.");
             }
 
-            if (_dodgeConfig == null)
+            if (_dodgeMovementConfig == null)
             {
                 throw new InvalidOperationException(
                     "Dodge state requires a Dodge movement config reference.");
@@ -88,10 +88,10 @@ namespace ProjectCore.TechnicalPrototype
                 new DodgeProcessor<
                     PlayerMovementState,
                     PlayerMovementPayload>(
-                    _movementBody,
-                    _movementStateTimerMutator,
-                    _dodgeConfig,
-                    PlayerMovementState.Locomotion),
+                    movementBodyVelocityMutator: _movementBody,
+                    movementStateTimerAccessor: _movementStateTimerMutator,
+                    dodgeMovementConfig: _dodgeMovementConfig,
+                    locomotionMovementState: PlayerMovementState.Locomotion),
             };
         }
 

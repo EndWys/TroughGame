@@ -10,10 +10,7 @@ namespace ProjectCore.GameCore
         {
             var state = new TestInputBufferState
             {
-                BufferedCommand = new InputBufferCommandData
-                {
-                    CommandId = 1,
-                },
+                BufferedCommand = new InputBufferCommandDescriptor(1),
             };
             var controller = new InputBufferController(
                 state,
@@ -34,10 +31,7 @@ namespace ProjectCore.GameCore
             var state = new TestInputBufferState
             {
                 IsLocked = true,
-                BufferedCommand = new InputBufferCommandData
-                {
-                    CommandId = 2,
-                },
+                BufferedCommand = new InputBufferCommandDescriptor(2),
             };
             var controller = new InputBufferController(
                 state,
@@ -56,12 +50,12 @@ namespace ProjectCore.GameCore
         private sealed class TestInputBufferState :
             IInputBufferStateMutator
         {
-            public InputBufferCommandData BufferedCommand { get; set; }
+            public InputBufferCommandDescriptor BufferedCommand { get; set; }
             public TickTimer BufferedCommandTimer { get; set; }
             public bool IsLocked { get; set; }
 
             public void SetBufferedCommand(
-                InputBufferCommandData command,
+                InputBufferCommandDescriptor command,
                 TickTimer expirationTimer)
             {
                 BufferedCommand = command;

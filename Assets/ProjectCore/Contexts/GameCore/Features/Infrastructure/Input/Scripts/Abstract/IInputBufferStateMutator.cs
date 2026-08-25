@@ -5,7 +5,7 @@ namespace ProjectCore.GameCore
     public interface IInputBufferStateMutator : IInputBufferStateAccessor
     {
         void SetBufferedCommand(
-            InputBufferCommandData command,
+            InputBufferCommandDescriptor command,
             TickTimer expirationTimer);
 
         void ClearBufferedCommand();

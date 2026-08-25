@@ -568,6 +568,7 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Kind>/<Feature>/
       Data/
       Descriptors/
       DTOs/
+      Models/
       Payloads/
     Enums/
     Init/
@@ -743,6 +744,7 @@ resolve dependencies, or mutate unrelated objects.
 | `Data` | `Data` | Internal feature state or a value bundle that does not represent a transport contract. Use the most specific name, such as `PlayerInputData`. |
 | `Descriptors` | `Descriptor` | Immutable description of how another object is identified or processed. |
 | `DTOs` | `DTO` | A transport representation used at a serialization, network, backend, or persistence boundary. Its shape follows the external contract. |
+| `Models` | `Model` | A long-lived runtime state representation owned by a feature. Models are passive data holders; they may change through their owner but do not resolve dependencies or execute workflows. |
 | `Payloads` | `Payload` | Immutable or short-lived parameters for a command, factory, spawn request, navigation request, or signal. |
 
 Use the uppercase `DTO` suffix: `PlayerStateDTO`. The folder remains `DTOs`
@@ -1191,6 +1193,7 @@ Features
 GraphicResources
 Init
 Materials
+Models
 Mediators
 Other
 Prefabs

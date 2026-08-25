@@ -10,12 +10,13 @@ namespace ProjectCore.TechnicalPrototype
             BaseMovementState<PlayerMovementState, PlayerMovementPayload>,
             PlayerMovementPayload>
     {
+        [SerializeField] private IdleState _idleState;
         [SerializeField] private LocomotionState _locomotionState;
         [SerializeField] private DodgeState _dodgeState;
         [SerializeField] private PlayerInputSourceComponent _inputSource;
 
         protected override PlayerMovementState InitialState =>
-            PlayerMovementState.Locomotion;
+            PlayerMovementState.Idle;
 
         protected override Dictionary<
             PlayerMovementState,
@@ -26,6 +27,7 @@ namespace ProjectCore.TechnicalPrototype
                 PlayerMovementState,
                 BaseMovementState<PlayerMovementState, PlayerMovementPayload>>
             {
+                { PlayerMovementState.Idle, _idleState },
                 { PlayerMovementState.Locomotion, _locomotionState },
                 { PlayerMovementState.Dodge, _dodgeState },
             };

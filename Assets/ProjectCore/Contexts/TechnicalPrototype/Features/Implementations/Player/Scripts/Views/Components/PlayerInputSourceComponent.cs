@@ -42,10 +42,10 @@ namespace ProjectCore.TechnicalPrototype
             {
                 if (input.MoveDirection.sqrMagnitude > 0f)
                 {
-                    _inputBufferController.BufferCommand(new InputBufferCommandData
-                    {
-                        CommandId = MovementInputCommandConstants.DodgeCommandId,
-                    }, MovementInputCommandConstants.DodgeInputBufferLifetimeSeconds);
+                    _inputBufferController.BufferCommand(
+                        new InputBufferCommandDescriptor(
+                            MovementInputCommandConstants.DodgeCommandId),
+                        MovementInputCommandConstants.DodgeInputBufferLifetimeSeconds);
                 }
             }
 

@@ -341,6 +341,7 @@ function Test-FeatureScriptPath {
             Definitions = @('Definition')
             Descriptors = @('Descriptor')
             DTOs = @('DTO')
+            Models = @('Model')
             Payloads = @('Payload')
             Settings = @('Settings')
         }
@@ -582,6 +583,7 @@ function Test-ContextSharedScriptPath {
                 Data = @('Data')
                 Definitions = @('Definition')
                 DTOs = @('DTO')
+                Models = @('Model')
                 Payloads = @('Payload')
             }
             Other = @{

@@ -2,7 +2,8 @@ namespace ProjectCore.TechnicalPrototype
 {
     public enum PlayerMovementState : byte
     {
-        Locomotion = 0,
-        Dodge = 1,
+        Idle = 0,
+        Locomotion = 1,
+        Dodge = 2,
     }
 }

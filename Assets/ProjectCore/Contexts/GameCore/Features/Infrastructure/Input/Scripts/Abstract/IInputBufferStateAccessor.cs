@@ -4,7 +4,7 @@ namespace ProjectCore.GameCore
 {
     public interface IInputBufferStateAccessor
     {
-        InputBufferCommandData BufferedCommand { get; }
+        InputBufferCommandDescriptor BufferedCommand { get; }
 
         TickTimer BufferedCommandTimer { get; }
 

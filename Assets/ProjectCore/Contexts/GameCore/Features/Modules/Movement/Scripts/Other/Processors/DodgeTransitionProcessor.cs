@@ -9,31 +9,31 @@ namespace ProjectCore.GameCore
         where TStatePayload : struct
     {
         private readonly IInputBufferController _inputBufferController;
-        private readonly ushort _commandId;
-        private readonly TStateType _dodgeState;
+        private readonly ushort _dodgeCommandId;
+        private readonly TStateType _dodgeMovementState;
 
         public DodgeTransitionProcessor(
             IInputBufferController inputBufferController,
-            ushort commandId,
-            TStateType dodgeState)
+            ushort dodgeCommandId,
+            TStateType dodgeMovementState)
         {
             _inputBufferController = inputBufferController ??
                 throw new ArgumentNullException(nameof(inputBufferController));
-            _commandId = commandId;
-            _dodgeState = dodgeState;
+            _dodgeCommandId = dodgeCommandId;
+            _dodgeMovementState = dodgeMovementState;
         }
 
         public bool Execute(
             TStatePayload payload,
             out TStateType resultState)
         {
-            if (!_inputBufferController.HasBufferedCommand(_commandId))
+            if (!_inputBufferController.HasBufferedCommand(_dodgeCommandId))
             {
                 resultState = default;
                 return false;
             }
 
-            resultState = _dodgeState;
+            resultState = _dodgeMovementState;
             return true;
         }
     }

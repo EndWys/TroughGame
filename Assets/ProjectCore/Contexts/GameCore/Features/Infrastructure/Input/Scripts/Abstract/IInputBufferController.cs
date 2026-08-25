@@ -6,7 +6,7 @@ namespace ProjectCore.GameCore
 
         bool HasBufferedCommand(ushort commandId);
 
-        void BufferCommand(InputBufferCommandData command, float lifetimeSeconds);
+        void BufferCommand(InputBufferCommandDescriptor command, float lifetimeSeconds);
 
         bool BeginAction(ushort commandId);
 
