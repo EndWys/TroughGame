@@ -13,7 +13,7 @@ namespace ProjectCore.GameCore
 
         protected override void InstallBindings()
         {
-            BindInterfacesAndSelfAsSingle<LocalInputAccumulator>();
+            BindInterfacesAndSelfAsSingle<LocalInputProvider>();
         }
 
         protected override UniTask InitializeAsync(CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ namespace ProjectCore.GameCore
                     "InputFeature requires an InputActionAsset.");
             }
 
-            ResolveAs<ILocalInputAccumulator, LocalInputAccumulator>()
+            ResolveAs<ILocalInputReader, LocalInputProvider>()
                 .Initialize(_inputActions);
 
             return UniTask.CompletedTask;

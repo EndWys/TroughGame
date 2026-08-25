@@ -8,7 +8,6 @@ namespace ProjectCore.GameCore
         {
             AddFeature<NetworkEntitiesFeature>();
             AddFeature<CameraTargetFeature>();
-            AddFeature<InputBufferFeature>();
             AddFeature<MovementSimulationFeature>();
             AddFeature<MovementFeature>();
             AddFeature<CombatFeature>();

@@ -11,6 +11,8 @@ namespace ProjectCore.TechnicalPrototype
             PlayerMovementPayload>
     {
         [SerializeField] private LocomotionState _locomotionState;
+        [SerializeField] private DodgeState _dodgeState;
+        [SerializeField] private PlayerInputSourceComponent _inputSource;
 
         protected override PlayerMovementState InitialState =>
             PlayerMovementState.Locomotion;
@@ -25,20 +27,29 @@ namespace ProjectCore.TechnicalPrototype
                 BaseMovementState<PlayerMovementState, PlayerMovementPayload>>
             {
                 { PlayerMovementState.Locomotion, _locomotionState },
+                { PlayerMovementState.Dodge, _dodgeState },
             };
         }
 
         protected override bool TryGetMovementPayload(
             out PlayerMovementPayload payload)
         {
-            if (!ParentNetworkBehaviour.GetInput(out PlayerInputData input))
+            if (_inputSource == null)
             {
                 payload = default;
                 return false;
             }
 
-            payload = new PlayerMovementPayload(input.MoveDirection);
+            Vector2 direction = Vector2.zero;
+
+            if (_inputSource.TryGetInput(out PlayerInputFrameData input))
+            {
+                direction = input.Direction;
+            }
+
+            payload = new PlayerMovementPayload(direction);
             return true;
         }
+
     }
 }

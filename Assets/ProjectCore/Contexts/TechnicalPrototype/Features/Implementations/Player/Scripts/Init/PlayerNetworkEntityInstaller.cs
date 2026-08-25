@@ -7,6 +7,8 @@ namespace ProjectCore.TechnicalPrototype
     {
         protected override void BindAdditionalComponents()
         {
+            Container.BindInterfacesAndSelfTo<InputBufferController>()
+                .AsSingle();
         }
     }
 }

@@ -36,6 +36,9 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(
                 prefab.GetComponent<CameraTargetComponent>(),
                 Is.Not.Null);
+            Assert.That(
+                prefab.GetComponent<PlayerInputSourceComponent>(),
+                Is.Not.Null);
 
             Transform movement = prefab.transform.Find("Movement");
 
@@ -44,13 +47,14 @@ namespace ProjectCore.TechnicalPrototype
                 movement.GetComponent<PlayerMovementStateMachine>(),
                 Is.Not.Null);
             Assert.That(movement.GetComponent<LocomotionState>(), Is.Not.Null);
+            Assert.That(movement.GetComponent<DodgeState>(), Is.Not.Null);
 
             TransformMovementBodyComponent movementBody =
                 prefab.GetComponent<TransformMovementBodyComponent>();
 
             Assert.That(movementBody, Is.Not.Null);
-            Assert.That(movementBody.Offset, Is.EqualTo(new Vector2(0f, 0.2f)));
-            Assert.That(movementBody.CollisionRadius, Is.EqualTo(0.4f));
+            Assert.That(movementBody.Offset, Is.EqualTo(new Vector2(0f, 0.4f)));
+            Assert.That(movementBody.CollisionRadius, Is.EqualTo(0.3f));
             Assert.That(
                 movementBody.CollisionMask.value,
                 Is.EqualTo(1 << LayerMask.NameToLayer("LevelCollision")));
@@ -71,6 +75,21 @@ namespace ProjectCore.TechnicalPrototype
                 Is.Not.Null);
             Assert.That(
                 locomotionState.FindProperty("_movementBody")
+                    .objectReferenceValue,
+                Is.Not.Null);
+            Assert.That(
+                locomotionState.FindProperty("_dodgeConfig")
+                    .objectReferenceValue,
+                Is.Not.Null);
+
+            SerializedObject dodgeState = new SerializedObject(
+                movement.GetComponent<DodgeState>());
+            Assert.That(
+                dodgeState.FindProperty("_movementBody")
+                    .objectReferenceValue,
+                Is.Not.Null);
+            Assert.That(
+                dodgeState.FindProperty("_dodgeConfig")
                     .objectReferenceValue,
                 Is.Not.Null);
         }

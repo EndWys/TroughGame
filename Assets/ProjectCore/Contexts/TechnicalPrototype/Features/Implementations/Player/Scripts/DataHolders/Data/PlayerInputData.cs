@@ -6,5 +6,6 @@ namespace ProjectCore.TechnicalPrototype
     public struct PlayerInputData : INetworkInput
     {
         public Vector2 MoveDirection { get; set; }
+        public bool DodgePressed { get; set; }
     }
 }

@@ -107,6 +107,7 @@ GameObject:
   - component: {fileID: 8489854188152957200}
   - component: {fileID: 7885406040919925618}
   - component: {fileID: 930001001}
+  - component: {fileID: 930001002}
   m_Layer: 0
   m_Name: Prefab_Player_NetworkEntity
   m_TagString: Untagged
@@ -213,6 +214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a74efc7e6c3c354f8871339f9d10f9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerNetworkEntityComponent
+  _inputSourceComponent: {fileID: 930001002}
   _movementStateMachine: {fileID: 3893509649565096512}
   _movementBodyComponent: {fileID: 7885406040919925618}
   _cameraTargetComponent: {fileID: 930001001}
@@ -247,6 +249,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce6f32d7aa134e21b7fea8ba88517787, type: 3}
   m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.CameraTargetComponent
+--- !u!114 &930001002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309667084643460771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cf772b69f1d45b9a3c03a42aa5d9e2d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerInputSourceComponent
 --- !u!1 &5577852976947837429
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,6 +307,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerMovementStateMachine
   _locomotionState: {fileID: 964983221566649929}
+  _dodgeState: {fileID: 964983221566649930}
+  _inputSource: {fileID: 930001002}
 --- !u!114 &964983221566649929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,3 +323,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.LocomotionState
   _locomotionConfig: {fileID: 11400000, guid: fbdd22e21efcc03479e35cd0748b2b88, type: 2}
   _movementBody: {fileID: 7885406040919925618}
+  _dodgeConfig: {fileID: 11400000, guid: 7b064509350d44c5a34d122b4e0f3a26, type: 2}
+--- !u!114 &964983221566649930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5577852976947837429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ca219746e2a4d82950a9eae687e1e7b, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.DodgeState
+  _movementBody: {fileID: 7885406040919925618}
+  _dodgeConfig: {fileID: 11400000, guid: 7b064509350d44c5a34d122b4e0f3a26, type: 2}

@@ -1,12 +1,10 @@
-using ProjectCore.GameCore;
 using UnityEngine;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public readonly struct PlayerMovementPayload :
-        ILocomotionPayload
+    public readonly struct PlayerInputFrameData
     {
-        public PlayerMovementPayload(Vector2 direction)
+        public PlayerInputFrameData(Vector2 direction)
         {
             Direction = direction;
         }

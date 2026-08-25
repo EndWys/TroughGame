@@ -8,23 +8,28 @@ namespace ProjectCore.TechnicalPrototype
 {
     public sealed class PlayerNetworkInputComponent : BaseNetworkCallbacksBehaviour
     {
-        private ILocalInputAccumulator _localInputAccumulator;
+        private ILocalInputReader _localInputReader;
 
         [Inject]
-        private void Construct(ILocalInputAccumulator localInputAccumulator)
+        private void Construct(ILocalInputReader localInputReader)
         {
-            _localInputAccumulator = localInputAccumulator ??
-                throw new ArgumentNullException(nameof(localInputAccumulator));
+            _localInputReader = localInputReader ??
+                throw new ArgumentNullException(nameof(localInputReader));
         }
 
         public override void OnInput(NetworkRunner runner, NetworkInput input)
         {
-            Vector2 moveDirection = _localInputAccumulator.ReadValue<Vector2>(
+            _localInputReader.Capture();
+
+            Vector2 moveDirection = _localInputReader.ReadValue<Vector2>(
                 PlayerInputActionConstants.Move);
+            LocalButtonStateData dodge = _localInputReader.ReadButton(
+                PlayerInputActionConstants.Dodge);
 
             input.Set(new PlayerInputData
             {
                 MoveDirection = Vector2.ClampMagnitude(moveDirection, 1f),
+                DodgePressed = dodge.WasPressed,
             });
         }
     }
