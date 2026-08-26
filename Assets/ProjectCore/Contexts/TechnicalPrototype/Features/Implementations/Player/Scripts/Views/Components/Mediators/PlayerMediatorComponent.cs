@@ -18,6 +18,7 @@ namespace ProjectCore.TechnicalPrototype
             _handlers = new List<Action<HandlerPayload>>
             {
                 HandleMovementStateChanged,
+                HandleFacingDirectionChanged,
             };
         }
 
@@ -60,6 +61,14 @@ namespace ProjectCore.TechnicalPrototype
                         nameof(movementStateChangedPayload.CurrentMovementState),
                         movementStateChangedPayload.CurrentMovementState,
                         "Player movement state does not have a presentation handler.");
+            }
+        }
+
+        private void HandleFacingDirectionChanged(HandlerPayload payload)
+        {
+            if (payload is PlayerFacingDirectionChangedPayload facingDirectionChangedPayload)
+            {
+                _playerAnimatorComponent.SetFacingDirection(facingDirectionChangedPayload.FacingDirection);
             }
         }
     }

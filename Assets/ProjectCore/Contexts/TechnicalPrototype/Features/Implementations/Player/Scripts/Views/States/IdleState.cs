@@ -9,11 +9,15 @@ namespace ProjectCore.TechnicalPrototype
     public sealed class IdleState : BaseMovementState<PlayerMovementState, PlayerMovementPayload>
     {
         private IInputBufferController _inputBufferController;
+        private IPlayerFacingDirectionMutator _facingDirectionMutator;
 
         [Inject]
-        private void Construct(IInputBufferController inputBufferController)
+        private void Construct(
+            IInputBufferController inputBufferController,
+            IPlayerFacingDirectionMutator facingDirectionMutator)
         {
             _inputBufferController = inputBufferController;
+            _facingDirectionMutator = facingDirectionMutator;
         }
 
         public override void Enter() { }
@@ -28,8 +32,15 @@ namespace ProjectCore.TechnicalPrototype
                 throw new InvalidOperationException("Idle state requires an input buffer controller.");
             }
 
+            if (_facingDirectionMutator == null)
+            {
+                throw new InvalidOperationException("Idle state requires a facing direction mutator.");
+            }
+
             return new IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>[]
             {
+                new FourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload>(
+                    facingDirectionMutator: _facingDirectionMutator),
                 new DodgeTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
                     inputBufferController: _inputBufferController,
                     dodgeCommandId: MovementInputCommandConstants.DodgeCommandId,

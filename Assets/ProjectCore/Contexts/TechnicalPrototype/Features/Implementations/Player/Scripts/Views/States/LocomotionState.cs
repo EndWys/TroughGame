@@ -11,11 +11,15 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private LocomotionMovementConfig _locomotionMovementConfig;
         [SerializeField] private TransformMovementBodyComponent _movementBody;
         private IInputBufferController _inputBufferController;
+        private IPlayerFacingDirectionMutator _facingDirectionMutator;
 
         [Inject]
-        private void Construct(IInputBufferController inputBufferController)
+        private void Construct(
+            IInputBufferController inputBufferController,
+            IPlayerFacingDirectionMutator facingDirectionMutator)
         {
             _inputBufferController = inputBufferController;
+            _facingDirectionMutator = facingDirectionMutator;
         }
 
         public override void Enter() { }
@@ -35,6 +39,11 @@ namespace ProjectCore.TechnicalPrototype
                 throw new InvalidOperationException("Locomotion state requires an input command controller.");
             }
 
+            if (_facingDirectionMutator == null)
+            {
+                throw new InvalidOperationException("Locomotion state requires a facing direction mutator.");
+            }
+
             if (_locomotionMovementConfig == null)
             {
                 throw new InvalidOperationException(
@@ -43,6 +52,8 @@ namespace ProjectCore.TechnicalPrototype
 
             return new IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>[]
             {
+                new FourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload>(
+                    facingDirectionMutator: _facingDirectionMutator),
                 new DodgeTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
                     inputBufferController: _inputBufferController,
                     dodgeCommandId: MovementInputCommandConstants.DodgeCommandId,

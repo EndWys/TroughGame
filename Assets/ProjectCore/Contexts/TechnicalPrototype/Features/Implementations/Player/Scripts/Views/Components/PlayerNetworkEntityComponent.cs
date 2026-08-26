@@ -12,7 +12,8 @@ namespace ProjectCore.TechnicalPrototype
         IColleague,
         IMovementStateDataMutator<PlayerMovementState>,
         IMovementStateTimerMutator,
-        IInputBufferStateMutator
+        IInputBufferStateMutator,
+        IPlayerFacingDirectionMutator
     {
         #region Components
 
@@ -29,8 +30,24 @@ namespace ProjectCore.TechnicalPrototype
         [Networked, OnChangedRender(nameof(OnCurrentStateChanged))]
         public PlayerMovementState CurrentState { get; private set; }
         [Networked] public PlayerMovementState PreviousState { get; private set; }
+        [Networked, OnChangedRender(nameof(OnFacingDirectionChanged))]
+        public PlayerFacingDirection FacingDirection { get; private set; }
         [Networked] public TickTimer MovementStateTimer { get; private set; }
         [Networked] private InputBufferStateModel InputBufferStateValue { get; set; }
+
+        #endregion
+
+        #region Facing Direction
+
+        public void SetFacingDirection(PlayerFacingDirection facingDirection)
+        {
+            if (FacingDirection == facingDirection)
+            {
+                return;
+            }
+
+            FacingDirection = facingDirection;
+        }
 
         #endregion
 
@@ -122,6 +139,7 @@ namespace ProjectCore.TechnicalPrototype
         protected override void AfterComponentsInitialized()
         {
             NotifyMovementStateChanged();
+            NotifyFacingDirectionChanged();
         }
 
         protected override IEnumerable<INetworkEntityComponent> CreateComponents()
@@ -160,10 +178,20 @@ namespace ProjectCore.TechnicalPrototype
             NotifyMovementStateChanged();
         }
 
+        private void OnFacingDirectionChanged()
+        {
+            NotifyFacingDirectionChanged();
+        }
+
         private void NotifyMovementStateChanged()
         {
             _playerMediatorComponent.Notify(
                 new PlayerMovementStateChangedPayload(this, CurrentState, PreviousState));
+        }
+
+        private void NotifyFacingDirectionChanged()
+        {
+            _playerMediatorComponent.Notify(new PlayerFacingDirectionChangedPayload(this, FacingDirection));
         }
 
         #endregion
