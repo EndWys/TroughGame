@@ -27,9 +27,9 @@ Transform:
   m_GameObject: {fileID: 2259883906243949090}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 0.175, y: 0.175, z: 0.175}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0.4, z: 0}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5693484042428257909}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -92,6 +92,18 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &7152336791540273603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2259883906243949090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f846f11d8e5048f7bc0ba4962845266b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerAnimatorComponent
 --- !u!1 &3309667084643460771
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,8 +248,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32c4e4264ca44646a7fd221b51f891d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.TransformMovementBodyComponent
-  _offset: {x: 0, y: 0.3}
-  _collisionRadius: 0.3
+  _offset: {x: 0, y: 0.2}
+  _collisionRadius: 0.2
   _collisionMask:
     serializedVersion: 2
     m_Bits: 512
@@ -251,7 +263,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce6f32d7aa134e21b7fea8ba88517787, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.CameraTargetComponent
 --- !u!114 &930001002
 MonoBehaviour:
@@ -263,7 +275,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cf772b69f1d45b9a3c03a42aa5d9e2d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerInputSourceComponent
 --- !u!114 &930001003
 MonoBehaviour:
@@ -275,21 +287,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a9147b6bb7f4f91903753dd2e574f07, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerMediatorComponent
   _playerAnimatorComponent: {fileID: 7152336791540273603}
---- !u!114 &7152336791540273603
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2259883906243949090}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f846f11d8e5048f7bc0ba4962845266b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerAnimatorComponent
 --- !u!1 &5577852976947837429
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,6 +341,18 @@ MonoBehaviour:
   _locomotionState: {fileID: 964983221566649929}
   _dodgeState: {fileID: 964983221566649930}
   _inputSource: {fileID: 930001002}
+--- !u!114 &964983221566649931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5577852976947837429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49081024c46c4eaf9acedafcc609088c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.IdleState
 --- !u!114 &964983221566649929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,19 +377,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5ca219746e2a4d82950a9eae687e1e7b, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.DodgeState
   _movementBody: {fileID: 7885406040919925618}
   _dodgeMovementConfig: {fileID: 11400000, guid: 7b064509350d44c5a34d122b4e0f3a26, type: 2}
---- !u!114 &964983221566649931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5577852976947837429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49081024c46c4eaf9acedafcc609088c, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.IdleState
