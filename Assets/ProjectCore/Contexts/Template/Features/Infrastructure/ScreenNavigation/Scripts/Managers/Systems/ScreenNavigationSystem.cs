@@ -128,7 +128,8 @@ namespace ProjectCore.Template
             IScreenSettings settings,
             CancellationToken cancellationToken)
         {
-            Result definitionResult = GetDefinition(screenType, settings, out BaseScreenDefinition definition);
+            Result definitionResult =
+                GetDefinition(screenType, settings, out BaseScreenDefinition definition);
             if (definitionResult.IsFailure)
             {
                 return definitionResult;
@@ -148,7 +149,8 @@ namespace ProjectCore.Template
             IScreenSettings settings,
             CancellationToken cancellationToken)
         {
-            Result definitionResult = GetDefinition(screenType, settings, out BaseScreenDefinition definition);
+            Result definitionResult =
+                GetDefinition(screenType, settings, out BaseScreenDefinition definition);
             if (definitionResult.IsFailure)
             {
                 return definitionResult;
@@ -174,7 +176,8 @@ namespace ProjectCore.Template
             IScreenSettings settings,
             CancellationToken cancellationToken)
         {
-            Result definitionResult = GetDefinition(screenType, settings, out BaseScreenDefinition definition);
+            Result definitionResult =
+                GetDefinition(screenType, settings, out BaseScreenDefinition definition);
             if (definitionResult.IsFailure)
             {
                 return definitionResult;

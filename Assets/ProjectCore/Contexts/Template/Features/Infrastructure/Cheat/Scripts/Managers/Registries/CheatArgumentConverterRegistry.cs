@@ -19,7 +19,8 @@ namespace ProjectCore.Template
 
             try
             {
-                if (nullableType != null && string.Equals(rawValue, "null", StringComparison.OrdinalIgnoreCase))
+                if (nullableType != null &&
+                    string.Equals(rawValue, "null", StringComparison.OrdinalIgnoreCase))
                     return Result.Success<object>(null);
                 if (_converters.TryGetValue(conversionType, out ConverterRegistration registration))
                     return registration.Convert(rawValue);

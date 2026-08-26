@@ -6,8 +6,7 @@ namespace ProjectCore.TechnicalPrototype
     public sealed class PlayerNetworkEntityInstaller :
         BaseNetworkEntityInstaller<PlayerNetworkEntityComponent>
     {
-        [SerializeField]
-        private PlayerMediatorComponent _playerMediatorComponent;
+        [SerializeField] private PlayerMediatorComponent _playerMediatorComponent;
 
         protected override void BindAdditionalComponents()
         {

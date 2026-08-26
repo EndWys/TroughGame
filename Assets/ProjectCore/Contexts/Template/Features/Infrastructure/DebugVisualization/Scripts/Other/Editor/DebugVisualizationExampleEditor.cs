@@ -15,16 +15,31 @@ namespace ProjectCore.Template
 
             EnsureCameraAndLight();
             CreateGround(root.transform);
-            CreateTarget(root.transform, "Example Enemy A", new Vector3(-4f, 0.6f, 0f), Color.red, 100f, 5f, 5.5f, 2.2f, 0.8f);
-            CreateTarget(root.transform, "Example Enemy B", new Vector3(0f, 0.6f, 2.5f), new Color(1f, 0.55f, 0.1f), 80f, 3f, 4f, 1.8f, 1.2f);
-            CreateTarget(root.transform, "Example Ally", new Vector3(4f, 0.6f, 0f), Color.cyan, 120f, 7f, 6.5f, 2.8f, 0.6f);
+            CreateTarget(
+                root.transform, "Example Enemy A", new Vector3(-4f, 0.6f, 0f), Color.red,
+                100f, 5f, 5.5f, 2.2f, 0.8f);
+            CreateTarget(
+                root.transform, "Example Enemy B", new Vector3(0f, 0.6f, 2.5f),
+                new Color(1f, 0.55f, 0.1f), 80f, 3f, 4f, 1.8f, 1.2f);
+            CreateTarget(
+                root.transform, "Example Ally", new Vector3(4f, 0.6f, 0f), Color.cyan,
+                120f, 7f, 6.5f, 2.8f, 0.6f);
             CreateCollisionDemo(root.transform);
 
             Selection.activeGameObject = root;
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         }
 
-        private static void CreateTarget(Transform parent, string objectName, Vector3 position, Color color, float health, float regen, float vision, float attackRange, float moveRadius)
+        private static void CreateTarget(
+            Transform parent,
+            string objectName,
+            Vector3 position,
+            Color color,
+            float health,
+            float regen,
+            float vision,
+            float attackRange,
+            float moveRadius)
         {
             var target = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             Undo.RegisterCreatedObjectUndo(target, $"Create {objectName}");
@@ -45,7 +60,8 @@ namespace ProjectCore.Template
             wall.transform.SetParent(parent);
             wall.transform.position = new Vector3(0f, 0.75f, -4f);
             wall.transform.localScale = new Vector3(7f, 1.5f, 0.35f);
-            wall.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Collision Wall Material", new Color(0.25f, 0.25f, 0.28f));
+            wall.GetComponent<Renderer>().sharedMaterial =
+                CreateMaterial("Collision Wall Material", new Color(0.25f, 0.25f, 0.28f));
 
             CreateBumper(parent, "Left Collision Bumper", new Vector3(-4.3f, 0.75f, -2.8f));
             CreateBumper(parent, "Right Collision Bumper", new Vector3(4.3f, 0.75f, -2.8f));
@@ -55,11 +71,14 @@ namespace ProjectCore.Template
             mover.name = "Collision Damage Emitter";
             mover.transform.SetParent(parent);
             mover.transform.position = new Vector3(0f, 0.6f, -2.8f);
-            mover.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Collision Emitter Material", Color.magenta);
+            mover.GetComponent<Renderer>().sharedMaterial =
+                CreateMaterial("Collision Emitter Material", Color.magenta);
 
             var rigidbody = mover.AddComponent<Rigidbody>();
             rigidbody.useGravity = false;
-            rigidbody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
+            rigidbody.constraints = RigidbodyConstraints.FreezePositionY |
+                                    RigidbodyConstraints.FreezePositionZ |
+                                    RigidbodyConstraints.FreezeRotation;
             mover.AddComponent<DebugVisualizationCollisionEmitterComponent>();
         }
 
@@ -71,7 +90,8 @@ namespace ProjectCore.Template
             bumper.transform.SetParent(parent);
             bumper.transform.position = position;
             bumper.transform.localScale = new Vector3(0.35f, 1.5f, 1.2f);
-            bumper.GetComponent<Renderer>().sharedMaterial = CreateMaterial($"{objectName} Material", new Color(0.3f, 0.32f, 0.38f));
+            bumper.GetComponent<Renderer>().sharedMaterial =
+                CreateMaterial($"{objectName} Material", new Color(0.3f, 0.32f, 0.38f));
         }
 
         private static void CreateGround(Transform parent)
@@ -82,7 +102,8 @@ namespace ProjectCore.Template
             ground.transform.SetParent(parent);
             ground.transform.position = Vector3.zero;
             ground.transform.localScale = new Vector3(1.4f, 1f, 1.4f);
-            ground.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Debug Ground Material", new Color(0.12f, 0.14f, 0.16f));
+            ground.GetComponent<Renderer>().sharedMaterial =
+                CreateMaterial("Debug Ground Material", new Color(0.12f, 0.14f, 0.16f));
         }
 
         private static void EnsureCameraAndLight()

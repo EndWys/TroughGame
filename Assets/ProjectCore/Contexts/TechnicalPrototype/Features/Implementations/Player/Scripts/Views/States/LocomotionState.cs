@@ -6,13 +6,10 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class LocomotionState :
-        BaseMovementState<PlayerMovementState, PlayerMovementPayload>
+    public sealed class LocomotionState : BaseMovementState<PlayerMovementState, PlayerMovementPayload>
     {
-        [SerializeField]
-        private LocomotionMovementConfig _locomotionMovementConfig;
-        [SerializeField]
-        private TransformMovementBodyComponent _movementBody;
+        [SerializeField] private LocomotionMovementConfig _locomotionMovementConfig;
+        [SerializeField] private TransformMovementBodyComponent _movementBody;
         private IInputBufferController _inputBufferController;
 
         [Inject]
@@ -30,14 +27,12 @@ namespace ProjectCore.TechnicalPrototype
         {
             if (_movementBody == null)
             {
-                throw new InvalidOperationException(
-                    "Locomotion state requires a movement body reference.");
+                throw new InvalidOperationException("Locomotion state requires a movement body reference.");
             }
 
             if (_inputBufferController == null)
             {
-                throw new InvalidOperationException(
-                    "Locomotion state requires an input command controller.");
+                throw new InvalidOperationException("Locomotion state requires an input command controller.");
             }
 
             if (_locomotionMovementConfig == null)
@@ -46,29 +41,20 @@ namespace ProjectCore.TechnicalPrototype
                     "Locomotion state requires a locomotion movement config reference.");
             }
 
-            return new IMovementStateProcessor<
-                PlayerMovementState,
-                PlayerMovementPayload>[]
+            return new IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>[]
             {
-                new DodgeTransitionProcessor<
-                    PlayerMovementState,
-                    PlayerMovementPayload>(
+                new DodgeTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
                     inputBufferController: _inputBufferController,
                     dodgeCommandId: MovementInputCommandConstants.DodgeCommandId,
                     dodgeMovementState: PlayerMovementState.Dodge),
-                new LocomotionProcessor<
-                    PlayerMovementState,
-                    PlayerMovementPayload>(
+                new LocomotionProcessor<PlayerMovementState, PlayerMovementPayload>(
                     movementBodyVelocityMutator: _movementBody,
                     locomotionMovementConfig: _locomotionMovementConfig),
-                new NoDirectionTransitionProcessor<
-                    PlayerMovementState,
-                    PlayerMovementPayload>(
+                new NoDirectionTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
                     idleMovementState: PlayerMovementState.Idle),
             };
         }
 
-        protected override PlayerMovementState FallbackState =>
-            PlayerMovementState.Locomotion;
+        protected override PlayerMovementState FallbackState => PlayerMovementState.Locomotion;
     }
 }

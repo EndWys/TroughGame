@@ -4,8 +4,7 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class PlayerInputSourceComponent :
-        BaseEntityInputSourceComponent<PlayerInputFrameData>
+    public sealed class PlayerInputSourceComponent : BaseEntityInputSourceComponent<PlayerInputFrameData>
     {
         private IInputBufferController _inputBufferController;
         private PlayerInputFrameData _currentInput;
@@ -38,19 +37,14 @@ namespace ProjectCore.TechnicalPrototype
                 return;
             }
 
-            if (input.DodgePressed)
+            if (input is { DodgePressed: true, MoveDirection: { sqrMagnitude: > 0f } })
             {
-                if (input.MoveDirection.sqrMagnitude > 0f)
-                {
-                    _inputBufferController.BufferCommand(
-                        new InputBufferCommandDescriptor(
-                            MovementInputCommandConstants.DodgeCommandId),
-                        MovementInputCommandConstants.DodgeInputBufferLifetimeSeconds);
-                }
+                _inputBufferController.BufferCommand(
+                    new(MovementInputCommandConstants.DodgeCommandId),
+                    MovementInputCommandConstants.DodgeInputBufferLifetimeSeconds);
             }
 
-            _currentInput = new PlayerInputFrameData(
-                Vector2.ClampMagnitude(input.MoveDirection, 1f));
+            _currentInput = new(Vector2.ClampMagnitude(input.MoveDirection, 1f));
             _hasInput = true;
         }
     }

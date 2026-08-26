@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public readonly struct PlayerMovementPayload :
-        ILocomotionPayload
+    public readonly struct PlayerMovementPayload : ILocomotionPayload
     {
         public PlayerMovementPayload(Vector2 direction)
         {

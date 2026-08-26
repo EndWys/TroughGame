@@ -49,7 +49,8 @@ namespace ProjectCore.Template
 
             try
             {
-                return UniTask.FromResult(Result.Success(Convert.FromBase64String(PlayerPrefs.GetString(key))));
+                return UniTask.FromResult(
+                    Result.Success(Convert.FromBase64String(PlayerPrefs.GetString(key))));
             }
             catch (Exception exception)
             {

@@ -169,7 +169,8 @@ namespace ProjectCore.Template
 
             public bool HasChildren => Children.Count > 0;
 
-            private readonly Dictionary<string, ChannelTreeNode> _childrenByName = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, ChannelTreeNode> _childrenByName =
+            new(StringComparer.Ordinal);
 
             private ChannelTreeNode(string name, string fullPath)
             {
@@ -205,7 +206,9 @@ namespace ProjectCore.Template
 
                 for (var i = 0; i < parts.Length; i++)
                 {
-                    var part = string.IsNullOrWhiteSpace(parts[i]) ? DebugVisualizationUtility.DefaultChannel : parts[i];
+                var part = string.IsNullOrWhiteSpace(parts[i])
+                    ? DebugVisualizationUtility.DefaultChannel
+                    : parts[i];
                     currentPath = string.IsNullOrEmpty(currentPath) ? part : $"{currentPath}/{part}";
 
                     if (!current._childrenByName.TryGetValue(part, out var child))

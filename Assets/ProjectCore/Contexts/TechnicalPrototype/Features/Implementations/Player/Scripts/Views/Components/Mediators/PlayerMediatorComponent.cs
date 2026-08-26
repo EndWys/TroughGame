@@ -6,9 +6,7 @@ using UnityEngine;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class PlayerMediatorComponent :
-        BaseNetworkEntityComponent,
-        IPlayerMediator
+    public sealed class PlayerMediatorComponent : BaseNetworkEntityComponent, IPlayerMediator
     {
         [Header("COLLEAGUES")]
         [SerializeField] private PlayerAnimatorComponent _playerAnimatorComponent;
@@ -21,7 +19,6 @@ namespace ProjectCore.TechnicalPrototype
             {
                 HandleMovementStateChanged,
             };
-
         }
 
         public void Notify(HandlerPayload payload)
@@ -39,8 +36,7 @@ namespace ProjectCore.TechnicalPrototype
 
         private void HandleMovementStateChanged(HandlerPayload payload)
         {
-            if (payload is not PlayerMovementStateChangedPayload
-                movementStateChangedPayload)
+            if (payload is not PlayerMovementStateChangedPayload movementStateChangedPayload)
             {
                 return;
             }

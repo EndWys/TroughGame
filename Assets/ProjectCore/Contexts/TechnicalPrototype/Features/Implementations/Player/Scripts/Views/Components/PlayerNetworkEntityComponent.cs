@@ -16,16 +16,11 @@ namespace ProjectCore.TechnicalPrototype
     {
         #region Components
 
-        [SerializeField]
-        private PlayerInputSourceComponent _inputSourceComponent;
-        [SerializeField]
-        private PlayerMediatorComponent _playerMediatorComponent;
-        [SerializeField]
-        private PlayerMovementStateMachine _movementStateMachine;
-        [SerializeField]
-        private TransformMovementBodyComponent _movementBodyComponent;
-        [SerializeField]
-        private CameraTargetComponent _cameraTargetComponent;
+        [SerializeField] private PlayerInputSourceComponent _inputSourceComponent;
+        [SerializeField] private PlayerMediatorComponent _playerMediatorComponent;
+        [SerializeField] private PlayerMovementStateMachine _movementStateMachine;
+        [SerializeField] private TransformMovementBodyComponent _movementBodyComponent;
+        [SerializeField] private CameraTargetComponent _cameraTargetComponent;
 
         #endregion
 
@@ -41,20 +36,18 @@ namespace ProjectCore.TechnicalPrototype
 
         #region Movement State Timing
 
-        public bool IsStateTimerFinished => MovementStateTimer.IsRunning && MovementStateTimer.ExpiredOrNotRunning(Runner);
+        public bool IsStateTimerFinished =>
+            MovementStateTimer.IsRunning && MovementStateTimer.ExpiredOrNotRunning(Runner);
 
         public void StartStateTimer(float durationSeconds)
         {
             if (durationSeconds <= 0f)
             {
                 throw new ArgumentOutOfRangeException(
-                    nameof(durationSeconds),
-                    "State timer duration must be positive.");
+                    nameof(durationSeconds), "State timer duration must be positive.");
             }
 
-            MovementStateTimer = TickTimer.CreateFromSeconds(
-                Runner,
-                durationSeconds);
+            MovementStateTimer = TickTimer.CreateFromSeconds(Runner, durationSeconds);
         }
 
         public void StopStateTimer()
@@ -66,23 +59,17 @@ namespace ProjectCore.TechnicalPrototype
 
         #region Input Buffer State
 
-        public InputBufferCommandDescriptor BufferedCommand =>
-            new InputBufferCommandDescriptor(InputBufferStateValue.BufferedCommandId);
+        public InputBufferCommandDescriptor BufferedCommand => new(InputBufferStateValue.BufferedCommandId);
 
         public TickTimer BufferedCommandTimer => InputBufferStateValue.BufferedCommandTimer;
 
-        public bool IsLocked =>
-            InputBufferStateValue.IsLocked;
+        public bool IsLocked => InputBufferStateValue.IsLocked;
 
-        public void SetBufferedCommand(
-            InputBufferCommandDescriptor command,
-            TickTimer expirationTimer)
+        public void SetBufferedCommand(InputBufferCommandDescriptor command, TickTimer expirationTimer)
         {
             if (command.CommandId == 0)
             {
-                throw new ArgumentException(
-                    "Input command id must be non-zero.",
-                    nameof(command));
+                throw new ArgumentException("Input command id must be non-zero.", nameof(command));
             }
 
             InputBufferStateModel state = InputBufferStateValue;
@@ -176,10 +163,7 @@ namespace ProjectCore.TechnicalPrototype
         private void NotifyMovementStateChanged()
         {
             _playerMediatorComponent.Notify(
-                new PlayerMovementStateChangedPayload(
-                    this,
-                    CurrentState,
-                    PreviousState));
+                new PlayerMovementStateChangedPayload(this, CurrentState, PreviousState));
         }
 
         #endregion

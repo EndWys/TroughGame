@@ -5,8 +5,7 @@ namespace ProjectCore.TechnicalPrototype
 {
     public sealed class LocalCameraFeature : BaseMonoBehaviourFeature
     {
-        [SerializeField]
-        private LocalCameraComponent _cameraComponent;
+        [SerializeField] private LocalCameraComponent _cameraComponent;
 
         protected override void InstallBindings()
         {

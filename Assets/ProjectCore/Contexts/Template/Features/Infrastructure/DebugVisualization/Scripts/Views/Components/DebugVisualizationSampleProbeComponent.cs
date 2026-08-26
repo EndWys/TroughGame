@@ -20,7 +20,8 @@ namespace ProjectCore.Template
         private float Speed => 3f + Mathf.PingPong(Time.realtimeSinceStartup * 0.8f, 4f);
 
         [DebugValue("ConsoleTest/Gameplay/Session", Label = "State")]
-        private string SessionState => (Mathf.FloorToInt(Time.realtimeSinceStartup / 4f) % 2) == 0 ? "Running" : "Paused";
+        private string SessionState =>
+            (Mathf.FloorToInt(Time.realtimeSinceStartup / 4f) % 2) == 0 ? "Running" : "Paused";
 
         [DebugValue("ConsoleTest/Network", Label = "Ping (ms)")]
         private int Ping => 40 + Mathf.RoundToInt(Mathf.PingPong(Time.realtimeSinceStartup * 20f, 80f));

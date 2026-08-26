@@ -7,18 +7,12 @@ namespace ProjectCore.TechnicalPrototype
     [RequireComponent(typeof(Camera))]
     public sealed class LocalCameraComponent : MonoBehaviour, ILocalCamera
     {
-        [SerializeField]
-        private Camera _camera;
-        [SerializeField]
-        private SpriteRenderer _levelBoundsRenderer;
-        [SerializeField]
-        private Collider2D[] _levelBoundaryColliders;
-        [SerializeField, Min(0f)]
-        private float _followSmoothTime = 0.08f;
-        [SerializeField, Range(0.2f, 0.4f)]
-        private float _maxZoomChange = 0.4f;
-        [SerializeField, Range(-1f, 1f)]
-        private float _zoomFactor;
+        [SerializeField] private Camera _camera;
+        [SerializeField] private SpriteRenderer _levelBoundsRenderer;
+        [SerializeField] private Collider2D[] _levelBoundaryColliders;
+        [SerializeField, Min(0f)] private float _followSmoothTime = 0.08f;
+        [SerializeField, Range(0.2f, 0.4f)] private float _maxZoomChange = 0.4f;
+        [SerializeField, Range(-1f, 1f)] private float _zoomFactor;
 
         private ICameraTargetRegistry _cameraTargetRegistry;
         private Transform _target;
@@ -147,8 +141,7 @@ namespace ProjectCore.TechnicalPrototype
                 levelBounds.size.y * 0.5f,
                 levelBounds.size.x / (2f * _camera.aspect));
 
-            if (maximumOrthographicSize > 0f &&
-                _camera.orthographicSize > maximumOrthographicSize)
+            if (maximumOrthographicSize > 0f && _camera.orthographicSize > maximumOrthographicSize)
             {
                 _camera.orthographicSize = maximumOrthographicSize;
             }
@@ -211,11 +204,7 @@ namespace ProjectCore.TechnicalPrototype
             return true;
         }
 
-        private static float ClampViewportAxis(
-            float value,
-            float minimum,
-            float maximum,
-            float fallback)
+        private static float ClampViewportAxis(float value, float minimum, float maximum, float fallback)
         {
             return minimum > maximum
                 ? fallback

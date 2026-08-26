@@ -18,7 +18,8 @@ namespace ProjectCore.GameCore
             if (payload is not TPayload typedPayload)
             {
                 throw new ArgumentException(
-                    $"Factory '{GetType().Name}' expected payload '{typeof(TPayload).Name}', but received '{payload?.GetType().Name ?? "null"}'.",
+                    $"Factory '{GetType().Name}' expected payload '{typeof(TPayload).Name}', " +
+                    $"but received '{payload?.GetType().Name ?? "null"}'.",
                     nameof(payload));
             }
 

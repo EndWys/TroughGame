@@ -20,7 +20,10 @@ namespace ProjectCore.Template
             _backend.AddPersistentValue(_owner, channel, label, value);
         }
 
-        public void Label(Vector3 position, string text, string channel = DebugVisualizationUtility.DefaultChannel)
+        public void Label(
+            Vector3 position,
+            string text,
+            string channel = DebugVisualizationUtility.DefaultChannel)
         {
             string normalizedChannel = NormalizeChannel(channel);
             _backend.Add(DebugVisualizationDrawCommand.Label(
@@ -31,7 +34,10 @@ namespace ProjectCore.Template
                 0f));
         }
 
-        public void Radius(Vector3 center, float radius, string channel = DebugVisualizationUtility.DefaultChannel)
+        public void Radius(
+            Vector3 center,
+            float radius,
+            string channel = DebugVisualizationUtility.DefaultChannel)
         {
             string normalizedChannel = NormalizeChannel(channel);
             _backend.Add(DebugVisualizationDrawCommand.Circle(
@@ -43,7 +49,10 @@ namespace ProjectCore.Template
                 64));
         }
 
-        public void ZoneDisc(Vector3 center, float radius, string channel = DebugVisualizationUtility.DefaultChannel)
+        public void ZoneDisc(
+            Vector3 center,
+            float radius,
+            string channel = DebugVisualizationUtility.DefaultChannel)
         {
             string normalizedChannel = NormalizeChannel(channel);
             _backend.Add(DebugVisualizationDrawCommand.Disc(
@@ -55,7 +64,10 @@ namespace ProjectCore.Template
                 64));
         }
         
-        public void Line(Vector3 start, Vector3 end, string channel = DebugVisualizationUtility.DefaultChannel)
+        public void Line(
+            Vector3 start,
+            Vector3 end,
+            string channel = DebugVisualizationUtility.DefaultChannel)
         {
             string normalizedChannel = NormalizeChannel(channel);
             _backend.Add(DebugVisualizationDrawCommand.Line(

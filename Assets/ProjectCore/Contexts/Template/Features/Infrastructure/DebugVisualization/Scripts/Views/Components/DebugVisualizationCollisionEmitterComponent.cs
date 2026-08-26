@@ -30,8 +30,10 @@ namespace ProjectCore.Template
         private void OnCollisionEnter(Collision collision)
         {
             var contact = collision.GetContact(0);
-            DebugVisualizationUtility.DrawNumber(contact.point + Vector3.up * 0.35f, _damage, "Examples/Collision Damage", duration: 1.25f);
-            DebugVisualizationUtility.DrawRadius(contact.point, 0.75f, "Examples/Collision Radius", duration: 1.25f);
+            DebugVisualizationUtility.DrawNumber(
+                contact.point + Vector3.up * 0.35f, _damage, "Examples/Collision Damage", duration: 1.25f);
+            DebugVisualizationUtility.DrawRadius(
+                contact.point, 0.75f, "Examples/Collision Radius", duration: 1.25f);
         }
     }
 }

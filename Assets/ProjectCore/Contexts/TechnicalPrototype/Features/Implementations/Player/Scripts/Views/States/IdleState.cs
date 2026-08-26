@@ -6,8 +6,7 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class IdleState :
-        BaseMovementState<PlayerMovementState, PlayerMovementPayload>
+    public sealed class IdleState : BaseMovementState<PlayerMovementState, PlayerMovementPayload>
     {
         private IInputBufferController _inputBufferController;
 
@@ -21,34 +20,25 @@ namespace ProjectCore.TechnicalPrototype
 
         public override void Exit() { }
 
-        protected override IReadOnlyList<
-            IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>>
+        protected override IReadOnlyList<IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>>
             CreateMovementProcessors()
         {
             if (_inputBufferController == null)
             {
-                throw new InvalidOperationException(
-                    "Idle state requires an input buffer controller.");
+                throw new InvalidOperationException("Idle state requires an input buffer controller.");
             }
 
-            return new IMovementStateProcessor<
-                PlayerMovementState,
-                PlayerMovementPayload>[]
+            return new IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>[]
             {
-                new DodgeTransitionProcessor<
-                    PlayerMovementState,
-                    PlayerMovementPayload>(
+                new DodgeTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
                     inputBufferController: _inputBufferController,
                     dodgeCommandId: MovementInputCommandConstants.DodgeCommandId,
                     dodgeMovementState: PlayerMovementState.Dodge),
-                new DirectionalLocomotionTransitionProcessor<
-                    PlayerMovementState,
-                    PlayerMovementPayload>(
+                new DirectionalLocomotionTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
                     locomotionMovementState: PlayerMovementState.Locomotion),
             };
         }
 
-        protected override PlayerMovementState FallbackState =>
-            PlayerMovementState.Idle;
+        protected override PlayerMovementState FallbackState => PlayerMovementState.Idle;
     }
 }

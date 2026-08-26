@@ -23,7 +23,8 @@ namespace Domain
                 return;
             }
 
-            Rect headerRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
+            Rect headerRect =
+                new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
             Rect popupRect = EditorGUI.PrefixLabel(headerRect, label);
             Type[] concreteTypes = GetConcreteTypes();
             string[] typeNames = new string[concreteTypes.Length + 1];

@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class PlayerMovementStateMachine :
-        BaseMovementStateMachine<
+    public sealed class PlayerMovementStateMachine : BaseMovementStateMachine<
             PlayerMovementState,
             BaseMovementState<PlayerMovementState, PlayerMovementPayload>,
             PlayerMovementPayload>
@@ -15,8 +14,7 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private DodgeState _dodgeState;
         [SerializeField] private PlayerInputSourceComponent _inputSource;
 
-        protected override PlayerMovementState InitialState =>
-            PlayerMovementState.Idle;
+        protected override PlayerMovementState InitialState => PlayerMovementState.Idle;
 
         protected override Dictionary<
             PlayerMovementState,
@@ -33,8 +31,7 @@ namespace ProjectCore.TechnicalPrototype
             };
         }
 
-        protected override bool TryGetMovementPayload(
-            out PlayerMovementPayload payload)
+        protected override bool TryGetMovementPayload(out PlayerMovementPayload payload)
         {
             if (_inputSource == null)
             {
@@ -49,7 +46,7 @@ namespace ProjectCore.TechnicalPrototype
                 direction = input.Direction;
             }
 
-            payload = new PlayerMovementPayload(direction);
+            payload = new(direction);
             return true;
         }
 

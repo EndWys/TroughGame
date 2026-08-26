@@ -4,20 +4,17 @@ using ProjectCore.GameCore;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class PlayerNetworkEntityFactory :
-        BaseNetworkEntityFactory<PlayerSpawnPayload>
+    public sealed class PlayerNetworkEntityFactory : BaseNetworkEntityFactory<PlayerSpawnPayload>
     {
         private readonly NetworkEntityIdFactory _networkEntityIdFactory;
 
-        public PlayerNetworkEntityFactory(
-            NetworkEntityIdFactory networkEntityIdFactory)
+        public PlayerNetworkEntityFactory(NetworkEntityIdFactory networkEntityIdFactory)
         {
             _networkEntityIdFactory = networkEntityIdFactory ??
                 throw new ArgumentNullException(nameof(networkEntityIdFactory));
         }
 
-        public override NetworkEntityTypeData EntityType =>
-            PlayerNetworkEntityConstants.Player;
+        public override NetworkEntityTypeData EntityType => PlayerNetworkEntityConstants.Player;
 
         public override BaseNetworkEntityRoot Spawn(
             NetworkRunner runner,
@@ -30,8 +27,7 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(runner));
             }
 
-            NetworkEntityIdData entityId =
-                _networkEntityIdFactory.Create(EntityType);
+            NetworkEntityIdData entityId = _networkEntityIdFactory.Create(EntityType);
 
             NetworkObject networkObject = runner.Spawn(
                 prefab,
@@ -40,15 +36,13 @@ namespace ProjectCore.TechnicalPrototype
                 inputAuthority,
                 (_, spawnedNetworkObject) =>
                 {
-                    if (spawnedNetworkObject.TryGetComponent(
-                            out PlayerNetworkEntityComponent playerEntity))
+                    if (spawnedNetworkObject.TryGetComponent(out PlayerNetworkEntityComponent playerEntity))
                     {
                         playerEntity.SetEntityId(entityId);
                     }
                 });
 
-            if (!networkObject.TryGetComponent(
-                    out PlayerNetworkEntityComponent spawnedPlayer))
+            if (!networkObject.TryGetComponent(out PlayerNetworkEntityComponent spawnedPlayer))
             {
                 throw new InvalidOperationException(
                     $"Spawned player prefab does not contain " +

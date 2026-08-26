@@ -73,7 +73,8 @@ namespace ProjectCore.Template
         {
             return new Error(
                 "LocalSave.VersionMismatch",
-                $"Local save version {savedVersion} is incompatible with expected version {expectedVersion}.");
+                $"Local save version {savedVersion} is incompatible with expected " +
+                $"version {expectedVersion}.");
         }
 
         public static bool IsNotFound(Error error)

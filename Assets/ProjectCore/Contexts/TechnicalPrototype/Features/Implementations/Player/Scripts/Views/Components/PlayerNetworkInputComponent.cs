@@ -13,18 +13,15 @@ namespace ProjectCore.TechnicalPrototype
         [Inject]
         private void Construct(ILocalInputReader localInputReader)
         {
-            _localInputReader = localInputReader ??
-                throw new ArgumentNullException(nameof(localInputReader));
+            _localInputReader = localInputReader ?? throw new ArgumentNullException(nameof(localInputReader));
         }
 
         public override void OnInput(NetworkRunner runner, NetworkInput input)
         {
             _localInputReader.Capture();
 
-            Vector2 moveDirection = _localInputReader.ReadValue<Vector2>(
-                PlayerInputActionConstants.Move);
-            LocalButtonStateData dodge = _localInputReader.ReadButton(
-                PlayerInputActionConstants.Dodge);
+            Vector2 moveDirection = _localInputReader.ReadValue<Vector2>(PlayerInputActionConstants.Move);
+            LocalButtonStateData dodge = _localInputReader.ReadButton(PlayerInputActionConstants.Dodge);
 
             input.Set(new PlayerInputData
             {

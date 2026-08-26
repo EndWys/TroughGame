@@ -11,7 +11,8 @@ namespace ProjectCore.Template
     {
         [SerializeField] private bool _showHudOnStart = true;
         [SerializeField, Min(32)] private int _maxTransientDraws = 1024;
-        [SerializeField] private DebugVisualizationStyleData _defaultStyle = DebugVisualizationStyleData.Default;
+        [SerializeField]
+        private DebugVisualizationStyleData _defaultStyle = DebugVisualizationStyleData.Default;
         [SerializeField] private List<DebugVisualizationChannelStyleConfig> _channelStyles = new();
 
         public bool ShowHudOnStart => _showHudOnStart;
@@ -36,7 +37,8 @@ namespace ProjectCore.Template
             if (bestMatch != null)
                 return bestMatch.Style;
 
-            var createdStyle = new DebugVisualizationChannelStyleConfig(channel, DebugVisualizationStyleData.Default);
+            var createdStyle =
+                new DebugVisualizationChannelStyleConfig(channel, DebugVisualizationStyleData.Default);
             _channelStyles.Add(createdStyle);
 
 #if UNITY_EDITOR

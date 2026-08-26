@@ -24,8 +24,7 @@ namespace ProjectCore.TechnicalPrototype
 
         public override void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
-            if (!HasStateAuthority ||
-                runner.TryGetPlayerObject(player, out _))
+            if (!HasStateAuthority || runner.TryGetPlayerObject(player, out _))
             {
                 return;
             }
@@ -34,15 +33,12 @@ namespace ProjectCore.TechnicalPrototype
             BaseNetworkEntityRoot playerEntity = _networkEntitySpawner.Spawn(
                 runner,
                 _playerPrefab,
-                new PlayerSpawnPayload(
-                    spawnPoint.position,
-                    spawnPoint.rotation),
+                new PlayerSpawnPayload(spawnPoint.position, spawnPoint.rotation),
                 player);
 
             if (_entitiesContainer == null)
             {
-                throw new InvalidOperationException(
-                    "Player entities container must be configured.");
+                throw new InvalidOperationException("Player entities container must be configured.");
             }
 
             playerEntity.transform.SetParent(_entitiesContainer, true);
@@ -66,12 +62,10 @@ namespace ProjectCore.TechnicalPrototype
         {
             if (_spawnPoints == null || _spawnPoints.Length == 0)
             {
-                throw new InvalidOperationException(
-                    "At least one player spawn point must be configured.");
+                throw new InvalidOperationException("At least one player spawn point must be configured.");
             }
 
-            Transform spawnPoint =
-                _spawnPoints[_nextSpawnIndex % _spawnPoints.Length];
+            Transform spawnPoint = _spawnPoints[_nextSpawnIndex % _spawnPoints.Length];
             _nextSpawnIndex++;
 
             return spawnPoint != null

@@ -4,7 +4,8 @@ using Zenject;
 
 namespace ProjectCore.GameCore
 {
-    public abstract class BaseNetworkEntityInstaller<TNetworkEntity> : MonoInstaller where TNetworkEntity : NetworkBehaviour
+    public abstract class BaseNetworkEntityInstaller<TNetworkEntity> : MonoInstaller
+        where TNetworkEntity : NetworkBehaviour
     {
         [field: SerializeReference] private TNetworkEntity _networkEntity;
         

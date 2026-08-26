@@ -4,13 +4,15 @@ namespace ProjectCore.GameCore
 {
     public readonly struct NetworkEntityIdData : IEquatable<NetworkEntityIdData>
     {
-        public static readonly NetworkEntityIdData None = new NetworkEntityIdData(new NetworkEntityTypeData("none"), -1, true);
+        public static readonly NetworkEntityIdData None =
+            new(new NetworkEntityTypeData("none"), -1, true);
 
         public NetworkEntityIdData(NetworkEntityTypeData type, int index)
         {
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), "Network entity index cannot be negative.");
+                throw new ArgumentOutOfRangeException(
+                    nameof(index), "Network entity index cannot be negative.");
             }
 
             Type = type;

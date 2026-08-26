@@ -51,7 +51,8 @@ namespace ProjectCore.Template
             return _lifecycleAdapter.BindInterfacesAndSelfAsSingle<T>();
         }
 
-        protected ConcreteIdArgConditionCopyNonLazyBinder BindInterfacesAndSelfFromComponentInHierarchyAsSingle<T>()
+        protected ConcreteIdArgConditionCopyNonLazyBinder
+            BindInterfacesAndSelfFromComponentInHierarchyAsSingle<T>()
             where T : Component
         {
             return _lifecycleAdapter.BindInterfacesAndSelfFromComponentInHierarchyAsSingle<T>();

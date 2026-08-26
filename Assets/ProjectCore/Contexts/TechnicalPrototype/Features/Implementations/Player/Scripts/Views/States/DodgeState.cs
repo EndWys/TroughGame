@@ -6,13 +6,10 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class DodgeState :
-        BaseMovementState<PlayerMovementState, PlayerMovementPayload>
+    public sealed class DodgeState : BaseMovementState<PlayerMovementState, PlayerMovementPayload>
     {
-        [SerializeField]
-        private TransformMovementBodyComponent _movementBody;
-        [SerializeField]
-        private DodgeMovementConfig _dodgeMovementConfig;
+        [SerializeField] private TransformMovementBodyComponent _movementBody;
+        [SerializeField] private DodgeMovementConfig _dodgeMovementConfig;
 
         private IInputBufferController _inputBufferController;
         private IMovementStateTimerMutator _movementStateTimerMutator;
@@ -36,15 +33,12 @@ namespace ProjectCore.TechnicalPrototype
                     "Dodge state is not configured for the input command controller.");
             }
 
-            if (!_inputBufferController.BeginAction(
-                    MovementInputCommandConstants.DodgeCommandId))
+            if (!_inputBufferController.BeginAction(MovementInputCommandConstants.DodgeCommandId))
             {
-                throw new InvalidOperationException(
-                    "Dodge state entered without a pending Dodge command.");
+                throw new InvalidOperationException("Dodge state entered without a pending Dodge command.");
             }
 
-            _movementStateTimerMutator.StartStateTimer(
-                _dodgeMovementConfig.DurationSeconds);
+            _movementStateTimerMutator.StartStateTimer(_dodgeMovementConfig.DurationSeconds);
         }
 
         public override void Exit()
@@ -53,26 +47,22 @@ namespace ProjectCore.TechnicalPrototype
             _movementStateTimerMutator?.StopStateTimer();
         }
 
-        protected override IReadOnlyList<
-            IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>>
+        protected override IReadOnlyList<IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>>
             CreateMovementProcessors()
         {
             if (_movementBody == null)
             {
-                throw new InvalidOperationException(
-                    "Dodge state requires a movement body reference.");
+                throw new InvalidOperationException("Dodge state requires a movement body reference.");
             }
 
             if (_inputBufferController == null)
             {
-                throw new InvalidOperationException(
-                    "Dodge state requires an input command controller.");
+                throw new InvalidOperationException("Dodge state requires an input command controller.");
             }
 
             if (_movementStateTimerMutator == null)
             {
-                throw new InvalidOperationException(
-                    "Dodge state requires movement state timing.");
+                throw new InvalidOperationException("Dodge state requires movement state timing.");
             }
 
             if (_dodgeMovementConfig == null)
@@ -81,13 +71,9 @@ namespace ProjectCore.TechnicalPrototype
                     "Dodge state requires a Dodge movement config reference.");
             }
 
-            return new IMovementStateProcessor<
-                PlayerMovementState,
-                PlayerMovementPayload>[]
+            return new IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>[]
             {
-                new DodgeProcessor<
-                    PlayerMovementState,
-                    PlayerMovementPayload>(
+                new DodgeProcessor<PlayerMovementState, PlayerMovementPayload>(
                     movementBodyVelocityMutator: _movementBody,
                     movementStateTimerAccessor: _movementStateTimerMutator,
                     dodgeMovementConfig: _dodgeMovementConfig,
@@ -95,7 +81,6 @@ namespace ProjectCore.TechnicalPrototype
             };
         }
 
-        protected override PlayerMovementState FallbackState =>
-            PlayerMovementState.Dodge;
+        protected override PlayerMovementState FallbackState => PlayerMovementState.Dodge;
     }
 }

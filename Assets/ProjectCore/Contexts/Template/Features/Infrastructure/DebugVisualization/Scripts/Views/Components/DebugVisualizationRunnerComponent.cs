@@ -68,10 +68,16 @@ namespace ProjectCore.Template
         {
             channel = string.IsNullOrWhiteSpace(channel) ? DebugVisualizationUtility.DefaultChannel : channel;
             RegisterChannel(channel);
-            _persistentValues.Add(new DebugVisualizationHudValueData(owner != null ? owner.name : "Unknown", channel, label, value));
+            _persistentValues.Add(new DebugVisualizationHudValueData(
+                owner != null ? owner.name : "Unknown", channel, label, value));
         }
 
-        public void AddPersistentWorldLabel(Object owner, string channel, string label, object value, Vector3 position)
+        public void AddPersistentWorldLabel(
+            Object owner,
+            string channel,
+            string label,
+            object value,
+            Vector3 position)
         {
             channel = string.IsNullOrWhiteSpace(channel) ? DebugVisualizationUtility.DefaultChannel : channel;
             RegisterChannel(channel);
@@ -206,7 +212,13 @@ namespace ProjectCore.Template
                     _worldLabelStack[label.Owner] = stackIndex + 1;
                 }
 
-                if (DrawScreenLabel(camera, label.Position, $"{label.Label}: {FormatValue(label.Value)}", _settings.GetStyle(label.Channel), stackIndex, out var rect)
+                if (DrawScreenLabel(
+                        camera,
+                        label.Position,
+                        $"{label.Label}: {FormatValue(label.Value)}",
+                        _settings.GetStyle(label.Channel),
+                        stackIndex,
+                        out var rect)
                     && label.Owner != null)
                 {
                     _worldOwnerLabels[label.Owner] = WorldOwnerLabel.Combine(
@@ -309,7 +321,10 @@ namespace ProjectCore.Template
             return true;
         }
 
-        private static void DrawScreenLabelAboveRect(string text, Rect topRect, DebugVisualizationStyleData style)
+        private static void DrawScreenLabelAboveRect(
+            string text,
+            Rect topRect,
+            DebugVisualizationStyleData style)
         {
             var previousColor = GUI.color;
             var previousSize = GUI.skin.label.fontSize;
@@ -480,7 +495,12 @@ namespace ProjectCore.Template
             public readonly object Value;
             public readonly Vector3 Position;
 
-            public PersistentWorldLabel(Object owner, string channel, string label, object value, Vector3 position)
+            public PersistentWorldLabel(
+                Object owner,
+                string channel,
+                string label,
+                object value,
+                Vector3 position)
             {
                 Owner = owner;
                 Channel = channel;
@@ -505,7 +525,11 @@ namespace ProjectCore.Template
                 HasValue = true;
             }
 
-            public static WorldOwnerLabel Combine(WorldOwnerLabel current, string ownerName, string channel, Rect rect)
+            public static WorldOwnerLabel Combine(
+                WorldOwnerLabel current,
+                string ownerName,
+                string channel,
+                Rect rect)
             {
                 if (!current.HasValue || rect.yMin < current.TopRect.yMin)
                     return new WorldOwnerLabel(ownerName, channel, rect);
