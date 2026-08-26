@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Domain;
 using Fusion;
 using ProjectCore.GameCore;
 using UnityEngine;
@@ -8,12 +9,17 @@ namespace ProjectCore.TechnicalPrototype
 {
     public sealed class PlayerNetworkEntityComponent :
         BaseNetworkEntityRoot,
+        IColleague,
         IMovementStateDataMutator<PlayerMovementState>,
         IMovementStateTimerMutator,
         IInputBufferStateMutator
     {
+        #region Components
+
         [SerializeField]
         private PlayerInputSourceComponent _inputSourceComponent;
+        [SerializeField]
+        private PlayerMediatorComponent _playerMediatorComponent;
         [SerializeField]
         private PlayerMovementStateMachine _movementStateMachine;
         [SerializeField]
@@ -21,10 +27,19 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField]
         private CameraTargetComponent _cameraTargetComponent;
 
-        [Networked] public PlayerMovementState CurrentState { get; private set; }
+        #endregion
+
+        #region Networked State
+
+        [Networked, OnChangedRender(nameof(OnCurrentStateChanged))]
+        public PlayerMovementState CurrentState { get; private set; }
         [Networked] public PlayerMovementState PreviousState { get; private set; }
         [Networked] public TickTimer MovementStateTimer { get; private set; }
         [Networked] private InputBufferStateModel InputBufferStateValue { get; set; }
+
+        #endregion
+
+        #region Movement State Timing
 
         public bool IsStateTimerFinished => MovementStateTimer.IsRunning && MovementStateTimer.ExpiredOrNotRunning(Runner);
 
@@ -47,11 +62,14 @@ namespace ProjectCore.TechnicalPrototype
             MovementStateTimer = TickTimer.None;
         }
 
+        #endregion
+
+        #region Input Buffer State
+
         public InputBufferCommandDescriptor BufferedCommand =>
             new InputBufferCommandDescriptor(InputBufferStateValue.BufferedCommandId);
 
-        public TickTimer BufferedCommandTimer =>
-            InputBufferStateValue.BufferedCommandTimer;
+        public TickTimer BufferedCommandTimer => InputBufferStateValue.BufferedCommandTimer;
 
         public bool IsLocked =>
             InputBufferStateValue.IsLocked;
@@ -95,8 +113,16 @@ namespace ProjectCore.TechnicalPrototype
             InputBufferStateValue = state;
         }
 
+        #endregion
+
+        #region Movement State Data
+
         public PlayerMovementState CurrentMovementStates => CurrentState;
         public PlayerMovementState PreviousMovementStates => PreviousState;
+
+        #endregion
+
+        #region Entity Lifecycle
 
         protected override void BeforeComponentsInitialized()
         {
@@ -106,16 +132,26 @@ namespace ProjectCore.TechnicalPrototype
             }
         }
 
+        protected override void AfterComponentsInitialized()
+        {
+            NotifyMovementStateChanged();
+        }
+
         protected override IEnumerable<INetworkEntityComponent> CreateComponents()
         {
             return new INetworkEntityComponent[]
             {
                 _inputSourceComponent,
+                _playerMediatorComponent,
                 _movementStateMachine,
                 _movementBodyComponent,
                 _cameraTargetComponent,
             };
         }
+
+        #endregion
+
+        #region Movement State Mutation
 
         public void ChangeMovementState(PlayerMovementState newState)
         {
@@ -127,5 +163,25 @@ namespace ProjectCore.TechnicalPrototype
             PreviousState = CurrentState;
             CurrentState = newState;
         }
+
+        #endregion
+
+        #region Movement State Presentation
+
+        private void OnCurrentStateChanged()
+        {
+            NotifyMovementStateChanged();
+        }
+
+        private void NotifyMovementStateChanged()
+        {
+            _playerMediatorComponent.Notify(
+                new PlayerMovementStateChangedPayload(
+                    this,
+                    CurrentState,
+                    PreviousState));
+        }
+
+        #endregion
     }
 }

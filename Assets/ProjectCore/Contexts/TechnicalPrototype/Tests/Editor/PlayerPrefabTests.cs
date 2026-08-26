@@ -34,6 +34,39 @@ namespace ProjectCore.TechnicalPrototype
                 prefab.GetComponent<PlayerNetworkEntityComponent>(),
                 Is.Not.Null);
             Assert.That(
+                prefab.GetComponent<PlayerMediatorComponent>(),
+                Is.Not.Null);
+
+            SerializedObject playerEntity = new SerializedObject(
+                prefab.GetComponent<PlayerNetworkEntityComponent>());
+            Assert.That(
+                playerEntity.FindProperty("_inputSourceComponent")
+                    .objectReferenceValue,
+                Is.Not.Null);
+            Assert.That(
+                playerEntity.FindProperty("_playerMediatorComponent")
+                    .objectReferenceValue,
+                Is.Not.Null);
+            Assert.That(
+                playerEntity.FindProperty("_movementStateMachine")
+                    .objectReferenceValue,
+                Is.Not.Null);
+            Assert.That(
+                playerEntity.FindProperty("_movementBodyComponent")
+                    .objectReferenceValue,
+                Is.Not.Null);
+            Assert.That(
+                playerEntity.FindProperty("_cameraTargetComponent")
+                    .objectReferenceValue,
+                Is.Not.Null);
+
+            SerializedObject playerMediator = new SerializedObject(
+                prefab.GetComponent<PlayerMediatorComponent>());
+            Assert.That(
+                playerMediator.FindProperty("_playerAnimatorComponent")
+                    .objectReferenceValue,
+                Is.Not.Null);
+            Assert.That(
                 prefab.GetComponent<CameraTargetComponent>(),
                 Is.Not.Null);
             Assert.That(
@@ -73,6 +106,9 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(prefab.transform.GetChild(1).name, Is.EqualTo("Movement"));
             Assert.That(
                 prefab.transform.GetChild(0).GetComponent<SpriteRenderer>(),
+                Is.Not.Null);
+            Assert.That(
+                prefab.transform.GetChild(0).GetComponent<PlayerAnimatorComponent>(),
                 Is.Not.Null);
 
             SerializedObject locomotionState = new SerializedObject(
