@@ -238,7 +238,7 @@ namespace ProjectCore.Template
                 Is.True);
             Assert.That(HasComponentNamed(popupUI.gameObject, "UIDocument"), Is.True);
             Assert.That(HasComponentNamed(popupUI.gameObject, "PopupComponent"), Is.True);
-            AssertDirectChildren(player, "PlayerSpawnController", "SpawnPoints");
+            AssertDirectChildren(player, "PlayerSpawnController", "SpawnPoints", "Entities");
             Assert.That(
                 playerSpawnController.GetComponent<PlayerSpawnComponent>(),
                 Is.Not.Null);

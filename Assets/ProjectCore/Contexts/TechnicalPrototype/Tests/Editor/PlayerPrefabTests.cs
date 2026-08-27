@@ -79,8 +79,8 @@ namespace ProjectCore.TechnicalPrototype
                 prefab.GetComponent<TransformMovementBodyComponent>();
 
             Assert.That(movementBody, Is.Not.Null);
-            Assert.That(movementBody.Offset, Is.EqualTo(new Vector2(0f, 0.4f)));
-            Assert.That(movementBody.CollisionRadius, Is.EqualTo(0.3f));
+            Assert.That(movementBody.Offset, Is.EqualTo(new Vector2(0f, 0.2f)));
+            Assert.That(movementBody.CollisionRadius, Is.EqualTo(0.2f));
             Assert.That(
                 movementBody.CollisionMask.value,
                 Is.EqualTo(1 << LayerMask.NameToLayer("LevelCollision")));
