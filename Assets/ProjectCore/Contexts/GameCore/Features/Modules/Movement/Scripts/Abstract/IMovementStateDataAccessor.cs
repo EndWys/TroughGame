@@ -1,10 +1,12 @@
+using System;
 using Domain;
 
 namespace ProjectCore.GameCore
 {
-    public interface IMovementStateDataAccessor : IStateDataAccessor<MovementStates>
+    public interface IMovementStateDataAccessor<TStateType> : IStateDataAccessor<TStateType>
+        where TStateType : struct, Enum
     {
-        public MovementStates CurrentMovementStates { get; }
-        public MovementStates PreviousMovementStates { get; }
+        public TStateType CurrentMovementStates { get; }
+        public TStateType PreviousMovementStates { get; }
     }
 }

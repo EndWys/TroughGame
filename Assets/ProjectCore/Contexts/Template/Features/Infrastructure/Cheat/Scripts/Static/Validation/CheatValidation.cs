@@ -31,23 +31,30 @@ namespace ProjectCore.Template
         public static Result ValidateMethod(MethodInfo method, CheatCommandAttribute attribute)
         {
             if (!IsValidCommandName(attribute.Name))
-                return Result.Failure(CheatErrors.InvalidHandler(method.DeclaringType, $"invalid command name '{attribute.Name}'."));
+                return Result.Failure(CheatErrors.InvalidHandler(
+                    method.DeclaringType, $"invalid command name '{attribute.Name}'."));
             if (method.IsGenericMethodDefinition || method.ContainsGenericParameters)
-                return Result.Failure(CheatErrors.InvalidHandler(method.DeclaringType, $"method '{method.Name}' is generic."));
+                return Result.Failure(CheatErrors.InvalidHandler(
+                    method.DeclaringType, $"method '{method.Name}' is generic."));
             if (method.ReturnType == typeof(void)
                 && method.GetCustomAttribute<AsyncStateMachineAttribute>() != null)
             {
-                return Result.Failure(CheatErrors.InvalidHandler(method.DeclaringType, $"method '{method.Name}' is async void."));
+                return Result.Failure(CheatErrors.InvalidHandler(
+                    method.DeclaringType, $"method '{method.Name}' is async void."));
             }
             if (method.ReturnType == typeof(UniTaskVoid))
-                return Result.Failure(CheatErrors.InvalidHandler(method.DeclaringType, $"method '{method.Name}' returns UniTaskVoid."));
+                return Result.Failure(CheatErrors.InvalidHandler(
+                    method.DeclaringType, $"method '{method.Name}' returns UniTaskVoid."));
             if (typeof(System.Threading.Tasks.Task).IsAssignableFrom(method.ReturnType))
-                return Result.Failure(CheatErrors.InvalidHandler(method.DeclaringType, $"method '{method.Name}' must return UniTask instead of Task."));
+                return Result.Failure(CheatErrors.InvalidHandler(
+                    method.DeclaringType, $"method '{method.Name}' must return UniTask instead of Task."));
             if (method.ReturnType == typeof(System.Threading.Tasks.ValueTask)
                 || method.ReturnType.IsGenericType
                 && method.ReturnType.GetGenericTypeDefinition() == typeof(System.Threading.Tasks.ValueTask<>))
             {
-                return Result.Failure(CheatErrors.InvalidHandler(method.DeclaringType, $"method '{method.Name}' must return UniTask instead of ValueTask."));
+                return Result.Failure(CheatErrors.InvalidHandler(
+                    method.DeclaringType,
+                    $"method '{method.Name}' must return UniTask instead of ValueTask."));
             }
 
             int cancellationTokenCount = 0;
@@ -65,7 +72,8 @@ namespace ProjectCore.Template
                 {
                     return Result.Failure(CheatErrors.InvalidHandler(
                         method.DeclaringType,
-                        $"parameter '{parameter.Name}' in method '{method.Name}' uses an unsupported signature."));
+                        $"parameter '{parameter.Name}' in method '{method.Name}' " +
+                        "uses an unsupported signature."));
                 }
             }
 

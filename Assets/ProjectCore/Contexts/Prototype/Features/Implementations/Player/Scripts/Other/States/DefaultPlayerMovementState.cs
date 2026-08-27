@@ -9,9 +9,9 @@ namespace ProjectCore.Prototype
         {
         }
 
-        protected override IReadOnlyList<IMovementStateProcessor<PlayerInputData>> CreateMovementProcessors()
+        protected override IReadOnlyList<IMovementStateProcessor<MovementStates, PlayerInputData>> CreateMovementProcessors()
         {
-            return new IMovementStateProcessor<PlayerInputData>[] { };
+            return new IMovementStateProcessor<MovementStates, PlayerInputData>[] { };
         }
 
         protected override MovementStates FallbackState => MovementStates.Default;

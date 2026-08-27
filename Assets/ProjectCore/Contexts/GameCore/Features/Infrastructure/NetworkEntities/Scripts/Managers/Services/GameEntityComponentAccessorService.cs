@@ -9,7 +9,8 @@ namespace ProjectCore.GameCore
 
         public GameEntityComponentAccessorService(NetworkEntityRegistry networkEntityRegistry)
         {
-            _networkEntityRegistry = networkEntityRegistry ?? throw new ArgumentNullException(nameof(networkEntityRegistry));
+            _networkEntityRegistry = networkEntityRegistry ??
+                throw new ArgumentNullException(nameof(networkEntityRegistry));
         }
 
         public void FillEntityIds<TComponent>(
@@ -82,7 +83,8 @@ namespace ProjectCore.GameCore
                 }
             }
 
-            sortBuffer.Sort((first, second) => Comparer<TSortKey>.Default.Compare(first.SortKey, second.SortKey));
+            sortBuffer.Sort((first, second) =>
+                Comparer<TSortKey>.Default.Compare(first.SortKey, second.SortKey));
 
             foreach (EntitySortData<TSortKey> result in sortBuffer)
             {

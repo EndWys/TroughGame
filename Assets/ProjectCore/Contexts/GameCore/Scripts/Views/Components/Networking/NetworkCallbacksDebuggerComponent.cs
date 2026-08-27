@@ -55,14 +55,21 @@ namespace ProjectCore.GameCore
             Debug.Log($"<color=red>[Fusion] Shutdown.</color> Reason: {shutdownReason}");
         }
 
-        public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
+        public void OnConnectRequest(
+            NetworkRunner runner,
+            NetworkRunnerCallbackArgs.ConnectRequest request,
+            byte[] token)
         {
             Debug.Log($"<color=cyan>[Fusion] Connect Request:</color> From {request.RemoteAddress}");
         }
 
-        public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
+        public void OnConnectFailed(
+            NetworkRunner runner,
+            NetAddress remoteAddress,
+            NetConnectFailedReason reason)
         {
-            Debug.Log($"<color=red>[Fusion] Connect Failed.</color> Address: {remoteAddress}, Reason: {reason}");
+            Debug.Log(
+                $"<color=red>[Fusion] Connect Failed.</color> Address: {remoteAddress}, Reason: {reason}");
         }
 
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
@@ -98,14 +105,25 @@ namespace ProjectCore.GameCore
             Debug.Log($"[Fusion] Simulation Message received.");
         }
 
-        public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data)
+        public void OnReliableDataReceived(
+            NetworkRunner runner,
+            PlayerRef player,
+            ReliableKey key,
+            ArraySegment<byte> data)
         {
             Debug.Log($"[Fusion] Reliable Data received from {player}. Size: {data.Count}");
         }
 
-        public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
+        public void OnReliableDataProgress(
+            NetworkRunner runner,
+            PlayerRef player,
+            ReliableKey key,
+            float progress)
         {
-             if (progress >= 1f) Debug.Log($"[Fusion] Reliable Data Progress from {player}: {progress * 100}%");
+            if (progress >= 1f)
+            {
+                Debug.Log($"[Fusion] Reliable Data Progress from {player}: {progress * 100}%");
+            }
         }
 
         public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)

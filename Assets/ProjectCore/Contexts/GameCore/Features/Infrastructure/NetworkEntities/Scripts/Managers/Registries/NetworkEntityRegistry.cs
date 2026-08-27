@@ -7,7 +7,8 @@ namespace ProjectCore.GameCore
     {
         private readonly Dictionary<NetworkEntityIdData, BaseNetworkEntityRoot> _entitiesById = new();
 
-        private readonly Dictionary<NetworkEntityTypeData, List<BaseNetworkEntityRoot>> _entitiesByType = new();
+        private readonly Dictionary<NetworkEntityTypeData, List<BaseNetworkEntityRoot>> _entitiesByType =
+            new();
 
         public IReadOnlyDictionary<NetworkEntityIdData, BaseNetworkEntityRoot> EntitiesById => _entitiesById;
 
@@ -22,7 +23,8 @@ namespace ProjectCore.GameCore
 
             if (!entityId.IsValid)
             {
-                throw new ArgumentException("Cannot register network entity without valid id.", nameof(entity));
+                throw new ArgumentException(
+                    "Cannot register network entity without valid id.", nameof(entity));
             }
 
             if (_entitiesById.TryGetValue(entityId, out BaseNetworkEntityRoot registeredEntity) &&
@@ -151,7 +153,8 @@ namespace ProjectCore.GameCore
                 throw new ArgumentNullException(nameof(results));
             }
 
-            foreach (KeyValuePair<NetworkEntityIdData, BaseNetworkEntityRoot> registeredEntity in _entitiesById)
+            foreach (
+                KeyValuePair<NetworkEntityIdData, BaseNetworkEntityRoot> registeredEntity in _entitiesById)
             {
                 if (registeredEntity.Value.TryGetEntityComponent<TComponent>(out _))
                 {
@@ -177,7 +180,8 @@ namespace ProjectCore.GameCore
 
             var componentBuffer = new List<TComponent>();
 
-            foreach (KeyValuePair<NetworkEntityIdData, BaseNetworkEntityRoot> registeredEntity in _entitiesById)
+            foreach (
+                KeyValuePair<NetworkEntityIdData, BaseNetworkEntityRoot> registeredEntity in _entitiesById)
             {
                 componentBuffer.Clear();
                 registeredEntity.Value.FillEntityComponents(componentBuffer);

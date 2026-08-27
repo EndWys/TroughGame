@@ -68,10 +68,16 @@ namespace ProjectCore.Template
         {
             channel = string.IsNullOrWhiteSpace(channel) ? DebugVisualizationUtility.DefaultChannel : channel;
             RegisterChannel(channel);
-            _persistentValues.Add(new DebugVisualizationHudValueData(owner != null ? owner.name : "Unknown", channel, label, value));
+            _persistentValues.Add(new DebugVisualizationHudValueData(
+                owner != null ? owner.name : "Unknown", channel, label, value));
         }
 
-        public void AddPersistentWorldLabel(Object owner, string channel, string label, object value, Vector3 position)
+        public void AddPersistentWorldLabel(
+            Object owner,
+            string channel,
+            string label,
+            object value,
+            Vector3 position)
         {
             channel = string.IsNullOrWhiteSpace(channel) ? DebugVisualizationUtility.DefaultChannel : channel;
             RegisterChannel(channel);
@@ -93,7 +99,7 @@ namespace ProjectCore.Template
 
         public void ClearAll()
         {
-            _draws.Clear();
+            _draws?.Clear();
             _persistentValues.Clear();
             _persistentWorldLabels.Clear();
             _worldLabelStack.Clear();
@@ -106,7 +112,7 @@ namespace ProjectCore.Template
 
         public void ClearDraws()
         {
-            _draws.Clear();
+            _draws?.Clear();
             _hudController?.Refresh();
         }
 
@@ -125,6 +131,9 @@ namespace ProjectCore.Template
 
         private void LateUpdate()
         {
+            if (_draws == null || _registry == null || _backend == null)
+                return;
+
             _persistentValues.Clear();
             _persistentWorldLabels.Clear();
             _registry.Refresh(_backend);
@@ -139,6 +148,9 @@ namespace ProjectCore.Template
 
         private void OnRenderObject()
         {
+            if (_draws == null)
+                return;
+
             if (_draws.Count == 0)
                 return;
 
@@ -160,6 +172,9 @@ namespace ProjectCore.Template
 
         private void OnGUI()
         {
+            if (_draws == null || _settings == null)
+                return;
+
             DrawWorldLabels();
         }
 
@@ -197,7 +212,13 @@ namespace ProjectCore.Template
                     _worldLabelStack[label.Owner] = stackIndex + 1;
                 }
 
-                if (DrawScreenLabel(camera, label.Position, $"{label.Label}: {FormatValue(label.Value)}", _settings.GetStyle(label.Channel), stackIndex, out var rect)
+                if (DrawScreenLabel(
+                        camera,
+                        label.Position,
+                        $"{label.Label}: {FormatValue(label.Value)}",
+                        _settings.GetStyle(label.Channel),
+                        stackIndex,
+                        out var rect)
                     && label.Owner != null)
                 {
                     _worldOwnerLabels[label.Owner] = WorldOwnerLabel.Combine(
@@ -300,7 +321,10 @@ namespace ProjectCore.Template
             return true;
         }
 
-        private static void DrawScreenLabelAboveRect(string text, Rect topRect, DebugVisualizationStyleData style)
+        private static void DrawScreenLabelAboveRect(
+            string text,
+            Rect topRect,
+            DebugVisualizationStyleData style)
         {
             var previousColor = GUI.color;
             var previousSize = GUI.skin.label.fontSize;
@@ -385,12 +409,13 @@ namespace ProjectCore.Template
 
         private static void EmitCircle(DebugVisualizationDrawCommand draw)
         {
-            var previous = PointOnCircle(draw.A, draw.Radius, 0f);
+            Vector3 normal = draw.Normal.sqrMagnitude > 0f ? draw.Normal : Vector3.up;
+            var previous = PointOnCircle(draw.A, draw.Radius, normal, 0f);
 
             for (var i = 1; i <= draw.Segments; i++)
             {
                 var angle = i / (float)draw.Segments * Mathf.PI * 2f;
-                var next = PointOnCircle(draw.A, draw.Radius, angle);
+                var next = PointOnCircle(draw.A, draw.Radius, normal, angle);
                 EmitThickLine(previous, next, draw.Style);
                 previous = next;
             }
@@ -399,6 +424,7 @@ namespace ProjectCore.Template
         private static void EmitDiscFill(DebugVisualizationDrawCommand draw)
         {
             GL.Color(draw.Style.FillColor);
+            Vector3 normal = draw.Normal.sqrMagnitude > 0f ? draw.Normal : Vector3.up;
 
             for (var i = 0; i < draw.Segments; i++)
             {
@@ -406,14 +432,20 @@ namespace ProjectCore.Template
                 var nextAngle = (i + 1) / (float)draw.Segments * Mathf.PI * 2f;
 
                 GL.Vertex(draw.A);
-                GL.Vertex(PointOnCircle(draw.A, draw.Radius, currentAngle));
-                GL.Vertex(PointOnCircle(draw.A, draw.Radius, nextAngle));
+                GL.Vertex(PointOnCircle(draw.A, draw.Radius, normal, currentAngle));
+                GL.Vertex(PointOnCircle(draw.A, draw.Radius, normal, nextAngle));
             }
         }
 
-        private static Vector3 PointOnCircle(Vector3 center, float radius, float angle)
+        private static Vector3 PointOnCircle(Vector3 center, float radius, Vector3 normal, float angle)
         {
-            return center + new Vector3(Mathf.Cos(angle) * radius, 0f, Mathf.Sin(angle) * radius);
+            Vector3 tangent = Vector3.Cross(normal, Vector3.up);
+            if (tangent.sqrMagnitude <= 0.0001f)
+                tangent = Vector3.Cross(normal, Vector3.right);
+
+            tangent.Normalize();
+            Vector3 bitangent = Vector3.Cross(normal, tangent).normalized;
+            return center + radius * (Mathf.Cos(angle) * tangent + Mathf.Sin(angle) * bitangent);
         }
 
         private void RegisterChannel(string channel)
@@ -471,7 +503,12 @@ namespace ProjectCore.Template
             public readonly object Value;
             public readonly Vector3 Position;
 
-            public PersistentWorldLabel(Object owner, string channel, string label, object value, Vector3 position)
+            public PersistentWorldLabel(
+                Object owner,
+                string channel,
+                string label,
+                object value,
+                Vector3 position)
             {
                 Owner = owner;
                 Channel = channel;
@@ -496,7 +533,11 @@ namespace ProjectCore.Template
                 HasValue = true;
             }
 
-            public static WorldOwnerLabel Combine(WorldOwnerLabel current, string ownerName, string channel, Rect rect)
+            public static WorldOwnerLabel Combine(
+                WorldOwnerLabel current,
+                string ownerName,
+                string channel,
+                Rect rect)
             {
                 if (!current.HasValue || rect.yMin < current.TopRect.yMin)
                     return new WorldOwnerLabel(ownerName, channel, rect);

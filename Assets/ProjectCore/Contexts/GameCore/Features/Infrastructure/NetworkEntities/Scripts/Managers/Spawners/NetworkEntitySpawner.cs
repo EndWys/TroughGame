@@ -32,7 +32,8 @@ namespace ProjectCore.GameCore
         {
             if (!_factoriesByPayloadType.TryGetValue(typeof(TPayload), out INetworkEntityFactory factory))
             {
-                throw new InvalidOperationException($"No network entity factory registered for payload '{typeof(TPayload).Name}'.");
+                throw new InvalidOperationException(
+                    $"No network entity factory registered for payload '{typeof(TPayload).Name}'.");
             }
 
             return factory.Spawn(runner, prefab, inputAuthority, payload);
@@ -47,7 +48,8 @@ namespace ProjectCore.GameCore
 
             if (!entity.EntityId.IsValid)
             {
-                throw new ArgumentException("Cannot despawn network entity without valid id.", nameof(entity));
+                throw new ArgumentException(
+                    "Cannot despawn network entity without valid id.", nameof(entity));
             }
 
             foreach (INetworkEntityFactory factory in _factoriesByPayloadType.Values)
@@ -59,7 +61,8 @@ namespace ProjectCore.GameCore
                 }
             }
 
-            throw new InvalidOperationException($"No network entity factory registered for entity type '{entity.EntityId.Type}'.");
+                throw new InvalidOperationException(
+                    $"No network entity factory registered for entity type '{entity.EntityId.Type}'.");
         }
 
         private void RegisterFactory(INetworkEntityFactory factory)
@@ -71,7 +74,9 @@ namespace ProjectCore.GameCore
 
             if (_factoriesByPayloadType.ContainsKey(factory.PayloadType))
             {
-                throw new InvalidOperationException($"Network entity factory for payload '{factory.PayloadType.Name}' is already registered.");
+                throw new InvalidOperationException(
+                    $"Network entity factory for payload '{factory.PayloadType.Name}' " +
+                    "is already registered.");
             }
 
             _factoriesByPayloadType.Add(factory.PayloadType, factory);

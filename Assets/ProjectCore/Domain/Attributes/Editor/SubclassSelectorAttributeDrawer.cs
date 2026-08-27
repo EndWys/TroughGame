@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,8 @@ namespace Domain
                 return;
             }
 
-            Rect headerRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
+            Rect headerRect =
+                new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
             Rect popupRect = EditorGUI.PrefixLabel(headerRect, label);
             Type[] concreteTypes = GetConcreteTypes();
             string[] typeNames = new string[concreteTypes.Length + 1];
@@ -143,3 +145,4 @@ namespace Domain
         }
     }
 }
+#endif

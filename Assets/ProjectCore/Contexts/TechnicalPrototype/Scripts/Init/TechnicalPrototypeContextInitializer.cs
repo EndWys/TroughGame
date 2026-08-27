@@ -1,13 +1,12 @@
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using ProjectCore.Template;
-using System.Threading;
 
 namespace ProjectCore.TechnicalPrototype
 {
     public sealed class TechnicalPrototypeContextInitializer : BaseGameSceneContextInitializer
     {
-        public TechnicalPrototypeContextInitializer(
-            IFeatureInitializationFlow featureInitializationFlow)
+        public TechnicalPrototypeContextInitializer(IFeatureInitializationFlow featureInitializationFlow)
             : base(featureInitializationFlow)
         {
         }

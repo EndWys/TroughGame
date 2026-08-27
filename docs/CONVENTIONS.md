@@ -58,11 +58,11 @@ adapt reusable feature-framework behavior to its external contracts.
   Scripts/
     Abstract/
     DataHolders/
-      Attributes/ Configs/ Data/ Definitions/ Descriptors/ DTOs/ Payloads/ Settings/
+      Attributes/ Configs/ Data/ Definitions/ Descriptors/ DTOs/ Models/ Payloads/ Settings/
     Enums/
     Init/
     Managers/
-      Controllers/ Coordinators/ Factories/ Flows/ Handlers/
+      Accumulators/ Controllers/ Coordinators/ Factories/ Flows/ Handlers/
       Mediators/ Providers/ Registries/ Repositories/ Serializers/ Services/ Storages/
       Spawners/ Systems/
     Other/
@@ -71,7 +71,7 @@ adapt reusable feature-framework behavior to its external contracts.
     Static/
       Constants/ Errors/ Extensions/ Utilities/ Validation/
     Views/
-      Components/ Navigation/ Popups/ Screens/ Widgets/
+      Components/ Navigation/ Popups/ Screens/ StateMachines/ States/ Widgets/
 ```
 
 Create only folders that are needed. `Scripts` and every category root are
@@ -110,6 +110,7 @@ owning container. Interfaces belong in `Abstract`.
 
 | Folder | Suffix | Meaning |
 | --- | --- | --- |
+| Accumulators | `Accumulator` | Collects transient values or transitions until an explicit read/consume boundary. |
 | Controllers | `Controller` | Coordinates one focused use case or input translation. |
 | Coordinators | `Coordinator` | Orchestrates a multi-step workflow across services/systems. |
 | Factories | `Factory` | Creates objects or aggregates and hides construction. |
@@ -142,6 +143,7 @@ services, load assets, or execute workflows.
 | Definitions | `Definition` | Authored registration of a typed project resource or route. |
 | Descriptors | `Descriptor` | Immutable description of how another object is identified or processed. |
 | DTOs | `DTO` | Serialization, network, backend, or persistence boundary shape. |
+| Models | `Model` | Long-lived runtime state representation owned by a feature. |
 | Payloads | `Payload` | Parameters for commands, factories, navigation, or signals. |
 | Settings | `Settings` | Immutable settings supplied for an object or context lifetime. |
 
@@ -151,11 +153,13 @@ Use the uppercase `DTO` abbreviation in type names, for example
 
 ### Views
 
-`Views` contains only C# presentation types. Every view must inherit from
-`MonoBehaviour` or `UnityEngine.UIElements.VisualElement`. Views render state,
-forward Unity/user events to injected contracts, and contain no business rules.
-UXML, USS, textures, fonts, and other non-C# presentation assets belong in the
-feature's `GraphicResources`.
+`Views` contains Unity-facing C# types. Every View type must inherit from
+`MonoBehaviour` or `UnityEngine.UIElements.VisualElement`. Presentation Views
+render state and forward Unity/user events to injected contracts. Unity-bound
+state machines and states own only their bounded state-processing role and
+delegate reusable operations to processors, services, or systems. UXML, USS,
+textures, fonts, and other non-C# presentation assets belong in the feature's
+`GraphicResources`.
 
 | Folder | Suffix | Meaning |
 | --- | --- | --- |
@@ -163,6 +167,8 @@ feature's `GraphicResources`.
 | Navigation | `NavigationView` | Navigation controls and transitions. |
 | Popups | `PopupView` | Popup presentation and serialized references. |
 | Screens | `ScreenView` | Full-screen or major panel presentation; may inherit `MonoBehaviour` or `VisualElement`. |
+| StateMachines | `StateMachine` | `MonoBehaviour` state machine attached to a scene object or prefab. |
+| States | `State` | `MonoBehaviour` state attached to a scene object or prefab. |
 | Widgets | `WidgetView` | Reusable embedded presentation. |
 
 ### Other
@@ -183,6 +189,10 @@ view, or special category.
 | StateMachines | `StateMachine` | Owns bounded transitions and active state. |
 | States | `State` | One behavior state used by a state machine. |
 | Strategies | `Strategy` | Replaceable algorithm selected by caller or DI. |
+
+`MonoBehaviour` state machines and states belong in `Views/StateMachines` and
+`Views/States`; `Other/StateMachines` and `Other/States` contain only plain C#
+implementations.
 
 Do not create `Misc`, `Common`, `Helpers`, or `Utils` escape-hatch folders.
 

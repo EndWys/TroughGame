@@ -4,7 +4,8 @@ namespace ProjectCore.GameCore
 {
     public sealed class NetworkEntityIdFactory
     {
-        private readonly Dictionary<NetworkEntityTypeData, int> _nextIndexes = new Dictionary<NetworkEntityTypeData, int>();
+        private readonly Dictionary<NetworkEntityTypeData, int> _nextIndexes =
+            new Dictionary<NetworkEntityTypeData, int>();
 
         public NetworkEntityIdData Create(NetworkEntityTypeData type)
         {

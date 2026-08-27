@@ -341,10 +341,12 @@ function Test-FeatureScriptPath {
             Definitions = @('Definition')
             Descriptors = @('Descriptor')
             DTOs = @('DTO')
+            Models = @('Model')
             Payloads = @('Payload')
             Settings = @('Settings')
         }
         Managers = @{
+            Accumulators = @('Accumulator')
             Controllers = @('Controller')
             Coordinators = @('Coordinator')
             Factories = @('Factory')
@@ -385,6 +387,8 @@ function Test-FeatureScriptPath {
             Navigation = @('NavigationView')
             Popups = @('PopupView')
             Screens = @('ScreenView')
+            StateMachines = @('StateMachine')
+            States = @('State')
             Widgets = @('WidgetView')
         }
     }
@@ -579,6 +583,7 @@ function Test-ContextSharedScriptPath {
                 Data = @('Data')
                 Definitions = @('Definition')
                 DTOs = @('DTO')
+                Models = @('Model')
                 Payloads = @('Payload')
             }
             Other = @{
@@ -598,6 +603,8 @@ function Test-ContextSharedScriptPath {
                 Navigation = @('NavigationView')
                 Popups = @('PopupView')
                 Screens = @('ScreenView')
+                StateMachines = @('StateMachine')
+                States = @('State')
                 Widgets = @('WidgetView')
             }
         }

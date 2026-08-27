@@ -7,6 +7,8 @@ namespace ProjectCore.GameCore
         protected override void AddFeatures()
         {
             AddFeature<NetworkEntitiesFeature>();
+            AddFeature<CameraTargetFeature>();
+            AddFeature<MovementSimulationFeature>();
             AddFeature<MovementFeature>();
             AddFeature<CombatFeature>();
         }

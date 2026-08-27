@@ -21,4 +21,44 @@ MonoBehaviour:
     LineWidth: 0.03
     Duration: 1
     DepthTest: 1
-  _channelStyles: []
+  _channelStyles:
+  - _channel: Player/State
+    _style:
+      Color: {r: 1, g: 1, b: 1, a: 1}
+      FillColor: {r: 1, g: 1, b: 1, a: 0.12}
+      TextSize: 18
+      LineWidth: 0.03
+      Duration: 1
+      DepthTest: 1
+  - _channel: Player/Movement
+    _style:
+      Color: {r: 0, g: 1, b: 1, a: 1}
+      FillColor: {r: 0, g: 1, b: 1, a: 0.12}
+      TextSize: 18
+      LineWidth: 0.03
+      Duration: 1
+      DepthTest: 1
+  - _channel: Player/Input
+    _style:
+      Color: {r: 1, g: 0.85, b: 0, a: 1}
+      FillColor: {r: 1, g: 0.85, b: 0, a: 0.12}
+      TextSize: 18
+      LineWidth: 0.03
+      Duration: 1
+      DepthTest: 1
+  - _channel: Player/Network
+    _style:
+      Color: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+      FillColor: {r: 0.7, g: 0.7, b: 0.7, a: 0.12}
+      TextSize: 18
+      LineWidth: 0.03
+      Duration: 1
+      DepthTest: 1
+  - _channel: Player/Input/Lock
+    _style:
+      Color: {r: 1, g: 0.45, b: 0, a: 1}
+      FillColor: {r: 1, g: 0.45, b: 0, a: 0.3}
+      TextSize: 18
+      LineWidth: 0.03
+      Duration: 1
+      DepthTest: 1

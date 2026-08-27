@@ -62,11 +62,26 @@ namespace ProjectCore.Template
             return _container.BindInterfacesAndSelfTo<T>().AsSingle();
         }
 
-        public ConcreteIdArgConditionCopyNonLazyBinder BindInterfacesAndSelfFromComponentInHierarchyAsSingle<T>()
+        public ConcreteIdArgConditionCopyNonLazyBinder
+            BindInterfacesAndSelfFromComponentInHierarchyAsSingle<T>()
             where T : Component
         {
             return _container.BindInterfacesAndSelfTo<T>()
                 .FromComponentInHierarchy()
+                .AsSingle();
+        }
+
+        public void BindFromInstance<TContract, TImplementation>(TImplementation instance)
+            where TImplementation : class, TContract
+        {
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            _container.Bind<TContract>()
+                .To<TImplementation>()
+                .FromInstance(instance)
                 .AsSingle();
         }
 

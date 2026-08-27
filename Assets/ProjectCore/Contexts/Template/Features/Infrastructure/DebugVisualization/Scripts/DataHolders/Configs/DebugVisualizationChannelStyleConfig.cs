@@ -15,7 +15,9 @@ namespace ProjectCore.Template
 
         public DebugVisualizationChannelStyleConfig(string channel, DebugVisualizationStyleData style)
         {
-            _channel = string.IsNullOrWhiteSpace(channel) ? DebugVisualizationUtility.DefaultChannel : channel;
+            _channel = string.IsNullOrWhiteSpace(channel)
+                ? DebugVisualizationUtility.DefaultChannel
+                : channel;
             _style = style ?? DebugVisualizationStyleData.Default;
         }
 

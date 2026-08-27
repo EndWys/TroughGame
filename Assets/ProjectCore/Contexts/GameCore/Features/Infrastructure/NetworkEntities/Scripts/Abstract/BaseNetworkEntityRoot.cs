@@ -18,7 +18,8 @@ namespace ProjectCore.GameCore
         [Networked] private int NetworkEntityIndex { get; set; }
 
         [Inject]
-        private void ConstructBaseNetworkEntityRoot([InjectOptional] NetworkEntityRegistry networkEntityRegistry)
+        private void ConstructBaseNetworkEntityRoot(
+            [InjectOptional] NetworkEntityRegistry networkEntityRegistry)
         {
             _networkEntityRegistry = networkEntityRegistry;
         }

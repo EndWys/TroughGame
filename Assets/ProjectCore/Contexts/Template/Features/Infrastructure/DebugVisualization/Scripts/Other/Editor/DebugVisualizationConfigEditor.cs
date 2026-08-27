@@ -51,7 +51,10 @@ namespace ProjectCore.Template
         {
             if (_channelStyles.arraySize == 0)
             {
-                EditorGUILayout.HelpBox("No channel styles configured. Add one to override the default style for a channel or folder path.", MessageType.Info);
+                EditorGUILayout.HelpBox(
+                    "No channel styles configured. Add one to override the default style " +
+                    "for a channel or folder path.",
+                    MessageType.Info);
                 return;
             }
 
@@ -202,7 +205,9 @@ namespace ProjectCore.Template
 
                 for (var i = 0; i < parts.Length; i++)
                 {
-                    var part = string.IsNullOrWhiteSpace(parts[i]) ? DebugVisualizationUtility.DefaultChannel : parts[i];
+                    var part = string.IsNullOrWhiteSpace(parts[i])
+                        ? DebugVisualizationUtility.DefaultChannel
+                        : parts[i];
                     currentPath = string.IsNullOrEmpty(currentPath) ? part : $"{currentPath}/{part}";
 
                     if (!current.Children.TryGetValue(part, out var child))

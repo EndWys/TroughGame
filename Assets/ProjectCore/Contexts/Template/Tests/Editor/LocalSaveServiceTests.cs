@@ -74,7 +74,8 @@ namespace ProjectCore.Template
             Assert.IsTrue(createdData.IsSuccess);
             Assert.AreEqual(5, createdData.Value.Value);
 
-            // A later explicit save replaces the stored document and can be loaded through the same definition.
+            // A later explicit save replaces the stored document and can be loaded
+            // through the same definition.
             var expectedData = new TestSaveData(10, "updated");
             Assert.IsTrue((await _service.SaveAsync(
                 descriptor,
@@ -125,7 +126,8 @@ namespace ProjectCore.Template
             Assert.IsFalse((await _service.ExistsAsync(formerDescriptor, CancellationToken.None)).Value);
             Assert.IsTrue((await _service.ExistsAsync(currentDescriptor, CancellationToken.None)).Value);
 
-            // SecureFile uses the same public service contract while keeping the serialized document encrypted at rest.
+            // SecureFile uses the same public service contract while keeping the
+            // serialized document encrypted at rest.
             Assert.IsTrue((await _service.SaveAsync(
                 secureDescriptor,
                 expectedData,

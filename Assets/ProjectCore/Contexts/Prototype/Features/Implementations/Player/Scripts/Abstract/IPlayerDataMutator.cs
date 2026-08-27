@@ -8,7 +8,7 @@ namespace ProjectCore.Prototype
         IGroundDetectorDataMutator,
         IHealthDataMutator,
         IJumpDataMutator,
-        IMovementStateDataMutator
+        IMovementStateDataMutator<MovementStates>
     {
     }
 }

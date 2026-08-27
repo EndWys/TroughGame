@@ -72,7 +72,8 @@ namespace ProjectCore.Template
         {
             if (!_definitions.TryGetValue(typeof(TScene), out BaseSceneDefinition definition))
             {
-                return UniTask.FromResult(Result.Failure(SceneFlowErrors.DefinitionNotRegistered(typeof(TScene))));
+                return UniTask.FromResult(
+                    Result.Failure(SceneFlowErrors.DefinitionNotRegistered(typeof(TScene))));
             }
 
             return LoadAsync(definition, settings, cancellationToken);
@@ -98,7 +99,8 @@ namespace ProjectCore.Template
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            if (!_definitions.TryGetValue(sceneDefinition.SceneType, out BaseSceneDefinition registeredDefinition) ||
+            if (!_definitions.TryGetValue(
+                    sceneDefinition.SceneType, out BaseSceneDefinition registeredDefinition) ||
                 !ReferenceEquals(registeredDefinition, sceneDefinition))
             {
                 return Result.Failure(SceneFlowErrors.DefinitionNotRegistered(sceneDefinition.SceneType));

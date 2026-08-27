@@ -9,16 +9,28 @@ namespace ProjectCore.Template
         public readonly DebugVisualizationRenderStyleData Style;
         public readonly Vector3 A;
         public readonly Vector3 B;
+        public readonly Vector3 Normal;
         public readonly float Radius;
         public readonly int Segments;
         public readonly string Text;
         public readonly float ExpiresAt;
 
-        private DebugVisualizationDrawCommand(DebugVisualizationDrawKind kind, Vector3 a, Vector3 b, float radius, string text, string channel, DebugVisualizationStyleData style, float? duration, int segments)
+        private DebugVisualizationDrawCommand(
+            DebugVisualizationDrawKind kind,
+            Vector3 a,
+            Vector3 b,
+            Vector3 normal,
+            float radius,
+            string text,
+            string channel,
+            DebugVisualizationStyleData style,
+            float? duration,
+            int segments)
         {
             Kind = kind;
             A = a;
             B = b;
+            Normal = normal;
             Radius = radius;
             Text = text;
             Channel = channel;
@@ -31,24 +43,88 @@ namespace ProjectCore.Template
 
         public bool IsExpired => Time.unscaledTime > ExpiresAt;
 
-        public static DebugVisualizationDrawCommand Label(Vector3 position, string text, string channel, DebugVisualizationStyleData style, float? duration)
+        public static DebugVisualizationDrawCommand Label(
+            Vector3 position,
+            string text,
+            string channel,
+            DebugVisualizationStyleData style,
+            float? duration)
         {
-            return new DebugVisualizationDrawCommand(DebugVisualizationDrawKind.Label, position, default, 0f, text, channel, style, duration, 0);
+            return new DebugVisualizationDrawCommand(
+                DebugVisualizationDrawKind.Label,
+                position,
+                default,
+                default,
+                0f,
+                text,
+                channel,
+                style,
+                duration,
+                0);
         }
 
-        public static DebugVisualizationDrawCommand Line(Vector3 start, Vector3 end, string channel, DebugVisualizationStyleData style, float? duration)
+        public static DebugVisualizationDrawCommand Line(
+            Vector3 start,
+            Vector3 end,
+            string channel,
+            DebugVisualizationStyleData style,
+            float? duration)
         {
-            return new DebugVisualizationDrawCommand(DebugVisualizationDrawKind.Line, start, end, 0f, null, channel, style, duration, 0);
+            return new DebugVisualizationDrawCommand(
+                DebugVisualizationDrawKind.Line,
+                start,
+                end,
+                default,
+                0f,
+                null,
+                channel,
+                style,
+                duration,
+                0);
         }
 
-        public static DebugVisualizationDrawCommand Circle(Vector3 center, float radius, string channel, DebugVisualizationStyleData style, float? duration, int segments)
+        public static DebugVisualizationDrawCommand Circle(
+            Vector3 center,
+            float radius,
+            Vector3 normal,
+            string channel,
+            DebugVisualizationStyleData style,
+            float? duration,
+            int segments)
         {
-            return new DebugVisualizationDrawCommand(DebugVisualizationDrawKind.Circle, center, default, Mathf.Max(0f, radius), null, channel, style, duration, segments);
+            return new DebugVisualizationDrawCommand(
+                DebugVisualizationDrawKind.Circle,
+                center,
+                default,
+                normal.normalized,
+                Mathf.Max(0f, radius),
+                null,
+                channel,
+                style,
+                duration,
+                segments);
         }
 
-        public static DebugVisualizationDrawCommand Disc(Vector3 center, float radius, string channel, DebugVisualizationStyleData style, float? duration, int segments)
+        public static DebugVisualizationDrawCommand Disc(
+            Vector3 center,
+            float radius,
+            Vector3 normal,
+            string channel,
+            DebugVisualizationStyleData style,
+            float? duration,
+            int segments)
         {
-            return new DebugVisualizationDrawCommand(DebugVisualizationDrawKind.Disc, center, default, Mathf.Max(0f, radius), null, channel, style, duration, segments);
+            return new DebugVisualizationDrawCommand(
+                DebugVisualizationDrawKind.Disc,
+                center,
+                default,
+                normal.normalized,
+                Mathf.Max(0f, radius),
+                null,
+                channel,
+                style,
+                duration,
+                segments);
         }
     }
 }

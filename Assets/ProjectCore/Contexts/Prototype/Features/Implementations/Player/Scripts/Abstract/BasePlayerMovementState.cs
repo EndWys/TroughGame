@@ -5,7 +5,7 @@ using Zenject;
 namespace ProjectCore.Prototype
 {
     public abstract class BasePlayerMovementState :
-        BaseMovementState<PlayerInputData>
+        BaseMovementState<MovementStates, PlayerInputData>
     {
         public PlayerMovementStateMachine Context { get; private set; }
 

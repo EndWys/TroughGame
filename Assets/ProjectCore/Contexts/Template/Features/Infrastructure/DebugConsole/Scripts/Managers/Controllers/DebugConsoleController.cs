@@ -46,7 +46,8 @@ namespace ProjectCore.Template
         public void Initialize(DebugConsoleSettings settings)
         {
             if (_isInitialized)
-                throw new InvalidOperationException($"{nameof(DebugConsoleController)} is already initialized.");
+                throw new InvalidOperationException(
+                    $"{nameof(DebugConsoleController)} is already initialized.");
 
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _isVisible = settings.OpenOnStart;

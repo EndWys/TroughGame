@@ -8,7 +8,8 @@ namespace ProjectCore.GameCore
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ArgumentException("Network entity type cannot be null or whitespace.", nameof(value));
+                throw new ArgumentException(
+                    "Network entity type cannot be null or whitespace.", nameof(value));
             }
 
             Value = value;

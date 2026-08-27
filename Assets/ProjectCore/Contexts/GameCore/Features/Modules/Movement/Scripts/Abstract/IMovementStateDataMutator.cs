@@ -1,11 +1,13 @@
+using System;
 using Domain;
 
 namespace ProjectCore.GameCore
 {
-    public interface IMovementStateDataMutator :
-        IMovementStateDataAccessor,
-        IStateDataMutator<MovementStates>
+    public interface IMovementStateDataMutator<TStateType> :
+        IMovementStateDataAccessor<TStateType>,
+        IStateDataMutator<TStateType>
+        where TStateType : struct, Enum
     {
-        public void ChangeMovementState(MovementStates newState);
+        public void ChangeMovementState(TStateType newState);
     }
 }

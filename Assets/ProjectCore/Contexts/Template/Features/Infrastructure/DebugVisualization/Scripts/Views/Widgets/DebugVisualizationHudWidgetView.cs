@@ -173,7 +173,8 @@ namespace ProjectCore.Template
 
             var colorsToggle = new Toggle("Value Colors") { value = _controller.UseChannelValueColors };
             colorsToggle.AddToClassList("debugviz-color-toggle");
-            colorsToggle.RegisterValueChangedCallback(evt => _controller.SetUseChannelValueColors(evt.newValue));
+            colorsToggle.RegisterValueChangedCallback(
+                evt => _controller.SetUseChannelValueColors(evt.newValue));
             _breadcrumbRow.Add(colorsToggle);
         }
 
@@ -256,7 +257,8 @@ namespace ProjectCore.Template
                 Label label;
                 if (_controller.UseChannelValueColors)
                 {
-                    var color = ColorUtility.ToHtmlStringRGBA(_controller.GetStyle(value.Channel).VisibleColor);
+                    var color = ColorUtility.ToHtmlStringRGBA(
+                _controller.GetStyle(value.Channel).VisibleColor);
                     label = new Label($"  <color=#{color}>{value.Label}: {FormatValue(value.Value)}</color>");
                     label.enableRichText = true;
                 }

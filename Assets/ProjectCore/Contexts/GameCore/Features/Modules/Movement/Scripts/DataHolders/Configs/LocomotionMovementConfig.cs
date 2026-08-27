@@ -1,14 +1,14 @@
-using System;
 using UnityEngine;
 
 namespace ProjectCore.GameCore
 {
-    [Serializable]
-    public sealed class LocomotionMovementConfig
+    [CreateAssetMenu(
+        fileName = "Config_GameCore_Movement_Locomotion",
+        menuName = "SO/GameCore/Movement/Locomotion")]
+    public sealed class LocomotionMovementConfig : ScriptableObject
     {
-        [Header("LOCOMOTION SETTINGS")]
-        [field:SerializeField] public float WalkSpeed { get; private set; } = 5f;
-        [field:SerializeField] public float RunSpeed { get; private set; } = 8f;
-        [field:SerializeField] public float RotationSpeed { get; private set; } = 150f;
+        [SerializeField, Min(0f)] private float _maxSpeed = 5f;
+
+        public float MaxSpeed => _maxSpeed;
     }
 }

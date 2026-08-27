@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ProjectCore.Prototype
 {
     public abstract class BasePlayerMovementStateProcessor :
-        BaseMovementStateProcessor<BasePlayerMovementState, PlayerInputData>
+        BaseMovementStateProcessor<MovementStates, BasePlayerMovementState, PlayerInputData>
     {
         protected BasePlayerMovementStateProcessor(BasePlayerMovementState state) : base(state) { }
 

@@ -73,10 +73,16 @@ namespace ProjectCore.Template
         private void DrawBuildAvailability()
         {
             EditorGUILayout.LabelField("Build Availability", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_enabledInEditor"), new GUIContent("Editor"));
-            EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_enabledInDevelopmentBuild"), new GUIContent("Development Build"));
-            EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_enabledInReleaseBuild"), new GUIContent("Release Build"));
-            EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_enabledOnDedicatedServer"), new GUIContent("Dedicated Server"));
+            EditorGUILayout.PropertyField(
+                _serializedSettings.FindProperty("_enabledInEditor"), new GUIContent("Editor"));
+            EditorGUILayout.PropertyField(
+                _serializedSettings.FindProperty("_enabledInDevelopmentBuild"),
+                new GUIContent("Development Build"));
+            EditorGUILayout.PropertyField(
+                _serializedSettings.FindProperty("_enabledInReleaseBuild"), new GUIContent("Release Build"));
+            EditorGUILayout.PropertyField(
+                _serializedSettings.FindProperty("_enabledOnDedicatedServer"),
+                new GUIContent("Dedicated Server"));
 
             if (_serializedSettings.FindProperty("_enabledInReleaseBuild").boolValue)
             {
@@ -139,9 +145,13 @@ namespace ProjectCore.Template
         private void DrawModules()
         {
             EditorGUILayout.LabelField("Modules", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_consoleEnabled"), new GUIContent("Runtime Console"));
-            EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_cheatsEnabled"), new GUIContent("Cheats"));
-            EditorGUILayout.PropertyField(_serializedSettings.FindProperty("_visualizationEnabled"), new GUIContent("Debug Visualization"));
+            EditorGUILayout.PropertyField(
+                _serializedSettings.FindProperty("_consoleEnabled"), new GUIContent("Runtime Console"));
+            EditorGUILayout.PropertyField(
+                _serializedSettings.FindProperty("_cheatsEnabled"), new GUIContent("Cheats"));
+            EditorGUILayout.PropertyField(
+                _serializedSettings.FindProperty("_visualizationEnabled"),
+                new GUIContent("Debug Visualization"));
             EditorGUILayout.Space(8f);
         }
 
@@ -149,9 +159,12 @@ namespace ProjectCore.Template
         {
             EditorGUILayout.LabelField("Console", EditorStyles.boldLabel);
             SerializedProperty consoleSettings = _serializedSettings.FindProperty("_consoleSettings");
-            EditorGUILayout.PropertyField(consoleSettings.FindPropertyRelative("_openOnStart"), new GUIContent("Open on Start"));
-            EditorGUILayout.PropertyField(consoleSettings.FindPropertyRelative("_toggleKey"), new GUIContent("Toggle Key"));
-            EditorGUILayout.PropertyField(consoleSettings.FindPropertyRelative("_maxLogs"), new GUIContent("Max Logs"));
+            EditorGUILayout.PropertyField(
+                consoleSettings.FindPropertyRelative("_openOnStart"), new GUIContent("Open on Start"));
+            EditorGUILayout.PropertyField(
+                consoleSettings.FindPropertyRelative("_toggleKey"), new GUIContent("Toggle Key"));
+            EditorGUILayout.PropertyField(
+                consoleSettings.FindPropertyRelative("_maxLogs"), new GUIContent("Max Logs"));
             EditorGUILayout.Space(8f);
         }
 
@@ -256,7 +269,8 @@ namespace ProjectCore.Template
             if (isValid)
                 Debug.Log("Debug Tools configuration is valid.");
             else
-                Debug.LogError("Debug Tools configuration is incomplete. Check ProjectContext and the settings asset.");
+                Debug.LogError(
+                    "Debug Tools configuration is incomplete. Check ProjectContext and the settings asset.");
         }
     }
 }

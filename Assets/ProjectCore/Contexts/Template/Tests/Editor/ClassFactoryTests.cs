@@ -34,11 +34,14 @@ namespace ProjectCore.Template
             // This mirrors the platform behavior used for runtime-selected subclasses.
             // The factory scans the base type assembly and creates every concrete child
             // through Zenject so constructor injection still works.
-            List<BaseClassFactoryTestHandler> handlers = factory.CreateByBaseClass<BaseClassFactoryTestHandler>();
+            List<BaseClassFactoryTestHandler> handlers =
+                factory.CreateByBaseClass<BaseClassFactoryTestHandler>();
 
             Assert.AreEqual(2, handlers.Count);
-            Assert.IsTrue(handlers.Exists(handler => handler.GetType() == typeof(FirstClassFactoryTestHandler)));
-            Assert.IsTrue(handlers.Exists(handler => handler.GetType() == typeof(SecondClassFactoryTestHandler)));
+            Assert.IsTrue(
+                handlers.Exists(handler => handler.GetType() == typeof(FirstClassFactoryTestHandler)));
+            Assert.IsTrue(
+                handlers.Exists(handler => handler.GetType() == typeof(SecondClassFactoryTestHandler)));
             Assert.IsTrue(handlers.TrueForAll(handler => handler.Dependency.ContextName == "Template"));
         }
 
