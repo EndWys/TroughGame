@@ -58,8 +58,22 @@ namespace ProjectCore.GameCore
             Color previousColor = Gizmos.color;
             Gizmos.color = Color.cyan;
             Vector3 bodyPosition = transform.position + (Vector3)_offset;
-            Gizmos.DrawWireSphere(bodyPosition, _collisionRadius);
+            DrawWireCircle(bodyPosition, _collisionRadius);
             Gizmos.color = previousColor;
+        }
+
+        private static void DrawWireCircle(Vector3 center, float radius)
+        {
+            const int segments = 32;
+            Vector3 previous = center + Vector3.right * radius;
+
+            for (int segment = 1; segment <= segments; segment++)
+            {
+                float angle = segment / (float)segments * Mathf.PI * 2f;
+                Vector3 next = center + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+                Gizmos.DrawLine(previous, next);
+                previous = next;
+            }
         }
 
         public void Init()

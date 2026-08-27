@@ -9,6 +9,7 @@ namespace ProjectCore.Template
         public readonly DebugVisualizationRenderStyleData Style;
         public readonly Vector3 A;
         public readonly Vector3 B;
+        public readonly Vector3 Normal;
         public readonly float Radius;
         public readonly int Segments;
         public readonly string Text;
@@ -18,6 +19,7 @@ namespace ProjectCore.Template
             DebugVisualizationDrawKind kind,
             Vector3 a,
             Vector3 b,
+            Vector3 normal,
             float radius,
             string text,
             string channel,
@@ -28,6 +30,7 @@ namespace ProjectCore.Template
             Kind = kind;
             A = a;
             B = b;
+            Normal = normal;
             Radius = radius;
             Text = text;
             Channel = channel;
@@ -48,7 +51,16 @@ namespace ProjectCore.Template
             float? duration)
         {
             return new DebugVisualizationDrawCommand(
-                DebugVisualizationDrawKind.Label, position, default, 0f, text, channel, style, duration, 0);
+                DebugVisualizationDrawKind.Label,
+                position,
+                default,
+                default,
+                0f,
+                text,
+                channel,
+                style,
+                duration,
+                0);
         }
 
         public static DebugVisualizationDrawCommand Line(
@@ -59,12 +71,22 @@ namespace ProjectCore.Template
             float? duration)
         {
             return new DebugVisualizationDrawCommand(
-                DebugVisualizationDrawKind.Line, start, end, 0f, null, channel, style, duration, 0);
+                DebugVisualizationDrawKind.Line,
+                start,
+                end,
+                default,
+                0f,
+                null,
+                channel,
+                style,
+                duration,
+                0);
         }
 
         public static DebugVisualizationDrawCommand Circle(
             Vector3 center,
             float radius,
+            Vector3 normal,
             string channel,
             DebugVisualizationStyleData style,
             float? duration,
@@ -74,6 +96,7 @@ namespace ProjectCore.Template
                 DebugVisualizationDrawKind.Circle,
                 center,
                 default,
+                normal.normalized,
                 Mathf.Max(0f, radius),
                 null,
                 channel,
@@ -85,6 +108,7 @@ namespace ProjectCore.Template
         public static DebugVisualizationDrawCommand Disc(
             Vector3 center,
             float radius,
+            Vector3 normal,
             string channel,
             DebugVisualizationStyleData style,
             float? duration,
@@ -94,6 +118,7 @@ namespace ProjectCore.Template
                 DebugVisualizationDrawKind.Disc,
                 center,
                 default,
+                normal.normalized,
                 Mathf.Max(0f, radius),
                 null,
                 channel,

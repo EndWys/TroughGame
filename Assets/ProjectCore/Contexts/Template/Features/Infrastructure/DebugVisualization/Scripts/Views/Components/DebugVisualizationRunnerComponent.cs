@@ -409,12 +409,13 @@ namespace ProjectCore.Template
 
         private static void EmitCircle(DebugVisualizationDrawCommand draw)
         {
-            var previous = PointOnCircle(draw.A, draw.Radius, 0f);
+            Vector3 normal = draw.Normal.sqrMagnitude > 0f ? draw.Normal : Vector3.up;
+            var previous = PointOnCircle(draw.A, draw.Radius, normal, 0f);
 
             for (var i = 1; i <= draw.Segments; i++)
             {
                 var angle = i / (float)draw.Segments * Mathf.PI * 2f;
-                var next = PointOnCircle(draw.A, draw.Radius, angle);
+                var next = PointOnCircle(draw.A, draw.Radius, normal, angle);
                 EmitThickLine(previous, next, draw.Style);
                 previous = next;
             }
@@ -423,6 +424,7 @@ namespace ProjectCore.Template
         private static void EmitDiscFill(DebugVisualizationDrawCommand draw)
         {
             GL.Color(draw.Style.FillColor);
+            Vector3 normal = draw.Normal.sqrMagnitude > 0f ? draw.Normal : Vector3.up;
 
             for (var i = 0; i < draw.Segments; i++)
             {
@@ -430,14 +432,20 @@ namespace ProjectCore.Template
                 var nextAngle = (i + 1) / (float)draw.Segments * Mathf.PI * 2f;
 
                 GL.Vertex(draw.A);
-                GL.Vertex(PointOnCircle(draw.A, draw.Radius, currentAngle));
-                GL.Vertex(PointOnCircle(draw.A, draw.Radius, nextAngle));
+                GL.Vertex(PointOnCircle(draw.A, draw.Radius, normal, currentAngle));
+                GL.Vertex(PointOnCircle(draw.A, draw.Radius, normal, nextAngle));
             }
         }
 
-        private static Vector3 PointOnCircle(Vector3 center, float radius, float angle)
+        private static Vector3 PointOnCircle(Vector3 center, float radius, Vector3 normal, float angle)
         {
-            return center + new Vector3(Mathf.Cos(angle) * radius, 0f, Mathf.Sin(angle) * radius);
+            Vector3 tangent = Vector3.Cross(normal, Vector3.up);
+            if (tangent.sqrMagnitude <= 0.0001f)
+                tangent = Vector3.Cross(normal, Vector3.right);
+
+            tangent.Normalize();
+            Vector3 bitangent = Vector3.Cross(normal, tangent).normalized;
+            return center + radius * (Mathf.Cos(angle) * tangent + Mathf.Sin(angle) * bitangent);
         }
 
         private void RegisterChannel(string channel)

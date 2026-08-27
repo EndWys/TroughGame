@@ -145,6 +145,7 @@ namespace ProjectCore.Template
             _system.Add(DebugVisualizationDrawCommand.Circle(
                 center,
                 radius,
+                Vector3.up,
                 normalizedChannel,
                 ResolveStyle(normalizedChannel, style),
                 duration,
@@ -169,6 +170,7 @@ namespace ProjectCore.Template
             _system.Add(DebugVisualizationDrawCommand.Disc(
                 center,
                 radius,
+                Vector3.up,
                 normalizedChannel,
                 ResolveStyle(normalizedChannel, style),
                 duration,

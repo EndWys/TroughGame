@@ -39,14 +39,15 @@ namespace ProjectCore.Template
             float radius,
             string channel = DebugVisualizationUtility.DefaultChannel)
         {
-            string normalizedChannel = NormalizeChannel(channel);
-            _backend.Add(DebugVisualizationDrawCommand.Circle(
-                center,
-                radius,
-                normalizedChannel,
-                _backend.GetChannelStyle(normalizedChannel),
-                0f,
-                64));
+            AddCircle(center, radius, Vector3.up, channel);
+        }
+
+        public void Radius2D(
+            Vector3 center,
+            float radius,
+            string channel = DebugVisualizationUtility.DefaultChannel)
+        {
+            AddCircle(center, radius, Vector3.forward, channel);
         }
 
         public void ZoneDisc(
@@ -54,14 +55,15 @@ namespace ProjectCore.Template
             float radius,
             string channel = DebugVisualizationUtility.DefaultChannel)
         {
-            string normalizedChannel = NormalizeChannel(channel);
-            _backend.Add(DebugVisualizationDrawCommand.Disc(
-                center,
-                radius,
-                normalizedChannel,
-                _backend.GetChannelStyle(normalizedChannel),
-                0f,
-                64));
+            AddDisc(center, radius, Vector3.up, channel);
+        }
+
+        public void ZoneDisc2D(
+            Vector3 center,
+            float radius,
+            string channel = DebugVisualizationUtility.DefaultChannel)
+        {
+            AddDisc(center, radius, Vector3.forward, channel);
         }
         
         public void Line(
@@ -76,6 +78,32 @@ namespace ProjectCore.Template
                 normalizedChannel,
                 _backend.GetChannelStyle(normalizedChannel),
                 0f));
+        }
+
+        private void AddCircle(Vector3 center, float radius, Vector3 normal, string channel)
+        {
+            string normalizedChannel = NormalizeChannel(channel);
+            _backend.Add(DebugVisualizationDrawCommand.Circle(
+                center,
+                radius,
+                normal,
+                normalizedChannel,
+                _backend.GetChannelStyle(normalizedChannel),
+                0f,
+                64));
+        }
+
+        private void AddDisc(Vector3 center, float radius, Vector3 normal, string channel)
+        {
+            string normalizedChannel = NormalizeChannel(channel);
+            _backend.Add(DebugVisualizationDrawCommand.Disc(
+                center,
+                radius,
+                normal,
+                normalizedChannel,
+                _backend.GetChannelStyle(normalizedChannel),
+                0f,
+                64));
         }
 
         private static string NormalizeChannel(string channel)

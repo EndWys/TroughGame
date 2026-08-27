@@ -63,6 +63,23 @@ namespace ProjectCore.TechnicalPrototype
                 Is.Not.Null);
             Assert.That(prefab.GetComponent<CameraTargetComponent>(), Is.Not.Null);
             Assert.That(prefab.GetComponent<PlayerInputSourceComponent>(), Is.Not.Null);
+            PlayerDebugVisualizationComponent playerDebugVisualization =
+                prefab.GetComponent<PlayerDebugVisualizationComponent>();
+            Assert.That(playerDebugVisualization, Is.Not.Null);
+
+            SerializedObject serializedPlayerDebugVisualization = new(playerDebugVisualization);
+            Assert.That(
+                serializedPlayerDebugVisualization.FindProperty("_playerNetworkEntity")
+                    .objectReferenceValue,
+                Is.SameAs(prefab.GetComponent<PlayerNetworkEntityComponent>()));
+            Assert.That(
+                serializedPlayerDebugVisualization.FindProperty("_inputSource")
+                    .objectReferenceValue,
+                Is.SameAs(prefab.GetComponent<PlayerInputSourceComponent>()));
+            Assert.That(
+                serializedPlayerDebugVisualization.FindProperty("_movementBody")
+                    .objectReferenceValue,
+                Is.SameAs(prefab.GetComponent<TransformMovementBodyComponent>()));
 
             Transform movement = prefab.transform.Find("Movement");
 

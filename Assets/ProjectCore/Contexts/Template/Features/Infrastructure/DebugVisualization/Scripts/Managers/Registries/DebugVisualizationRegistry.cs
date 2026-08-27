@@ -273,6 +273,7 @@ namespace ProjectCore.Template
                     ? DebugVisualizationDrawCommand.Disc(
                         position,
                         radius,
+                        Vector3.up,
                         _channel,
                         style,
                         0f,
@@ -280,6 +281,7 @@ namespace ProjectCore.Template
                     : DebugVisualizationDrawCommand.Circle(
                         position,
                         radius,
+                        Vector3.up,
                         _channel,
                         style,
                         0f,
