@@ -10,7 +10,6 @@ namespace ProjectCore.TechnicalPrototype
     {
         [SerializeField] private NetworkPrefabRef _playerPrefab;
         [SerializeField] private Transform[] _spawnPoints = Array.Empty<Transform>();
-        [SerializeField] private Transform _entitiesContainer;
 
         private NetworkEntitySpawner _networkEntitySpawner;
         private int _nextSpawnIndex;
@@ -35,13 +34,6 @@ namespace ProjectCore.TechnicalPrototype
                 _playerPrefab,
                 new PlayerSpawnPayload(spawnPoint.position, spawnPoint.rotation),
                 player);
-
-            if (_entitiesContainer == null)
-            {
-                throw new InvalidOperationException("Player entities container must be configured.");
-            }
-
-            playerEntity.transform.SetParent(_entitiesContainer, true);
 
             runner.SetPlayerObject(player, playerEntity.Object);
         }

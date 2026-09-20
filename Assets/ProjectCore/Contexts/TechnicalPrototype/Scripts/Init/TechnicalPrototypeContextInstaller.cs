@@ -19,7 +19,8 @@ namespace ProjectCore.TechnicalPrototype
             AddFeatureFromComponent<ScreenNavigationFeature>();
             AddFeatureFromComponent<PopupFeature>();
             AddFeature<GameCoreFeatureGroup>();
-            AddFeature<PlayerFeature>();
+            AddFeatureFromComponent<PlayerFeature>();
+            AddFeatureFromComponent<EnemyFeature>();
             AddFeatureFromComponent<LocalCameraFeature>();
         }
     }

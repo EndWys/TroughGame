@@ -71,7 +71,7 @@ namespace ProjectCore.Template
                 .AsSingle();
         }
 
-        public void BindFromInstance<TContract, TImplementation>(TImplementation instance)
+        public void BindFromInstance<TContract, TImplementation>(TImplementation instance, object id = null)
             where TImplementation : class, TContract
         {
             if (instance == null)
@@ -80,9 +80,10 @@ namespace ProjectCore.Template
             }
 
             _container.Bind<TContract>()
+                .WithId(id)
                 .To<TImplementation>()
                 .FromInstance(instance)
-                .AsSingle();
+                .AsCached();
         }
 
         public T Resolve<T>() where T : class
