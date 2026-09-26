@@ -62,6 +62,7 @@ namespace ProjectCore.TechnicalPrototype
                     .objectReferenceValue,
                 Is.Not.Null);
             Assert.That(prefab.GetComponent<CameraTargetComponent>(), Is.Not.Null);
+            Assert.That(prefab.GetComponent<TargetableNetworkEntityComponent>(), Is.Not.Null);
             Assert.That(prefab.GetComponent<PlayerInputSourceComponent>(), Is.Not.Null);
             PlayerDebugVisualizationComponent playerDebugVisualization =
                 prefab.GetComponent<PlayerDebugVisualizationComponent>();

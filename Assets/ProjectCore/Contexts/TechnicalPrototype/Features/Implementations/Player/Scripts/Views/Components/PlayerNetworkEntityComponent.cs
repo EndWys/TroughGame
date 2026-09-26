@@ -23,6 +23,7 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private PlayerMovementStateMachine _movementStateMachine;
         [SerializeField] private TransformMovementBodyComponent _movementBodyComponent;
         [SerializeField] private CameraTargetComponent _cameraTargetComponent;
+        [SerializeField] private TargetableNetworkEntityComponent _targetableNetworkEntityComponent;
 
         private Transform _entitiesContainer;
 
@@ -164,6 +165,7 @@ namespace ProjectCore.TechnicalPrototype
                 _movementStateMachine,
                 _movementBodyComponent,
                 _cameraTargetComponent,
+                _targetableNetworkEntityComponent,
             };
         }
 

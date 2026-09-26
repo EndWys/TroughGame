@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 930001002}
   - component: {fileID: 930001003}
   - component: {fileID: 1058331315508964277}
+  - component: {fileID: 3994379520493875385}
   m_Layer: 0
   m_Name: Prefab_Player_NetworkEntity
   m_TagString: Untagged
@@ -259,6 +260,7 @@ MonoBehaviour:
   _movementStateMachine: {fileID: 3893509649565096512}
   _movementBodyComponent: {fileID: 7885406040919925618}
   _cameraTargetComponent: {fileID: 930001001}
+  _targetableNetworkEntityComponent: {fileID: 3994379520493875385}
   _CurrentState: 0
   _PreviousState: 0
   _FacingDirection: 0
@@ -331,6 +333,18 @@ MonoBehaviour:
   _playerNetworkEntity: {fileID: 8489854188152957200}
   _inputSource: {fileID: 930001002}
   _movementBody: {fileID: 7885406040919925618}
+--- !u!114 &3994379520493875385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309667084643460771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a518aba6acaec7a4c80d2baf97e50129, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.TargetableNetworkEntityComponent
 --- !u!1 &5577852976947837429
 GameObject:
   m_ObjectHideFlags: 0

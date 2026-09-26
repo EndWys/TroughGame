@@ -16,7 +16,7 @@ namespace ProjectCore.TechnicalPrototype
             "GraphicResources/Prefabs/Prefab_Enemy_NetworkEntity.prefab";
 
         [Test]
-        public void EnemyPrefabContainsOnlyNetworkIdentityAndPlaceholderVisual()
+        public void EnemyPrefabComposesNetworkBehaviourFoundation()
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
             Assert.That(prefab, Is.Not.Null);
@@ -26,15 +26,41 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(networkTransform, Is.Not.Null);
             Assert.That(networkTransform.SyncParent, Is.False);
             Assert.That(networkTransform.SyncScale, Is.False);
-            Assert.That(prefab.GetComponent<EnemyNetworkEntityComponent>(), Is.Not.Null);
-            Assert.That(prefab.GetComponent<GameObjectContext>(), Is.Null);
-            Assert.That(prefab.GetComponents<Component>().Select(component => component.GetType().Name),
-                Is.EquivalentTo(new[]
-                {
-                    nameof(Transform), nameof(NetworkObject), nameof(NetworkTransform),
-                    nameof(EnemyNetworkEntityComponent), "NetworkObjectPrefabData",
-                }));
-            Assert.That(prefab.transform.childCount, Is.EqualTo(1));
+            EnemyNetworkEntityComponent enemyEntity = prefab.GetComponent<EnemyNetworkEntityComponent>();
+            Assert.That(enemyEntity, Is.Not.Null);
+            Assert.That(prefab.GetComponent<GameObjectContext>(), Is.Not.Null);
+            Assert.That(prefab.GetComponent<EnemyNetworkEntityInstaller>(), Is.Not.Null);
+            Assert.That(prefab.GetComponent<EnemyInputSourceComponent>(), Is.Not.Null);
+            Assert.That(prefab.GetComponent<EnemyDebugVisualizationComponent>(), Is.Not.Null);
+
+            SerializedObject serializedEnemyEntity = new(enemyEntity);
+            Assert.That(
+                serializedEnemyEntity.FindProperty("_inputSourceComponent").objectReferenceValue,
+                Is.SameAs(prefab.GetComponent<EnemyInputSourceComponent>()));
+            Assert.That(
+                serializedEnemyEntity.FindProperty("_behaviourStateMachine").objectReferenceValue,
+                Is.Not.Null);
+
+            Transform behaviour = prefab.transform.Find("Behaviour");
+            Assert.That(behaviour, Is.Not.Null);
+            Assert.That(behaviour.GetComponent<EnemyBehaviourStateMachine>(), Is.Not.Null);
+            Assert.That(behaviour.GetComponent<EnemyBehaviourDisabledState>(), Is.Not.Null);
+            Assert.That(behaviour.GetComponent<EnemyBehaviourTargetSelectionState>(), Is.Not.Null);
+            Assert.That(behaviour.GetComponent<EnemyBehaviourWaitingState>(), Is.Not.Null);
+
+            SerializedObject serializedStateMachine = new(
+                behaviour.GetComponent<EnemyBehaviourStateMachine>());
+            Assert.That(
+                serializedStateMachine.FindProperty("_disabledState").objectReferenceValue,
+                Is.SameAs(behaviour.GetComponent<EnemyBehaviourDisabledState>()));
+            Assert.That(
+                serializedStateMachine.FindProperty("_targetSelectionState").objectReferenceValue,
+                Is.SameAs(behaviour.GetComponent<EnemyBehaviourTargetSelectionState>()));
+            Assert.That(
+                serializedStateMachine.FindProperty("_waitingState").objectReferenceValue,
+                Is.SameAs(behaviour.GetComponent<EnemyBehaviourWaitingState>()));
+
+            Assert.That(prefab.transform.childCount, Is.EqualTo(2));
             Transform visual = prefab.transform.GetChild(0);
             Assert.That(visual.name, Is.EqualTo("Visual"));
             Assert.That(visual.GetComponent<SpriteRenderer>().sprite, Is.Not.Null);

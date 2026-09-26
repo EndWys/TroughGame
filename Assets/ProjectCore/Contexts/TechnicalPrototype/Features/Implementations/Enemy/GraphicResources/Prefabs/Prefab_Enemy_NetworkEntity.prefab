@@ -12,6 +12,10 @@ GameObject:
   - component: {fileID: 747478491718501545}
   - component: {fileID: 3195028490362469912}
   - component: {fileID: 1259357564330911874}
+  - component: {fileID: 1231098527604241315}
+  - component: {fileID: 7643102433778432920}
+  - component: {fileID: 1660854554113357123}
+  - component: {fileID: 4465512277710050909}
   m_Layer: 0
   m_Name: Prefab_Enemy_NetworkEntity
   m_TagString: Untagged
@@ -33,6 +37,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 955698843771476762}
+  - {fileID: 3353270075926241708}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &747478491718501545
@@ -45,7 +50,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
   SortKey: 739574048
   ObjectInterest: 1
@@ -65,7 +70,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkTransform
   _stateAuthorityChangeErrorCorrectionDelta: 0
   SyncScale: 0
@@ -82,8 +87,159 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0fc2d716ccdd5644829a4c300bc3152, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyNetworkEntityComponent
+  _inputSourceComponent: {fileID: 1231098527604241315}
+  _behaviourStateMachine: {fileID: 4125976174204342296}
+  _CurrentBehaviourState: 0
+  _PreviousBehaviourState: 0
+--- !u!114 &1231098527604241315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2524859144858559395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01668e6606216784888099fed0685d7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyInputSourceComponent
+--- !u!114 &7643102433778432920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2524859144858559395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 346d4940dc7fffd42a42abcb84cade02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyDebugVisualizationComponent
+  _enemyNetworkEntity: {fileID: 1259357564330911874}
+--- !u!114 &1660854554113357123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2524859144858559395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9554dbc5367daef4fbe4069380d9002a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyNetworkEntityInstaller
+  _networkEntity: {fileID: 1259357564330911874}
+  _inputSourceComponent: {fileID: 1231098527604241315}
+  _behaviourStateMachine: {fileID: 4125976174204342296}
+  _disabledState: {fileID: 3524133119621996886}
+  _targetSelectionState: {fileID: 4206805771678922955}
+  _waitingState: {fileID: 8792766857729800281}
+--- !u!114 &4465512277710050909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2524859144858559395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zenject::Zenject.GameObjectContext
+  _scriptableObjectInstallers: []
+  _monoInstallers:
+  - {fileID: 1660854554113357123}
+  _installerPrefabs: []
+  _autoRun: 1
+  _kernel: {fileID: 0}
+--- !u!1 &3359975923103764214
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3353270075926241708}
+  - component: {fileID: 4125976174204342296}
+  - component: {fileID: 3524133119621996886}
+  - component: {fileID: 4206805771678922955}
+  - component: {fileID: 8792766857729800281}
+  m_Layer: 0
+  m_Name: Behaviour
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3353270075926241708
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3359975923103764214}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 688964566515074181}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4125976174204342296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3359975923103764214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0a1b1ff73b892a4e8d87c042f99fdf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyBehaviourStateMachine
+  _disabledState: {fileID: 3524133119621996886}
+  _targetSelectionState: {fileID: 4206805771678922955}
+  _waitingState: {fileID: 8792766857729800281}
+--- !u!114 &3524133119621996886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3359975923103764214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3760ef109d6ee0744a2f1a832ee7f77a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyBehaviourDisabledState
+--- !u!114 &4206805771678922955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3359975923103764214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36968a2509b05144dbdb52886670f3e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyBehaviourTargetSelectionState
+--- !u!114 &8792766857729800281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3359975923103764214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 325e7e8decd33b148b5e4ca905c31567, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyBehaviourWaitingState
 --- !u!1 &6903314817501715423
 GameObject:
   m_ObjectHideFlags: 0
