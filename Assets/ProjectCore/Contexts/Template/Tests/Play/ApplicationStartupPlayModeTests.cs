@@ -67,6 +67,10 @@ namespace ProjectCore.Template
 
             BaseNetworkEntityRoot[] enemies = registry.GetByType(EnemyNetworkEntityConstants.Enemy).ToArray();
             Assert.That(enemies.Length, Is.EqualTo(2));
+            Vector2 playerPosition = player.transform.position;
+            var initialDistances = enemies.ToDictionary(
+                enemy => enemy.EntityId,
+                enemy => Vector2.Distance(enemy.transform.position, playerPosition));
             float inputDeadline = Time.realtimeSinceStartup + 5f;
 
             while (enemies.Any(enemy =>
@@ -81,9 +85,9 @@ namespace ProjectCore.Template
                 Time.realtimeSinceStartup,
                 Is.LessThan(inputDeadline),
                 "Enemy behaviour did not produce input within five seconds.");
+
             Assert.That(enemies[0].EntityId, Is.Not.EqualTo(enemies[1].EntityId));
             NetworkEntityIdData[] firstIds = enemies.Select(enemy => enemy.EntityId).ToArray();
-            Vector3 expectedPosition = spawn.transform.parent.Find("SpawnPoints/SpawnPoint_01").position;
 
             foreach (BaseNetworkEntityRoot enemy in enemies)
             {
@@ -94,21 +98,34 @@ namespace ProjectCore.Template
                     Is.True);
                 Assert.That(inputSource, Is.Not.Null);
                 Assert.That(inputSource.TryGetInput(out EnemyInputFrameData input), Is.True);
-                Assert.That(input.Direction, Is.EqualTo(Vector2.zero));
+                Assert.That(input.Direction, Is.Not.EqualTo(Vector2.zero));
                 Assert.That(
                     enemy.TryGetEntityComponent(out EnemyBehaviourStateMachine behaviourStateMachine),
                     Is.True);
                 Assert.That(behaviourStateMachine, Is.Not.Null);
-                Assert.That(enemy.transform.parent, Is.SameAs(enemyContainer));
                 Assert.That(
-                    Vector3.Distance(enemy.transform.position, expectedPosition), Is.LessThan(0.001f));
+                    enemy.TryGetEntityComponent(out EnemyMovementStateMachine movementStateMachine),
+                    Is.True);
+                Assert.That(movementStateMachine, Is.Not.Null);
+                Assert.That(
+                    enemy.TryGetEntityComponent(out EnemyMovementStateComponent movementState),
+                    Is.True);
+                Assert.That(movementState, Is.Not.Null);
+                Assert.That(
+                    enemy.TryGetEntityComponent(out TransformMovementBodyComponent movementBody),
+                    Is.True);
+                Assert.That(movementBody, Is.Not.Null);
+                Assert.That(enemy.transform.parent, Is.SameAs(enemyContainer));
                 Assert.That(enemy.Object.InputAuthority, Is.EqualTo(PlayerRef.None));
                 Assert.That(registry.TryGet(enemy.EntityId, out BaseNetworkEntityRoot registered), Is.True);
                 Assert.That(registered, Is.SameAs(enemy));
                 Assert.That(
                     enemyComponent.CurrentBehaviourState,
-                    Is.EqualTo(EnemyBehaviourStateType.Waiting));
+                    Is.EqualTo(EnemyBehaviourStateType.Chasing));
                 Assert.That(enemyComponent.TargetEntityId, Is.EqualTo(player.EntityId));
+                Assert.That(
+                    Vector2.Distance(enemy.transform.position, playerPosition),
+                    Is.LessThan(initialDistances[enemy.EntityId]));
             }
 
             yield return null;

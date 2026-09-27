@@ -12,6 +12,7 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private EnemyBehaviourDisabledState _disabledState;
         [SerializeField] private EnemyBehaviourTargetSelectionState _targetSelectionState;
         [SerializeField] private EnemyBehaviourWaitingState _waitingState;
+        [SerializeField] private EnemyBehaviourChasingState _chasingState;
 
         public override void Init()
         {
@@ -36,6 +37,7 @@ namespace ProjectCore.TechnicalPrototype
                 { EnemyBehaviourStateType.Disabled, _disabledState },
                 { EnemyBehaviourStateType.TargetSelection, _targetSelectionState },
                 { EnemyBehaviourStateType.Waiting, _waitingState },
+                { EnemyBehaviourStateType.Chasing, _chasingState },
             };
         }
 

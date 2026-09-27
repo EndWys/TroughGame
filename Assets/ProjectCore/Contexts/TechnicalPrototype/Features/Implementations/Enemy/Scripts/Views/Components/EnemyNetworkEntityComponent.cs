@@ -15,6 +15,9 @@ namespace ProjectCore.TechnicalPrototype
     {
         [SerializeField] private EnemyInputSourceComponent _inputSourceComponent;
         [SerializeField] private EnemyBehaviourStateMachine _behaviourStateMachine;
+        [SerializeField] private EnemyMovementStateComponent _movementStateComponent;
+        [SerializeField] private EnemyMovementStateMachine _movementStateMachine;
+        [SerializeField] private TransformMovementBodyComponent _movementBodyComponent;
 
         private Transform _entitiesContainer;
 
@@ -38,6 +41,9 @@ namespace ProjectCore.TechnicalPrototype
             {
                 _inputSourceComponent,
                 _behaviourStateMachine,
+                _movementStateComponent,
+                _movementStateMachine,
+                _movementBodyComponent,
             };
         }
 

@@ -5,5 +5,6 @@ namespace ProjectCore.TechnicalPrototype
         Disabled,
         TargetSelection,
         Waiting,
+        Chasing,
     }
 }

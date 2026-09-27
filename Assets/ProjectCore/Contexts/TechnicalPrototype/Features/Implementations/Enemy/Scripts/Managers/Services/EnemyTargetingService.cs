@@ -34,6 +34,22 @@ namespace ProjectCore.TechnicalPrototype
                        out ITargetableNetworkEntity _);
         }
 
+        public bool TryGetTargetPosition(
+            NetworkEntityIdData targetEntityId,
+            out Vector2 targetPosition)
+        {
+            if (_networkEntityRegistry.TryGetComponent(
+                    targetEntityId,
+                    out ITargetableNetworkEntity target))
+            {
+                targetPosition = target.TargetPosition;
+                return true;
+            }
+
+            targetPosition = default;
+            return false;
+        }
+
         public bool TryFindNearestTarget(
             Vector2 origin,
             out NetworkEntityIdData targetEntityId)

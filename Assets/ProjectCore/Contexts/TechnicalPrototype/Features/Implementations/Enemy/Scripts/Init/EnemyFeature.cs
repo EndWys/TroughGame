@@ -21,7 +21,9 @@ namespace ProjectCore.TechnicalPrototype
 
             BindFromInstance<Transform, Transform>(
                 _entitiesContainer, EnemyNetworkEntityConstants.EntitiesContainer);
+            BindFromInstance<EnemySpawnComponent, EnemySpawnComponent>(_spawnComponent);
             BindAsSingle<INetworkEntityFactory, EnemyNetworkEntityFactory>();
+            BindInterfacesAndSelfAsSingle<EnemyCheatHandler>();
         }
 
         protected override UniTask InitializeAsync(CancellationToken cancellationToken)
@@ -32,6 +34,7 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             _spawnComponent.ValidateConfiguration();
+            Resolve<EnemyCheatHandler>().Initialize();
             return UniTask.CompletedTask;
         }
     }

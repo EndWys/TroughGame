@@ -11,6 +11,11 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private EnemyBehaviourDisabledState _disabledState;
         [SerializeField] private EnemyBehaviourTargetSelectionState _targetSelectionState;
         [SerializeField] private EnemyBehaviourWaitingState _waitingState;
+        [SerializeField] private EnemyBehaviourChasingState _chasingState;
+        [SerializeField] private EnemyMovementStateComponent _movementStateComponent;
+        [SerializeField] private EnemyMovementStateMachine _movementStateMachine;
+        [SerializeField] private EnemyIdleState _idleState;
+        [SerializeField] private EnemyLocomotionState _locomotionState;
 
         protected override void BindAdditionalComponents()
         {
@@ -19,6 +24,13 @@ namespace ProjectCore.TechnicalPrototype
             BindComponentFromInstance(_disabledState);
             BindComponentFromInstance(_targetSelectionState);
             BindComponentFromInstance(_waitingState);
+            BindComponentFromInstance(_chasingState);
+            Container.BindInterfacesAndSelfTo<EnemyMovementStateComponent>()
+                .FromInstance(_movementStateComponent)
+                .AsCached();
+            BindComponentFromInstance(_movementStateMachine);
+            BindComponentFromInstance(_idleState);
+            BindComponentFromInstance(_locomotionState);
             Container.Bind<EnemyTargetingService>().AsSingle();
         }
     }

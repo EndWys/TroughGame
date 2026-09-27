@@ -4,6 +4,7 @@ using Fusion;
 using ProjectCore.GameCore;
 using ProjectCore.Template;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
@@ -53,12 +54,31 @@ namespace ProjectCore.TechnicalPrototype
             }
         }
 
-        [ContextMenu("Spawn Enemy")]
-        public void SpawnEnemy()
+        private void Update()
+        {
+            Keyboard keyboard = Keyboard.current;
+
+            if (keyboard == null)
+            {
+                return;
+            }
+
+            if (keyboard.f7Key.wasPressedThisFrame)
+            {
+                SpawnEnemy();
+            }
+
+            if (keyboard.f8Key.wasPressedThisFrame)
+            {
+                DespawnEnemies();
+            }
+        }
+
+        public bool SpawnEnemy()
         {
             if (!CanManageEnemies())
             {
-                return;
+                return false;
             }
 
             ValidateConfiguration();
@@ -68,29 +88,33 @@ namespace ProjectCore.TechnicalPrototype
                 _enemyPrefab,
                 new EnemySpawnPayload(spawnPoint.position, spawnPoint.rotation));
             _nextSpawnIndex = (_nextSpawnIndex + 1) % _spawnPoints.Length;
+            return true;
         }
 
-        [ContextMenu("Despawn Enemies")]
-        public void DespawnEnemies()
+        public int DespawnEnemies()
         {
             if (!CanManageEnemies())
             {
-                return;
+                return 0;
             }
 
             var enemies = new List<BaseNetworkEntityRoot>(
                 _networkEntityRegistry.GetByType(EnemyNetworkEntityConstants.Enemy));
+            int despawnedEnemiesCount = 0;
 
             foreach (BaseNetworkEntityRoot enemy in enemies)
             {
                 if (enemy != null && enemy.Object != null && enemy.Object.IsValid && enemy.Runner == Runner)
                 {
                     _networkEntitySpawner.Despawn(enemy);
+                    despawnedEnemiesCount++;
                 }
             }
+
+            return despawnedEnemiesCount;
         }
 
-        private bool CanManageEnemies()
+        public bool CanManageEnemies()
         {
             if (_logger == null)
             {
@@ -104,13 +128,6 @@ namespace ProjectCore.TechnicalPrototype
 
             _logger.LogWarning("Enemy commands are only available in a running Solo/Host session.");
             return false;
-        }
-
-        [ContextMenu("Spawn Enemy", true)]
-        [ContextMenu("Despawn Enemies", true)]
-        private bool CanUseContextMenu()
-        {
-            return Application.isPlaying && _logger != null;
         }
     }
 }
