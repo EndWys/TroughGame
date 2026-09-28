@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ProjectCore.GameCore;
 using UnityEngine;
+using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
@@ -9,7 +10,17 @@ namespace ProjectCore.TechnicalPrototype
         BaseMovementState<EnemyMovementState, EnemyMovementPayload>
     {
         [SerializeField] private LocomotionMovementConfig _locomotionMovementConfig;
+        [SerializeField] private EnemyChaseConfig _chaseConfig;
         [SerializeField] private TransformMovementBodyComponent _movementBody;
+
+        private IMovementObstacleProbe _movementObstacleProbe;
+
+        [Inject]
+        private void Construct(IMovementObstacleProbe movementObstacleProbe)
+        {
+            _movementObstacleProbe = movementObstacleProbe ??
+                throw new ArgumentNullException(nameof(movementObstacleProbe));
+        }
 
         public override void Enter() { }
 
@@ -29,11 +40,19 @@ namespace ProjectCore.TechnicalPrototype
                     "Enemy locomotion state requires a locomotion movement config reference.");
             }
 
+            if (_chaseConfig == null)
+            {
+                throw new InvalidOperationException("Enemy locomotion state requires a chase config reference.");
+            }
+
             return new IMovementStateProcessor<EnemyMovementState, EnemyMovementPayload>[]
             {
-                new LocomotionProcessor<EnemyMovementState, EnemyMovementPayload>(
+                new ObstacleAvoidanceLocomotionProcessor<EnemyMovementState, EnemyMovementPayload>(
                     movementBodyVelocityMutator: _movementBody,
-                    locomotionMovementConfig: _locomotionMovementConfig),
+                    movementCollisionBodyAccessor: _movementBody,
+                    movementObstacleProbe: _movementObstacleProbe,
+                    locomotionMovementConfig: _locomotionMovementConfig,
+                    obstacleProbeDistance: _chaseConfig.ObstacleProbeDistance),
                 new NoDirectionTransitionProcessor<EnemyMovementState, EnemyMovementPayload>(
                     idleMovementState: EnemyMovementState.Idle),
             };

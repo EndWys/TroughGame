@@ -7,13 +7,13 @@ namespace ProjectCore.TechnicalPrototype
     {
         private EnemyInputSourceComponent _inputSource;
         private IEnemyTargetMutator _targetMutator;
-        private EnemyTargetingService _targetingService;
+        private IEnemyTargetingService _targetingService;
 
         [Inject]
         private void Construct(
             EnemyInputSourceComponent inputSource,
             IEnemyTargetMutator targetMutator,
-            EnemyTargetingService targetingService)
+            IEnemyTargetingService targetingService)
         {
             _inputSource = inputSource ?? throw new ArgumentNullException(nameof(inputSource));
             _targetMutator = targetMutator ?? throw new ArgumentNullException(nameof(targetMutator));

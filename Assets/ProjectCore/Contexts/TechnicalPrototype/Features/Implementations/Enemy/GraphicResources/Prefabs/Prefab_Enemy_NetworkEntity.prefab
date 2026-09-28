@@ -74,6 +74,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyLocomotionState
   _locomotionMovementConfig: {fileID: 11400000, guid: e95343e2e9cf6be478c0ffd9195a1f49, type: 2}
+  _chaseConfig: {fileID: 11400000, guid: 35210a2d35cfac446945da603c3122eb, type: 2}
   _movementBody: {fileID: 8911535481648758648}
 --- !u!1 &2524859144858559395
 GameObject:
@@ -174,7 +175,6 @@ MonoBehaviour:
   _movementStateComponent: {fileID: 3526974178999751230}
   _movementStateMachine: {fileID: 1916683656827304820}
   _movementBodyComponent: {fileID: 8911535481648758648}
-  _spawnMovementDebugComponent: {fileID: 0}
   _CurrentBehaviourState: 0
   _PreviousBehaviourState: 0
 --- !u!114 &1231098527604241315
@@ -225,7 +225,6 @@ MonoBehaviour:
   _movementStateMachine: {fileID: 1916683656827304820}
   _idleState: {fileID: 584413201904313257}
   _locomotionState: {fileID: 2642395670431192166}
-  _spawnMovementDebugComponent: {fileID: 0}
 --- !u!114 &4465512277710050909
 MonoBehaviour:
   m_ObjectHideFlags: 0

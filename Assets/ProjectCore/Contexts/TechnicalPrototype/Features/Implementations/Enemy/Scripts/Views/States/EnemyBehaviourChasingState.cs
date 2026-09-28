@@ -14,7 +14,10 @@ namespace ProjectCore.TechnicalPrototype
         private IEnemyTargetAccessor _targetAccessor;
         private IEnemyTargetMutator _targetMutator;
         private INetworkBehaviourAccessor _networkBehaviourAccessor;
-        private EnemyTargetingService _targetingService;
+        private IEnemyTargetingService _targetingService;
+        private IEnemySteeringService _steeringService;
+        private NetworkEntityIdData _retargetCandidateId;
+        private float _retargetElapsedTime;
 
         [Inject]
         private void Construct(
@@ -22,7 +25,8 @@ namespace ProjectCore.TechnicalPrototype
             IEnemyTargetAccessor targetAccessor,
             IEnemyTargetMutator targetMutator,
             INetworkBehaviourAccessor networkBehaviourAccessor,
-            EnemyTargetingService targetingService)
+            IEnemyTargetingService targetingService,
+            IEnemySteeringService steeringService)
         {
             _inputSource = inputSource ?? throw new ArgumentNullException(nameof(inputSource));
             _targetAccessor = targetAccessor ?? throw new ArgumentNullException(nameof(targetAccessor));
@@ -30,6 +34,13 @@ namespace ProjectCore.TechnicalPrototype
             _networkBehaviourAccessor = networkBehaviourAccessor ??
                 throw new ArgumentNullException(nameof(networkBehaviourAccessor));
             _targetingService = targetingService ?? throw new ArgumentNullException(nameof(targetingService));
+            _steeringService = steeringService ?? throw new ArgumentNullException(nameof(steeringService));
+        }
+
+        public override void Enter()
+        {
+            _retargetCandidateId = NetworkEntityIdData.None;
+            _retargetElapsedTime = 0f;
         }
 
         public override EnemyBehaviourStateType Tick(EnemyBehaviourPayload payload)
@@ -49,9 +60,28 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             Vector2 position = _networkBehaviourAccessor.ParentNetworkBehaviour.transform.position;
-            Vector2 direction = targetPosition - position;
+            NetworkEntityIdData targetEntityId = ReassessTarget(
+                position,
+                targetPosition,
+                _targetAccessor.TargetEntityId);
 
-            if (direction.sqrMagnitude <= _chaseConfig.StoppingDistance * _chaseConfig.StoppingDistance)
+            if (targetEntityId != _targetAccessor.TargetEntityId &&
+                _targetingService.TryGetTargetPosition(targetEntityId, out targetPosition))
+            {
+                _targetMutator.SetTargetEntityId(targetEntityId);
+            }
+
+            Vector2 direction = _steeringService.CalculateDirection(
+                targetEntityId,
+                targetPosition,
+                _chaseConfig.StoppingDistance,
+                _chaseConfig.SeparationDistance,
+                _chaseConfig.SeparationWeight);
+
+            float approachArrivalDistance = _chaseConfig.ApproachArrivalDistance;
+
+            if ((position - _steeringService.ApproachPosition).sqrMagnitude <=
+                approachArrivalDistance * approachArrivalDistance)
             {
                 _inputSource.SetInput(default);
                 return EnemyBehaviourStateType.Chasing;
@@ -59,6 +89,51 @@ namespace ProjectCore.TechnicalPrototype
 
             _inputSource.SetInput(new EnemyInputData(direction.normalized));
             return EnemyBehaviourStateType.Chasing;
+        }
+
+        private NetworkEntityIdData ReassessTarget(
+            Vector2 position,
+            Vector2 currentTargetPosition,
+            NetworkEntityIdData currentTargetEntityId)
+        {
+            if (!_targetingService.TryFindNearestTarget(position, out NetworkEntityIdData candidateEntityId) ||
+                candidateEntityId == currentTargetEntityId ||
+                !_targetingService.TryGetTargetPosition(candidateEntityId, out Vector2 candidatePosition))
+            {
+                ResetRetargeting();
+                return currentTargetEntityId;
+            }
+
+            float currentDistance = Vector2.Distance(position, currentTargetPosition);
+            float candidateDistance = Vector2.Distance(position, candidatePosition);
+
+            if (currentDistance - candidateDistance < _chaseConfig.RetargetDistanceAdvantage)
+            {
+                ResetRetargeting();
+                return currentTargetEntityId;
+            }
+
+            if (_retargetCandidateId != candidateEntityId)
+            {
+                _retargetCandidateId = candidateEntityId;
+                _retargetElapsedTime = 0f;
+            }
+
+            _retargetElapsedTime += _networkBehaviourAccessor.ParentNetworkBehaviour.Runner.DeltaTime;
+
+            if (_retargetElapsedTime < _chaseConfig.RetargetDelay)
+            {
+                return currentTargetEntityId;
+            }
+
+            ResetRetargeting();
+            return candidateEntityId;
+        }
+
+        private void ResetRetargeting()
+        {
+            _retargetCandidateId = NetworkEntityIdData.None;
+            _retargetElapsedTime = 0f;
         }
     }
 }

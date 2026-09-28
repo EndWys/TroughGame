@@ -31,7 +31,8 @@ namespace ProjectCore.TechnicalPrototype
             BindComponentFromInstance(_movementStateMachine);
             BindComponentFromInstance(_idleState);
             BindComponentFromInstance(_locomotionState);
-            Container.Bind<EnemyTargetingService>().AsSingle();
+            Container.Bind<IEnemyTargetingService>().To<EnemyTargetingService>().AsSingle();
+            Container.Bind<IEnemySteeringService>().To<EnemySteeringService>().AsSingle();
         }
     }
 }

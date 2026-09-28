@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Config_TechnicalPrototype_Enemy_Chase
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyChaseConfig
   _stoppingDistance: 0.5
+  _approachArrivalDistance: 0.1
+  _separationDistance: 1
+  _separationWeight: 1
+  _obstacleProbeDistance: 1
+  _retargetDistanceAdvantage: 2
+  _retargetDelay: 1

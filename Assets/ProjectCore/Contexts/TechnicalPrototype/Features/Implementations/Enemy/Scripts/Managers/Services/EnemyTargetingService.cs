@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class EnemyTargetingService
+    public sealed class EnemyTargetingService : IEnemyTargetingService
     {
         private readonly IGameEntityComponentAccessor _gameEntityComponentAccessor;
         private readonly NetworkEntityRegistry _networkEntityRegistry;
