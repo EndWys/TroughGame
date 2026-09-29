@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 4465512277710050909}
   - component: {fileID: 8911535481648758648}
   - component: {fileID: 3526974178999751230}
+  - component: {fileID: 2947910090444434332}
   m_Layer: 0
   m_Name: Prefab_Enemy_NetworkEntity
   m_TagString: Untagged
@@ -172,6 +173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyNetworkEntityComponent
   _inputSourceComponent: {fileID: 1231098527604241315}
   _behaviourStateMachine: {fileID: 4125976174204342296}
+  _abilityCollectionComponent: {fileID: 2947910090444434332}
   _movementStateComponent: {fileID: 3526974178999751230}
   _movementStateMachine: {fileID: 1916683656827304820}
   _movementBodyComponent: {fileID: 8911535481648758648}
@@ -221,6 +223,7 @@ MonoBehaviour:
   _targetSelectionState: {fileID: 4206805771678922955}
   _waitingState: {fileID: 8792766857729800281}
   _chasingState: {fileID: 2694764230141271905}
+  _abilityCollectionComponent: {fileID: 2947910090444434332}
   _movementStateComponent: {fileID: 3526974178999751230}
   _movementStateMachine: {fileID: 1916683656827304820}
   _idleState: {fileID: 584413201904313257}
@@ -274,6 +277,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyMovementStateComponent
   _CurrentState: 0
   _PreviousState: 0
+--- !u!114 &2947910090444434332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2524859144858559395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2d1a43c4fadcce469077ee24b93003e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyMovementAbilityCollectionComponent
+  _abilityComponents: []
 --- !u!1 &3359975923103764214
 GameObject:
   m_ObjectHideFlags: 0

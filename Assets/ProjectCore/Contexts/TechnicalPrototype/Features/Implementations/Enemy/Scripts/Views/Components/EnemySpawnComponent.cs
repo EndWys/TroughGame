@@ -12,6 +12,7 @@ namespace ProjectCore.TechnicalPrototype
     public sealed class EnemySpawnComponent : NetworkBehaviour
     {
         [SerializeField] private NetworkPrefabRef _enemyPrefab;
+        [SerializeField] private NetworkPrefabRef _dashEnemyPrefab;
         [SerializeField] private Transform[] _spawnPoints = Array.Empty<Transform>();
 
         private NetworkEntitySpawner _networkEntitySpawner;
@@ -34,24 +35,8 @@ namespace ProjectCore.TechnicalPrototype
 
         public void ValidateConfiguration()
         {
-            if (!_enemyPrefab.IsValid)
-            {
-                throw new InvalidOperationException("Enemy prefab must be configured.");
-            }
-
-            if (_spawnPoints == null || _spawnPoints.Length == 0)
-            {
-                throw new InvalidOperationException("At least one enemy spawn point must be configured.");
-            }
-
-            foreach (Transform spawnPoint in _spawnPoints)
-            {
-                if (spawnPoint == null)
-                {
-                    throw new InvalidOperationException(
-                        "Enemy spawn points must not contain null references.");
-                }
-            }
+            EnemySpawnValidation.ValidatePrefab(_enemyPrefab, "Enemy");
+            EnemySpawnValidation.ValidateSpawnPoints(_spawnPoints);
         }
 
         private void Update()
@@ -72,9 +57,24 @@ namespace ProjectCore.TechnicalPrototype
             {
                 DespawnEnemies();
             }
+
+            if (keyboard.f9Key.wasPressedThisFrame)
+            {
+                SpawnDashEnemy();
+            }
         }
 
         public bool SpawnEnemy()
+        {
+            return SpawnEnemy(_enemyPrefab, "Enemy");
+        }
+
+        public bool SpawnDashEnemy()
+        {
+            return SpawnEnemy(_dashEnemyPrefab, "Dash enemy");
+        }
+
+        private bool SpawnEnemy(NetworkPrefabRef enemyPrefab, string enemyName)
         {
             if (!CanManageEnemies())
             {
@@ -82,10 +82,11 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             ValidateConfiguration();
+            EnemySpawnValidation.ValidatePrefab(enemyPrefab, enemyName);
             Transform spawnPoint = _spawnPoints[_nextSpawnIndex];
             _networkEntitySpawner.Spawn(
                 Runner,
-                _enemyPrefab,
+                enemyPrefab,
                 new EnemySpawnPayload(spawnPoint.position, spawnPoint.rotation));
             _nextSpawnIndex = (_nextSpawnIndex + 1) % _spawnPoints.Length;
             return true;

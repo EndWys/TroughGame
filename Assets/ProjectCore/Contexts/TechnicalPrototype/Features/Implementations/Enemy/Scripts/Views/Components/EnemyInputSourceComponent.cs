@@ -15,7 +15,10 @@ namespace ProjectCore.TechnicalPrototype
 
         public void SetInput(EnemyInputData input)
         {
-            _currentInput = new EnemyInputFrameData(input.Direction);
+            _currentInput = new EnemyInputFrameData(
+                direction: input.Direction,
+                isDashRequested: input.IsDashRequested,
+                dashTargetPosition: input.DashTargetPosition);
             _hasInput = true;
         }
 

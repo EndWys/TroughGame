@@ -11,10 +11,12 @@ namespace ProjectCore.TechnicalPrototype
     public sealed class EnemyNetworkEntityComponent :
         BaseNetworkEntityRoot,
         IEnemyBehaviourStateMutator,
-        IEnemyTargetMutator
+        IEnemyTargetMutator,
+        IEnemyDashStateMutator
     {
         [SerializeField] private EnemyInputSourceComponent _inputSourceComponent;
         [SerializeField] private EnemyBehaviourStateMachine _behaviourStateMachine;
+        [SerializeField] private EnemyAbilityCollectionComponent _abilityCollectionComponent;
         [SerializeField] private EnemyMovementStateComponent _movementStateComponent;
         [SerializeField] private EnemyMovementStateMachine _movementStateMachine;
         [SerializeField] private TransformMovementBodyComponent _movementBodyComponent;
@@ -25,6 +27,7 @@ namespace ProjectCore.TechnicalPrototype
         [Networked] public EnemyBehaviourStateType PreviousBehaviourState { get; private set; }
         [Networked] private NetworkString<_32> TargetEntityTypeValue { get; set; }
         [Networked] private int TargetEntityIndex { get; set; }
+        [Networked] private EnemyDashStateModel DashStateValue { get; set; }
 
         [Inject]
         private void Construct(
@@ -40,6 +43,7 @@ namespace ProjectCore.TechnicalPrototype
             return new INetworkEntityComponent[]
             {
                 _inputSourceComponent,
+                _abilityCollectionComponent,
                 _behaviourStateMachine,
                 _movementStateComponent,
                 _movementStateMachine,
@@ -68,6 +72,22 @@ namespace ProjectCore.TechnicalPrototype
             }
         }
 
+        public Vector2 DashTargetPosition => DashStateValue.TargetPosition;
+
+        public Vector2 DashDirection => DashStateValue.Direction;
+
+        public TickTimer DashActionTimer => DashStateValue.ActionTimer;
+
+        public TickTimer DashCooldownTimer => DashStateValue.CooldownTimer;
+
+        public bool IsDashActionFinished =>
+            DashActionTimer.IsRunning && DashActionTimer.ExpiredOrNotRunning(Runner);
+
+        public bool IsDashCooldownFinished =>
+            !DashCooldownTimer.IsRunning || DashCooldownTimer.ExpiredOrNotRunning(Runner);
+
+        public bool IsStateTimerFinished => IsDashActionFinished;
+
         public void ChangeState(EnemyBehaviourStateType newState)
         {
             PreviousBehaviourState = CurrentBehaviourState;
@@ -89,6 +109,43 @@ namespace ProjectCore.TechnicalPrototype
         {
             TargetEntityTypeValue = NetworkEntityIdData.None.Type.Value;
             TargetEntityIndex = NetworkEntityIdData.None.Index;
+        }
+
+        public void StartDash(
+            Vector2 targetPosition,
+            Vector2 direction,
+            float durationSeconds,
+            float cooldownSeconds)
+        {
+            if (direction.sqrMagnitude <= Mathf.Epsilon)
+            {
+                throw new ArgumentException("Dash direction must be non-zero.", nameof(direction));
+            }
+
+            if (durationSeconds <= 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(durationSeconds));
+            }
+
+            if (cooldownSeconds < 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(cooldownSeconds));
+            }
+
+            DashStateValue = new EnemyDashStateModel
+            {
+                TargetPosition = targetPosition,
+                Direction = direction.normalized,
+                ActionTimer = TickTimer.CreateFromSeconds(Runner, durationSeconds),
+                CooldownTimer = TickTimer.CreateFromSeconds(Runner, cooldownSeconds),
+            };
+        }
+
+        public void StopDash()
+        {
+            EnemyDashStateModel state = DashStateValue;
+            state.ActionTimer = TickTimer.None;
+            DashStateValue = state;
         }
     }
 }

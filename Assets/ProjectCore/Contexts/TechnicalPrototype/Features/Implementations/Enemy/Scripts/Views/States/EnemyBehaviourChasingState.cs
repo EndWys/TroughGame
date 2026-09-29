@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Fusion;
 using ProjectCore.GameCore;
 using UnityEngine;
@@ -9,13 +10,15 @@ namespace ProjectCore.TechnicalPrototype
     public sealed class EnemyBehaviourChasingState : EnemyBehaviourState
     {
         [SerializeField] private EnemyChaseConfig _chaseConfig;
-
         private EnemyInputSourceComponent _inputSource;
         private IEnemyTargetAccessor _targetAccessor;
         private IEnemyTargetMutator _targetMutator;
         private INetworkBehaviourAccessor _networkBehaviourAccessor;
         private IEnemyTargetingService _targetingService;
         private IEnemySteeringService _steeringService;
+        private IMovementStateDataAccessor<EnemyMovementState> _movementStateDataAccessor;
+        private IEnemyAbilityCollection _abilityCollection;
+        private IReadOnlyList<BaseEnemyChaseAbilityProcessor> _chaseAbilityProcessors;
         private NetworkEntityIdData _retargetCandidateId;
         private float _retargetElapsedTime;
 
@@ -26,7 +29,9 @@ namespace ProjectCore.TechnicalPrototype
             IEnemyTargetMutator targetMutator,
             INetworkBehaviourAccessor networkBehaviourAccessor,
             IEnemyTargetingService targetingService,
-            IEnemySteeringService steeringService)
+            IEnemySteeringService steeringService,
+            IMovementStateDataAccessor<EnemyMovementState> movementStateDataAccessor,
+            IEnemyAbilityCollection abilityCollection)
         {
             _inputSource = inputSource ?? throw new ArgumentNullException(nameof(inputSource));
             _targetAccessor = targetAccessor ?? throw new ArgumentNullException(nameof(targetAccessor));
@@ -35,6 +40,24 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(networkBehaviourAccessor));
             _targetingService = targetingService ?? throw new ArgumentNullException(nameof(targetingService));
             _steeringService = steeringService ?? throw new ArgumentNullException(nameof(steeringService));
+            _movementStateDataAccessor = movementStateDataAccessor ??
+                throw new ArgumentNullException(nameof(movementStateDataAccessor));
+            _abilityCollection = abilityCollection ??
+                throw new ArgumentNullException(nameof(abilityCollection));
+        }
+
+        public override void Init()
+        {
+            IReadOnlyList<IEnemyChaseAbilityContributor> abilities =
+                _abilityCollection.GetAbilities<IEnemyChaseAbilityContributor>();
+            var processors = new List<BaseEnemyChaseAbilityProcessor>(abilities.Count);
+
+            foreach (IEnemyChaseAbilityContributor ability in abilities)
+            {
+                processors.Add(ability.CreateChaseAbilityProcessor());
+            }
+
+            _chaseAbilityProcessors = processors;
         }
 
         public override void Enter()
@@ -48,6 +71,12 @@ namespace ProjectCore.TechnicalPrototype
             if (_chaseConfig == null)
             {
                 throw new InvalidOperationException("Enemy chasing state requires a chase config reference.");
+            }
+
+            if (_movementStateDataAccessor.CurrentMovementStates == EnemyMovementState.Dash)
+            {
+                _inputSource.SetInput(default);
+                return EnemyBehaviourStateType.Chasing;
             }
 
             if (!_targetingService.TryGetTargetPosition(
@@ -78,6 +107,16 @@ namespace ProjectCore.TechnicalPrototype
                 _chaseConfig.SeparationDistance,
                 _chaseConfig.SeparationWeight);
 
+            if (TryCreateAbilityInput(
+                    targetEntityId,
+                    targetPosition,
+                    _steeringService.ApproachPosition,
+                    out EnemyInputData abilityInput))
+            {
+                _inputSource.SetInput(abilityInput);
+                return EnemyBehaviourStateType.Chasing;
+            }
+
             float approachArrivalDistance = _chaseConfig.ApproachArrivalDistance;
 
             if ((position - _steeringService.ApproachPosition).sqrMagnitude <=
@@ -96,7 +135,9 @@ namespace ProjectCore.TechnicalPrototype
             Vector2 currentTargetPosition,
             NetworkEntityIdData currentTargetEntityId)
         {
-            if (!_targetingService.TryFindNearestTarget(position, out NetworkEntityIdData candidateEntityId) ||
+            if (!_targetingService.TryFindNearestTarget(
+                    position,
+                    out NetworkEntityIdData candidateEntityId) ||
                 candidateEntityId == currentTargetEntityId ||
                 !_targetingService.TryGetTargetPosition(candidateEntityId, out Vector2 candidatePosition))
             {
@@ -128,6 +169,28 @@ namespace ProjectCore.TechnicalPrototype
 
             ResetRetargeting();
             return candidateEntityId;
+        }
+
+        private bool TryCreateAbilityInput(
+            NetworkEntityIdData targetEntityId,
+            Vector2 targetPosition,
+            Vector2 approachPosition,
+            out EnemyInputData input)
+        {
+            foreach (BaseEnemyChaseAbilityProcessor abilityProcessor in _chaseAbilityProcessors)
+            {
+                if (abilityProcessor.TryCreateInput(
+                        targetEntityId,
+                        targetPosition,
+                        approachPosition,
+                        out input))
+                {
+                    return true;
+                }
+            }
+
+            input = default;
+            return false;
         }
 
         private void ResetRetargeting()

@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d4f04219ecf3d645939ccc04ff44a28, type: 3}
+  m_Name: Config_TechnicalPrototype_Enemy_DashAbility
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyDashChaseAbilityDefinition
+  _dashMovementConfig: {fileID: 11400000, guid: 9b513e4623114764888c61e9ff09a2ed, type: 2}
+  _targetOffset: 0.15
+  _startDistanceTolerance: 0.2

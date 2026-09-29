@@ -4,5 +4,6 @@ namespace ProjectCore.TechnicalPrototype
     {
         Idle,
         Locomotion,
+        Dash,
     }
 }

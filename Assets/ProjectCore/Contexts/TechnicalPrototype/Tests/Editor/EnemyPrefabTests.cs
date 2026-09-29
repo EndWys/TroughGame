@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using Fusion;
 using NUnit.Framework;
 using ProjectCore.GameCore;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
@@ -14,6 +17,18 @@ namespace ProjectCore.TechnicalPrototype
         private const string PrefabPath =
             "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Implementations/Enemy/" +
             "GraphicResources/Prefabs/Prefab_Enemy_NetworkEntity.prefab";
+        private const string DashPrefabPath =
+            "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Implementations/Enemy/" +
+            "GraphicResources/Prefabs/Prefab_Enemy_Dash_NetworkEntity.prefab";
+        private const string DashAbilityConfigPath =
+            "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Implementations/Enemy/" +
+            "GraphicResources/Configs/Config_TechnicalPrototype_Enemy_DashAbility.asset";
+        private const string DashMovementConfigPath =
+            "Assets/ProjectCore/Contexts/GameCore/Features/Modules/Movement/GraphicResources/Configs/" +
+            "Config_GameCore_Movement_Dash.asset";
+        private const string TechnicalPrototypeScenePath =
+            "Assets/ProjectCore/Contexts/TechnicalPrototype/GraphicResources/Scenes/" +
+            "Scene_TechnicalPrototype.unity";
 
         [Test]
         public void EnemyPrefabComposesNetworkBehaviourFoundation()
@@ -33,6 +48,9 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(prefab.GetComponent<EnemyInputSourceComponent>(), Is.Not.Null);
             Assert.That(prefab.GetComponent<EnemyDebugVisualizationComponent>(), Is.Not.Null);
             Assert.That(prefab.GetComponent<TransformMovementBodyComponent>(), Is.Not.Null);
+            EnemyAbilityCollectionComponent abilityCollection =
+                prefab.GetComponent<EnemyAbilityCollectionComponent>();
+            Assert.That(abilityCollection, Is.Not.Null);
             Assert.That(prefab.GetComponent<EnemyMovementStateComponent>(), Is.Not.Null);
 
             SerializedObject serializedEnemyEntity = new(enemyEntity);
@@ -42,6 +60,9 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(
                 serializedEnemyEntity.FindProperty("_behaviourStateMachine").objectReferenceValue,
                 Is.Not.Null);
+            Assert.That(
+                serializedEnemyEntity.FindProperty("_abilityCollectionComponent").objectReferenceValue,
+                Is.SameAs(abilityCollection));
             Assert.That(
                 serializedEnemyEntity.FindProperty("_movementStateComponent").objectReferenceValue,
                 Is.SameAs(prefab.GetComponent<EnemyMovementStateComponent>()));
@@ -94,11 +115,116 @@ namespace ProjectCore.TechnicalPrototype
                 serializedMovementStateMachine.FindProperty("_inputSource").objectReferenceValue,
                 Is.SameAs(prefab.GetComponent<EnemyInputSourceComponent>()));
 
+            SerializedObject serializedAbilityCollection = new(abilityCollection);
+            Assert.That(
+                serializedAbilityCollection.FindProperty("_abilityComponents").arraySize,
+                Is.Zero);
+
             Assert.That(prefab.transform.childCount, Is.EqualTo(3));
             Transform visual = prefab.transform.GetChild(0);
             Assert.That(visual.name, Is.EqualTo("Visual"));
             Assert.That(visual.GetComponent<SpriteRenderer>().sprite, Is.Not.Null);
             Assert.That(visual.GetComponent<Animator>(), Is.Null);
+        }
+
+        [Test]
+        public void DashEnemyPrefabComposesDashMovement()
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(DashPrefabPath);
+            Assert.That(prefab, Is.Not.Null);
+            Assert.That(AssetDatabase.GetLabels(prefab), Does.Contain("FusionPrefab"));
+
+            Transform movement = prefab.transform.Find("Movement");
+            Assert.That(movement, Is.Not.Null);
+            EnemyDashState dashState = movement.GetComponent<EnemyDashState>();
+            EnemyNetworkEntityInstaller installer = prefab.GetComponent<EnemyNetworkEntityInstaller>();
+            Transform behaviour = prefab.transform.Find("Behaviour");
+            Assert.That(behaviour, Is.Not.Null);
+            EnemyBehaviourChasingState chasingState = behaviour.GetComponent<EnemyBehaviourChasingState>();
+            Transform abilities = prefab.transform.Find("Abilities");
+            Assert.That(abilities, Is.Not.Null);
+            EnemyAbilityCollectionComponent abilityCollection =
+                prefab.GetComponent<EnemyAbilityCollectionComponent>();
+            EnemyNetworkEntityComponent networkEntity = prefab.GetComponent<EnemyNetworkEntityComponent>();
+            TransformMovementBodyComponent movementBody =
+                prefab.GetComponent<TransformMovementBodyComponent>();
+            DashMovementConfig dashMovementConfig =
+                AssetDatabase.LoadAssetAtPath<DashMovementConfig>(DashMovementConfigPath);
+            EnemyDashAbilityConfig dashAbilityConfig =
+                AssetDatabase.LoadAssetAtPath<EnemyDashAbilityConfig>(DashAbilityConfigPath);
+            EnemyDashAbilityComponent dashAbility = abilities.GetComponent<EnemyDashAbilityComponent>();
+
+            Assert.That(dashState, Is.Not.Null);
+            Assert.That(abilityCollection, Is.Not.Null);
+            Assert.That(dashMovementConfig, Is.Not.Null);
+            Assert.That(dashAbilityConfig, Is.Not.Null);
+            Assert.That(dashAbility, Is.Not.Null);
+
+            SerializedObject serializedInstaller = new(installer);
+            Assert.That(
+                serializedInstaller.FindProperty("_abilityCollectionComponent").objectReferenceValue,
+                Is.SameAs(abilityCollection));
+
+            SerializedObject serializedNetworkEntity = new(networkEntity);
+            Assert.That(
+                serializedNetworkEntity.FindProperty("_abilityCollectionComponent")
+                    .objectReferenceValue,
+                Is.SameAs(abilityCollection));
+
+            SerializedObject serializedAbilityCollection = new(abilityCollection);
+            SerializedProperty abilityComponents =
+                serializedAbilityCollection.FindProperty("_abilityComponents");
+            Assert.That(abilityComponents.arraySize, Is.EqualTo(1));
+            Assert.That(
+                abilityComponents.GetArrayElementAtIndex(0).objectReferenceValue,
+                Is.SameAs(dashAbility));
+
+            SerializedObject serializedDashState = new(dashState);
+            Assert.That(
+                serializedDashState.FindProperty("_movementBody").objectReferenceValue,
+                Is.SameAs(movementBody));
+            Assert.That(
+                serializedDashState.FindProperty("_dashMovementConfig").objectReferenceValue,
+                Is.SameAs(dashMovementConfig));
+
+            SerializedObject serializedDashAbility = new(dashAbility);
+            Assert.That(
+                serializedDashAbility.FindProperty("_dashState").objectReferenceValue,
+                Is.SameAs(dashState));
+            Assert.That(
+                serializedDashAbility.FindProperty("_movementBody").objectReferenceValue,
+                Is.SameAs(movementBody));
+            Assert.That(
+                serializedDashAbility.FindProperty("_dashAbilityConfig").objectReferenceValue,
+                Is.SameAs(dashAbilityConfig));
+
+            SerializedObject serializedChasingState = new(chasingState);
+            Assert.That(serializedChasingState.FindProperty("_chaseAbilityDefinitions"), Is.Null);
+        }
+
+        [Test]
+        public void TechnicalPrototypeSceneConfiguresDashEnemySpawnReference()
+        {
+            Scene scene = EditorSceneManager.OpenScene(
+                TechnicalPrototypeScenePath,
+                OpenSceneMode.Additive);
+
+            try
+            {
+                EnemySpawnComponent spawnComponent = FindEnemySpawnComponent(scene);
+                FieldInfo dashPrefabField = typeof(EnemySpawnComponent).GetField(
+                    "_dashEnemyPrefab",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                NetworkPrefabRef dashPrefab = (NetworkPrefabRef)dashPrefabField.GetValue(spawnComponent);
+                Guid dashPrefabGuid = new(AssetDatabase.AssetPathToGUID(DashPrefabPath));
+
+                Assert.That(dashPrefab.IsValid, Is.True);
+                Assert.That((Guid)dashPrefab, Is.EqualTo(dashPrefabGuid));
+            }
+            finally
+            {
+                EditorSceneManager.CloseScene(scene, true);
+            }
         }
 
         [Test]
@@ -122,6 +248,23 @@ namespace ProjectCore.TechnicalPrototype
             {
                 UnityEngine.Object.DestroyImmediate(gameObject);
             }
+        }
+
+        private static EnemySpawnComponent FindEnemySpawnComponent(Scene scene)
+        {
+            foreach (GameObject rootObject in scene.GetRootGameObjects())
+            {
+                EnemySpawnComponent spawnComponent =
+                    rootObject.GetComponentInChildren<EnemySpawnComponent>(true);
+
+                if (spawnComponent != null)
+                {
+                    return spawnComponent;
+                }
+            }
+
+            Assert.Fail("Technical Prototype scene requires an EnemySpawnComponent.");
+            return null;
         }
     }
 }

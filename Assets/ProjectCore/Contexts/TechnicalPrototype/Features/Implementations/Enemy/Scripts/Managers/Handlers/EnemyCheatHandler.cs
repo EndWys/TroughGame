@@ -9,7 +9,8 @@ namespace ProjectCore.TechnicalPrototype
 
         public EnemyCheatHandler(EnemySpawnComponent enemySpawnComponent)
         {
-            _enemySpawnComponent = enemySpawnComponent ?? throw new ArgumentNullException(nameof(enemySpawnComponent));
+            _enemySpawnComponent = enemySpawnComponent ??
+                throw new ArgumentNullException(nameof(enemySpawnComponent));
         }
 
         [CheatCommand("enemy_spawn", "Enemy")]
@@ -17,10 +18,23 @@ namespace ProjectCore.TechnicalPrototype
         {
             if (!_enemySpawnComponent.SpawnEnemy())
             {
-                throw new InvalidOperationException("Enemy spawn is only available in a running Solo or Host session.");
+                throw new InvalidOperationException(
+                    "Enemy spawn is only available in a running Solo or Host session.");
             }
 
             return "Enemy spawned.";
+        }
+
+        [CheatCommand("enemy_dash_spawn", "Enemy")]
+        private string SpawnDashEnemy()
+        {
+            if (!_enemySpawnComponent.SpawnDashEnemy())
+            {
+                throw new InvalidOperationException(
+                    "Dash enemy spawn is only available in a running Solo or Host session.");
+            }
+
+            return "Dash enemy spawned.";
         }
 
         [CheatCommand("enemy_despawn", "Enemy")]
@@ -28,7 +42,8 @@ namespace ProjectCore.TechnicalPrototype
         {
             if (!_enemySpawnComponent.CanManageEnemies())
             {
-                throw new InvalidOperationException("Enemy despawn is only available in a running Solo or Host session.");
+                throw new InvalidOperationException(
+                    "Enemy despawn is only available in a running Solo or Host session.");
             }
 
             int despawnedEnemiesCount = _enemySpawnComponent.DespawnEnemies();

@@ -1818,6 +1818,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemySpawnComponent
   _enemyPrefab:
     RawGuidValue: 2149046792ef45a4e85962aaded76c3b
+  _dashEnemyPrefab:
+    RawGuidValue: 5f17775fdd549404688a04987a08c728
   _spawnPoints:
   - {fileID: 1402539600}
 --- !u!114 &1136758675
