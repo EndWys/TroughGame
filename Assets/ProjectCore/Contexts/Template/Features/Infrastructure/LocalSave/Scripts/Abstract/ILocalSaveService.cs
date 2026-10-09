@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Domain;
+using Shared;
 
 namespace ProjectCore.Template
 {

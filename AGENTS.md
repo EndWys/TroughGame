@@ -10,8 +10,8 @@
 
 ## Architecture Constraints
 
-- `Domain` must stay independent from external APIs except Unity Engine, Unity Editor, and .NET.
-- Namespaces must stay simplified: `ProjectCore.{Context}` or `Domain`.
+- `Shared` must stay independent from external APIs except .NET.
+- Namespaces must stay simplified: `ProjectCore.{Context}` or `Shared`.
 - Features must be initialized through the unified initialization flow.
 - Avoid initialization chains hidden in random `Awake`/`Start`; only explicit entry-point/bootstrap components are allowed.
 - Use DI for dependencies between services, systems, factories, coordinators, and feature managers.

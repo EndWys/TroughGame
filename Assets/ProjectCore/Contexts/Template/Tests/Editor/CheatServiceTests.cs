@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
-using Domain;
+using Shared;
 using NUnit.Framework;
 
 namespace ProjectCore.Template

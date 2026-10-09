@@ -1,5 +1,5 @@
 using Cysharp.Threading.Tasks;
-using Domain;
+using Shared;
 using System.Threading;
 
 namespace ProjectCore.Template

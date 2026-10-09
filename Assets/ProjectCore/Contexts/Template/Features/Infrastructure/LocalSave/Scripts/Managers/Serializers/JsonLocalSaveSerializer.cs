@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using Domain;
+using Shared;
 using Newtonsoft.Json;
 
 namespace ProjectCore.Template

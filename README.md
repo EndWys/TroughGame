@@ -26,8 +26,8 @@ are initialized through the common application flow.
 - Use DI for services, systems, factories, and other functional dependencies.
 - Keep Features independent; connect them through Modules, Template Features,
   or Bridge Features where appropriate.
-- Keep Domain independent of external APIs except .NET and Unity APIs.
-- Use `Domain` or `ProjectCore.{Context}` namespaces.
+- Keep Shared independent of external APIs except .NET.
+- Use `Shared` or `ProjectCore.{Context}` namespaces.
 - Keep application startup under the single `ApplicationEntryPoint` flow.
 - Preserve the project folder taxonomy, suffix conventions, and context
   lifetimes when adding or moving code.

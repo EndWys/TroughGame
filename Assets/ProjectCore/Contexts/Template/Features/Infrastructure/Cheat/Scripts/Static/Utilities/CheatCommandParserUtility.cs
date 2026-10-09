@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Domain;
+using Shared;
 
 namespace ProjectCore.Template
 {

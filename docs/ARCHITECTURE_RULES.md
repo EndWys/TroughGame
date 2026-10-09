@@ -8,9 +8,8 @@ The project follows the context- and feature-based organization of BG Games
 Platform, with the following TroughGame-specific rules:
 
 - `Template` remains a context inside `Assets/ProjectCore/Contexts`.
-- `Domain` is independent of external APIs. It may use only .NET, UnityEngine,
-  and UnityEditor APIs.
-- Project-owned namespaces are intentionally short: `Domain` or
+- `Shared` is independent of external APIs. It may use only .NET APIs.
+- Project-owned namespaces are intentionally short: `Shared` or
   `ProjectCore.<Context>`.
 - Runtime and test assembly definitions separate production code from
   Editor/Play tests. Architectural boundaries are additionally enforced through
@@ -92,11 +91,11 @@ Assets/
         Scripts/
           Init/
 
-    Domain/
+    Shared/
       Attributes/
-        Editor/
       Collections/
       Modifiers/
+      Patterns/
       Results/
     ThirdParty/
 ```
@@ -198,13 +197,13 @@ Use the narrowest valid owner:
   responsibility is genuinely context-independent;
 - networking foundations that describe the game runtime remain in
   `GameCore/Scripts`, even when several gameplay contexts consume them;
-- code independent from project contexts and external APIs moves to `Domain`;
+- code independent from project contexts and external APIs moves to `Shared`;
 - behavioral objects requiring DI lifetime or initialization remain features.
 
 Context-shared dependencies are one-way:
 
 ```text
-Feature -> Context Scripts -> Template Scripts -> Domain
+Feature -> Context Scripts -> Template Scripts -> Shared
 ```
 
 Context `Scripts` must not depend on concrete features. If a shared type needs
@@ -220,22 +219,20 @@ A script must remain feature-owned when any of the following is true:
 - it owns feature-specific resources or configuration.
 
 Context `Scripts` must not become a substitute for `Features`, `Template`, or
-`Domain`.
+`Shared`.
 
-### Domain
+### Shared
 
-`Assets/ProjectCore/Domain` contains code that expresses project-independent
+`Assets/ProjectCore/Shared` contains code that expresses project-independent
 rules and abstractions without depending on infrastructure.
 
 Allowed dependencies:
 
-- .NET/BCL namespaces such as `System` and `System.Collections.Generic`;
-- UnityEngine;
-- UnityEditor, when editor code is isolated in an `Editor` folder or guarded by
-  `UNITY_EDITOR`.
+- .NET/BCL namespaces such as `System` and `System.Collections.Generic`.
 
 Forbidden dependencies include, but are not limited to:
 
+- UnityEngine and UnityEditor;
 - Photon Fusion;
 - Zenject;
 - UniTask;
@@ -244,25 +241,29 @@ Forbidden dependencies include, but are not limited to:
 
 Fusion state machines, Zenject installers, network spawning, scene
 initializers, and feature lifecycle code are infrastructure and must live in
-the owning context rather than `Domain`.
+the owning context rather than `Shared`.
 
-`Domain` must not become a general-purpose utilities folder. Feature behavior
+`Shared` must not become a general-purpose utilities folder. Feature behavior
 belongs to its feature even when the implementation itself is small.
 
-Reusable attributes and their editor-only drawers belong to `Domain` when they
-depend only on .NET and Unity APIs. Runtime attributes stay outside contexts;
-editor drawers are isolated in a nested `Editor` folder.
+Pure C# attributes belong to `Shared/Attributes`. Unity property attributes
+belong to `Template/Scripts/DataHolders/Attributes`, and their drawers belong
+to `Template/Scripts/Other/Editor`. Reusable MonoBehaviour state foundations
+belong to `Template/Scripts/Abstract`; mediator handler components belong to
+`Template/Scripts/Views/Handlers`, with their Unity-dependent contracts in
+`Template/Scripts/Abstract/Mediators`. Shared contracts must not depend on
+these Template implementations.
 
-Current shared Domain categories are:
+Current Shared categories are:
 
-- `Attributes` for reusable declarative metadata such as subclass selection
-  and former-name mappings;
+- `Attributes` for pure C# declarative metadata such as former-name mappings;
 - `Collections` for small context-independent collection primitives;
 - `Modifiers` for context-independent sequential value transformations;
+- `Patterns` for pure C# composites, mediators, and state-machine foundations;
 - `Results` for success/failure values and errors. Results are standalone
   primitives rather than a `Patterns` category.
 
-Domain primitives do not receive dedicated test fixtures. Feature and
+Shared primitives do not receive dedicated test fixtures. Feature and
 integration tests verify behavior at the owning application boundary.
 
 ### ThirdParty
@@ -278,17 +279,17 @@ Third-party source code keeps its original namespaces and naming conventions.
 The intended dependency flow is:
 
 ```text
-Domain -> .NET and Unity APIs only
-Template -> Domain
-Project -> Template + Domain + application-lifetime integrations
-GameCore -> Template + Domain + Project services
-Preloader -> Template + Domain + Project services + startup integrations
-Gameplay contexts -> Template + Domain + Project services + GameCore
+Shared -> .NET APIs only
+Template -> Shared
+Project -> Template + Shared + application-lifetime integrations
+GameCore -> Template + Shared + Project services
+Preloader -> Template + Shared + Project services + startup integrations
+Gameplay contexts -> Template + Shared + Project services + GameCore
 ```
 
 Rules:
 
-- `Domain` does not depend on a context or an external API.
+- `Shared` does not depend on a context or an external API.
 - `Template` does not depend on `Project`, `Preloader`, `GameCore`, or a
   gameplay context.
 - `Project` does not depend on `Preloader` or a gameplay context.
@@ -535,7 +536,7 @@ Rules:
 The allowed feature dependency direction is:
 
 ```text
-Domain <- Infrastructure <- Modules <- Implementations
+Shared <- Infrastructure <- Modules <- Implementations
               ^               ^              ^
               +---- Bridges ---+--------------+
 
@@ -878,8 +879,8 @@ Test rules:
 - Tests are placed directly in `Contexts/<Context>/Tests/Editor` or
   `Contexts/<Context>/Tests/Play`; do not create `Scripts/Tests` inside a
   Feature or nested production-category folders.
-- Domain types do not have dedicated test fixtures. Test feature behavior and
-  integration contracts instead of duplicating tests for `Domain` primitives.
+- Shared types do not have dedicated test fixtures. Test feature behavior and
+  integration contracts instead of duplicating tests for `Shared` primitives.
 - Test fixture files and fixture types end with `Tests`, not `Test`.
 - Tests use the same flat context namespace as their production feature. The
   required `Tests` type suffix and the `Tests` path distinguish test code; test
@@ -1106,8 +1107,8 @@ consumers.
 Folder depth below a context does not extend its namespace.
 
 ```csharp
-// Assets/ProjectCore/Domain/**
-namespace Domain;
+// Assets/ProjectCore/Shared/**
+namespace Shared;
 
 // Assets/ProjectCore/Contexts/Template/**
 namespace ProjectCore.Template;
@@ -1244,7 +1245,7 @@ attributes such as `FormerlySerializedAs` or `MovedFrom`.
 - Expose shared services through interfaces when multiple consumers require a
   stable contract.
 - Use UniTask for asynchronous context and feature workflows; do not use it in
-  `Domain`.
+  `Shared`.
 - Register scene-lifetime features in the owning context installer.
 - Register application-lifetime features through `ProjectContextInstaller` or
   a feature group owned by the Project context.
@@ -1290,8 +1291,8 @@ identify heuristic checks that require review and do not fail strict mode.
 The validator checks:
 
 - path ownership and legacy roots;
-- context and Domain namespaces;
-- external dependencies in Domain;
+- context and Shared namespaces;
+- external dependencies in Shared;
 - feature kind and `Scripts` taxonomy;
 - folder/suffix correspondence;
 - static, Manager, View, enum, abstract, Init, and test type rules;

@@ -1,6 +1,7 @@
+using ProjectCore.Template;
 using System;
 using System.Collections.Generic;
-using Domain;
+using Shared;
 
 namespace ProjectCore.GameCore
 {

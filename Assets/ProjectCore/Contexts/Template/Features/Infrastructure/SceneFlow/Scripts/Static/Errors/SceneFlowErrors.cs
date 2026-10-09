@@ -1,4 +1,4 @@
-using Domain;
+using Shared;
 using System;
 
 namespace ProjectCore.Template
