@@ -58,10 +58,11 @@ namespace ProjectCore.Template
             return _lifecycleAdapter.BindInterfacesAndSelfFromComponentInHierarchyAsSingle<T>();
         }
 
-        protected void BindFromInstance<TContract, TImplementation>(TImplementation instance)
+        protected void BindFromInstance<TContract, TImplementation>(
+            TImplementation instance, object id = null)
             where TImplementation : class, TContract
         {
-            _lifecycleAdapter.BindFromInstance<TContract, TImplementation>(instance);
+            _lifecycleAdapter.BindFromInstance<TContract, TImplementation>(instance, id);
         }
 
         protected T Resolve<T>() where T : class

@@ -1,0 +1,199 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1271102477519231058
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3513581399134590343}
+  - component: {fileID: 4583928909564582183}
+  m_Layer: 0
+  m_Name: Abilities
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3513581399134590343
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271102477519231058}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8943855219138288431}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4583928909564582183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271102477519231058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4259697da404a4f40889ab1ac4cdf3f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyDashAbilityComponent
+  _dashState: {fileID: 6425344080834935256}
+  _movementBody: {fileID: 1026089806905614546}
+  _dashAbilityConfig: {fileID: 11400000, guid: d4a13d0659a18484caa77fc5cfcbe9de, type: 2}
+--- !u!1001 &8471628721713094570
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 584413201904313257, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: _movementBody
+      value: 
+      objectReference: {fileID: 1026089806905614546}
+    - target: {fileID: 584413201904313257, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: _dashMovementConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 9b513e4623114764888c61e9ff09a2ed, type: 2}
+    - target: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 747478491718501545, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: SortKey
+      value: 3865014148
+      objectReference: {fileID: 0}
+    - target: {fileID: 1660854554113357123, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: _dashState
+      value: 
+      objectReference: {fileID: 6425344080834935256}
+    - target: {fileID: 1916683656827304820, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: _dashState
+      value: 
+      objectReference: {fileID: 6425344080834935256}
+    - target: {fileID: 2524859144858559395, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_Name
+      value: Prefab_Enemy_Dash_NetworkEntity
+      objectReference: {fileID: 0}
+    - target: {fileID: 2642395670431192166, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: _dashMovementConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 9b513e4623114764888c61e9ff09a2ed, type: 2}
+    - target: {fileID: 2694764230141271905, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: _chaseAbilityDefinitions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2694764230141271905, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: '_chaseAbilityDefinitions.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: d4a13d0659a18484caa77fc5cfcbe9de, type: 2}
+    - target: {fileID: 2947910090444434332, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: _abilityComponents.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2947910090444434332, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: '_abilityComponents.Array.data[0]'
+      value: 
+      objectReference: {fileID: 4583928909564582183}
+    - target: {fileID: 6646267629646700233, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6646267629646700233, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_Color.g
+      value: 0.008741896
+      objectReference: {fileID: 0}
+    - target: {fileID: 6646267629646700233, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3513581399134590343}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1192747594508930323, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6425344080834935256}
+  m_SourcePrefab: {fileID: 100100000, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+--- !u!114 &1026089806905614546 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8911535481648758648, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+  m_PrefabInstance: {fileID: 8471628721713094570}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32c4e4264ca44646a7fd221b51f891d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.TransformMovementBodyComponent
+--- !u!1 &7285760892969194169 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1192747594508930323, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+  m_PrefabInstance: {fileID: 8471628721713094570}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6425344080834935256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7285760892969194169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 722611d8180012c48be0e19fb2ca1f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyDashState
+  _movementBody: {fileID: 1026089806905614546}
+  _dashMovementConfig: {fileID: 11400000, guid: 9b513e4623114764888c61e9ff09a2ed, type: 2}
+--- !u!4 &8943855219138288431 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 688964566515074181, guid: 2149046792ef45a4e85962aaded76c3b, type: 3}
+  m_PrefabInstance: {fileID: 8471628721713094570}
+  m_PrefabAsset: {fileID: 0}

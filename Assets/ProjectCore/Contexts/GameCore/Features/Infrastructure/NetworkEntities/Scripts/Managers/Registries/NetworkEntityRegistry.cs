@@ -92,6 +92,20 @@ namespace ProjectCore.GameCore
             return false;
         }
 
+        public bool TryGetRootContract<TContract>(
+            NetworkEntityIdData entityId,
+            out TContract contract)
+            where TContract : class
+        {
+            if (TryGet(entityId, out BaseNetworkEntityRoot entity))
+            {
+                return entity.TryGetRootContract(out contract);
+            }
+
+            contract = null;
+            return false;
+        }
+
         public IReadOnlyList<BaseNetworkEntityRoot> GetByType(NetworkEntityTypeData entityType)
         {
             return _entitiesByType.TryGetValue(entityType, out List<BaseNetworkEntityRoot> entities)

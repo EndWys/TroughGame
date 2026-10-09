@@ -51,6 +51,13 @@ namespace ProjectCore.GameCore
             NetworkEntityIndex = entityId.Index;
         }
 
+        public bool TryGetRootContract<TContract>(out TContract contract)
+            where TContract : class
+        {
+            contract = this as TContract;
+            return contract != null;
+        }
+
         public override void Spawned()
         {
             BeforeComponentsInitialized();

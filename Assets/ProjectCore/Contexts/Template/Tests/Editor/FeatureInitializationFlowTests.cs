@@ -9,6 +9,18 @@ namespace ProjectCore.Template
     public sealed class FeatureInitializationFlowTests
     {
         [Test]
+        public void InstanceBindingsKeepNamedAndUnnamedInstancesSeparate()
+        {
+            var container = new DiContainer();
+            var feature = new InstanceBindingTestFeature();
+            feature.InstallBindings(container);
+
+            Assert.That(container.Resolve<object>(), Is.SameAs(feature.DefaultInstance));
+            Assert.That(container.ResolveId<object>("First"), Is.SameAs(feature.FirstInstance));
+            Assert.That(container.ResolveId<object>("Second"), Is.SameAs(feature.SecondInstance));
+        }
+
+        [Test]
         public void InitializesFeaturesInOrderExactlyOnce()
         {
             var events = new List<string>();
@@ -94,6 +106,20 @@ namespace ProjectCore.Template
             {
                 _events.Add(_name);
                 return UniTask.CompletedTask;
+            }
+        }
+
+        private sealed class InstanceBindingTestFeature : BaseFeature
+        {
+            public object DefaultInstance { get; } = new();
+            public object FirstInstance { get; } = new();
+            public object SecondInstance { get; } = new();
+
+            protected override void InstallBindings()
+            {
+                BindFromInstance<object, object>(DefaultInstance);
+                BindFromInstance<object, object>(FirstInstance, "First");
+                BindFromInstance<object, object>(SecondInstance, "Second");
             }
         }
 

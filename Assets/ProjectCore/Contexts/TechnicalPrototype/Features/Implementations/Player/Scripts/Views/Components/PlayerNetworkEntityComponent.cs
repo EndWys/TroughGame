@@ -4,6 +4,7 @@ using Domain;
 using Fusion;
 using ProjectCore.GameCore;
 using UnityEngine;
+using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
@@ -22,6 +23,18 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private PlayerMovementStateMachine _movementStateMachine;
         [SerializeField] private TransformMovementBodyComponent _movementBodyComponent;
         [SerializeField] private CameraTargetComponent _cameraTargetComponent;
+        [SerializeField] private TargetableNetworkEntityComponent _targetableNetworkEntityComponent;
+
+        private Transform _entitiesContainer;
+
+        [Inject]
+        private void Construct(
+            [Inject(Id = PlayerNetworkEntityConstants.EntitiesContainer)] Transform entitiesContainer)
+        {
+            _entitiesContainer = entitiesContainer != null
+                ? entitiesContainer
+                : throw new ArgumentNullException(nameof(entitiesContainer));
+        }
 
         #endregion
 
@@ -138,6 +151,7 @@ namespace ProjectCore.TechnicalPrototype
 
         protected override void AfterComponentsInitialized()
         {
+            transform.SetParent(_entitiesContainer, true);
             NotifyMovementStateChanged();
             NotifyFacingDirectionChanged();
         }
@@ -151,6 +165,7 @@ namespace ProjectCore.TechnicalPrototype
                 _movementStateMachine,
                 _movementBodyComponent,
                 _cameraTargetComponent,
+                _targetableNetworkEntityComponent,
             };
         }
 

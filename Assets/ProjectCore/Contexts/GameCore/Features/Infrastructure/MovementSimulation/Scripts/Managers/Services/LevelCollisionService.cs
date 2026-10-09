@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProjectCore.GameCore
 {
-    public sealed class LevelCollisionService : IMovementCollisionStrategy
+    public sealed class LevelCollisionService : IMovementCollisionStrategy, IMovementObstacleProbe
     {
         private const float SkinWidth = 0.01f;
         private const float MinimumDisplacement = 0.0001f;
@@ -28,7 +28,6 @@ namespace ProjectCore.GameCore
             }
 
             Vector2 currentPosition = body.Position;
-            Vector2 remainingDisplacement = desiredDisplacement;
             Vector2 resolvedDisplacement = Vector2.zero;
             float radius = Mathf.Max(0f, body.CollisionRadius);
 
@@ -41,6 +40,22 @@ namespace ProjectCore.GameCore
                 radius,
                 desiredDisplacement,
                 contactFilter);
+
+            return resolvedDisplacement + ResolveSlideDisplacement(
+                ref currentPosition,
+                radius,
+                desiredDisplacement,
+                contactFilter);
+        }
+
+        private Vector2 ResolveSlideDisplacement(
+            ref Vector2 currentPosition,
+            float radius,
+            Vector2 desiredDisplacement,
+            ContactFilter2D contactFilter)
+        {
+            Vector2 remainingDisplacement = desiredDisplacement;
+            Vector2 resolvedDisplacement = Vector2.zero;
 
             for (int iteration = 0;
                  iteration < MaximumSlideIterations;
@@ -100,6 +115,37 @@ namespace ProjectCore.GameCore
             }
 
             return resolvedDisplacement;
+        }
+
+        public bool TryProbe(
+            IMovementCollisionBodyAccessor body,
+            Vector2 direction,
+            float distance,
+            out Vector2 obstacleNormal)
+        {
+            if (body == null)
+            {
+                throw new ArgumentNullException(nameof(body));
+            }
+
+            if (direction.sqrMagnitude <= Mathf.Epsilon || distance <= 0f)
+            {
+                obstacleNormal = default;
+                return false;
+            }
+
+            ContactFilter2D contactFilter = new ContactFilter2D();
+            contactFilter.SetLayerMask(body.CollisionMask);
+            contactFilter.useTriggers = false;
+            bool hasObstacle = TryFindClosestBlockingHit(
+                body.Position,
+                Mathf.Max(0f, body.CollisionRadius),
+                direction.normalized,
+                distance,
+                contactFilter,
+                out RaycastHit2D closestHit);
+            obstacleNormal = hasObstacle ? closestHit.normal.normalized : default;
+            return hasObstacle;
         }
 
         private Vector2 ResolveInitialOverlap(

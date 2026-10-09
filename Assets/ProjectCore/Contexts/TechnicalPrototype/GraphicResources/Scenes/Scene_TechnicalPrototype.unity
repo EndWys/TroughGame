@@ -161,7 +161,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89715ad69b973a14899afa2c6730b30b, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Zenject::Zenject.SceneContext
   _scriptableObjectInstallers: []
   _monoInstallers:
@@ -193,7 +193,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57db4bd8df3f43f8b9134ce6a33043c7, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.TechnicalPrototype.TechnicalPrototypeContextInstaller
 --- !u!114 &1004
 MonoBehaviour:
@@ -205,7 +205,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7ed001ce0fa543deb6cbbd40de56a632, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.GameCore.ZenjectNetworkObjectProvider
   DelayIfSceneManagerIsBusy: 1
 --- !u!114 &1005
@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46fff267026e443881953bf282239154, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Template.ScreenNavigationFeature
   _screenNavigationComponent: {fileID: 1006}
   _screenCatalog: {fileID: 11400000, guid: 10dfae61242c4d03971624858f6bb3f5, type: 2}
@@ -232,7 +232,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45fcfa0af879491eabf5593ac8ac3a42, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Template.ScreenNavigationComponent
   _uiDocument: {fileID: 1007}
 --- !u!114 &1007
@@ -245,8 +245,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: c0ce0c10bf4d453e8fdc1c524e1101ab, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: e4b774700d7c438080a653fc1aa364c0, type: 3}
@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 268091428cba4d0f97dd1cae171b8686, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Template.PopupFeature
   _popupComponent: {fileID: 6102}
   _popupCatalog: {fileID: 11400000, guid: 20861523fe844414a87ab9bd898366eb, type: 2}
@@ -282,7 +282,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1cb0bbe78f9f480c9995b7e4deedfe16, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.InputFeature
   _inputActions: {fileID: -944628639613478452, guid: a55f5a3fc5ea4d22bd1bb8efc7a39d64, type: 3}
 --- !u!1 &1100
@@ -299,6 +299,8 @@ GameObject:
   - component: {fileID: 1005}
   - component: {fileID: 1008}
   - component: {fileID: 2200000011}
+  - component: {fileID: 2200000013}
+  - component: {fileID: 2200000012}
   m_Layer: 0
   m_Name: SceneFeatures
   m_TagString: Untagged
@@ -365,8 +367,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ba5764f4714bd64ab9efab127938e77, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   EnableHotkeys: 0
   BaseSkin: {fileID: 11400000, guid: e59b35dfeb4b6f54e9b2791b2a40a510, type: 2}
 --- !u!114 &2003
@@ -379,8 +381,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88230848386761045af440d808ee3efa, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   RunnerPrefab: {fileID: 3002}
   StartMode: 0
   AutoStartAs: 2
@@ -388,8 +390,8 @@ MonoBehaviour:
   AutoClients: 1
   ClientStartDelay: 0.1
   ServerPort: 0
-  DefaultRoomName:
-  InitialScenePath:
+  DefaultRoomName: 
+  InitialScenePath: 
   _currentStage: 0
   AutoConnectVirtualInstances: 1
   VirtualInstanceConnectDelay: 1
@@ -505,8 +507,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1199893898, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -517,8 +519,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 90a93abf1a391964a94e5c139605105b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   IsSceneTakeOverEnabled: 1
   LogSceneLoadErrors: 1
   DestroySpawnedPrefabsOnSceneUnload: 1
@@ -532,8 +534,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -232609262, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   OnInput:
     m_PersistentCalls:
       m_Calls: []
@@ -601,8 +603,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8edbe7108d8a43ab838cf8b8d9453df, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -613,7 +615,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 768b0e943ba0439992b234418020d264, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.GameCore.NetworkCallbacksDebuggerComponent
   _logInputEvents: 0
 --- !u!114 &3007
@@ -626,7 +628,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7b5a1ff9dee264bfd829a39e6542dcbd, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Fusion.Addons.Physics::Fusion.Addons.Physics.RunnerSimulatePhysics3D
   _physicsAuthority: 2
   _physicsTiming: 3
@@ -737,8 +739,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
@@ -879,7 +881,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0283862923704ecc8394ff4b3cf09300, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProjectCore.Template.PopupComponent
   _uiDocument: {fileID: 6103}
 --- !u!114 &6103
@@ -892,8 +894,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: 3ddbf0661dfe465dab754a09febe1a67, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 3bb83ac935574cc0a73660ad8cd5fa7e, type: 3}
@@ -948,8 +950,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
@@ -963,8 +965,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_SendPointerHoverToParent: 1
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
@@ -1113,6 +1115,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1814600864}
+  - {fileID: 809651213}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &245711093
@@ -1314,6 +1317,37 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 16.12, y: 0.4}
   m_EdgeRadius: 0
+--- !u!1 &560612191
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 560612192}
+  m_Layer: 0
+  m_Name: Entities
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &560612192
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 560612191}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 809651213}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &599713975
 GameObject:
   m_ObjectHideFlags: 0
@@ -1501,6 +1535,40 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.4, y: 9.41}
   m_EdgeRadius: 0
+--- !u!1 &809651212
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 809651213}
+  m_Layer: 0
+  m_Name: Enemy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &809651213
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 809651212}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1136758673}
+  - {fileID: 1567541587}
+  - {fileID: 560612192}
+  m_Father: {fileID: 9001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &968270021
 GameObject:
   m_ObjectHideFlags: 0
@@ -1703,6 +1771,76 @@ PolygonCollider2D:
       - {x: 1.3226262, y: -0.011190176}
       - {x: 1.923845, y: 0.2880215}
   m_UseDelaunayMesh: 1
+--- !u!1 &1136758672
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1136758673}
+  - component: {fileID: 1136758675}
+  - component: {fileID: 1136758674}
+  m_Layer: 0
+  m_Name: EnemySpawnController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1136758673
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136758672}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 809651213}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1136758674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136758672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b99f4dc7c9983ec43a4d77c55b916134, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemySpawnComponent
+  _enemyPrefab:
+    RawGuidValue: 2149046792ef45a4e85962aaded76c3b
+  _dashEnemyPrefab:
+    RawGuidValue: 5f17775fdd549404688a04987a08c728
+  _spawnPoints:
+  - {fileID: 1402539600}
+--- !u!114 &1136758675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136758672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 2883973834
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1136758674}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &1309816710
 GameObject:
   m_ObjectHideFlags: 0
@@ -1747,7 +1885,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d29013f556d76814784ffcab3f80f336, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerSpawnComponent
   _playerPrefab:
     RawGuidValue: 27122d774d5daf64bb5260f1ff6ed8c4
@@ -1756,7 +1894,6 @@ MonoBehaviour:
   - {fileID: 1527722722}
   - {fileID: 245711094}
   - {fileID: 599713976}
-  _entitiesContainer: {fileID: 2200000002}
 --- !u!114 &1309816713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1767,7 +1904,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
   SortKey: 3519755670
   ObjectInterest: 1
@@ -1787,8 +1924,39 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09c7934cf83a4a43a70ccae5286538ee, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerNetworkInputComponent
+--- !u!1 &1402539599
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1402539600}
+  m_Layer: 0
+  m_Name: SpawnPoint_01
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1402539600
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402539599}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.054, y: -0.459, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1567541587}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1451230065
 GameObject:
   m_ObjectHideFlags: 0
@@ -1997,6 +2165,38 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1779720410}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1567541586
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1567541587}
+  m_Layer: 0
+  m_Name: SpawnPoints
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1567541587
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567541586}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1402539600}
+  m_Father: {fileID: 809651213}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1628163186
 GameObject:
@@ -2613,7 +2813,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f48d89d8d9e4f9eb0dca3bb2f3f0c77, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.LocalCameraComponent
   _camera: {fileID: 4002}
   _levelBoundsRenderer: {fileID: 2100497009}
@@ -2635,9 +2835,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3cf4e53d5f834dd38f73a6d74e40a801, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.LocalCameraFeature
   _cameraComponent: {fileID: 2200000010}
+--- !u!114 &2200000012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 102161ceea591a14bbedebe98185c8ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyFeature
+  _entitiesContainer: {fileID: 560612192}
+  _spawnComponent: {fileID: 1136758674}
+--- !u!114 &2200000013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9412ddca424a6da46b2021f6ac78a108, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerFeature
+  _entitiesContainer: {fileID: 2200000002}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
