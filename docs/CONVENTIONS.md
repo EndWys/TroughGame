@@ -15,7 +15,7 @@ Assets/ProjectCore/
     GraphicResources/
     Resources/
     Scripts/                 # context-shared scripts, no feature lifecycle
-    Features/<Role>/<Feature>/
+    Features/<Feature>/
     Tests/
       Editor/
       Play/
@@ -85,9 +85,10 @@ they preserve the suffix rule. One file contains one top-level type and the
 file name exactly matches it.
 
 Every feature that participates in the lifecycle has
-`Scripts/Init/<Feature>Feature.cs`. A feature may be independent, may compose
-modules, or may be reusable infrastructure/bridge as defined in the
-architecture rules.
+`Scripts/Init/<Feature>Feature.cs`. All features live directly under their
+context's `Features` folder. Features may provide reusable capabilities,
+compose other capabilities, or adapt public contracts; these responsibilities
+do not introduce feature types or intermediate role folders.
 
 Feature entries inherit `BaseFeature` by default. `BaseMonoBehaviourFeature` is
 allowed only when the feature itself must own serialized scene, prefab, or
@@ -283,7 +284,7 @@ startup boundary.
 - Correct spelling in identifiers and paths; do not preserve legacy typos.
 
 Namespaces are flat below the owning context: `ProjectCore.<Context>` or
-`Shared`. Folder depth and feature role do not extend the namespace. Third-party
+`Shared`. Folder depth and feature responsibility do not extend the namespace. Third-party
 code keeps its original namespace.
 
 ## Member Order

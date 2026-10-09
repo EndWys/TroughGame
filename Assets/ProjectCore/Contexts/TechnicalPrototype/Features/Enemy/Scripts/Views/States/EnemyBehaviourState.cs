@@ -1,4 +1,4 @@
-using Domain;
+using Shared;
 using UnityEngine;
 
 namespace ProjectCore.TechnicalPrototype

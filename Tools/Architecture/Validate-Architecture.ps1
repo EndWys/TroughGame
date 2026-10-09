@@ -242,23 +242,24 @@ function Test-FeatureScriptPath {
     }
 
     $segments = @($match.Groups['rest'].Value.Split('/'))
-    $featureKinds = @('Modules', 'Implementations', 'Infrastructure', 'Bridges')
+    $legacyRoleFolders = @('Modules', 'Implementations', 'Infrastructure', 'Bridges')
 
-    if ($segments.Count -lt 1 -or $segments[0] -notin $featureKinds) {
+    if ($segments.Count -ge 3 -and $segments[0] -in $legacyRoleFolders -and
+        $segments[1] -ne 'Scripts') {
         Add-Diagnostic -Severity 'Error' -Rule 'FEATURE001' `
             -Path $FileRecord.RelativePath -Line 1 `
-            -Message 'Feature must be placed under Features/Modules, Features/Implementations, Features/Infrastructure, or Features/Bridges.'
+            -Message 'Feature role folders are obsolete; use Features/<Feature>/Scripts/<Category>.'
         return $true
     }
 
-    if ($segments.Count -lt 4 -or $segments[2] -ne 'Scripts') {
+    if ($segments.Count -lt 3 -or $segments[1] -ne 'Scripts') {
         Add-Diagnostic -Severity 'Error' -Rule 'SCRIPT001' `
             -Path $FileRecord.RelativePath -Line 1 `
             -Message 'Feature C# files must be placed under <Feature>/Scripts/<Category>.'
         return $true
     }
 
-    $scriptSegments = @($segments[3..($segments.Count - 1)])
+    $scriptSegments = @($segments[2..($segments.Count - 1)])
     $category = $scriptSegments[0]
     if ($category -eq 'Tests') {
         Add-Diagnostic -Severity 'Error' -Rule 'TEST001' `

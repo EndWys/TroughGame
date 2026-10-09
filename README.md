@@ -24,8 +24,8 @@ are initialized through the common application flow.
 ## Development rules
 
 - Use DI for services, systems, factories, and other functional dependencies.
-- Keep Features independent; connect them through Modules, Template Features,
-  or Bridge Features where appropriate.
+- Place Features directly under their context; connect them through public
+  contracts and injected adapters.
 - Keep Shared independent of external APIs except .NET.
 - Use `Shared` or `ProjectCore.{Context}` namespaces.
 - Keep application startup under the single `ApplicationEntryPoint` flow.

@@ -1,4 +1,4 @@
-using Domain;
+using Shared;
 
 namespace ProjectCore.TechnicalPrototype
 {

@@ -15,16 +15,16 @@ namespace ProjectCore.TechnicalPrototype
     public sealed class EnemyPrefabTests
     {
         private const string PrefabPath =
-            "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Implementations/Enemy/" +
+            "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/" +
             "GraphicResources/Prefabs/Prefab_Enemy_NetworkEntity.prefab";
         private const string DashPrefabPath =
-            "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Implementations/Enemy/" +
+            "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/" +
             "GraphicResources/Prefabs/Prefab_Enemy_Dash_NetworkEntity.prefab";
         private const string DashAbilityConfigPath =
-            "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Implementations/Enemy/" +
+            "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/" +
             "GraphicResources/Configs/Config_TechnicalPrototype_Enemy_DashAbility.asset";
         private const string DashMovementConfigPath =
-            "Assets/ProjectCore/Contexts/GameCore/Features/Modules/Movement/GraphicResources/Configs/" +
+            "Assets/ProjectCore/Contexts/GameCore/Features/Movement/GraphicResources/Configs/" +
             "Config_GameCore_Movement_Dash.asset";
         private const string TechnicalPrototypeScenePath =
             "Assets/ProjectCore/Contexts/TechnicalPrototype/GraphicResources/Scenes/" +

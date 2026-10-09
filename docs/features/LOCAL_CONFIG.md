@@ -1,7 +1,7 @@
 # Local Config
 
 `LocalConfig` provides strongly typed access to configuration shipped as
-`ScriptableObject` assets. It is reusable Template Infrastructure and is
+`ScriptableObject` assets. It is a reusable Template feature and is
 installed separately in every DI context that owns local configuration.
 
 ## Responsibilities
@@ -87,7 +87,7 @@ catalog is allowed because that represents an explicit context override.
 The persistent Project catalog currently lives at:
 
 ```text
-Assets/ProjectCore/Contexts/Template/Features/Infrastructure/LocalConfig/DataResources/Config_Project_LocalConfig_Catalog.asset
+Assets/ProjectCore/Contexts/Template/Features/LocalConfig/DataResources/Config_Project_LocalConfig_Catalog.asset
 ```
 
 ## Installing in a context

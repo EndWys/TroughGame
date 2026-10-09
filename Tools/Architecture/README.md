@@ -50,7 +50,7 @@ The valid fixture must report `0 errors, 0 warnings`.
 | `PATH` | Source ownership and legacy roots |
 | `NS` | Context and Shared namespaces |
 | `SHARED` | Forbidden Shared dependencies |
-| `FEATURE` | Modules, Implementations, Infrastructure, and Bridges ownership |
+| `FEATURE` | Flat feature ownership; obsolete role folders are rejected |
 | `SCRIPT` | Closed feature `Scripts` taxonomy |
 | `CONTEXT` | Shared context `Scripts/<Category>` |
 | `SUFFIX` | Folder and type suffix correspondence |

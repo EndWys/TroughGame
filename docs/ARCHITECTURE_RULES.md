@@ -31,10 +31,7 @@ Assets/
     Contexts/
       Template/
         Features/
-          Bridges/
-          Implementations/
-          Infrastructure/
-          Modules/
+          <Feature>/
         Plugins/
         Scripts/
         Tests/
@@ -58,20 +55,14 @@ Assets/
 
       GameCore/
         Features/
-          Bridges/
-          Implementations/
-          Infrastructure/
-          Modules/
+          <Feature>/
         GraphicResources/
         Scripts/
           Init/
 
       TechnicalPrototype/
         Features/
-          Bridges/
-          Implementations/
-          Infrastructure/
-          Modules/
+          <Feature>/
         GraphicResources/
           Scenes/
         Resources/
@@ -81,10 +72,7 @@ Assets/
 
       Prototype/                 # legacy experiments; not part of runtime flow
         Features/
-          Bridges/
-          Implementations/
-          Infrastructure/
-          Modules/
+          <Feature>/
         GraphicResources/
           Scenes/
         Resources/
@@ -387,12 +375,35 @@ Startup rules:
 
 ## Feature Architecture
 
-Every feature has one of four architectural roles.
+All features live directly under `Contexts/<Context>/Features/<Feature>`.
+Features are not classified as Modules, Implementations, Infrastructure, or
+Bridges. Ownership comes from the context and the feature's responsibility;
+dependency direction comes from public contracts, not role folders.
+
+### Feature Dependencies
+
+- Each feature owns one coherent capability, its code, and its resources.
+- Features consume other capabilities through narrow public contracts and DI.
+- Reusable capabilities must not depend on the concrete consumers that use them.
+- Consumers must not access another feature's internal implementation types.
+- Extract shared behavior into an appropriate owning feature rather than
+  coupling consumers to one another's internals.
+- Adapter features may connect independent systems through their public
+  contracts. Names such as `SceneLoadingScreenBridge` describe responsibility
+  and remain valid without a separate Bridges category.
+- Adapters must stay focused and must not accumulate unrelated game logic.
+- Feature dependency cycles are forbidden. Cross-context dependencies follow
+  the context dependency direction defined above.
+- Reusable cross-context capabilities belong to `Template/Features/<Feature>`.
+  Code ownership and runtime lifetime are separate: a Template feature may be
+  installed into Project, Preloader, or scene containers as required.
+- Feature groups and installers compose concrete features; runtime consumers
+  depend on the contracts bound by those features.
 
 ### Feature Groups
 
 `FeatureGroup` is an explicitly ordered composition of related features. It
-does not introduce a DI scope, own business logic, or replace a feature role.
+does not introduce a DI scope, own business logic, or change feature ownership.
 Its child features are installed and initialized in declaration order.
 
 `BaseFeatureGroup` composes code-created features. A group that owns serialized
@@ -402,101 +413,33 @@ children through explicit serialized references. Component searches are not
 used for group composition.
 
 Use a group when a context needs to keep a coherent set of related features
-together, such as GameCore modules or a scene's implementation features. A
+together, such as shared GameCore features or scene-owned features. A
 group may contain another group. Context installers compose top-level groups
 and standalone features only.
 
-### Module Features
+### Shared Feature Lifetimes
 
-Modules are reusable capabilities that can be consumed and implemented by
-different implementation features. A module defines focused contracts and the
-shared behavior needed to use that capability, but it does not know which game
-entity or implementation feature consumes it.
-
-Examples:
-
-- `Movement`;
-- `Combat`;
-- `Health`;
-- `NetworkEntity`.
-
-Rules:
-
-- A module never depends on an implementation feature.
-- A module exposes narrow interfaces and data contracts through DI.
-- A module must not assume that `Player`, `Bot`, or another concrete entity is
-  its only consumer.
-- Reusable module code belongs to `Features/Modules/<Feature>` in the context
-  that owns its lifetime.
-
-### Implementation Features
-
-Implementation features provide a complete concrete game concept. They may
-compose several modules, use one module, or be fully independent when no
-reusable module is required. `Player`, for example, can implement movement,
-combat, health, input, and network-entity module contracts.
-
-Rules:
-
-- An implementation feature may depend on module contracts.
-- It owns the adapters, components, controllers, and state that implement those
-  contracts for its concrete concept.
-- One implementation feature must not reference another implementation
-  feature directly.
-- Shared behavior discovered inside an implementation must be extracted into a
-  module instead of being consumed through a direct implementation dependency.
-
-### Infrastructure Features
-
-Infrastructure features are complete, reusable technical systems shared by
-multiple features or contexts. Injection into other features, generic APIs,
-and payload-based communication do not make a feature a bridge when it owns a
-complete system and its lifecycle.
-
-Examples:
-
-- `AppTime`;
-- `LocalConfig`;
-- `Logging`;
-- `Popup`;
-- `ScreenNavigation`;
-- `SignalBus`;
-- `Audio`;
-- `Save`;
-- `Pooling`;
-- `Localization`.
-
-Rules:
-
-- Reusable cross-context infrastructure normally belongs to
-  `Template/Features/Infrastructure/<Feature>`.
-- Infrastructure must not depend on concrete gameplay implementation features.
-- Other features consume infrastructure through DI and narrow public contracts.
-- Code ownership and runtime lifetime are separate: Template infrastructure may
-  be installed into Project, Preloader, or scene containers as required.
-- A complete reusable system remains Infrastructure even when every consumer
-  injects it directly.
-- `AppTime` is owned by Template Infrastructure but installed once in the
+- `AppTime` is owned by a Template feature but installed once in the
   persistent Project context. Consumers inject `IAppTimeService`; static access
   is forbidden. Its public time values use UTC, network synchronization is
   asynchronous, and local UTC time remains the fallback.
-- `LocalConfig` is owned by Template Infrastructure and installed separately
+- `LocalConfig` is owned by a Template feature and installed separately
   in every DI context that owns a flat local config catalog. Lookup checks the
   current context first and then parent contexts; nested provider catalogs and
   mutable global provider registries are forbidden. Its MonoBehaviour feature
   privately owns the serialized catalog and passes it directly to its service;
   the catalog is not bound in DI. Usage and lifetime details are documented in
   [`features/LOCAL_CONFIG.md`](features/LOCAL_CONFIG.md).
-- `Logging` is owned by Template Infrastructure and installed once in the
+- `Logging` is owned by a Template feature and installed once in the
   persistent Project context. Consumers use the injected `IDebugLogger` or a
   context-scoped `IDebugLogger<TFeature>`; log handlers connect through
   `ILogService`. Usage and lifetime details are documented in
   [`features/LOGGING.md`](features/LOGGING.md).
-- `CommandLine` is independent Template Infrastructure installed before Debug
+- `CommandLine` is an independent Template feature installed before Debug
   Tools in the persistent Project context. It provides an immutable parsed
   argument snapshot and the dedicated-server cancel request. It remains
   available in every build type and is not controlled by Debug Tools.
-- `DebugTools` is the persistent Template Infrastructure composition for
+- `DebugTools` is the persistent Template feature composition for
   Cheats, Debug Visualization, and Runtime Console. The systems remain
   independent features and communicate through public contracts. A single
   `IDebugToolsService` controls build availability and runtime state; disabling
@@ -512,41 +455,6 @@ Rules:
   Controller owns presentation state and UI flow; MonoBehaviour and
   VisualElement Views only render supplied data and forward user input.
 
-### Bridge Features
-
-Bridge features are small adapters that connect two otherwise independent
-systems through their public contracts. They do not provide either connected
-system and do not own business logic.
-
-Examples include `PopupSignalBusBridge`, `SaveCloudBridge`, and
-`AnalyticsNavigationBridge`. `SignalBus` itself is Infrastructure; a feature
-that adapts popup events to that bus is a Bridge.
-
-Rules:
-
-- A bridge depends only on the public contracts of the systems it connects.
-- A bridge must not resolve or call a concrete implementation feature.
-- Signals and messages describe neutral domain or integration events, not the
-  internal implementation of their publisher.
-- Bridge features must stay small and must not become repositories for game
-  logic.
-- Cross-implementation communication uses a bridge contract; it never uses a
-  concrete class reference.
-
-The allowed feature dependency direction is:
-
-```text
-Shared <- Infrastructure <- Modules <- Implementations
-              ^               ^              ^
-              +---- Bridges ---+--------------+
-
-Implementation A -X-> Implementation B
-```
-
-Bridges are installed by a composition root and adapt public contracts without
-creating a direct dependency between concrete implementations. Cyclic feature
-dependencies are forbidden.
-
 > Folder taxonomy, suffix semantics, naming, member order, access modifiers,
 > resource naming, and coding style are maintained in
 > [`CONVENTIONS.md`](CONVENTIONS.md). This document defines architecture,
@@ -557,7 +465,7 @@ dependencies are forbidden.
 Project-owned features use the following layout:
 
 ```text
-Assets/ProjectCore/Contexts/<Context>/Features/<Kind>/<Feature>/
+Assets/ProjectCore/Contexts/<Context>/Features/<Feature>/
   DataResources/
   GraphicResources/
     Materials/
@@ -650,7 +558,6 @@ config instance passed through DI remains a `DataHolder`.
 Every feature must have:
 
 - a folder named after the feature;
-- an explicit `Modules`, `Implementations`, `Infrastructure`, or `Bridges` role;
 - a clear owner context;
 - `Scripts/Init/<Feature>Feature.cs` when it participates in the feature
   lifecycle;
@@ -660,15 +567,14 @@ Every feature must have:
 Examples:
 
 ```text
-Contexts/GameCore/Features/Modules/Movement
-Contexts/GameCore/Features/Implementations/Player
-Contexts/Template/Features/Infrastructure/Popup
-Contexts/Template/Features/Infrastructure/SignalBus
-Contexts/Template/Features/Bridges/PopupSignalBusBridge
+Contexts/GameCore/Features/Movement
+Contexts/GameCore/Features/Player
+Contexts/Template/Features/Popup
+Contexts/Template/Features/SignalBus
+Contexts/Template/Features/PopupSignalBusBridge
 ```
 
-The role folders affect ownership and dependency direction but do not extend
-the namespace.
+Feature folders express ownership but do not extend the namespace.
 
 ### Strict Folder And Suffix Rule
 
@@ -702,7 +608,7 @@ instance for the whole application.
 | Folder | Required suffix | Role and usage |
 | --- | --- | --- |
 | `Accumulators` | `Accumulator` | Collects transient values or transitions until an explicit read/consume boundary. The owning feature controls initialization and lifetime. |
-| `Controllers` | `Controller` | Coordinates one non-visual use case or translates input into calls to domain/module contracts. Visual MonoBehaviour controllers belong to `Views/Components`. |
+| `Controllers` | `Controller` | Coordinates one non-visual use case or translates input into calls to gameplay contracts. Visual MonoBehaviour controllers belong to `Views/Components`. |
 | `Coordinators` | `Coordinator` | Orchestrates a multi-step workflow involving several services or systems. Application and scene flow coordinators belong here. |
 | `Factories` | `Factory` | Creates injected objects or aggregates and hides construction details. The factory is a singleton even when the objects it creates are transient. |
 | `Flows` | `Flow` | Executes one explicitly ordered, awaitable lifecycle or use-case pipeline. A Flow is invoked by its owner and never starts itself from a Unity callback. |
@@ -1067,7 +973,7 @@ Rules:
   factories, configuration, and lifecycle contracts.
 - Consumers depend on the narrowest appropriate interface rather than a
   concrete implementation.
-- Implementation features satisfy module contracts through DI bindings.
+- Features satisfy public capability contracts through DI bindings.
 - Bridge services such as the signal bus are injected; features do not locate
   the bus or one another globally.
 - Object creation that requires injected dependencies goes through an injected
@@ -1293,7 +1199,7 @@ The validator checks:
 - path ownership and legacy roots;
 - context and Shared namespaces;
 - external dependencies in Shared;
-- feature kind and `Scripts` taxonomy;
+- flat feature ownership and `Scripts` taxonomy;
 - folder/suffix correspondence;
 - static, Manager, View, enum, abstract, Init, and test type rules;
 - known spelling and legacy suffix errors;
