@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Domain;
+using Shared;
 using ProjectCore.GameCore;
 using UnityEngine;
 

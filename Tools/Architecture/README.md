@@ -48,8 +48,8 @@ The valid fixture must report `0 errors, 0 warnings`.
 | Prefix | Area |
 | --- | --- |
 | `PATH` | Source ownership and legacy roots |
-| `NS` | Context and Domain namespaces |
-| `DOMAIN` | Forbidden Domain dependencies |
+| `NS` | Context and Shared namespaces |
+| `SHARED` | Forbidden Shared dependencies |
 | `FEATURE` | Modules, Implementations, Infrastructure, and Bridges ownership |
 | `SCRIPT` | Closed feature `Scripts` taxonomy |
 | `CONTEXT` | Shared context `Scripts/<Category>` |
@@ -83,8 +83,8 @@ Baseline captured on 2026-07-22 against 131 first-party C# files:
 | `NS001` | 107 | Legacy or incorrect namespaces |
 | `FEATURE001` | 102 | Features do not yet have a Modules, Implementations, Infrastructure, or Bridges owner |
 | `NAME004` | 19 | Legacy `Changer` suffixes |
-| `PATH001` | 14 | Domain remains under legacy `Assets/Domain` |
-| `PATH002` | 10 | Project-owned scripts remain outside Contexts or ProjectCore/Domain |
+| `PATH001` | 14 | Shared remains under legacy `Assets/Shared` |
+| `PATH002` | 10 | Project-owned scripts remain outside Contexts or ProjectCore/Shared |
 | `NAME001` | 9 | `Proyotype` or `Enteties` spelling in paths |
 | `SUFFIX001` | 3 | Context script folder/suffix mismatch |
 | `TYPE003` | 2 | More than one top-level type in one file |

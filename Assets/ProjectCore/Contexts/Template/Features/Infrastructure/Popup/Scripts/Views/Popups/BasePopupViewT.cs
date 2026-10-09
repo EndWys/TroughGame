@@ -9,7 +9,7 @@ namespace ProjectCore.Template
     {
         protected void Complete(TResponse response)
         {
-            RequestCompletion(new PopupCompletionData(response, Domain.Error.None));
+            RequestCompletion(new PopupCompletionData(response, Shared.Error.None));
         }
 
         protected sealed override UniTask OnInitializeAsync(

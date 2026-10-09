@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Domain;
+using Shared;
 
 namespace ProjectCore.Template
 {

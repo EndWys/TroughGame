@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using Domain;
+using Shared;
 using UnityEngine;
 
 namespace ProjectCore.Template

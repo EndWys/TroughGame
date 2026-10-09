@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [ValidateSet('Report', 'Strict')]
     [string]$Mode = 'Report',
@@ -579,6 +579,7 @@ function Test-ContextSharedScriptPath {
         $subfolder = $segments[1]
         $contextSuffixMaps = @{
             DataHolders = @{
+                Attributes = @('Attribute')
                 Configs = @('Config')
                 Data = @('Data')
                 Definitions = @('Definition')
@@ -587,6 +588,7 @@ function Test-ContextSharedScriptPath {
                 Payloads = @('Payload')
             }
             Other = @{
+                Editor = @('AttributeDrawer')
                 Adapters = @('Adapter')
                 Builders = @('Builder')
                 Commands = @('Command')
@@ -599,6 +601,7 @@ function Test-ContextSharedScriptPath {
                 Strategies = @('Strategy')
             }
             Views = @{
+                Handlers = @('Handler')
                 Components = @('Component')
                 Navigation = @('NavigationView')
                 Popups = @('PopupView')
@@ -673,6 +676,7 @@ function Test-ContextTestPath {
 $sourceRoots = New-Object System.Collections.ArrayList
 foreach ($candidate in @(
     (Join-Path $ProjectRoot 'Assets\ProjectCore'),
+    (Join-Path $ProjectRoot 'Assets\Shared'),
     (Join-Path $ProjectRoot 'Assets\Domain')
 )) {
     if (Test-Path -LiteralPath $candidate) {
@@ -776,19 +780,20 @@ foreach ($record in $fileRecords) {
 
     if ($contextMatch.Success) {
         $expectedNamespace = 'ProjectCore.' + $contextMatch.Groups['context'].Value
-    } elseif ($record.RelativePath -match '^Assets/ProjectCore/Domain/' -or
-        $record.RelativePath -match '^Assets/Domain/') {
-        $expectedNamespace = 'Domain'
+    } elseif ($record.RelativePath -match '^Assets/ProjectCore/Shared/' -or
+        $record.RelativePath -match '^Assets/Shared/') {
+        $expectedNamespace = 'Shared'
     } elseif ($record.RelativePath -match '^Assets/ProjectCore/') {
         Add-Diagnostic -Severity 'Error' -Rule 'PATH002' `
             -Path $record.RelativePath -Line 1 `
-            -Message 'Project-owned C# file is outside Contexts, Domain, or ThirdParty.'
+            -Message 'Project-owned C# file is outside Contexts, Shared, or ThirdParty.'
     }
 
-    if ($record.RelativePath -match '^Assets/Domain/') {
+    if ($record.RelativePath -match '^Assets/Shared/' -or
+        $record.RelativePath -match '^Assets/(?:ProjectCore/)?Domain/') {
         Add-Diagnostic -Severity 'Error' -Rule 'PATH001' `
             -Path $record.RelativePath -Line 1 `
-            -Message 'Legacy Assets/Domain code must move to Assets/ProjectCore/Domain.'
+            -Message 'Legacy shared code must move to Assets/ProjectCore/Shared; Unity-dependent types belong to Template.'
     }
 
     if ($null -ne $expectedNamespace -and $typeInfo.Namespace -ne $expectedNamespace) {
@@ -802,10 +807,10 @@ foreach ($record in $fileRecords) {
             -Message ("Expected namespace '{0}', found '{1}'." -f $expectedNamespace, $actual)
     }
 
-    $isDomainPath = $record.RelativePath -match '^Assets/ProjectCore/Domain/' -or
-        $record.RelativePath -match '^Assets/Domain/'
+    $isSharedPath = $record.RelativePath -match '^Assets/ProjectCore/Shared/' -or
+        $record.RelativePath -match '^Assets/Shared/'
 
-    if ($isDomainPath) {
+    if ($isSharedPath) {
         $usingMatches = [regex]::Matches(
             $record.Text,
             '(?m)^\s*using\s+(?:static\s+)?(?:(?:[A-Za-z_][A-Za-z0-9_]*)\s*=\s*)?(?<namespace>[A-Za-z_][A-Za-z0-9_\.]*)(?:\s*;|\s*=)')
@@ -813,25 +818,23 @@ foreach ($record in $fileRecords) {
         foreach ($usingMatch in $usingMatches) {
             $usedNamespace = $usingMatch.Groups['namespace'].Value
             $allowed = $usedNamespace -eq 'System' -or $usedNamespace.StartsWith('System.') -or
-                $usedNamespace -eq 'UnityEngine' -or $usedNamespace.StartsWith('UnityEngine.') -or
-                $usedNamespace -eq 'UnityEditor' -or $usedNamespace.StartsWith('UnityEditor.') -or
-                $usedNamespace -eq 'Domain' -or $usedNamespace.StartsWith('Domain.')
+                $usedNamespace -eq 'Shared' -or $usedNamespace.StartsWith('Shared.')
 
             if (-not $allowed) {
-                Add-Diagnostic -Severity 'Error' -Rule 'DOMAIN001' `
+                Add-Diagnostic -Severity 'Error' -Rule 'SHARED001' `
                     -Path $record.RelativePath `
                     -Line (Get-LineNumber -Text $record.Text -Index $usingMatch.Index) `
-                    -Message ("Domain cannot depend on external namespace '{0}'." -f $usedNamespace)
+                    -Message ("Shared cannot depend on external namespace '{0}'." -f $usedNamespace)
             }
         }
 
-        foreach ($externalPrefix in @('Fusion.', 'Zenject.', 'Cysharp.', 'Newtonsoft.', 'Photon.')) {
+        foreach ($externalPrefix in @('UnityEngine.', 'UnityEditor.', 'ProjectCore.', 'Fusion.', 'Zenject.', 'Cysharp.', 'Newtonsoft.', 'Photon.')) {
             $externalMatch = [regex]::Match($record.Text, '\b' + [regex]::Escape($externalPrefix))
             if ($externalMatch.Success) {
-                Add-Diagnostic -Severity 'Error' -Rule 'DOMAIN002' `
+                Add-Diagnostic -Severity 'Error' -Rule 'SHARED002' `
                     -Path $record.RelativePath `
                     -Line (Get-LineNumber -Text $record.Text -Index $externalMatch.Index) `
-                    -Message ("Domain contains external API reference '{0}'." -f $externalPrefix.TrimEnd('.'))
+                    -Message ("Shared contains external API reference '{0}'." -f $externalPrefix.TrimEnd('.'))
             }
         }
     }

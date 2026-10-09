@@ -1,5 +1,5 @@
 using System;
-using Domain;
+using Shared;
 
 namespace ProjectCore.GameCore
 {

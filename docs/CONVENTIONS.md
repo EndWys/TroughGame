@@ -19,17 +19,20 @@ Assets/ProjectCore/
     Tests/
       Editor/
       Play/
-  Domain/
+  Shared/
     Attributes/
-      Editor/
     Collections/
     Modifiers/
+    Patterns/
     Results/
   ThirdParty/
 ```
 
-`Template` is project-agnostic reusable code. `Domain` is independent of
-external APIs and may reference only .NET and Unity Engine/Editor APIs.
+`Template` is project-agnostic reusable code. `Shared` is independent of
+external APIs and may reference only .NET APIs. Shared Unity property
+attributes, drawers, state foundations, and mediator handlers belong to
+`Template/Scripts/DataHolders/Attributes`, `Other/Editor`, `Abstract`, and
+`Views/Handlers` respectively.
 
 Zenject's `Assets/ProjectCore/Resources/ProjectContext.prefab` is the explicit
 root-layout exception. It keeps both its framework-required location and name.
@@ -226,7 +229,7 @@ Test fixtures end with `Tests` and are stored directly under
 not live inside production Feature folders. Nested test-category folders are
 not used. Editor tests cover feature services, DI bindings, and editor-safe
 logic. Play tests cover scenes, prefabs, Unity lifecycle, frame progression,
-and runtime integration. Domain primitives do not receive dedicated test
+and runtime integration. Shared primitives do not receive dedicated test
 fixtures. Test assemblies reference the runtime assembly and are never
 production dependencies.
 
@@ -280,7 +283,7 @@ startup boundary.
 - Correct spelling in identifiers and paths; do not preserve legacy typos.
 
 Namespaces are flat below the owning context: `ProjectCore.<Context>` or
-`Domain`. Folder depth and feature role do not extend the namespace. Third-party
+`Shared`. Folder depth and feature role do not extend the namespace. Third-party
 code keeps its original namespace.
 
 ## Member Order
@@ -321,7 +324,7 @@ Keep related overloads together. Do not use regions to hide unrelated members.
   remove unused usings.
 - Keep business rules in domain/services, Unity references in views/components,
   and external SDK access behind adapters/providers.
-- Use UniTask for asynchronous runtime/initialization workflows; Domain must
+- Use UniTask for asynchronous runtime/initialization workflows; Shared must
   not depend on UniTask.
 - Do not start application work from `Awake`, `OnEnable`, or arbitrary `Start`.
 - Avoid `async void`; use `UniTask`, `UniTask<T>`, or `UniTaskVoid` only for a
