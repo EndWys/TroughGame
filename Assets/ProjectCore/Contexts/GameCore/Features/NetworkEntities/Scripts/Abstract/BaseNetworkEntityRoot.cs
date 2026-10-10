@@ -14,8 +14,7 @@ namespace ProjectCore.GameCore
         private readonly List<INetworkEntityComponent> _components = new();
         private NetworkEntityRegistry _networkEntityRegistry;
 
-        [Networked] private NetworkString<_32> NetworkEntityTypeValue { get; set; }
-        [Networked] private int NetworkEntityIndex { get; set; }
+        [Networked] private uint NetworkEntityIdValue { get; set; }
 
         [Inject]
         private void ConstructBaseNetworkEntityRoot(
@@ -28,27 +27,12 @@ namespace ProjectCore.GameCore
 
         public NetworkBehaviour ParentNetworkBehaviour => this;
 
-        public NetworkEntityIdData EntityId
-        {
-            get
-            {
-                string entityType = NetworkEntityTypeValue.ToString();
-
-                return string.IsNullOrWhiteSpace(entityType)
-                    ? NetworkEntityIdData.None
-                    : new NetworkEntityIdData(new NetworkEntityTypeData(entityType), NetworkEntityIndex);
-            }
-        }
+        public NetworkEntityIdData EntityId => new(NetworkEntityIdValue);
 
         public void SetEntityId(NetworkEntityIdData entityId)
         {
-            if (!entityId.IsValid)
-            {
-                throw new ArgumentException("Network entity id must be valid.", nameof(entityId));
-            }
-
-            NetworkEntityTypeValue = entityId.Type.Value;
-            NetworkEntityIndex = entityId.Index;
+            NetworkEntityIdValidation.ValidateAssignedId(entityId, nameof(entityId));
+            NetworkEntityIdValue = entityId.Value;
         }
 
         public bool TryGetRootContract<TContract>(out TContract contract)

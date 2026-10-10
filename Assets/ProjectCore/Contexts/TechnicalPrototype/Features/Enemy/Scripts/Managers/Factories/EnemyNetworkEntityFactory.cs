@@ -14,7 +14,7 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(networkEntityIdFactory));
         }
 
-        public override NetworkEntityTypeData EntityType => EnemyNetworkEntityConstants.Enemy;
+        public override NetworkEntityType EntityType => EnemyNetworkEntityConstants.Enemy;
 
         public override BaseNetworkEntityRoot Spawn(
             NetworkRunner runner,

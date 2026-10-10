@@ -6,6 +6,6 @@ namespace ProjectCore.TechnicalPrototype
     {
         public const string EntitiesContainer = "Player.EntitiesContainer";
 
-        public static readonly NetworkEntityTypeData Player = new("player");
+        public const NetworkEntityType Player = NetworkEntityType.Player;
     }
 }

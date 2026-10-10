@@ -7,7 +7,7 @@ namespace ProjectCore.GameCore
         where TPayload : INetworkEntitySpawnPayload
     {
         public Type PayloadType => typeof(TPayload);
-        public abstract NetworkEntityTypeData EntityType { get; }
+        public abstract NetworkEntityType EntityType { get; }
 
         public BaseNetworkEntityRoot Spawn(
             NetworkRunner runner,

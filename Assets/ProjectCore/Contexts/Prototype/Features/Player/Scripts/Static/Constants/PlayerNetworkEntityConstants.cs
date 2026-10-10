@@ -4,6 +4,6 @@ namespace ProjectCore.Prototype
 {
     public static class PlayerNetworkEntityConstants
     {
-        public static readonly NetworkEntityTypeData Player = new NetworkEntityTypeData("player");
+        public const NetworkEntityType Player = NetworkEntityType.Player;
     }
 }

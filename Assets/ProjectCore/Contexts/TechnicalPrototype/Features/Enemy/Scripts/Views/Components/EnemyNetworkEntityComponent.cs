@@ -25,8 +25,7 @@ namespace ProjectCore.TechnicalPrototype
 
         [Networked] public EnemyBehaviourStateType CurrentBehaviourState { get; private set; }
         [Networked] public EnemyBehaviourStateType PreviousBehaviourState { get; private set; }
-        [Networked] private NetworkString<_32> TargetEntityTypeValue { get; set; }
-        [Networked] private int TargetEntityIndex { get; set; }
+        [Networked] private uint TargetEntityIdValue { get; set; }
         [Networked] private EnemyDashStateModel DashStateValue { get; set; }
 
         [Inject]
@@ -60,17 +59,7 @@ namespace ProjectCore.TechnicalPrototype
 
         public EnemyBehaviourStateType PreviousState => PreviousBehaviourState;
 
-        public NetworkEntityIdData TargetEntityId
-        {
-            get
-            {
-                string entityType = TargetEntityTypeValue.ToString();
-
-                return string.IsNullOrWhiteSpace(entityType) || entityType == NetworkEntityIdData.None.Type.Value
-                    ? NetworkEntityIdData.None
-                    : new NetworkEntityIdData(new NetworkEntityTypeData(entityType), TargetEntityIndex);
-            }
-        }
+        public NetworkEntityIdData TargetEntityId => new(TargetEntityIdValue);
 
         public Vector2 DashTargetPosition => DashStateValue.TargetPosition;
 
@@ -96,19 +85,13 @@ namespace ProjectCore.TechnicalPrototype
 
         public void SetTargetEntityId(NetworkEntityIdData targetEntityId)
         {
-            if (!targetEntityId.IsValid)
-            {
-                throw new System.ArgumentException("Target entity id must be valid.", nameof(targetEntityId));
-            }
-
-            TargetEntityTypeValue = targetEntityId.Type.Value;
-            TargetEntityIndex = targetEntityId.Index;
+            NetworkEntityIdValidation.ValidateAssignedId(targetEntityId, nameof(targetEntityId));
+            TargetEntityIdValue = targetEntityId.Value;
         }
 
         public void ClearTargetEntityId()
         {
-            TargetEntityTypeValue = NetworkEntityIdData.None.Type.Value;
-            TargetEntityIndex = NetworkEntityIdData.None.Index;
+            TargetEntityIdValue = NetworkEntityIdData.None.Value;
         }
 
         public void StartDash(

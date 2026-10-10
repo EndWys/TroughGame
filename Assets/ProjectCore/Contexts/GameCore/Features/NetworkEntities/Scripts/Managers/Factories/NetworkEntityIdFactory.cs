@@ -4,15 +4,17 @@ namespace ProjectCore.GameCore
 {
     public sealed class NetworkEntityIdFactory
     {
-        private readonly Dictionary<NetworkEntityTypeData, int> _nextIndexes =
-            new Dictionary<NetworkEntityTypeData, int>();
+        private readonly Dictionary<NetworkEntityType, uint> _nextIndexes = new();
 
-        public NetworkEntityIdData Create(NetworkEntityTypeData type)
+        public NetworkEntityIdData Create(NetworkEntityType type)
         {
-            _nextIndexes.TryGetValue(type, out int nextIndex);
-            _nextIndexes[type] = nextIndex + 1;
+            NetworkEntityIdValidation.ValidateType(type);
+            _nextIndexes.TryGetValue(type, out uint nextIndex);
+            NetworkEntityIdValidation.ValidateNextIndex(type, nextIndex);
 
-            return new NetworkEntityIdData(type, nextIndex);
+            var entityId = new NetworkEntityIdData(type, nextIndex);
+            _nextIndexes[type] = nextIndex + 1u;
+            return entityId;
         }
     }
 }

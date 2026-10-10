@@ -14,7 +14,7 @@ namespace ProjectCore.Prototype
             _networkEntityIdFactory = networkEntityIdFactory;
         }
 
-        public override NetworkEntityTypeData EntityType => PlayerNetworkEntityConstants.Player;
+        public override NetworkEntityType EntityType => PlayerNetworkEntityConstants.Player;
 
         public override BaseNetworkEntityRoot Spawn(
             NetworkRunner runner,

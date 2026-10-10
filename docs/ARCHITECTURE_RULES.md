@@ -422,6 +422,12 @@ and standalone features only.
 
 ### Shared Feature Lifetimes
 
+- `NetworkEntities` is owned by GameCore and installed in the gameplay context.
+  Its entity IDs use a uint with 6 type bits and 26 index bits. The spawning
+  authority issues monotonically increasing indexes without reuse within that
+  context. Entity lookup remains a registry responsibility; protocol codes,
+  validation, and world-lifetime limits are documented in
+  [`features/NETWORK_ENTITIES.md`](features/NETWORK_ENTITIES.md).
 - `AppTime` is owned by a Template feature but installed once in the
   persistent Project context. Consumers inject `IAppTimeService`; static access
   is forbidden. Its public time values use UTC, network synchronization is

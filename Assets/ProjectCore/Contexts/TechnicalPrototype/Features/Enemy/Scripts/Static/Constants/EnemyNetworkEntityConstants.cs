@@ -6,6 +6,6 @@ namespace ProjectCore.TechnicalPrototype
     {
         public const string EntitiesContainer = "Enemy.EntitiesContainer";
 
-        public static readonly NetworkEntityTypeData Enemy = new("enemy");
+        public const NetworkEntityType Enemy = NetworkEntityType.Enemy;
     }
 }

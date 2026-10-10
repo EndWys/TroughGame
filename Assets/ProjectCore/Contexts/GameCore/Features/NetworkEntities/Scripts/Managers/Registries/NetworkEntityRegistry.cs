@@ -7,7 +7,7 @@ namespace ProjectCore.GameCore
     {
         private readonly Dictionary<NetworkEntityIdData, BaseNetworkEntityRoot> _entitiesById = new();
 
-        private readonly Dictionary<NetworkEntityTypeData, List<BaseNetworkEntityRoot>> _entitiesByType =
+        private readonly Dictionary<NetworkEntityType, List<BaseNetworkEntityRoot>> _entitiesByType =
             new();
 
         public IReadOnlyDictionary<NetworkEntityIdData, BaseNetworkEntityRoot> EntitiesById => _entitiesById;
@@ -106,14 +106,14 @@ namespace ProjectCore.GameCore
             return false;
         }
 
-        public IReadOnlyList<BaseNetworkEntityRoot> GetByType(NetworkEntityTypeData entityType)
+        public IReadOnlyList<BaseNetworkEntityRoot> GetByType(NetworkEntityType entityType)
         {
             return _entitiesByType.TryGetValue(entityType, out List<BaseNetworkEntityRoot> entities)
                 ? entities
                 : Array.Empty<BaseNetworkEntityRoot>();
         }
 
-        public List<TComponent> GetComponentsByType<TComponent>(NetworkEntityTypeData entityType)
+        public List<TComponent> GetComponentsByType<TComponent>(NetworkEntityType entityType)
             where TComponent : class
         {
             var results = new List<TComponent>();
@@ -138,7 +138,7 @@ namespace ProjectCore.GameCore
         }
 
         public void FillComponentsByType<TComponent>(
-            NetworkEntityTypeData entityType,
+            NetworkEntityType entityType,
             ICollection<TComponent> results)
             where TComponent : class
         {

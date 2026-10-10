@@ -4,34 +4,30 @@ namespace ProjectCore.GameCore
 {
     public readonly struct NetworkEntityIdData : IEquatable<NetworkEntityIdData>
     {
-        public static readonly NetworkEntityIdData None =
-            new(new NetworkEntityTypeData("none"), -1, true);
+        public static readonly NetworkEntityIdData None = default;
 
-        public NetworkEntityIdData(NetworkEntityTypeData type, int index)
+        public NetworkEntityIdData(NetworkEntityType type, uint index)
         {
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(index), "Network entity index cannot be negative.");
-            }
+            NetworkEntityIdValidation.ValidateType(type);
+            NetworkEntityIdValidation.ValidateIndex(index);
 
-            Type = type;
-            Index = index;
+            Value = ((uint)type << NetworkEntityIdConstants.IndexBits) | index;
         }
 
-        private NetworkEntityIdData(NetworkEntityTypeData type, int index, bool _)
+        public NetworkEntityIdData(uint value)
         {
-            Type = type;
-            Index = index;
+            NetworkEntityIdValidation.ValidateValue(value);
+            Value = value;
         }
 
-        public NetworkEntityTypeData Type { get; }
-        public int Index { get; }
-        public bool IsValid => Index >= 0 && !string.IsNullOrWhiteSpace(Type.Value) && Type != None.Type;
+        public uint Value { get; }
+        public NetworkEntityType Type => (NetworkEntityType)(Value >> NetworkEntityIdConstants.IndexBits);
+        public uint Index => Value & NetworkEntityIdConstants.IndexMask;
+        public bool IsValid => NetworkEntityIdValidation.IsValid(Value);
 
         public bool Equals(NetworkEntityIdData other)
         {
-            return Type.Equals(other.Type) && Index == other.Index;
+            return Value == other.Value;
         }
 
         public override bool Equals(object obj)
@@ -41,10 +37,7 @@ namespace ProjectCore.GameCore
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return (Type.GetHashCode() * 397) ^ Index;
-            }
+            return Value.GetHashCode();
         }
 
         public override string ToString()

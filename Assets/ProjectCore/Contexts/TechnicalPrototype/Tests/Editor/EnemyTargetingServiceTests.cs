@@ -11,14 +11,14 @@ namespace ProjectCore.TechnicalPrototype
         [Test]
         public void TryFindNearestTargetReturnsClosestAvailableTarget()
         {
-            NetworkEntityIdData nearestId = new(new NetworkEntityTypeData("player"), 2);
+            NetworkEntityIdData nearestId = new(NetworkEntityType.Player, 2);
             var accessor = new TestGameEntityComponentAccessor(new Dictionary<
                 NetworkEntityIdData,
                 ITargetableNetworkEntity>
             {
-                { new NetworkEntityIdData(new NetworkEntityTypeData("player"), 0), new TestTarget(new(8f, 0f)) },
+                { new NetworkEntityIdData(NetworkEntityType.Player, 0), new TestTarget(new(8f, 0f)) },
                 { nearestId, new TestTarget(new(2f, 0f)) },
-                { new NetworkEntityIdData(new NetworkEntityTypeData("player"), 1), new TestTarget(new(4f, 0f)) },
+                { new NetworkEntityIdData(NetworkEntityType.Player, 1), new TestTarget(new(4f, 0f)) },
             });
             var service = new EnemyTargetingService(accessor, new NetworkEntityRegistry());
 

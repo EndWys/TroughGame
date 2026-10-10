@@ -329,10 +329,19 @@ namespace ProjectCore.Template
             first.SetTargetEntityId(targetId);
             second.SetTargetEntityId(targetId);
             Assert.That(first.TargetEntityId, Is.EqualTo(targetId));
+            Assert.That(first.TargetEntityId.Value, Is.EqualTo(targetId.Value));
+            Assert.That(new NetworkEntityIdData(first.EntityId.Value), Is.EqualTo(first.EntityId));
+            Assert.That(first.EntityId.Type, Is.EqualTo(NetworkEntityType.Enemy));
+            Assert.That(targetId.Type, Is.EqualTo(NetworkEntityType.Player));
+            Assert.Throws<ArgumentException>(() => first.SetEntityId(NetworkEntityIdData.None));
+            Assert.That(first.EntityId.IsValid, Is.True);
+            Assert.Throws<ArgumentException>(() => first.SetTargetEntityId(NetworkEntityIdData.None));
+            Assert.That(first.TargetEntityId, Is.EqualTo(targetId));
 
             first.ClearTargetEntityId();
             Assert.That(first.TargetEntityId, Is.EqualTo(NetworkEntityIdData.None));
             Assert.That(first.TargetEntityId.IsValid, Is.False);
+            Assert.That(first.TargetEntityId.Value, Is.Zero);
             first.ClearTargetEntityId();
             Assert.That(first.TargetEntityId, Is.EqualTo(NetworkEntityIdData.None));
 

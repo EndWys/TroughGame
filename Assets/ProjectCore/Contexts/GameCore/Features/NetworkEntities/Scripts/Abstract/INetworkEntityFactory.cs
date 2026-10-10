@@ -6,7 +6,7 @@ namespace ProjectCore.GameCore
     public interface INetworkEntityFactory
     {
         Type PayloadType { get; }
-        NetworkEntityTypeData EntityType { get; }
+        NetworkEntityType EntityType { get; }
 
         BaseNetworkEntityRoot Spawn(
             NetworkRunner runner,
