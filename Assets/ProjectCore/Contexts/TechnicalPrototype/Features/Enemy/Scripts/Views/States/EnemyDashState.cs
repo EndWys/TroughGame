@@ -50,6 +50,8 @@ namespace ProjectCore.TechnicalPrototype
                     "Enemy dash state requires a dash movement config reference.");
             }
 
+            MovementConfigValidation.ValidateDash(_dashMovementConfig);
+
             return new IMovementStateProcessor<EnemyMovementState, EnemyMovementPayload>[]
             {
                 new DashProcessor<EnemyMovementState, EnemyMovementPayload>(

@@ -66,7 +66,7 @@ namespace ProjectCore.TechnicalPrototype
             {
                 string entityType = TargetEntityTypeValue.ToString();
 
-                return string.IsNullOrWhiteSpace(entityType)
+                return string.IsNullOrWhiteSpace(entityType) || entityType == NetworkEntityIdData.None.Type.Value
                     ? NetworkEntityIdData.None
                     : new NetworkEntityIdData(new NetworkEntityTypeData(entityType), TargetEntityIndex);
             }

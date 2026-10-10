@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Fusion;
 using ProjectCore.GameCore;
 using UnityEngine;
@@ -20,6 +21,10 @@ namespace ProjectCore.TechnicalPrototype
             _networkEntitySpawner = networkEntitySpawner ??
                 throw new ArgumentNullException(nameof(networkEntitySpawner));
         }
+
+        public NetworkPrefabRef PlayerPrefab => _playerPrefab;
+
+        public IReadOnlyList<Transform> SpawnPoints => _spawnPoints;
 
         public override void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
@@ -52,18 +57,12 @@ namespace ProjectCore.TechnicalPrototype
 
         private Transform GetNextSpawnPoint()
         {
-            if (_spawnPoints == null || _spawnPoints.Length == 0)
-            {
-                throw new InvalidOperationException("At least one player spawn point must be configured.");
-            }
+            PlayerSpawnValidation.ValidateSpawnPoints(_spawnPoints, name);
 
             Transform spawnPoint = _spawnPoints[_nextSpawnIndex % _spawnPoints.Length];
             _nextSpawnIndex++;
 
-            return spawnPoint != null
-                ? spawnPoint
-                : throw new InvalidOperationException(
-                    "Player spawn points must not contain null references.");
+            return spawnPoint;
         }
     }
 }

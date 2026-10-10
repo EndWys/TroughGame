@@ -12,11 +12,11 @@ namespace ProjectCore.TechnicalPrototype
     {
         private const string PrefabPath =
             "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/" +
-            "Implementations/Player/GraphicResources/Prefabs/" +
+            "Player/GraphicResources/Prefabs/" +
             "Prefab_Player_NetworkEntity.prefab";
         private const string AnimationsPath =
             "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/" +
-            "Implementations/Player/GraphicResources/Animations";
+            "Player/GraphicResources/Animations";
         private const float DodgeDurationSeconds = 0.2f;
 
         [Test]

@@ -59,6 +59,49 @@ function Get-LineNumber {
     return ([regex]::Matches($Text.Substring(0, $Index), "`n").Count + 1)
 }
 
+function Split-TypeList {
+    param([string]$Text)
+
+    # Commas inside generic arguments do not separate base types.
+    $depth = 0
+    $start = 0
+    for ($index = 0; $index -lt $Text.Length; $index++) {
+        if ($Text[$index] -in @('<', '(')) { $depth++ }
+        elseif ($Text[$index] -in @('>', ')')) { $depth-- }
+        elseif ($Text[$index] -eq ',' -and $depth -eq 0) {
+            $Text.Substring($start, $index - $start).Trim()
+            $start = $index + 1
+        }
+    }
+    if ($start -lt $Text.Length) {
+        $Text.Substring($start).Trim()
+    }
+}
+
+function Get-TypeReference {
+    param([string]$Text)
+
+    $value = $Text.Trim()
+    $genericStart = $value.IndexOf('<')
+    $arity = 0
+    $name = $value
+    if ($genericStart -ge 0) {
+        $name = $value.Substring(0, $genericStart).Trim()
+        $arguments = $value.Substring($genericStart + 1)
+        if ($arguments.EndsWith('>')) {
+            $arguments = $arguments.Substring(0, $arguments.Length - 1)
+        }
+        $arity = @(Split-TypeList -Text $arguments).Count
+    }
+    return [pscustomobject]@{ Name = $name; Arity = $arity; Text = $value }
+}
+
+function Get-TypeIdentity {
+    param([string]$Name, [int]$Arity)
+
+    return ('{0}#{1}' -f $Name, $Arity)
+}
+
 function Get-TypeInfo {
     param([string]$Text)
 
@@ -68,32 +111,49 @@ function Get-TypeInfo {
 
     $typePattern = '(?m)^[ \t]{0,4}(?<mods>(?:(?:public|internal|private|protected|abstract|sealed|static|partial|readonly)\s+)*)' +
         '(?<kind>class|interface|struct|enum|record(?:\s+class|\s+struct)?)\s+' +
-        '(?<name>[A-Za-z_][A-Za-z0-9_]*)(?<generic>\s*<[^\r\n{]+?>)?' +
-        '(?:\s*:\s*(?<bases>[^\r\n{]+))?'
+        '(?<name>[A-Za-z_][A-Za-z0-9_]*)(?<generic>\s*<[^{};]+?>)?' +
+        '(?:\s*:\s*(?<bases>[^{;]+))?'
 
     $typeMatches = [regex]::Matches($Text, $typePattern)
     $primary = $null
+    $namespace = if ($namespaceMatch.Success) { $namespaceMatch.Groups['name'].Value } else { '' }
+    $usings = @()
+    $aliases = @{}
+    $usingMatches = [regex]::Matches($Text,
+        '(?m)^\s*using\s+(?:(?<alias>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*)?(?<name>(?:global::)?[A-Za-z_][A-Za-z0-9_\.]*)\s*;')
+    foreach ($usingMatch in $usingMatches) {
+        $usedName = $usingMatch.Groups['name'].Value
+        if ($usingMatch.Groups['alias'].Success) {
+            $aliases[$usingMatch.Groups['alias'].Value] = $usedName
+        } else {
+            $usings += $usedName -replace '^global::', ''
+        }
+    }
 
     if ($typeMatches.Count -gt 0) {
         $match = $typeMatches[0]
-        $bases = @()
+        $baseReferences = @()
         if ($match.Groups['bases'].Success) {
-            $baseText = $match.Groups['bases'].Value -replace '\s+where\s+.*$', ''
-            $bases = @($baseText.Split(',') | ForEach-Object {
-                $value = $_.Trim()
-                $value = $value -replace '<.*$', ''
-                if ($value.Contains('.')) {
-                    $value = $value.Substring($value.LastIndexOf('.') + 1)
-                }
-                $value
-            } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+            $baseText = $match.Groups['bases'].Value -replace '(?s)\s+where\s+.*$', ''
+            $baseReferences = @(Split-TypeList -Text $baseText | ForEach-Object {
+                Get-TypeReference -Text $_
+            })
         }
 
+        $declaration = Get-TypeReference -Text ($match.Groups['name'].Value + $match.Groups['generic'].Value)
+        $fullName = if ($namespace) { $namespace + '.' + $declaration.Name } else { $declaration.Name }
         $primary = [pscustomobject]@{
             Name = $match.Groups['name'].Value
+            Namespace = $namespace
+            Identity = Get-TypeIdentity -Name $fullName -Arity $declaration.Arity
+            Usings = $usings
+            Aliases = $aliases
+            Path = $null
             Kind = $match.Groups['kind'].Value
             Modifiers = $match.Groups['mods'].Value.Trim()
-            Bases = $bases
+            # Short names remain available for the existing feature-registration heuristic.
+            Bases = @($baseReferences | ForEach-Object { ($_.Name -split '\.')[-1] })
+            BaseReferences = $baseReferences
             IsGeneric = $match.Groups['generic'].Success
             Line = Get-LineNumber -Text $Text -Index $match.Index
         }
@@ -157,66 +217,113 @@ function Add-SuffixDiagnostic {
     }
 }
 
-function Test-IsMonoBehaviourType {
+function Test-KnownTypeIdentity {
+    param([string]$Identity)
+
+    return ($script:typeMap.ContainsKey($Identity) -or $Identity -in @(
+        'UnityEngine.MonoBehaviour#0', 'Fusion.NetworkBehaviour#0',
+        'UnityEngine.UIElements.VisualElement#0'))
+}
+
+function Resolve-BaseTypeIdentity {
     param(
-        [string]$TypeName,
-        [hashtable]$Visited
+        [pscustomobject]$Reference,
+        [pscustomobject]$DeclaringType
     )
 
-    if ([string]::IsNullOrWhiteSpace($TypeName)) {
-        return $false
+    $cacheKey = $DeclaringType.Path + '|' + $Reference.Text
+    if ($script:typeResolutionCache.ContainsKey($cacheKey)) {
+        return $script:typeResolutionCache[$cacheKey]
     }
 
-    if ($TypeName -in @('MonoBehaviour', 'NetworkBehaviour')) {
-        return $true
+    $name = $Reference.Name
+    $absolute = $name.StartsWith('global::')
+    $name = $name -replace '^global::', ''
+    $firstSegment = ($name -split '\.')[0]
+    if (-not $absolute -and $DeclaringType.Aliases.ContainsKey($firstSegment)) {
+        $name = ($DeclaringType.Aliases[$firstSegment] -replace '^global::', '') +
+            $name.Substring($firstSegment.Length)
+        $absolute = $true
     }
 
-    if ($Visited.ContainsKey($TypeName)) {
-        return $false
+    $resolved = $null
+    # Search the declaring namespace and its parents before file-level imports.
+    $scope = if ($absolute) { '' } else { $DeclaringType.Namespace }
+    while ($true) {
+        $candidate = if ($scope) { $scope + '.' + $name } else { $name }
+        $identity = Get-TypeIdentity -Name $candidate -Arity $Reference.Arity
+        if (Test-KnownTypeIdentity -Identity $identity) {
+            $resolved = $identity
+            break
+        }
+        if (-not $scope) { break }
+        $lastDot = $scope.LastIndexOf('.')
+        $scope = if ($lastDot -ge 0) { $scope.Substring(0, $lastDot) } else { '' }
     }
 
-    $Visited[$TypeName] = $true
-
-    if (-not $script:typeMap.ContainsKey($TypeName)) {
-        return $false
-    }
-
-    foreach ($baseType in $script:typeMap[$TypeName].Bases) {
-        if (Test-IsMonoBehaviourType -TypeName $baseType -Visited $Visited) {
-            return $true
+    if (-not $absolute -and $null -eq $resolved) {
+        $candidates = @($DeclaringType.Usings | ForEach-Object {
+            $identity = Get-TypeIdentity -Name ($_ + '.' + $name) -Arity $Reference.Arity
+            if (Test-KnownTypeIdentity -Identity $identity) { $identity }
+        } | Sort-Object -Unique)
+        if ($candidates.Count -eq 1) {
+            $resolved = $candidates[0]
+        } elseif ($candidates.Count -gt 1) {
+            Add-Diagnostic -Severity 'Error' -Rule 'TYPE004' `
+                -Path $DeclaringType.Path -Line $DeclaringType.Line `
+                -Message ("Base type '{0}' is ambiguous between: {1}. Qualify the name or use an alias." -f `
+                    $Reference.Text, ($candidates -join ', '))
         }
     }
 
+    $script:typeResolutionCache[$cacheKey] = $resolved
+    return $resolved
+}
+
+function Test-InheritsKnownType {
+    param(
+        [string]$Identity,
+        [string[]]$Roots,
+        [hashtable]$Visited
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Identity) -or $Visited.ContainsKey($Identity)) {
+        return $false
+    }
+    $Visited[$Identity] = $true
+    if (-not $script:typeMap.ContainsKey($Identity)) {
+        return ($Identity -in $Roots)
+    }
+    foreach ($type in $script:typeMap[$Identity]) {
+        foreach ($reference in $type.BaseReferences) {
+            $baseIdentity = Resolve-BaseTypeIdentity -Reference $reference -DeclaringType $type
+            if (Test-InheritsKnownType -Identity $baseIdentity -Roots $Roots -Visited $Visited) {
+                return $true
+            }
+        }
+    }
     return $false
+}
+
+function Test-IsMonoBehaviourType {
+    param(
+        [string]$Identity,
+        [hashtable]$Visited
+    )
+
+    return (Test-InheritsKnownType -Identity $Identity -Visited $Visited `
+        -Roots @('UnityEngine.MonoBehaviour#0', 'Fusion.NetworkBehaviour#0'))
 }
 
 function Test-IsViewType {
     param(
-        [string]$TypeName,
+        [string]$Identity,
         [hashtable]$Visited
     )
 
-    if (Test-IsMonoBehaviourType -TypeName $TypeName -Visited @{}) {
-        return $true
-    }
-
-    if ($TypeName -eq 'VisualElement') {
-        return $true
-    }
-
-    if ($Visited.ContainsKey($TypeName) -or -not $script:typeMap.ContainsKey($TypeName)) {
-        return $false
-    }
-
-    $Visited[$TypeName] = $true
-
-    foreach ($baseType in $script:typeMap[$TypeName].Bases) {
-        if (Test-IsViewType -TypeName $baseType -Visited $Visited) {
-            return $true
-        }
-    }
-
-    return $false
+    return (Test-InheritsKnownType -Identity $Identity -Visited $Visited `
+        -Roots @('UnityEngine.MonoBehaviour#0', 'Fusion.NetworkBehaviour#0',
+            'UnityEngine.UIElements.VisualElement#0'))
 }
 
 function Test-StaticClass {
@@ -412,7 +519,7 @@ function Test-FeatureScriptPath {
     }
 
     if ($category -eq 'Managers') {
-        if (Test-IsMonoBehaviourType -TypeName $primary.Name -Visited @{}) {
+        if (Test-IsMonoBehaviourType -Identity $primary.Identity -Visited @{}) {
             Add-Diagnostic -Severity 'Error' -Rule 'MANAGER001' `
                 -Path $FileRecord.RelativePath -Line $primary.Line `
                 -Message 'Managers must not inherit from MonoBehaviour.'
@@ -433,7 +540,7 @@ function Test-FeatureScriptPath {
     }
 
     if ($category -eq 'Views') {
-        if (-not (Test-IsViewType -TypeName $primary.Name -Visited @{})) {
+        if (-not (Test-IsViewType -Identity $primary.Identity -Visited @{})) {
             Add-Diagnostic -Severity 'Error' -Rule 'VIEW001' `
                 -Path $FileRecord.RelativePath -Line $primary.Line `
                 -Message 'Views must inherit from MonoBehaviour or VisualElement, directly or through a known base type.'
@@ -629,7 +736,7 @@ function Test-ContextSharedScriptPath {
                 -Suffixes $contextSuffixMaps[$category][$subfolder] `
                 -Folder ("Context/Scripts/{0}/{1}" -f $category, $subfolder)
 
-            if ($category -eq 'Views' -and -not (Test-IsViewType -TypeName $primary.Name -Visited @{})) {
+            if ($category -eq 'Views' -and -not (Test-IsViewType -Identity $primary.Identity -Visited @{})) {
                 Add-Diagnostic -Severity 'Error' -Rule 'VIEW002' `
                     -Path $FileRecord.RelativePath -Line $primary.Line `
                     -Message 'Context Views must inherit from MonoBehaviour or VisualElement.'
@@ -695,6 +802,7 @@ $sourceFiles = @($sourceRoots | ForEach-Object {
 
 $fileRecords = New-Object System.Collections.ArrayList
 $typeMap = @{}
+$typeResolutionCache = @{}
 
 foreach ($file in $sourceFiles) {
     $text = Get-Content -LiteralPath $file.FullName -Raw
@@ -708,10 +816,12 @@ foreach ($file in $sourceFiles) {
     }
     [void]$fileRecords.Add($record)
 
-    if ($null -ne $typeInfo.PrimaryType -and
-        (-not $typeMap.ContainsKey($typeInfo.PrimaryType.Name) -or
-        (-not $typeInfo.PrimaryType.IsGeneric -and $typeMap[$typeInfo.PrimaryType.Name].IsGeneric))) {
-        $typeMap[$typeInfo.PrimaryType.Name] = $typeInfo.PrimaryType
+    if ($null -ne $typeInfo.PrimaryType) {
+        $primary = $typeInfo.PrimaryType
+        $primary.Path = $record.RelativePath
+        # Partial declarations share an identity; names from different namespaces do not.
+        $typeMap[$primary.Identity] = @($typeMap[$primary.Identity]) + @($primary) |
+            Where-Object { $null -ne $_ }
     }
 }
 

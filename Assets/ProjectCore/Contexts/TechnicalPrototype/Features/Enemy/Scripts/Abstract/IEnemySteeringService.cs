@@ -5,9 +5,10 @@ namespace ProjectCore.TechnicalPrototype
 {
     public interface IEnemySteeringService
     {
-        Vector2 ApproachPosition { get; }
+        // Debug visualization reads the last calculation; gameplay uses the method's return value.
+        EnemySteeringData LastCalculation { get; }
 
-        Vector2 CalculateDirection(
+        EnemySteeringData CalculateSteering(
             NetworkEntityIdData targetEntityId,
             Vector2 targetPosition,
             float stoppingDistance,

@@ -43,6 +43,21 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 
 The valid fixture must report `0 errors, 0 warnings`.
 
+Run the inheritance/type-name regression checks:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\Tools\Architecture\Test-TypeResolution.ps1
+```
+
+The runner checks exact diagnostic rules, file paths, and Strict exit codes.
+It includes the positive fixture and `Fixtures/TypeNamesInvalid`, where a plain
+class in Views must produce `VIEW001` even when another context has a valid
+MonoBehaviour with the same name. Other cases cover local-name precedence,
+imports, qualified names, aliases, generic arity, multiline generic bases,
+ambiguous imports, framework namesakes, Managers, context-owned Views, and cycles.
+Generated fixtures are created in a temporary directory and removed after the run.
+
 ## Diagnostic Families
 
 | Prefix | Area |
@@ -63,6 +78,9 @@ The valid fixture must report `0 errors, 0 warnings`.
 
 Errors are deterministic convention violations and fail Strict mode. Warnings
 are heuristic findings that require manual review.
+
+`TYPE004` reports an ambiguous base type when more than one known type is
+available through imports. Use a qualified type name or a `using` alias.
 
 `TEST001` requires every test fixture to live directly in
 `Contexts/<Context>/Tests/Editor` or `Contexts/<Context>/Tests/Play`.
@@ -103,7 +121,14 @@ stateful service, or lifecycle participant remains feature-owned.
 ## Static Analysis Limits
 
 - MonoBehaviour inheritance is resolved from project-owned types and the known
-  Unity/Fusion roots. An external custom base type may require manual review.
+  roots `UnityEngine.MonoBehaviour`, `Fusion.NetworkBehaviour`, and
+  `UnityEngine.UIElements.VisualElement`. Type identities include the namespace
+  and generic arity; each inheritance link uses its declaring file's namespace,
+  imports, and aliases. An external custom base type may require manual review.
+- Type parsing remains lightweight and assumes one primary top-level type and
+  one namespace per file, as required by project conventions. It is not a C#
+  compiler and does not model every language construct, such as nested types,
+  global using directives, or aliases to constructed generic types.
 - Manager `AsSingle`, open-generic `AsCached`, and Feature binding discovery is
   heuristic and produces a Warning when the binding cannot be found statically.
 - Lifecycle callback inspection intentionally produces Warnings because local

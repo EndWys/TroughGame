@@ -11,6 +11,7 @@ namespace ProjectCore.Template
     {
         private readonly ZenjectSceneLoader _sceneLoader;
         private readonly List<ISceneTransitionPresenter> _transitionPresenters;
+        private readonly IDebugLogger<SceneFlowFeature> _logger;
         private readonly Dictionary<Type, BaseSceneDefinition> _definitions =
             new Dictionary<Type, BaseSceneDefinition>();
 
@@ -20,10 +21,12 @@ namespace ProjectCore.Template
 
         public SceneFlowService(
             ZenjectSceneLoader sceneLoader,
-            List<ISceneTransitionPresenter> transitionPresenters)
+            List<ISceneTransitionPresenter> transitionPresenters,
+            IDebugLogger<SceneFlowFeature> logger)
         {
             _sceneLoader = sceneLoader;
             _transitionPresenters = transitionPresenters;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public bool IsTransitioning { get; private set; }
@@ -163,8 +166,14 @@ namespace ProjectCore.Template
             }
             finally
             {
-                IsTransitioning = false;
-                await HideTransitionAsync(CancellationToken.None);
+                try
+                {
+                    await HideTransitionAsync(CancellationToken.None);
+                }
+                finally
+                {
+                    IsTransitioning = false;
+                }
             }
         }
 
@@ -210,7 +219,17 @@ namespace ProjectCore.Template
         {
             for (int index = _transitionPresenters.Count - 1; index >= 0; index--)
             {
-                await _transitionPresenters[index].HideAsync(cancellationToken);
+                ISceneTransitionPresenter presenter = _transitionPresenters[index];
+
+                try
+                {
+                    await presenter.HideAsync(cancellationToken);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogException(exception,
+                        $"Failed to hide scene transition presenter '{presenter.GetType().Name}'.");
+                }
             }
         }
     }

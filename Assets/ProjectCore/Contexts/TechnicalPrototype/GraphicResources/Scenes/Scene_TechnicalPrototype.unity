@@ -2865,6 +2865,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerFeature
   _entitiesContainer: {fileID: 2200000002}
+  _spawnComponent: {fileID: 1309816712}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

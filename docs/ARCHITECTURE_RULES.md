@@ -289,8 +289,11 @@ Rules:
 - Cross-context references must follow the dependency direction above.
 - Cyclic context dependencies are forbidden.
 
-Because TroughGame uses one default Unity runtime assembly, these rules must be
-validated with static dependency checks in addition to compilation.
+TroughGame's project-owned runtime code shares the existing `ProjectCore.Runtime`
+assembly, defined by `Assets/ProjectCore/ProjectCore.Runtime.asmdef`. Contexts and
+features are not separated by assembly boundaries, so compilation alone does not
+enforce their dependency direction. These rules must be validated separately
+with static dependency checks and code review.
 
 ## Runtime Entry Flow
 
@@ -664,7 +667,8 @@ not belong in `DataHolders`.
 ### Views
 
 `Views` contains presentation and scene-facing scripts. Every type in this
-folder must inherit from `MonoBehaviour`, directly or through a project base
+folder must inherit from `MonoBehaviour` or
+`UnityEngine.UIElements.VisualElement`, directly or through a project base
 class. Plain C# presenters, services, and controllers are not Views.
 
 | Folder | Required suffix | Role and usage |

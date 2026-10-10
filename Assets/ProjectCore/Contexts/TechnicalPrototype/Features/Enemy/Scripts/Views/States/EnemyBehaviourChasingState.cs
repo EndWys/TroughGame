@@ -100,7 +100,7 @@ namespace ProjectCore.TechnicalPrototype
                 _targetMutator.SetTargetEntityId(targetEntityId);
             }
 
-            Vector2 direction = _steeringService.CalculateDirection(
+            EnemySteeringData steering = _steeringService.CalculateSteering(
                 targetEntityId,
                 targetPosition,
                 _chaseConfig.StoppingDistance,
@@ -110,7 +110,7 @@ namespace ProjectCore.TechnicalPrototype
             if (TryCreateAbilityInput(
                     targetEntityId,
                     targetPosition,
-                    _steeringService.ApproachPosition,
+                    steering.ApproachPosition,
                     out EnemyInputData abilityInput))
             {
                 _inputSource.SetInput(abilityInput);
@@ -119,14 +119,14 @@ namespace ProjectCore.TechnicalPrototype
 
             float approachArrivalDistance = _chaseConfig.ApproachArrivalDistance;
 
-            if ((position - _steeringService.ApproachPosition).sqrMagnitude <=
+            if ((position - steering.ApproachPosition).sqrMagnitude <=
                 approachArrivalDistance * approachArrivalDistance)
             {
                 _inputSource.SetInput(default);
                 return EnemyBehaviourStateType.Chasing;
             }
 
-            _inputSource.SetInput(new EnemyInputData(direction.normalized));
+            _inputSource.SetInput(new EnemyInputData(steering.Direction.normalized));
             return EnemyBehaviourStateType.Chasing;
         }
 

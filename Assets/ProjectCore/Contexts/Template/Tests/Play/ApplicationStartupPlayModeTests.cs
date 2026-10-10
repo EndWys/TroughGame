@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace ProjectCore.Template
 {
@@ -67,10 +69,9 @@ namespace ProjectCore.Template
 
             BaseNetworkEntityRoot[] enemies = registry.GetByType(EnemyNetworkEntityConstants.Enemy).ToArray();
             Assert.That(enemies.Length, Is.EqualTo(2));
-            Vector2 playerPosition = player.transform.position;
-            var initialDistances = enemies.ToDictionary(
+            var initialPositions = enemies.ToDictionary(
                 enemy => enemy.EntityId,
-                enemy => Vector2.Distance(enemy.transform.position, playerPosition));
+                enemy => (Vector2)enemy.transform.position);
             float inputDeadline = Time.realtimeSinceStartup + 5f;
 
             while (enemies.Any(enemy =>
@@ -123,9 +124,26 @@ namespace ProjectCore.Template
                     enemyComponent.CurrentBehaviourState,
                     Is.EqualTo(EnemyBehaviourStateType.Chasing));
                 Assert.That(enemyComponent.TargetEntityId, Is.EqualTo(player.EntityId));
+            }
+
+            const float minimumMovementDistance = 0.001f;
+            float movementDeadline = Time.realtimeSinceStartup + 5f;
+
+            // Steering approaches assigned positions around the player, so movement can be away from its centre.
+            while (enemies.Any(enemy =>
+                       Vector2.Distance(enemy.transform.position, initialPositions[enemy.EntityId]) <=
+                       minimumMovementDistance) &&
+                   Time.realtimeSinceStartup < movementDeadline)
+            {
+                yield return null;
+            }
+
+            foreach (BaseNetworkEntityRoot enemy in enemies)
+            {
                 Assert.That(
-                    Vector2.Distance(enemy.transform.position, playerPosition),
-                    Is.LessThan(initialDistances[enemy.EntityId]));
+                    Vector2.Distance(enemy.transform.position, initialPositions[enemy.EntityId]),
+                    Is.GreaterThan(minimumMovementDistance),
+                    $"Enemy '{enemy.EntityId}' did not move despite producing input within five seconds.");
             }
 
             yield return null;
@@ -147,6 +165,186 @@ namespace ProjectCore.Template
             Assert.That(firstIds, Has.No.Member(nextEnemy.EntityId));
             Assert.That(nextEnemy.transform.parent, Is.SameAs(enemyContainer));
             spawn.DespawnEnemies();
+        }
+
+        [UnityTest]
+        public IEnumerator SoloPlayerSpawnRejectsInvalidPrefabsWithoutLeavingNetworkObjects()
+        {
+            yield return LoadPreloaderAndWaitForTechnicalPrototype();
+
+            SceneContext sceneContext = Object.FindFirstObjectByType<SceneContext>();
+            NetworkEntityRegistry registry = sceneContext.Container.Resolve<NetworkEntityRegistry>();
+            NetworkEntitySpawner spawner = sceneContext.Container.Resolve<NetworkEntitySpawner>();
+            EnemySpawnComponent enemySpawn = Object.FindFirstObjectByType<EnemySpawnComponent>();
+            yield return StartSoloRunner(sceneContext);
+
+            BaseNetworkEntityRoot existingPlayer =
+                registry.GetByType(PlayerNetworkEntityConstants.Player).Single();
+            Assert.That(existingPlayer, Is.TypeOf<PlayerNetworkEntityComponent>());
+            Assert.That(existingPlayer.EntityId.IsValid, Is.True);
+            Assert.That(existingPlayer.Object.InputAuthority, Is.EqualTo(_testRunner.LocalPlayer));
+
+            Assert.That(enemySpawn.SpawnEnemy(), Is.True);
+            BaseNetworkEntityRoot enemy = registry.GetByType(EnemyNetworkEntityConstants.Enemy).Single();
+            NetworkPrefabRef enemyPrefab = (NetworkPrefabRef)_testRunner.Prefabs.GetGuid(
+                enemy.Object.NetworkTypeId.AsPrefabId);
+            NetworkPrefabRef unregisteredPrefab = Guid.NewGuid();
+            Assert.That(_testRunner.Prefabs.GetId((NetworkObjectGuid)unregisteredPrefab).IsValid, Is.False);
+
+            var expectedObjects = new List<NetworkObject>();
+            _testRunner.GetAllNetworkObjects(expectedObjects);
+            var payload = new PlayerSpawnPayload(Vector3.zero, Quaternion.identity);
+
+            foreach (NetworkPrefabRef invalidPrefab in new[] { default, unregisteredPrefab, enemyPrefab })
+            {
+                ArgumentException exception = Assert.Throws<ArgumentException>(() => spawner.Spawn(
+                    _testRunner, invalidPrefab, payload, _testRunner.LocalPlayer));
+                Assert.That(exception.ParamName, Is.EqualTo("prefab"));
+
+                var actualObjects = new List<NetworkObject>();
+                _testRunner.GetAllNetworkObjects(actualObjects);
+                CollectionAssert.AreEquivalent(expectedObjects, actualObjects);
+                Assert.That(registry.GetByType(PlayerNetworkEntityConstants.Player), Has.Count.EqualTo(1));
+                Assert.That(registry.GetByType(EnemyNetworkEntityConstants.Enemy), Has.Count.EqualTo(1));
+            }
+
+            NetworkPrefabRef playerPrefab = (NetworkPrefabRef)_testRunner.Prefabs.GetGuid(
+                existingPlayer.Object.NetworkTypeId.AsPrefabId);
+            BaseNetworkEntityRoot player = spawner.Spawn(
+                _testRunner,
+                playerPrefab,
+                new PlayerSpawnPayload(new Vector3(2f, 0f, 0f), Quaternion.identity),
+                _testRunner.LocalPlayer);
+
+            Assert.That(player, Is.TypeOf<PlayerNetworkEntityComponent>());
+            Assert.That(player.EntityId.IsValid, Is.True);
+            Assert.That(player.EntityId, Is.Not.EqualTo(existingPlayer.EntityId));
+            Assert.That(player.Object.InputAuthority, Is.EqualTo(_testRunner.LocalPlayer));
+            Assert.That(registry.TryGet(player.EntityId, out BaseNetworkEntityRoot registered), Is.True);
+            Assert.That(registered, Is.SameAs(player));
+
+            NetworkEntityIdData playerId = player.EntityId;
+            spawner.Despawn(player);
+            Assert.That(registry.TryGet(playerId, out _), Is.False);
+            Assert.That(existingPlayer.Object.IsValid, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator SoloEnemySteeringReturnsMatchingDirectionAndApproachPosition()
+        {
+            yield return LoadPreloaderAndWaitForTechnicalPrototype();
+
+            SceneContext sceneContext = Object.FindFirstObjectByType<SceneContext>();
+            NetworkEntityRegistry registry = sceneContext.Container.Resolve<NetworkEntityRegistry>();
+            EnemySpawnComponent spawn = Object.FindFirstObjectByType<EnemySpawnComponent>();
+            yield return StartSoloRunner(sceneContext);
+
+            Assert.That(spawn.SpawnEnemy(), Is.True);
+            Assert.That(spawn.SpawnEnemy(), Is.True);
+            EnemyNetworkEntityComponent[] enemies = registry.GetByType(EnemyNetworkEntityConstants.Enemy)
+                .Cast<EnemyNetworkEntityComponent>().ToArray();
+            Assert.That(enemies.Length, Is.EqualTo(2));
+            EnemyNetworkEntityComponent first = enemies[0];
+            EnemyNetworkEntityComponent second = enemies[1];
+            NetworkEntityIdData targetId = registry.GetByType(PlayerNetworkEntityConstants.Player).Single().EntityId;
+            var otherTargetId = new NetworkEntityIdData(targetId.Type, targetId.Index + 1000);
+            IEnemySteeringService firstSteering = first.GetComponent<GameObjectContext>()
+                .Container.Resolve<IEnemySteeringService>();
+            IEnemySteeringService secondSteering = second.GetComponent<GameObjectContext>()
+                .Container.Resolve<IEnemySteeringService>();
+
+            // All calculations below run in one frame, with no simulation tick between assertions.
+            first.transform.position = Vector3.zero;
+            second.transform.position = Vector3.zero;
+            first.SetTargetEntityId(targetId);
+            second.SetTargetEntityId(otherTargetId);
+            EnemySteeringData alone = firstSteering.CalculateSteering(targetId, new Vector2(3f, 4f), 1f, 0f, 0f);
+            AssertSteering(alone, new Vector2(1f, 1f).normalized, new Vector2(4f, 4f));
+            AssertSteering(firstSteering.LastCalculation, alone.Direction, alone.ApproachPosition);
+
+            // Shared targets preserve registry order when distributing approach positions.
+            second.SetTargetEntityId(targetId);
+            EnemySteeringData groupFirst = firstSteering.CalculateSteering(targetId, Vector2.zero, 2f, 0f, 0f);
+            EnemySteeringData groupSecond = secondSteering.CalculateSteering(targetId, Vector2.zero, 2f, 0f, 0f);
+            AssertSteering(groupFirst, Vector2.right, new Vector2(2f, 0f));
+            AssertSteering(groupSecond, Vector2.left, new Vector2(-2f, 0f));
+
+            // A nearby neighbour contributes separation, while the target approach position stays fixed.
+            second.transform.position = new Vector3(-0.5f, 0f, 0f);
+            EnemySteeringData separated = firstSteering.CalculateSteering(targetId, new Vector2(0f, 4f), 0f, 1f, 1f);
+            AssertSteering(separated, new Vector2(0.5f, 1f).normalized, new Vector2(0f, 4f));
+            EnemySteeringData zeroWeight = firstSteering.CalculateSteering(targetId, new Vector2(0f, 4f), 0f, 1f, 0f);
+            AssertSteering(zeroWeight, Vector2.up, new Vector2(0f, 4f));
+            second.transform.position = new Vector3(-1f, 0f, 0f);
+            EnemySteeringData boundary = firstSteering.CalculateSteering(targetId, new Vector2(0f, 4f), 0f, 1f, 1f);
+            AssertSteering(boundary, Vector2.up, new Vector2(0f, 4f));
+
+            // Coincident positions do not divide by zero or generate a direction at the approach point.
+            second.transform.position = Vector3.zero;
+            EnemySteeringData coincident = firstSteering.CalculateSteering(targetId, Vector2.zero, 0f, 1f, 1f);
+            AssertSteering(coincident, Vector2.zero, Vector2.zero);
+
+            // A new target excludes neighbours pursuing the old target.
+            second.transform.position = new Vector3(-0.5f, 0f, 0f);
+            first.SetTargetEntityId(otherTargetId);
+            EnemySteeringData changedTarget = firstSteering.CalculateSteering(
+                otherTargetId, new Vector2(-3f, 4f), 1f, 1f, 1f);
+            AssertSteering(changedTarget, new Vector2(-2f, 4f).normalized, new Vector2(-2f, 4f));
+            AssertSteering(firstSteering.LastCalculation, changedTarget.Direction, changedTarget.ApproachPosition);
+
+            // The returned value still belongs to its original call after subsequent calculations.
+            AssertSteering(alone, new Vector2(1f, 1f).normalized, new Vector2(4f, 4f));
+            AssertSteering(secondSteering.LastCalculation, groupSecond.Direction, groupSecond.ApproachPosition);
+
+            // With no enemies assigned to the requested target, count/index fall back to one/zero.
+            first.ClearTargetEntityId();
+            second.ClearTargetEntityId();
+            EnemySteeringData fallback = firstSteering.CalculateSteering(targetId, Vector2.zero, 2f, 0f, 0f);
+            AssertSteering(fallback, Vector2.right, new Vector2(2f, 0f));
+        }
+
+        [UnityTest]
+        public IEnumerator SoloEnemyTargetCanBeClearedAndAssignedAgain()
+        {
+            yield return LoadPreloaderAndWaitForTechnicalPrototype();
+
+            SceneContext sceneContext = Object.FindFirstObjectByType<SceneContext>();
+            NetworkEntityRegistry registry = sceneContext.Container.Resolve<NetworkEntityRegistry>();
+            EnemySpawnComponent spawn = Object.FindFirstObjectByType<EnemySpawnComponent>();
+            yield return StartSoloRunner(sceneContext);
+
+            Assert.That(spawn.SpawnEnemy(), Is.True);
+            Assert.That(spawn.SpawnEnemy(), Is.True);
+            EnemyNetworkEntityComponent[] enemies = registry.GetByType(EnemyNetworkEntityConstants.Enemy)
+                .Cast<EnemyNetworkEntityComponent>().ToArray();
+            Assert.That(enemies.Length, Is.EqualTo(2));
+            EnemyNetworkEntityComponent first = enemies[0];
+            EnemyNetworkEntityComponent second = enemies[1];
+            NetworkEntityIdData targetId = registry.GetByType(PlayerNetworkEntityConstants.Player).Single().EntityId;
+            IEnemySteeringService secondSteering = second.GetComponent<GameObjectContext>()
+                .Container.Resolve<IEnemySteeringService>();
+
+            first.transform.position = Vector3.zero;
+            second.transform.position = Vector3.zero;
+            first.SetTargetEntityId(targetId);
+            second.SetTargetEntityId(targetId);
+            Assert.That(first.TargetEntityId, Is.EqualTo(targetId));
+
+            first.ClearTargetEntityId();
+            Assert.That(first.TargetEntityId, Is.EqualTo(NetworkEntityIdData.None));
+            Assert.That(first.TargetEntityId.IsValid, Is.False);
+            first.ClearTargetEntityId();
+            Assert.That(first.TargetEntityId, Is.EqualTo(NetworkEntityIdData.None));
+
+            // An enemy with no target must not interrupt steering for its active neighbour.
+            EnemySteeringData withoutNeighbour = secondSteering.CalculateSteering(targetId, Vector2.zero, 2f, 1f, 1f);
+            AssertSteering(withoutNeighbour, Vector2.right, new Vector2(2f, 0f));
+
+            first.SetTargetEntityId(targetId);
+            Assert.That(first.TargetEntityId, Is.EqualTo(targetId));
+            Assert.That(first.TargetEntityId.IsValid, Is.True);
+            EnemySteeringData withNeighbour = secondSteering.CalculateSteering(targetId, Vector2.zero, 2f, 0f, 0f);
+            AssertSteering(withNeighbour, Vector2.left, new Vector2(-2f, 0f));
         }
 
         [UnityTearDown]
@@ -257,6 +455,40 @@ namespace ProjectCore.Template
             Assert.That(loadingScreenSystem.IsTransitioning, Is.False);
 
             AssertNetworkBootstrapIsReady();
+        }
+
+        private IEnumerator StartSoloRunner(SceneContext sceneContext)
+        {
+            _testRunner = Object.FindFirstObjectByType<NetworkRunner>();
+            var start = _testRunner.StartGame(new StartGameArgs
+            {
+                GameMode = GameMode.Single,
+                Scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex),
+                SceneManager = _testRunner.GetComponent<INetworkSceneManager>(),
+                ObjectProvider = sceneContext.Container.Resolve<INetworkObjectProvider>(),
+            });
+
+            float deadline = Time.realtimeSinceStartup + 15f;
+            while (!start.IsCompleted && Time.realtimeSinceStartup < deadline)
+            {
+                yield return null;
+            }
+
+            Assert.That(start.IsCompleted, Is.True, "Solo runner did not start within 15 seconds.");
+            Assert.That(start.GetAwaiter().GetResult().Ok, Is.True);
+            yield return null;
+        }
+
+        private static void AssertSteering(
+            EnemySteeringData actual,
+            Vector2 expectedDirection,
+            Vector2 expectedApproachPosition)
+        {
+            Assert.That(Vector2.Distance(actual.Direction, expectedDirection), Is.LessThan(0.00001f),
+                "Steering direction differs from the expected scenario.");
+            Assert.That(Vector2.Distance(actual.ApproachPosition, expectedApproachPosition), Is.LessThan(0.00001f),
+                "Approach position differs from the expected scenario.");
+            Assert.That(actual.Direction.magnitude, Is.LessThanOrEqualTo(1.00001f));
         }
 
         private static IEnumerator LoadPreloaderAndWaitForTechnicalPrototype()

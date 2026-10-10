@@ -20,9 +20,9 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(networkEntityRegistry));
         }
 
-        public Vector2 ApproachPosition { get; private set; }
+        public EnemySteeringData LastCalculation { get; private set; }
 
-        public Vector2 CalculateDirection(
+        public EnemySteeringData CalculateSteering(
             NetworkEntityIdData targetEntityId,
             Vector2 targetPosition,
             float stoppingDistance,
@@ -42,16 +42,19 @@ namespace ProjectCore.TechnicalPrototype
                 _networkEntityRegistry.GetByType(EnemyNetworkEntityConstants.Enemy);
             int approachingEnemiesCount = GetApproachingEnemiesCount(enemies, targetEntityId);
             int approachIndex = GetApproachIndex(enemies, enemy, targetEntityId);
-            ApproachPosition = targetPosition + GetApproachOffset(
+            Vector2 approachPosition = targetPosition + GetApproachOffset(
                 approachIndex,
                 approachingEnemiesCount,
                 stoppingDistance);
-            Vector2 direction = ApproachPosition - position;
+            Vector2 direction = approachPosition - position;
             Vector2 separation = GetSeparation(enemies, enemy, targetEntityId, position, separationDistance);
 
-            return Vector2.ClampMagnitude(
+            Vector2 steeringDirection = Vector2.ClampMagnitude(
                 direction.normalized + separation * Mathf.Max(0f, separationWeight),
                 1f);
+            var calculation = new EnemySteeringData(steeringDirection, approachPosition);
+            LastCalculation = calculation;
+            return calculation;
         }
 
         private static int GetApproachingEnemiesCount(

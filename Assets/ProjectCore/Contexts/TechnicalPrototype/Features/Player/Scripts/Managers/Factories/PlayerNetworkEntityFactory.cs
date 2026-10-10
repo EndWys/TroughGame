@@ -27,19 +27,34 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(runner));
             }
 
+            if (!prefab.IsValid)
+            {
+                throw new ArgumentException("Player prefab must be configured.", nameof(prefab));
+            }
+
+            NetworkPrefabId prefabId = runner.Prefabs.GetId((NetworkObjectGuid)prefab);
+            if (!prefabId.IsValid)
+            {
+                throw new ArgumentException("Player prefab must be registered in Fusion.", nameof(prefab));
+            }
+
+            NetworkObject prefabObject = runner.Prefabs.Load(prefabId, isSynchronous: true);
+            if (prefabObject == null || !prefabObject.TryGetComponent<PlayerNetworkEntityComponent>(out _))
+            {
+                throw new ArgumentException(
+                    "Player prefab must contain PlayerNetworkEntityComponent.", nameof(prefab));
+            }
+
             NetworkEntityIdData entityId = _networkEntityIdFactory.Create(EntityType);
 
             NetworkObject networkObject = runner.Spawn(
-                prefab,
+                prefabObject,
                 payload.Position,
                 payload.Rotation,
                 inputAuthority,
                 (_, spawnedNetworkObject) =>
                 {
-                    if (spawnedNetworkObject.TryGetComponent(out PlayerNetworkEntityComponent playerEntity))
-                    {
-                        playerEntity.SetEntityId(entityId);
-                    }
+                    spawnedNetworkObject.GetComponent<PlayerNetworkEntityComponent>().SetEntityId(entityId);
                 });
 
             if (!networkObject.TryGetComponent(out PlayerNetworkEntityComponent spawnedPlayer))

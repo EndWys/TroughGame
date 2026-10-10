@@ -71,6 +71,8 @@ namespace ProjectCore.TechnicalPrototype
                     "Dodge state requires a Dodge movement config reference.");
             }
 
+            MovementConfigValidation.ValidateDodge(_dodgeMovementConfig);
+
             return new IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>[]
             {
                 new DodgeProcessor<PlayerMovementState, PlayerMovementPayload>(

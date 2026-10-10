@@ -217,7 +217,12 @@ Visualization only.
 | Errors | `Errors` | Stable error definitions, codes, or factories. |
 | Extensions | `Extensions` | Cohesive extension methods for one target concept. |
 | Utilities | `Utility` | Stateless cohesive operations that are not extensions. |
-| Validation | `Validation` | Stateless validation returning a result. |
+| Validation | `Validation` | Stateless validation of inputs and configuration. |
+
+Keep validation rules and `Validate*` methods in feature-owned static
+`*Validation` classes. Components and lifecycle entries invoke those classes
+from their explicit initialization or operation methods. Define errors and
+diagnostic messages in the corresponding static `*Errors` classes.
 
 Immutable `static readonly` values are allowed in `Constants`; mutable global
 runtime state and cached services are not. If a static operation needs an

@@ -38,8 +38,9 @@ namespace ProjectCore.TechnicalPrototype
             context.Value(BehaviourChannel, "Current", _enemyNetworkEntity.CurrentBehaviourState);
             context.Value(BehaviourChannel, "Previous", _enemyNetworkEntity.PreviousBehaviourState);
             context.Value(TargetChannel, "Entity", _enemyNetworkEntity.TargetEntityId);
-            context.Value(SteeringChannel, "Approach position", _enemySteeringService.ApproachPosition);
-            context.Line(transform.position, _enemySteeringService.ApproachPosition, SteeringChannel);
+            EnemySteeringData steering = _enemySteeringService.LastCalculation;
+            context.Value(SteeringChannel, "Approach position", steering.ApproachPosition);
+            context.Line(transform.position, steering.ApproachPosition, SteeringChannel);
 
             if (_networkEntityRegistry == null ||
                 !_networkEntityRegistry.TryGet(_enemyNetworkEntity.TargetEntityId, out BaseNetworkEntityRoot target))

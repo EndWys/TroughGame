@@ -11,6 +11,7 @@ namespace ProjectCore.Template
         private IDebugToolsService _debugToolsService;
         private IDebugConsoleSystem _debugConsoleSystem;
         private IDebugConsoleController _debugConsoleController;
+        private IClassFactory _classFactory;
         private DebugConsoleComponent _debugConsole;
 
         private void OnDestroy()
@@ -32,6 +33,7 @@ namespace ProjectCore.Template
             _debugToolsService = Resolve<IDebugToolsService>();
             _debugConsoleSystem = Resolve<IDebugConsoleSystem>();
             _debugConsoleController = Resolve<IDebugConsoleController>();
+            _classFactory = Resolve<IClassFactory>();
 
             DebugConsoleSettings settings = _debugToolsService.ConsoleSettings;
             _debugConsoleSystem.Initialize(
@@ -69,8 +71,7 @@ namespace ProjectCore.Template
             if (_debugConsole != null)
                 return;
 
-            _debugConsole = Resolve<IClassFactory>()
-                .CreateMonoBehaviour(_debugConsolePrefab, null);
+            _debugConsole = _classFactory.CreateMonoBehaviour(_debugConsolePrefab, null);
             _debugConsole.transform.SetParent(null, false);
             DontDestroyOnLoad(_debugConsole.gameObject);
             _debugConsoleController.Attach(_debugConsole);
