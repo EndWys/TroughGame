@@ -15,7 +15,7 @@ namespace ProjectCore.TechnicalPrototype
         private GameObject _enemy;
         private DodgeMovementConfig _dodgeConfig;
         private DashMovementConfig _dashConfig;
-        private DodgeState _dodgeState;
+        private PlayerDodgeState _dodgeState;
         private EnemyDashState _dashState;
 
         [SetUp]
@@ -27,7 +27,7 @@ namespace ProjectCore.TechnicalPrototype
             _dodgeConfig.name = "TestDodge";
             _dashConfig = ScriptableObject.CreateInstance<DashMovementConfig>();
             _dashConfig.name = "TestDash";
-            _dodgeState = _player.AddComponent<DodgeState>();
+            _dodgeState = _player.AddComponent<PlayerDodgeState>();
             _dashState = _enemy.AddComponent<EnemyDashState>();
 
             SetField(_dodgeState, "_movementBody", _player.AddComponent<TransformMovementBodyComponent>());

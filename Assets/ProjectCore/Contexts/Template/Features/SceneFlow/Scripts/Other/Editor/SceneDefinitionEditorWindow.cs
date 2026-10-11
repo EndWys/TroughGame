@@ -11,14 +11,11 @@ namespace ProjectCore.Template
 {
     public sealed class SceneDefinitionEditorWindow : EditorWindow
     {
-        private const string DefaultScenesDirectory =
-            "Assets/ProjectCore/Contexts/Prototype/GraphicResources/Scenes";
-
         private BaseSceneDefinition _existingDefinition;
         private SceneCatalogConfig _sceneCatalog;
         private SceneAsset _sceneAsset;
         private string _newSceneFileName = "Scene_New";
-        private string _newSceneDirectory = DefaultScenesDirectory;
+        private string _newSceneDirectory = string.Empty;
         private int _selectedDefinitionTypeIndex;
         private int _selectedMode;
         private string _statusMessage;
@@ -118,6 +115,15 @@ namespace ProjectCore.Template
         private void DrawNewSceneMode()
         {
             _newSceneDirectory = EditorGUILayout.TextField("Scene Directory", _newSceneDirectory);
+            if (GUILayout.Button("Choose Scene Directory"))
+            {
+                string selectedFolder = EditorUtility.OpenFolderPanel(
+                    "Choose context Assets/Scenes folder", Application.dataPath, string.Empty);
+                if (!string.IsNullOrEmpty(selectedFolder))
+                {
+                    _newSceneDirectory = FileUtil.GetProjectRelativePath(selectedFolder);
+                }
+            }
             _newSceneFileName = EditorGUILayout.TextField("Scene File Name", _newSceneFileName);
             DrawDefinitionTypeSelector();
 
@@ -153,7 +159,9 @@ namespace ProjectCore.Template
 
         private void RegisterExistingScene()
         {
-            if (!ValidateSceneAndCatalog())
+            if (!SceneDefinitionAuthoringValidation.TryValidateRegistration(
+                    _sceneAsset, _sceneCatalog, _existingDefinition != null,
+                    _definitionTypes.Length, out _statusMessage))
             {
                 return;
             }
@@ -198,9 +206,9 @@ namespace ProjectCore.Template
                 return;
             }
 
-            if (!AssetDatabase.IsValidFolder(_newSceneDirectory))
+            if (!SceneDefinitionAuthoringValidation.TryValidateNewScene(
+                    _newSceneDirectory, _newSceneFileName, out _statusMessage))
             {
-                _statusMessage = "Scene Directory must be an existing folder below Assets.";
                 return;
             }
 
@@ -228,29 +236,6 @@ namespace ProjectCore.Template
             _sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath);
             _existingDefinition = null;
             RegisterExistingScene();
-        }
-
-        private bool ValidateSceneAndCatalog()
-        {
-            if (_sceneAsset == null)
-            {
-                _statusMessage = "Assign a Unity scene.";
-                return false;
-            }
-
-            if (_sceneCatalog == null)
-            {
-                _statusMessage = "Assign a SceneCatalogConfig.";
-                return false;
-            }
-
-            if (_existingDefinition == null && _definitionTypes.Length == 0)
-            {
-                _statusMessage = "Create a concrete BaseSceneDefinition type first.";
-                return false;
-            }
-
-            return true;
         }
 
         private BaseSceneDefinition CreateDefinitionAsset()

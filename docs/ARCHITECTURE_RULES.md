@@ -24,9 +24,9 @@ Assets/
     Resources/
       ProjectContext.prefab
 
-    ContentData/
+    Assets/
       InputActions/
-      Settings/
+      Rendering/
 
     Contexts/
       Template/
@@ -39,15 +39,15 @@ Assets/
           Play/
 
       Project/
-        Features/
+        Assets/
+          Catalogs/
         Scripts/
           Init/
 
       Preloader/
         Features/
-        GraphicResources/
+        Assets/
           Scenes/
-        Resources/
         Scripts/
           Abstract/
           Init/
@@ -56,16 +56,15 @@ Assets/
       GameCore/
         Features/
           <Feature>/
-        GraphicResources/
+        Assets/
         Scripts/
           Init/
 
       TechnicalPrototype/
         Features/
           <Feature>/
-        GraphicResources/
+        Assets/
           Scenes/
-        Resources/
         Scripts/
           Init/
           Navigation/
@@ -73,9 +72,8 @@ Assets/
       Prototype/                 # legacy experiments; not part of runtime flow
         Features/
           <Feature>/
-        GraphicResources/
+        Assets/
           Scenes/
-        Resources/
         Scripts/
           Init/
 
@@ -88,13 +86,20 @@ Assets/
     ThirdParty/
 ```
 
-### ContentData
+### Assets
 
-`ContentData` contains project-wide designer- or game-owned data that is not
+`Assets` contains project-wide designer- or game-owned data that is not
 owned by one feature or scene. Examples include input actions, rendering
 settings, localization tables, level catalogs, and shared balance data.
 
-Feature-owned configs and assets stay inside their feature.
+Feature-owned configs and assets stay inside `<Feature>/Assets`. Resources without
+a feature owner use `Contexts/<Context>/Assets`; this does not require a new Feature.
+The owning context describes the resource instance, rather than the context defining
+its reusable C# type. Project's application catalogs are therefore in
+`Contexts/Project/Assets/Catalogs`, while catalog types remain in Template.
+The global `InputActions_Project_Default` supplies Input System project defaults;
+`InputActions_TechnicalPrototype` supplies the gameplay feature's serialized input.
+Both sets keep their distinct action IDs and assignments.
 
 ### Contexts
 
@@ -170,7 +175,7 @@ Contexts/GameCore/Scripts/Abstract/Networking/
 Contexts/GameCore/Scripts/Enums/Networking/
 Contexts/GameCore/Scripts/DataHolders/Data/
 Contexts/GameCore/Scripts/Other/Strategies/
-Contexts/GameCore/Scripts/Views/Components/Networking/
+Contexts/GameCore/Scripts/Components/Networking/
 ```
 
 Context-owned folders still follow the folder/suffix rule documented below.
@@ -238,7 +243,7 @@ Pure C# attributes belong to `Shared/Attributes`. Unity property attributes
 belong to `Template/Scripts/DataHolders/Attributes`, and their drawers belong
 to `Template/Scripts/Other/Editor`. Reusable MonoBehaviour state foundations
 belong to `Template/Scripts/Abstract`; mediator handler components belong to
-`Template/Scripts/Views/Handlers`, with their Unity-dependent contracts in
+`Template/Scripts/Components/Handlers`, with their Unity-dependent contracts in
 `Template/Scripts/Abstract/Mediators`. Shared contracts must not depend on
 these Template implementations.
 
@@ -462,7 +467,7 @@ and standalone features only.
   Runtime Console follows System-Controller-View separation: its System owns
   logs, history, and command execution independently of the window; its
   Controller owns presentation state and UI flow; MonoBehaviour and
-  VisualElement Views only render supplied data and forward user input.
+  VisualElement Components only render supplied data and forward user input.
 
 > Folder taxonomy, suffix semantics, naming, member order, access modifiers,
 > resource naming, and coding style are maintained in
@@ -475,10 +480,20 @@ Project-owned features use the following layout:
 
 ```text
 Assets/ProjectCore/Contexts/<Context>/Features/<Feature>/
-  DataResources/
-  GraphicResources/
+  Assets/
+    Configs/
+    Catalogs/
+    Definitions/
     Materials/
     Prefabs/
+    Sprites/
+    Animations/
+    Scenes/
+    InputActions/
+    UI/
+      UXML/
+      USS/
+      PanelSettings/
   Scripts/
     Abstract/
     DataHolders/
@@ -524,8 +539,8 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Feature>/
       Extensions/
       Utilities/
       Validation/
-    Views/
-      Components/
+    Components/
+      <Name>Component.cs
       Navigation/
       Popups/
       Screens/
@@ -537,13 +552,17 @@ Assets/ProjectCore/Contexts/<Context>/Features/<Feature>/
 Only create folders that the feature actually needs.
 
 `Scripts` is a closed taxonomy. Its direct children may only be `Abstract`,
-`DataHolders`, `Enums`, `Init`, `Managers`, `Other`, `Static`, and `Views`. Do
+`DataHolders`, `Enums`, `Init`, `Managers`, `Other`, `Static`, and `Components`. Do
 not put C# files directly in `Scripts`.
 
-`DataHolders`, `Managers`, `Other`, `Static`, and `Views` are category
+`DataHolders`, `Managers`, `Other`, and `Static` are category
 roots and also do not contain C# files directly. Their scripts must be placed
 in one of the documented suffix-specific subfolders. Additional organizational
 subfolders are allowed when they preserve the suffix rule.
+Ordinary `*Component` scripts live directly in `Scripts/Components`. Specialized
+states, state machines, screens, popups, widgets and navigation retain role folders;
+context-shared mediator handlers use `Components/Handlers`. Context-shared network
+components may use `Components/Networking`. Do not nest `Components/Components`.
 
 Use the following decision order for every script:
 
@@ -554,7 +573,7 @@ Use the following decision order for every script:
    `Tests/Editor` or `Tests/Play`.
 5. Any `static class` -> the matching `Static` subfolder.
 6. Passive data-only type -> the matching `DataHolders` subfolder.
-7. `MonoBehaviour` or a descendant -> the matching `Views` subfolder.
+7. `MonoBehaviour` or a descendant -> the matching `Components` subfolder.
 8. Non-MonoBehaviour behavioral object bound `AsSingle` in the owning DI
    container -> the matching `Managers` subfolder.
 9. Any remaining feature-owned behavior -> a suffix-specific subfolder under
@@ -604,7 +623,7 @@ Rules:
 - A type that changes from passive data to behavior must be renamed and moved
   to the folder matching its new responsibility.
 - A feature-owned production `static class` is always placed under `Static`,
-  never under `Managers`, `Other`, `DataHolders`, or `Views`. Context-owned
+  never under `Managers`, `Other`, `DataHolders`, or `Components`. Context-owned
   shared static classes follow the direct context `Scripts/<Category>` rule.
 
 ### Managers
@@ -617,7 +636,7 @@ instance for the whole application.
 | Folder | Required suffix | Role and usage |
 | --- | --- | --- |
 | `Accumulators` | `Accumulator` | Collects transient values or transitions until an explicit read/consume boundary. The owning feature controls initialization and lifetime. |
-| `Controllers` | `Controller` | Coordinates one non-visual use case or translates input into calls to gameplay contracts. Visual MonoBehaviour controllers belong to `Views/Components`. |
+| `Controllers` | `Controller` | Coordinates one non-visual use case or translates input into calls to gameplay contracts. Visual MonoBehaviour controllers belong directly to `Scripts/Components`. |
 | `Coordinators` | `Coordinator` | Orchestrates a multi-step workflow involving several services or systems. Application and scene flow coordinators belong here. |
 | `Factories` | `Factory` | Creates injected objects or aggregates and hides construction details. The factory is a singleton even when the objects it creates are transient. |
 | `Flows` | `Flow` | Executes one explicitly ordered, awaitable lifecycle or use-case pipeline. A Flow is invoked by its owner and never starts itself from a Unity callback. |
@@ -670,16 +689,16 @@ Data holders must not be used as disguised services. If a type has methods such
 as `Load`, `Save`, `Spawn`, `Send`, `Update`, or `Initialize`, it normally does
 not belong in `DataHolders`.
 
-### Views
+### Components
 
-`Views` contains presentation and scene-facing scripts. Every type in this
+`Components` contains presentation and scene-facing scripts. Every type in this
 folder must inherit from `MonoBehaviour` or
 `UnityEngine.UIElements.VisualElement`, directly or through a project base
-class. Plain C# presenters, services, and controllers are not Views.
+class. Plain C# presenters, services, and controllers are not Components.
 
 | Folder | Required suffix | Role and usage |
 | --- | --- | --- |
-| `Components` | `Component` | General scene or prefab behavior attached to a GameObject when no more specific View category applies. |
+| Root of `Components` | `Component` | General scene or prefab behavior attached to a GameObject when no more specific role applies. |
 | `Navigation` | `NavigationView` | MonoBehaviour presentation for navigation controls, transitions, or scene/screen navigation state. Navigation services remain Managers. |
 | `Popups` | `PopupView` | Popup presentation and serialized popup references. Popup control logic remains an injected Manager. |
 | `Screens` | `ScreenView` | Full-screen or major panel presentation owned by a screen flow. |
@@ -689,7 +708,7 @@ class. Plain C# presenters, services, and controllers are not Views.
 
 View rules:
 
-- Views receive runtime dependencies through DI.
+- Components receive runtime dependencies through DI.
 - Serialized fields reference scene objects, prefabs, assets, and visual
   configuration; they are not service-locator substitutes.
 - A presentation View forwards user or Unity events to an injected contract
@@ -718,8 +737,8 @@ Every type still lives in a suffix-specific subfolder.
 | `States` | `State` | Implements one behavioral state used by a state machine. Passive stored state remains `Data`. |
 | `Strategies` | `Strategy` | Encapsulates a replaceable algorithm selected by the caller or DI composition. |
 
-`MonoBehaviour` state machines and states belong in `Views/StateMachines` and
-`Views/States`; `Other/StateMachines` and `Other/States` contain only plain C#
+`MonoBehaviour` state machines and states belong in `Components/StateMachines` and
+`Components/States`; `Other/StateMachines` and `Other/States` contain only plain C#
 implementations.
 
 If an `Other` object becomes a long-lived DI `AsSingle`, move it to the most
@@ -1098,32 +1117,38 @@ Use the canonical folder names below consistently:
 
 ```text
 Abstract
+Animations
+Assets
+Catalogs
 Components
 Configs
 Constants
 Controllers
-Data
-DataResources
 DTOs
+Data
+Definitions
 Enums
 Features
-GraphicResources
 Init
+InputActions
 Materials
-Models
 Mediators
+Models
 Other
+PanelSettings
 Prefabs
+References
 Resources
 Scenes
 Scripts
 Serializers
 Services
-Storages
+Sprites
 StateMachines
+Storages
 Systems
+UI
 UserData
-Views
 ```
 
 ### Unity Assets
@@ -1131,7 +1156,12 @@ Views
 - Scenes use `Scene_<Context>[_<Detail>]`.
 - Prefabs use `Prefab_<Feature>_<Purpose>`.
 - Materials use `Material_<Purpose>`.
-- ScriptableObject asset files start with `Config_`.
+- ScriptableObject asset files use `Config_<OwnerContext>_<FeatureOrRole>_<Detail>`.
+- Resource instance ownership may differ from the context defining its C# type.
+- Sprites use `Sprite_`, references `Reference_`, clips `Animation_`, controllers
+  `AnimatorController_`, input action sets `InputActions_`, and UI themes `Theme_`.
+- The full resource naming table and semantic folders are defined in
+  [`CONVENTIONS.md`](CONVENTIONS.md#unity-resource-naming).
 - `CreateAssetMenu.fileName` follows
   `Config_<Context>_<Feature>_<Detail>`.
 - `CreateAssetMenu.menuName` follows
@@ -1167,7 +1197,7 @@ attributes such as `FormerlySerializedAs` or `MovedFrom`.
   a feature group owned by the Project context.
 - Register startup-only features through `PreloaderContextInstaller`; never
   resolve Preloader-scoped instances from a later gameplay scene.
-- Keep project-wide content in `ContentData`.
+- Keep project-wide resources in `Assets/ProjectCore/Assets`.
 - Keep feature-owned data and presentation assets inside the feature.
 - Do not commit passwords, tokens, credentials, or keystores.
 
@@ -1211,7 +1241,9 @@ The validator checks:
 - external dependencies in Shared;
 - flat feature ownership and `Scripts` taxonomy;
 - folder/suffix correspondence;
-- static, Manager, View, enum, abstract, Init, and test type rules;
+- static, Manager, component, enum, abstract, Init, and test type rules;
+- resource prefixes, semantic folders, owner names, `.meta` presence,
+  CreateAssetMenu context spelling, and empty folders;
 - known spelling and legacy suffix errors;
 - file/type correspondence and one top-level type per file;
 - suspicious `Awake`, `OnEnable`, `Start`, and `async void` initialization.

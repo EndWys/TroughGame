@@ -337,6 +337,30 @@ function Test-StaticClass {
         $TypeInfo.PrimaryType.Modifiers -match '(^|\s)static($|\s)')
 }
 
+function Test-ComponentScriptPath {
+    param([pscustomobject]$FileRecord, [string[]]$Segments, [string]$Rule)
+    $roles = @{
+        Navigation = @('NavigationView'); Popups = @('PopupView'); Screens = @('ScreenView')
+        StateMachines = @('StateMachine'); States = @('State'); Widgets = @('WidgetView')
+        Handlers = @('Handler'); Networking = @('Component')
+    }
+    $suffixes = @('Component')
+    if ($Segments.Count -gt 2) {
+        if (-not $roles.ContainsKey($Segments[1])) {
+            Add-Diagnostic -Severity 'Error' -Rule 'SCRIPT004' -Path $FileRecord.RelativePath -Line 1 `
+                -Message ('Unsupported Components subfolder: ' + $Segments[1])
+            return
+        }
+        $suffixes = $roles[$Segments[1]]
+    }
+    Add-SuffixDiagnostic -FileRecord $FileRecord -Suffixes $suffixes -Folder 'Scripts/Components'
+    $primary = $FileRecord.TypeInfo.PrimaryType
+    if ($null -ne $primary -and -not (Test-IsViewType -Identity $primary.Identity -Visited @{})) {
+        Add-Diagnostic -Severity 'Error' -Rule $Rule -Path $FileRecord.RelativePath -Line $primary.Line `
+            -Message 'Components must inherit from MonoBehaviour or VisualElement.'
+    }
+}
+
 function Test-FeatureScriptPath {
     param([pscustomobject]$FileRecord)
 
@@ -377,7 +401,7 @@ function Test-FeatureScriptPath {
 
     $allowedRoots = @(
         'Abstract', 'DataHolders', 'Enums', 'Init', 'Managers', 'Navigation',
-        'Other', 'Static', 'Views')
+        'Other', 'Static', 'Components')
 
     if ($category -notin $allowedRoots) {
         Add-Diagnostic -Severity 'Error' -Rule 'SCRIPT002' `
@@ -388,6 +412,11 @@ function Test-FeatureScriptPath {
 
     $primary = $FileRecord.TypeInfo.PrimaryType
     if ($null -eq $primary) {
+        return $true
+    }
+
+    if ($category -eq 'Components') {
+        Test-ComponentScriptPath -FileRecord $FileRecord -Segments $scriptSegments -Rule 'VIEW001'
         return $true
     }
 
@@ -490,15 +519,6 @@ function Test-FeatureScriptPath {
             Utilities = @('Utility')
             Validation = @('Validation')
         }
-        Views = @{
-            Components = @('Component')
-            Navigation = @('NavigationView')
-            Popups = @('PopupView')
-            Screens = @('ScreenView')
-            StateMachines = @('StateMachine')
-            States = @('State')
-            Widgets = @('WidgetView')
-        }
     }
 
     if (-not $suffixMaps.ContainsKey($category) -or
@@ -539,13 +559,6 @@ function Test-FeatureScriptPath {
         }
     }
 
-    if ($category -eq 'Views') {
-        if (-not (Test-IsViewType -Identity $primary.Identity -Visited @{})) {
-            Add-Diagnostic -Severity 'Error' -Rule 'VIEW001' `
-                -Path $FileRecord.RelativePath -Line $primary.Line `
-                -Message 'Views must inherit from MonoBehaviour or VisualElement, directly or through a known base type.'
-        }
-    }
 
     return $true
 }
@@ -577,6 +590,15 @@ function Test-ContextSharedScriptPath {
         Extensions = @('Extensions')
         Utilities = @('Utility')
         Validation = @('Validation')
+    }
+
+    if ($category -eq 'Components') {
+        Test-ComponentScriptPath -FileRecord $FileRecord -Segments $segments -Rule 'VIEW002'
+        if ($FileRecord.Text -match '(?m)^\s*using\s+Zenject\s*;|\[\s*Inject\s*\]|\bDiContainer\b|\.Bind(?:Interfaces|InterfacesAndSelf|InterfacesTo)?\s*[<(]') {
+            Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT003' -Path $FileRecord.RelativePath -Line 1 `
+                -Message 'Context-shared components must not participate in DI.'
+        }
+        return $true
     }
 
     if ($category -eq 'Initialization') {
@@ -676,7 +698,7 @@ function Test-ContextSharedScriptPath {
     } elseif ($category -eq 'Navigation') {
         Add-SuffixDiagnostic -FileRecord $FileRecord `
             -Suffixes @('Scene', 'SceneDefinition') -Folder 'Context/Scripts/Navigation'
-    } elseif ($category -in @('DataHolders', 'Other', 'Views', 'Tests')) {
+    } elseif ($category -in @('DataHolders', 'Other', 'Tests')) {
         if ($segments.Count -lt 3) {
             Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
                 -Path $FileRecord.RelativePath -Line 1 `
@@ -708,16 +730,7 @@ function Test-ContextSharedScriptPath {
                 States = @('State')
                 Strategies = @('Strategy')
             }
-            Views = @{
-                Handlers = @('Handler')
-                Components = @('Component')
-                Navigation = @('NavigationView')
-                Popups = @('PopupView')
-                Screens = @('ScreenView')
-                StateMachines = @('StateMachine')
-                States = @('State')
-                Widgets = @('WidgetView')
-            }
+
         }
 
         if ($category -eq 'Tests') {
@@ -736,11 +749,6 @@ function Test-ContextSharedScriptPath {
                 -Suffixes $contextSuffixMaps[$category][$subfolder] `
                 -Folder ("Context/Scripts/{0}/{1}" -f $category, $subfolder)
 
-            if ($category -eq 'Views' -and -not (Test-IsViewType -Identity $primary.Identity -Visited @{})) {
-                Add-Diagnostic -Severity 'Error' -Rule 'VIEW002' `
-                    -Path $FileRecord.RelativePath -Line $primary.Line `
-                    -Message 'Context Views must inherit from MonoBehaviour or VisualElement.'
-            }
         }
     } else {
         Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
@@ -1029,6 +1037,97 @@ foreach ($record in $fileRecords) {
     }
 }
 
+# Own Unity resources: dependencies and imported SDK assets are excluded.
+$assetRoot = Join-Path $ProjectRoot 'Assets/ProjectCore'
+$resourceCount = 0
+if (Test-Path -LiteralPath $assetRoot) {
+    $resources = @(Get-ChildItem -LiteralPath $assetRoot -Recurse -File | Where-Object {
+        $_.Extension -notin @('.meta', '.cs', '.md', '.asmdef', '.asmref') -and
+        $_.FullName.Replace('\', '/') -notmatch '/(ThirdParty|Plugins)/'
+    })
+    $resourceCount = $resources.Count
+    foreach ($asset in $resources) {
+        $path = Get-RelativePath $asset.FullName
+        if (-not (Test-Path -LiteralPath ($asset.FullName + '.meta'))) {
+            Add-Diagnostic 'Error' 'ASSET001' $path 1 'Unity resources require a matching .meta file.'
+        }
+        if ($path -eq 'Assets/ProjectCore/Resources/ProjectContext.prefab') { continue }
+        if ($path -notmatch '^Assets/ProjectCore/(Assets/|Contexts/[^/]+/(Features/[^/]+/)?Assets/)') {
+            Add-Diagnostic 'Error' 'ASSET002' $path 1 'Own resources belong in project, context or feature Assets.'
+        }
+        $pattern = switch ($asset.Extension.ToLowerInvariant()) {
+            '.unity' { '^Scene_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$' }
+            '.prefab' { '^Prefab_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.asset' { '^Config_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+){2,}$' }
+            '.inputactions' { '^InputActions_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$' }
+            '.controller' { '^AnimatorController_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.anim' { '^Animation_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.mat' { '^Material_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$' }
+            '.png' { '^(Sprite|Reference)_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.uxml' { '^(Document|Screen|Popup|Widget|LoadingScreen)_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.uss' { '^(Document|Screen|Popup|Widget|LoadingScreen)_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.tss' { '^Theme_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            default { $null }
+        }
+        if ($null -ne $pattern -and $asset.BaseName -notmatch $pattern) {
+            Add-Diagnostic 'Error' 'ASSET003' $path 1 'Resource name does not match its type prefix and naming convention.'
+        }
+        $location = switch ($asset.Extension.ToLowerInvariant()) {
+            '.unity' { '/Assets/Scenes/' }
+            '.prefab' { '/Assets/Prefabs/' }
+            '.inputactions' { '/Assets/InputActions/' }
+            '.controller' { '/Assets/Animations/' }
+            '.anim' { '/Assets/Animations/' }
+            '.mat' { '/Assets/Materials/|/Assets/Rendering/' }
+            '.png' { '/Assets/(Sprites|Animations/Frames|References)/' }
+            '.uxml' { '/Assets/UI/UXML/' }
+            '.uss' { '/Assets/UI/USS/' }
+            '.tss' { '/Assets/UI/USS/' }
+            '.asset' {
+                if ($asset.BaseName -match '_PanelSettings$') { '/Assets/UI/PanelSettings/' }
+                elseif ($asset.BaseName -match 'Catalog$') { '/Assets/Catalogs/' }
+                elseif ($asset.BaseName -match '^Config_Project_Rendering_') { '/Assets/Rendering/' }
+                else { '/Assets/(Configs|Definitions)/' }
+            }
+            default { $null }
+        }
+        $sceneDefinition = $asset.Extension -eq '.asset' -and $path -match '/Assets/Scenes/Config_([^_]+)_SceneFlow_(.+)\.asset$'
+        if ($sceneDefinition) {
+            $context = $Matches[1]; $detail = $Matches[2]
+            $sceneName = if ($detail -eq $context) { "Scene_$context.unity" } else { "Scene_${context}_$detail.unity" }
+            $sceneDefinition = Test-Path -LiteralPath (Join-Path $asset.DirectoryName $sceneName)
+        }
+        if ($null -ne $location -and $path -notmatch $location -and -not $sceneDefinition) {
+            Add-Diagnostic 'Error' 'ASSET004' $path 1 'Resource is outside the semantic folder for its type; SceneDefinition must be beside its scene.'
+        }
+        if ($asset.Extension -eq '.asset' -and $path -match '/Contexts/([^/]+)/') {
+            $owner = $Matches[1]
+            if ($asset.BaseName -notmatch ('^Config_' + [regex]::Escape($owner) + '_')) {
+                Add-Diagnostic 'Error' 'ASSET005' $path 1 'Config owner in the name must match its containing context.'
+            }
+        }
+    }
+    foreach ($directory in Get-ChildItem -LiteralPath $assetRoot -Recurse -Directory | Where-Object {
+        $_.FullName.Replace('\', '/') -notmatch '/(ThirdParty|Plugins)/'
+    }) {
+        $contents = @(Get-ChildItem -LiteralPath $directory.FullName -Recurse -File | Where-Object Extension -ne '.meta')
+        if ($contents.Count -eq 0) {
+            Add-Diagnostic 'Warning' 'ASSET006' (Get-RelativePath $directory.FullName) 1 'Empty folder: remove obsolete structure rather than creating unused categories.'
+        }
+    }
+}
+foreach ($record in $fileRecords) {
+    if ($record.Text.Contains('CreateAssetMenu') -and $record.RelativePath -match '/Contexts/([^/]+)/') {
+        $context = $Matches[1]
+        foreach ($menu in [regex]::Matches($record.Text, 'menuName\s*=\s*"SO/([^/]+)/')) {
+            if ($menu.Groups[1].Value -cne $context) {
+                Add-Diagnostic 'Error' 'ASSET007' $record.RelativePath (Get-LineNumber $record.Text $menu.Index) `
+                    'CreateAssetMenu context must match the script context spelling.'
+            }
+        }
+    }
+}
+
 $orderedDiagnostics = @($diagnostics | Sort-Object `
     @{ Expression = { if ($_.Severity -eq 'Error') { 0 } else { 1 } } }, `
     Rule, Path, Line)
@@ -1048,8 +1147,8 @@ if (-not $SummaryOnly) {
 }
 
 Write-Output ''
-Write-Output ("Architecture validation ({0}): {1} files, {2} errors, {3} warnings." -f `
-    $Mode, $fileRecords.Count, $errorCount, $warningCount)
+Write-Output ("Architecture validation ({0}): {1} scripts, {2} resources, {3} errors, {4} warnings." -f `
+    $Mode, $fileRecords.Count, $resourceCount, $errorCount, $warningCount)
 
 $ruleSummary = @($orderedDiagnostics | Group-Object Rule | Sort-Object Name)
 foreach ($group in $ruleSummary) {
@@ -1073,6 +1172,7 @@ if (-not [string]::IsNullOrWhiteSpace($OutputPath)) {
         Mode = $Mode
         ProjectRoot = $ProjectRoot
         FilesChecked = $fileRecords.Count
+        ResourcesChecked = $resourceCount
         Errors = $errorCount
         Warnings = $warningCount
         Diagnostics = $orderedDiagnostics

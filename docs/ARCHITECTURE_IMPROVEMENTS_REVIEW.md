@@ -92,7 +92,7 @@ methods; это не монолит без внутренних границ.
 действительно является побочным результатом вызова.
 
 Однако единственный активный caller
-[ChasingState:103](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Views/States/EnemyBehaviourChasingState.cs:103)
+[ChasingState:103](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Components/States/EnemyBehaviourChasingState.cs:103)
 сначала вызывает CalculateDirection, затем читает ApproachPosition в строках
 113 и 122, без await между ними. Дефект порядка доступа здесь не найден.
 
@@ -109,7 +109,7 @@ separation и coincident positions; второй injectable service или inter
 
 ### L2. Retarget/dash
 
-[ReassessTarget:133](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Views/States/EnemyBehaviourChasingState.cs:133)
+[ReassessTarget:133](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Components/States/EnemyBehaviourChasingState.cs:133)
 содержит связное правило: availability, преимущество кандидата, его смена,
 elapsed time и reset. Размещение такого правила в state допустимо: это часть
 поведения состояния, а не само по себе нарушение проекта.
@@ -163,7 +163,7 @@ tie order, reentrancy/mutation и GC query отдельно от остальн�
 [System:229](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/Template/Features/ScreenNavigation/Scripts/Managers/Systems/ScreenNavigationSystem.cs:229)
 добавляет view в hierarchy, затем await Show, но history обновляет лишь на строке
 241. Catch/finally не очищают новый view.
-[BaseScreenView:42](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/Template/Features/ScreenNavigation/Scripts/Views/Screens/BaseScreenView.cs:42)
+[BaseScreenView:42](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/Template/Features/ScreenNavigation/Scripts/Components/Screens/BaseScreenView.cs:42)
 имеет cancellable Yield/Delay, поэтому для этого сценария не требуется выдумывать
 неизвестного наследника. Повторный переход больше не защищён IsTransitioning,
 а потерянный view не находится в history. Частичное закрытие history и GoBack
@@ -265,7 +265,7 @@ NetworkEntitySpawner выбирает factory по EntityType, обычный ca
 
 ### G2. Configuration validation
 
-[PlayerSpawnComponent:53](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Views/Components/PlayerSpawnComponent.cs:53)
+[PlayerSpawnComponent:53](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerSpawnComponent.cs:53)
 проверяет spawnpoints только при join. Это реальный поздний fail-point.
 [DashMovementConfig:17](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/DataHolders/Configs/DashMovementConfig.cs:17)
 делит Distance на DurationSeconds; runtime precondition duration > 0 полезен.
@@ -278,7 +278,7 @@ references в затронутых prefab components. «Всё проверит�
 могут быть недоступны feature при startup. Использовать ближайшую явную
 точку readiness — scene init для scene-owned данных, entity init/preflight для
 prefab-owned. Также
-[EnemySpawnComponent:36](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Views/Components/EnemySpawnComponent.cs:36)
+[EnemySpawnComponent:36](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Components/EnemySpawnComponent.cs:36)
 проверяет при init основной enemy prefab, а dash prefab — при конкретном spawn;
 политика обязательного/опционального dash prefab должна быть решена явно.
 
@@ -337,7 +337,7 @@ Init exception отсутствует. Это основания для пров
 но не доказательство того, что SDK оставляет объект зарегистрированным после
 такого failure во всех modes.
 
-[CameraTargetComponent:46](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/CameraTarget/Scripts/Views/Components/CameraTargetComponent.cs:46)
+[CameraTargetComponent:46](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/CameraTarget/Scripts/Components/CameraTargetComponent.cs:46)
 уже освобождает регистрацию через Despawned и OnDestroy. Общий teardown на
 INetworkEntityComponent дублировал бы этот механизм без выявленного владельца,
 которому не хватает cleanup. Выяснить, используются ли reuse/pooling и какие

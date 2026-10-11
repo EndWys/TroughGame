@@ -10,10 +10,9 @@ Project code is organized below `Assets/ProjectCore`:
 
 ```text
 Assets/ProjectCore/
-  ContentData/
+  Assets/
   Contexts/<Context>/
-    GraphicResources/
-    Resources/
+    Assets/
     Scripts/                 # context-shared scripts, no feature lifecycle
     Features/<Feature>/
     Tests/
@@ -32,7 +31,7 @@ Assets/ProjectCore/
 external APIs and may reference only .NET APIs. Shared Unity property
 attributes, drawers, state foundations, and mediator handlers belong to
 `Template/Scripts/DataHolders/Attributes`, `Other/Editor`, `Abstract`, and
-`Views/Handlers` respectively.
+`Components/Handlers` respectively.
 
 Zenject's `Assets/ProjectCore/Resources/ProjectContext.prefab` is the explicit
 root-layout exception. It keeps both its framework-required location and name.
@@ -54,10 +53,11 @@ adapt reusable feature-framework behavior to its external contracts.
 
 ```text
 <Feature>/
-  DataResources/             # feature-owned data assets and JSON
-  GraphicResources/          # feature-owned visual assets
-    Materials/
-    Prefabs/
+  Assets/                   # non-C# resources owned by the feature
+    Configs/ Catalogs/ Definitions/
+    Prefabs/ Materials/ Sprites/ Animations/ InputActions/ Scenes/ References/
+    UI/
+      UXML/ USS/ PanelSettings/
   Scripts/
     Abstract/
     DataHolders/
@@ -73,12 +73,14 @@ adapt reusable feature-framework behavior to its external contracts.
       Mappers/ Processors/ StateMachines/ States/ Strategies/
     Static/
       Constants/ Errors/ Extensions/ Utilities/ Validation/
-    Views/
-      Components/ Navigation/ Popups/ Screens/ StateMachines/ States/ Widgets/
+    Components/
+      <Name>Component.cs
+      Navigation/ Popups/ Screens/ StateMachines/ States/ Widgets/
 ```
 
 Create only folders that are needed. `Scripts` and every category root are
-closed: they contain no C# files directly, only their documented subfolders.
+closed, except for `Abstract`, `Enums`, `Init` and ordinary `*Component` files
+directly in `Scripts/Components`. Other files use documented subfolders.
 Every concrete subfolder contains only scripts with the corresponding suffix.
 Additional organizational subfolders are allowed below a category root when
 they preserve the suffix rule. One file contains one top-level type and the
@@ -155,19 +157,19 @@ Use the uppercase `DTO` abbreviation in type names, for example
 `PlayerStateDTO`. Types with `Load`, `Save`, `Spawn`,
 `Send`, or `Initialize` behavior are not data holders.
 
-### Views
+### Components
 
-`Views` contains Unity-facing C# types. Every View type must inherit from
-`MonoBehaviour` or `UnityEngine.UIElements.VisualElement`. Presentation Views
+`Components` contains Unity-facing C# types. Every component type must inherit from
+`MonoBehaviour` or `UnityEngine.UIElements.VisualElement`. Presentation Components
 render state and forward Unity/user events to injected contracts. Unity-bound
 state machines and states own only their bounded state-processing role and
 delegate reusable operations to processors, services, or systems. UXML, USS,
 textures, fonts, and other non-C# presentation assets belong in the feature's
-`GraphicResources`.
+`Assets`.
 
 | Folder | Suffix | Meaning |
 | --- | --- | --- |
-| Components | `Component` | `MonoBehaviour` scene or prefab behavior. |
+| Root of Components | `Component` | `MonoBehaviour` scene or prefab behavior; no nested Components folder. |
 | Navigation | `NavigationView` | Navigation controls and transitions. |
 | Popups | `PopupView` | Popup presentation and serialized references. |
 | Screens | `ScreenView` | Full-screen or major panel presentation; may inherit `MonoBehaviour` or `VisualElement`. |
@@ -194,8 +196,8 @@ view, or special category.
 | States | `State` | One behavior state used by a state machine. |
 | Strategies | `Strategy` | Replaceable algorithm selected by caller or DI. |
 
-`MonoBehaviour` state machines and states belong in `Views/StateMachines` and
-`Views/States`; `Other/StateMachines` and `Other/States` contain only plain C#
+`MonoBehaviour` state machines and states belong in `Components/StateMachines` and
+`Components/States`; `Other/StateMachines` and `Other/States` contain only plain C#
 implementations.
 
 Do not create `Misc`, `Common`, `Helpers`, or `Utils` escape-hatch folders.
@@ -350,10 +352,29 @@ Keep related overloads together. Do not use regions to hide unrelated members.
 - Zenject's `ProjectContext.prefab` is the naming exception and keeps its
   framework-required name.
 - Materials: `Material_<Purpose>`.
-- ScriptableObject assets: `Config_<Context>_<Feature>_<Detail>`.
+- ScriptableObject assets: `Config_<OwnerContext>_<FeatureOrRole>_<Detail>`.
 - `CreateAssetMenu.menuName`: `SO/<Context>/<Feature>/<Detail>`.
-- Keep feature-owned assets inside `GraphicResources` or `DataResources`.
-- Keep cross-feature project content in `ContentData`.
+- Sprites: `Sprite_<FeatureOrRole>_<ActionOrPurpose>[_<Direction>][_<Frame>]`.
+- Reference images: `Reference_<Context>_<Purpose>` in `Assets/References`.
+- Animation clips: `Animation_<Feature>_<Action>[_<Direction>]`. Existing combined
+  action/direction names remain compatible; normalize them when editing animation content.
+- Animator controllers: `AnimatorController_<Feature>_<Purpose>`.
+- Input action sets: `InputActions_<OwnerContext>[_<Purpose>]`.
+- UI documents: `Document_`, `Screen_`, `Popup_`, `Widget_` or `LoadingScreen_`
+  followed by owner and purpose. USS uses the corresponding document's name;
+  shared styles may use `Document_<Owner>_<Feature>_<Purpose>`. TSS uses `Theme_`.
+- Keep feature-owned resources in `<Feature>/Assets`, grouped by resource type.
+- Context composition resources live in `Contexts/<Context>/Assets`; project-wide
+  rendering and default input settings live in `Assets/ProjectCore/Assets`.
+- Ownership of a resource instance can differ from ownership of its reusable C#
+  type. Application catalogs belong to `Project/Assets/Catalogs`; the scene's
+  gameplay input belongs to that scene context. Reusable Template defaults stay in Template.
+- Keep SceneDefinition beside its matching scene in `Assets/Scenes`. Other
+  definitions belong in `Assets/Definitions`; catalogs in `Assets/Catalogs`;
+  behavior configs in `Assets/Configs`; PanelSettings in `Assets/UI/PanelSettings`.
+- Choose a scene folder explicitly in the Scene Definition window; there is no
+  hard-coded default context. The scene name must match the selected context.
+- Do not create empty categories or rename imported SDK trees for consistency.
 - Move Unity `.meta` files together with renamed assets.
 - Use `FormerlySerializedAs` or `MovedFrom` when serialized fields/types are
   renamed.

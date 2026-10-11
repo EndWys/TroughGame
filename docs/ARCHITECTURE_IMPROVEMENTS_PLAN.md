@@ -146,7 +146,7 @@ ownership/reentrancy временных буферов определить вм
 
 ### L2. Выделить правила retarget и решения о dash — P2, структура
 
-**Основание:** [EnemyBehaviourChasingState](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Views/States/EnemyBehaviourChasingState.cs:133)
+**Основание:** [EnemyBehaviourChasingState](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Components/States/EnemyBehaviourChasingState.cs:133)
 координирует поиск цели, выдержку retarget delay, steering, способности и остановку.
 [EnemyDashChaseAbilityProcessor](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Other/Processors/EnemyDashChaseAbilityProcessor.cs:34)
 несмотря на имя processor читает сетевой accessor, `Transform`, cooldown и SO.
@@ -333,7 +333,7 @@ spawn → получение ожидаемого root и определённо
 
 ### G2. Валидировать авторские данные до использования — P2, структура
 
-**Основание:** [PlayerSpawnComponent](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Views/Components/PlayerSpawnComponent.cs:59)
+**Основание:** [PlayerSpawnComponent](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerSpawnComponent.cs:59)
 обнаруживает пустой/null spawn point только при подключении игрока. Enemy уже
 имеет spawn validation. EnemyChaseConfig и DashMovementConfig используют `[Min]`,
 но это не заменяет runtime-проверку значений и согласованности параметров.

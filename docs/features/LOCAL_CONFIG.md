@@ -45,7 +45,7 @@ expose `GetConfig(EnemyTypes enemyType)`.
 ## Creating a config
 
 Place the class in the owning Feature under `Scripts/DataHolders/Configs` and
-the asset under that Feature's `DataResources`.
+the asset under that Feature's `Assets/Configs`.
 
 ```csharp
 using UnityEngine;
@@ -87,7 +87,7 @@ catalog is allowed because that represents an explicit context override.
 The persistent Project catalog currently lives at:
 
 ```text
-Assets/ProjectCore/Contexts/Template/Features/LocalConfig/DataResources/Config_Project_LocalConfig_Catalog.asset
+Assets/ProjectCore/Contexts/Project/Assets/Catalogs/Config_Project_LocalConfig_Catalog.asset
 ```
 
 ## Installing in a context

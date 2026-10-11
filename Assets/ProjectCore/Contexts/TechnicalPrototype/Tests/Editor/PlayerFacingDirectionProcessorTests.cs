@@ -9,7 +9,7 @@ namespace ProjectCore.TechnicalPrototype
         public void ProcessorConvertsDirectionalPayloadToFacingDirection()
         {
             FacingDirectionMutatorStub mutator = new(PlayerFacingDirection.SouthEast);
-            FourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload> processor =
+            PlayerFourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload> processor =
                 new(mutator);
 
             bool hasTransition = processor.Execute(
@@ -25,7 +25,7 @@ namespace ProjectCore.TechnicalPrototype
         public void ProcessorPreservesFacingAxisMissingFromInput()
         {
             FacingDirectionMutatorStub mutator = new(PlayerFacingDirection.SouthWest);
-            FourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload> processor =
+            PlayerFourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload> processor =
                 new(mutator);
 
             processor.Execute(new PlayerMovementPayload(Vector2.up), out _);
@@ -37,7 +37,7 @@ namespace ProjectCore.TechnicalPrototype
         public void ProcessorIgnoresDirectionBelowAxisThreshold()
         {
             FacingDirectionMutatorStub mutator = new(PlayerFacingDirection.SouthWest);
-            FourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload> processor =
+            PlayerFourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload> processor =
                 new(mutator);
 
             processor.Execute(new PlayerMovementPayload(new Vector2(0.001f, 0.001f)), out _);

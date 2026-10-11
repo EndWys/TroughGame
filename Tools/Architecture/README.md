@@ -52,10 +52,10 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 
 The runner checks exact diagnostic rules, file paths, and Strict exit codes.
 It includes the positive fixture and `Fixtures/TypeNamesInvalid`, where a plain
-class in Views must produce `VIEW001` even when another context has a valid
+class in Components must produce `VIEW001` even when another context has a valid
 MonoBehaviour with the same name. Other cases cover local-name precedence,
 imports, qualified names, aliases, generic arity, multiline generic bases,
-ambiguous imports, framework namesakes, Managers, context-owned Views, and cycles.
+ambiguous imports, framework namesakes, Managers, context-owned Components, and cycles.
 Generated fixtures are created in a temporary directory and removed after the run.
 
 ## Diagnostic Families
@@ -75,6 +75,7 @@ Generated fixtures are created in a temporary directory and removed after the ru
 | `NAME` | Known spelling and legacy suffix rules |
 | `INIT` | Initialization callback and `async void` checks |
 | `TEST` | Flat Editor and Play test placement |
+| `ASSET` | Own resource naming, ownership, placement, metadata and authoring |
 
 Errors are deterministic convention violations and fail Strict mode. Warnings
 are heuristic findings that require manual review.
@@ -114,7 +115,7 @@ The baseline is historical and is not an allowlist. Current strict validation
 must remain at zero errors and warnings.
 
 Context-owned scripts use the documented non-feature categories such as
-`Abstract`, `Enums`, `Extensions`, `DataHolders`, `Other`, and `Views`. Outside
+`Abstract`, `Enums`, `Extensions`, `DataHolders`, `Other`, and `Components`. Outside
 `Init`, these scripts must not participate in DI. A complete capability,
 stateful service, or lifecycle participant remains feature-owned.
 
@@ -138,3 +139,30 @@ stateful service, or lifecycle participant remains feature-owned.
   serialized references still require Unity prefab or scene validation.
 - The validator does not replace Unity compilation, Test Runner, scene loading,
   prefab validation, or architecture review.
+
+## Resource validation
+
+Run `powershell -NoProfile -ExecutionPolicy Bypass -File
+Tools/Architecture/Test-ResourceValidation.ps1` from the repository root.
+The runner checks valid resource folders, negative naming/ownership/metadata cases,
+the ProjectContext and third-party exceptions, and SceneDefinition placement.
+
+Own non-C# resources under ProjectCore are checked; Plugins and ThirdParty are
+excluded. C# fixture metadata is not required by this resource stage. Existing
+SDK roots outside ProjectCore are not relocated or treated as project-owned content.
+
+| Rule | Check |
+| --- | --- |
+| ASSET001 | Matching resource .meta exists |
+| ASSET002 | Project/context/feature Assets root, with ProjectContext exception |
+| ASSET003 | Prefix and name pattern for the resource extension |
+| ASSET004 | Semantic folder; SceneDefinition exception requires its matching scene |
+| ASSET005 | Config owner matches its containing context |
+| ASSET006 | Empty folders, warning only |
+| ASSET007 | CreateAssetMenu context spelling matches the script context |
+
+`VIEW001` and `VIEW002` retain their IDs for compatibility but now validate
+`Scripts/Components`. Ordinary `*Component` scripts live in that root; role
+folders retain their suffixes and MonoBehaviour/VisualElement checks.
+The validator cannot infer semantic ownership from arbitrary serialized references;
+resource types and their configured instances may have different owners.

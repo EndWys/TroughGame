@@ -4,7 +4,7 @@ namespace ProjectCore.TechnicalPrototype
 {
     [CreateAssetMenu(
         fileName = "Config_TechnicalPrototype_Enemy_Chase",
-        menuName = "SO/Technical Prototype/Enemy/Chase")]
+        menuName = "SO/TechnicalPrototype/Enemy/Chase")]
     public sealed class EnemyChaseConfig : ScriptableObject
     {
         [SerializeField, Min(0f)] private float _stoppingDistance = 0.5f;

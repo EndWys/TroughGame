@@ -112,13 +112,13 @@ targets and draw state, and destroys the runtime runner.
 
 ## Feature assets
 
-- `DataResources/Config_Template_DebugVisualization_Settings.asset` controls
+- `Assets/Config_Template_DebugVisualization_Settings.asset` controls
   HUD startup, draw limits, default style, and channel styles.
-- `DataResources/Config_Template_DebugVisualization_PanelSettings.asset`
+- `Assets/Config_Template_DebugVisualization_PanelSettings.asset`
   configures the UI Toolkit panel.
-- `GraphicResources/USS/Document_Template_DebugVisualization_HUD.uss`
+- `Assets/USS/Document_Template_DebugVisualization_HUD.uss`
   defines HUD presentation.
-- `GraphicResources/Scenes/Scene_Template_DebugVisualization_Example.unity`
+- `Assets/Scenes/Scene_Template_DebugVisualization_Example.unity`
   contains the example scene.
 
 Use `Tools > Debug Visualization > Create Example Objects` to create example

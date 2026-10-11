@@ -52,36 +52,36 @@ $prototypeMonoBase = New-FixtureFile TechnicalPrototype Abstract BaseCollisionCo
 Add-Case -Name 'Existing positive fixture' -ExistingRoot (Join-Path $PSScriptRoot 'Fixtures/Valid')
 Add-Case -Name 'Same name cannot hide invalid view' `
     -ExistingRoot (Join-Path $PSScriptRoot 'Fixtures/TypeNamesInvalid') `
-    -Expected @('VIEW001|Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Movement/Scripts/Views/Components/CollisionComponent.cs')
+    -Expected @('VIEW001|Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Movement/Scripts/Components/CollisionComponent.cs')
 
-$gameInvalid = New-FixtureFile GameCore Views/Components CollisionComponent 'public class CollisionComponent'
-$prototypeValid = New-FixtureFile TechnicalPrototype Views/Components CollisionComponent `
+$gameInvalid = New-FixtureFile GameCore Components CollisionComponent 'public class CollisionComponent'
+$prototypeValid = New-FixtureFile TechnicalPrototype Components CollisionComponent `
     'public class CollisionComponent : Fusion.NetworkBehaviour'
 Add-Case -Name 'Same names with the invalid context reversed' -Files @($gameInvalid, $prototypeValid) `
     -Expected @(Get-ExpectedDiagnostic VIEW001 $gameInvalid)
 
-$contextInvalid = New-FixtureFile GameCore Views/Components CollisionComponent 'public class CollisionComponent'
-$contextInvalid.Path = 'Assets/ProjectCore/Contexts/GameCore/Scripts/Views/Components/CollisionComponent.cs'
-Add-Case -Name 'Context-owned Views use the same namespace-aware check' `
+$contextInvalid = New-FixtureFile GameCore Components CollisionComponent 'public class CollisionComponent'
+$contextInvalid.Path = 'Assets/ProjectCore/Contexts/GameCore/Scripts/Components/CollisionComponent.cs'
+Add-Case -Name 'Context-owned Components use the same namespace-aware check' `
     -Files @($contextInvalid, $prototypeValid) -Expected @(Get-ExpectedDiagnostic VIEW002 $contextInvalid)
 
-$validLocal = New-FixtureFile TechnicalPrototype Views/Components DerivedComponent `
+$validLocal = New-FixtureFile TechnicalPrototype Components DerivedComponent `
     'public class DerivedComponent : BaseCollisionComponent' @('ProjectCore.GameCore')
-$invalidLocal = New-FixtureFile GameCore Views/Components DerivedComponent `
+$invalidLocal = New-FixtureFile GameCore Components DerivedComponent `
     'public class DerivedComponent : BaseCollisionComponent' @('ProjectCore.TechnicalPrototype')
 Add-Case -Name 'Local base takes precedence over an imported namesake' `
     -Files @($gamePlainBase, $prototypeMonoBase, $validLocal, $invalidLocal) `
     -Expected @(Get-ExpectedDiagnostic VIEW001 $invalidLocal)
 
-$qualified = New-FixtureFile GameCore Views/Components QualifiedComponent `
+$qualified = New-FixtureFile GameCore Components QualifiedComponent `
     'public class QualifiedComponent : ProjectCore.TechnicalPrototype.BaseCollisionComponent'
-$global = New-FixtureFile GameCore Views/Components GlobalComponent `
+$global = New-FixtureFile GameCore Components GlobalComponent `
     'public class GlobalComponent : global::ProjectCore.TechnicalPrototype.BaseCollisionComponent'
-$namespaceAlias = New-FixtureFile GameCore Views/Components AliasComponent `
+$namespaceAlias = New-FixtureFile GameCore Components AliasComponent `
     'public class AliasComponent : Peer.BaseCollisionComponent' @('Peer = ProjectCore.TechnicalPrototype')
-$typeAlias = New-FixtureFile GameCore Views/Components TypeAliasComponent `
+$typeAlias = New-FixtureFile GameCore Components TypeAliasComponent `
     'public class TypeAliasComponent : Peer' @('Peer = global::ProjectCore.TechnicalPrototype.BaseCollisionComponent')
-$wrongQualified = New-FixtureFile TechnicalPrototype Views/Components PlainComponent `
+$wrongQualified = New-FixtureFile TechnicalPrototype Components PlainComponent `
     'public class PlainComponent : ProjectCore.GameCore.BaseCollisionComponent'
 Add-Case -Name 'Qualified bases and namespace or type aliases' `
     -Files @($gamePlainBase, $prototypeMonoBase, $qualified, $global, $namespaceAlias, $typeAlias, $wrongQualified) `
@@ -91,22 +91,22 @@ $templateBase = New-FixtureFile Template Abstract BaseVisualComponent `
     'public abstract class BaseVisualComponent : VisualElement' @('UnityEngine.UIElements')
 $importedBase = New-FixtureFile TechnicalPrototype Abstract BaseImportedComponent `
     'public abstract class BaseImportedComponent : BaseVisualComponent' @('ProjectCore.Template')
-$importedView = New-FixtureFile GameCore Views/Components ImportedComponent `
+$importedView = New-FixtureFile GameCore Components ImportedComponent `
     'public class ImportedComponent : BaseImportedComponent' @('ProjectCore.TechnicalPrototype')
 Add-Case -Name 'Each link in an inheritance chain uses its own imports' `
     -Files @($templateBase, $importedBase, $importedView)
 
 $genericBase = New-FixtureFile GameCore Abstract BaseCollisionComponentT `
     'public abstract class BaseCollisionComponent<TFirst, TSecond> : UnityEngine.MonoBehaviour'
-$genericView = New-FixtureFile GameCore Views/Components GenericComponent `
+$genericView = New-FixtureFile GameCore Components GenericComponent `
     "public class GenericComponent : BaseCollisionComponent<`n        System.Collections.Generic.Dictionary<int, string>,`n        System.Tuple<int, string>>"
-$plainView = New-FixtureFile GameCore Views/Components PlainComponent `
+$plainView = New-FixtureFile GameCore Components PlainComponent `
     'public class PlainComponent : BaseCollisionComponent'
 Add-Case -Name 'Generic arity and multiline nested generic arguments' `
     -Files @($gamePlainBase, $genericBase, $genericView, $plainView) `
     -Expected @(Get-ExpectedDiagnostic VIEW001 $plainView)
 
-$ambiguous = New-FixtureFile Template Views/Components AmbiguousComponent `
+$ambiguous = New-FixtureFile Template Components AmbiguousComponent `
     'public class AmbiguousComponent : BaseCollisionComponent' @('ProjectCore.GameCore', 'ProjectCore.TechnicalPrototype')
 Add-Case -Name 'Ambiguous imports produce an explicit diagnostic' `
     -Files @($gamePlainBase, $prototypeMonoBase, $ambiguous) `
@@ -118,11 +118,11 @@ $sharedNamesakes = @('MonoBehaviour', 'NetworkBehaviour', 'VisualElement') | For
         Content = "namespace Shared`n{`n    public class $_`n    {`n    }`n}`n"
     }
 }
-$fakeMono = New-FixtureFile GameCore Views/Components FakeMonoComponent `
+$fakeMono = New-FixtureFile GameCore Components FakeMonoComponent `
     'public class FakeMonoComponent : Shared.MonoBehaviour'
-$fakeNetwork = New-FixtureFile GameCore Views/Components FakeNetworkComponent `
+$fakeNetwork = New-FixtureFile GameCore Components FakeNetworkComponent `
     'public class FakeNetworkComponent : Shared.NetworkBehaviour'
-$fakeVisual = New-FixtureFile GameCore Views/Components FakeVisualComponent `
+$fakeVisual = New-FixtureFile GameCore Components FakeVisualComponent `
     'public class FakeVisualComponent : VisualElement' @('Shared')
 Add-Case -Name 'Framework roots are recognized only by their full names' `
     -Files (@($sharedNamesakes) + @($fakeMono, $fakeNetwork, $fakeVisual)) `
@@ -148,7 +148,7 @@ Add-Case -Name 'Namesake manager cannot hide forbidden MonoBehaviour inheritance
 
 $cycleA = New-FixtureFile GameCore Abstract BaseCycleComponent 'public abstract class BaseCycleComponent : BaseOtherComponent'
 $cycleB = New-FixtureFile GameCore Abstract BaseOtherComponent 'public abstract class BaseOtherComponent : BaseCycleComponent'
-$cycleView = New-FixtureFile GameCore Views/Components CycleComponent 'public class CycleComponent : BaseCycleComponent'
+$cycleView = New-FixtureFile GameCore Components CycleComponent 'public class CycleComponent : BaseCycleComponent'
 Add-Case -Name 'Cyclic inheritance terminates without accepting a view' -Files @($cycleA, $cycleB, $cycleView) `
     -Expected @(Get-ExpectedDiagnostic VIEW001 $cycleView)
 

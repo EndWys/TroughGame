@@ -102,7 +102,7 @@ response type because `OpenAsync` already returns `Result<TResponse>`.
 
 ### 2. Create the view
 
-Store popup views in `Scripts/Views/Popups`.
+Store popup views in `Scripts/Components/Popups`.
 
 ```csharp
 public sealed class DeleteItemPopupView
@@ -163,8 +163,8 @@ public sealed class DeleteItemPopupDefinition
 ```
 
 1. Store UXML, USS, textures, and fonts under the implementation feature's
-   `GraphicResources`.
-2. Store the concrete definition asset under its `DataResources`.
+   `Assets`.
+2. Store the concrete definition asset under its `Assets`.
 3. Assign the popup UXML to the definition.
 4. Add the definition to the scene `PopupCatalogConfig`.
 

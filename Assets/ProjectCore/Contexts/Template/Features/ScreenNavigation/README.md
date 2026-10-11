@@ -79,7 +79,7 @@ public sealed class ShopScreenSettings : IScreenSettings
 
 ### 2. Create the view
 
-Place the C# view in `Scripts/Views/Screens`. Query and bind UXML elements in
+Place the C# view in `Scripts/Components/Screens`. Query and bind UXML elements in
 `OnInitializeAsync`; the layout is already cloned at this point.
 
 ```csharp
@@ -124,8 +124,8 @@ Omit `ParentScreenType` when `ShopScreenView` must be a root screen.
 
 ### 4. Register presentation assets
 
-1. Store UXML, USS, textures, and fonts under the feature's `GraphicResources`.
-2. Create the concrete screen definition asset under `DataResources`.
+1. Store UXML, USS, textures, and fonts under the feature's `Assets`.
+2. Create the concrete screen definition asset under `Assets`.
 3. Assign the screen UXML to the definition asset.
 4. Add the definition asset to the scene `ScreenCatalogConfig`.
 

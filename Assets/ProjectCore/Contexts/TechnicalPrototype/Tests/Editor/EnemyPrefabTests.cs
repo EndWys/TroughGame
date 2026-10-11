@@ -16,18 +16,18 @@ namespace ProjectCore.TechnicalPrototype
     {
         private const string PrefabPath =
             "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/" +
-            "GraphicResources/Prefabs/Prefab_Enemy_NetworkEntity.prefab";
+            "Assets/Prefabs/Prefab_Enemy_NetworkEntity.prefab";
         private const string DashPrefabPath =
             "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/" +
-            "GraphicResources/Prefabs/Prefab_Enemy_Dash_NetworkEntity.prefab";
+            "Assets/Prefabs/Prefab_Enemy_Dash_NetworkEntity.prefab";
         private const string DashAbilityConfigPath =
             "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/" +
-            "GraphicResources/Configs/Config_TechnicalPrototype_Enemy_DashAbility.asset";
+            "Assets/Configs/Config_TechnicalPrototype_Enemy_DashAbility.asset";
         private const string DashMovementConfigPath =
-            "Assets/ProjectCore/Contexts/GameCore/Features/Movement/GraphicResources/Configs/" +
+            "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Assets/Configs/" +
             "Config_GameCore_Movement_Dash.asset";
         private const string TechnicalPrototypeScenePath =
-            "Assets/ProjectCore/Contexts/TechnicalPrototype/GraphicResources/Scenes/" +
+            "Assets/ProjectCore/Contexts/TechnicalPrototype/Assets/Scenes/" +
             "Scene_TechnicalPrototype.unity";
 
         [Test]

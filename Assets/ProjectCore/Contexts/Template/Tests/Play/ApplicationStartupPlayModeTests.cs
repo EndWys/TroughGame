@@ -76,7 +76,8 @@ namespace ProjectCore.Template
 
             while (enemies.Any(enemy =>
                        !enemy.TryGetEntityComponent(out EnemyInputSourceComponent inputSource) ||
-                       !inputSource.TryGetInput(out _)) &&
+                       !inputSource.TryGetInput(out EnemyInputFrameData input) ||
+                       input.Direction == Vector2.zero) &&
                    Time.realtimeSinceStartup < inputDeadline)
             {
                 yield return null;
@@ -85,7 +86,7 @@ namespace ProjectCore.Template
             Assert.That(
                 Time.realtimeSinceStartup,
                 Is.LessThan(inputDeadline),
-                "Enemy behaviour did not produce input within five seconds.");
+                "Enemy behaviour did not produce movement input within five seconds.");
 
             Assert.That(enemies[0].EntityId, Is.Not.EqualTo(enemies[1].EntityId));
             NetworkEntityIdData[] firstIds = enemies.Select(enemy => enemy.EntityId).ToArray();
