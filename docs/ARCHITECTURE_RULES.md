@@ -331,7 +331,6 @@ Scene_Preloader
       FeatureInitializationFlow(Project features)
     PreloaderContextInitializer
       FeatureInitializationFlow(Preloader features)
-    await GDPR flow, third-party SDKs, and other startup-only work
     ask ISceneFlowService to open the configured first gameplay scene
   unload Scene_Preloader and destroy all Preloader-scoped objects
 
@@ -476,416 +475,100 @@ and standalone features only.
 
 ## Feature Structure
 
-Project-owned features use the following layout:
+The canonical folder layout, placement decision order, category tables, and
+suffix meanings are maintained in
+[`CONVENTIONS.md`, Feature Layout](CONVENTIONS.md#feature-layout) and
+[Script Categories and Suffixes](CONVENTIONS.md#script-categories-and-suffixes).
+This section adds ownership, DI, and lifecycle constraints.
 
-```text
-Assets/ProjectCore/Contexts/<Context>/Features/<Feature>/
-  Assets/
-    Configs/
-    Catalogs/
-    Definitions/
-    Materials/
-    Prefabs/
-    Sprites/
-    Animations/
-    Scenes/
-    InputActions/
-    UI/
-      UXML/
-      USS/
-      PanelSettings/
-  Scripts/
-    Abstract/
-    DataHolders/
-      Configs/
-      Data/
-      Descriptors/
-      DTOs/
-      Models/
-      Payloads/
-    Enums/
-    Init/
-      <Feature>Feature.cs
-    Managers/
-      Accumulators/
-      Controllers/
-      Coordinators/
-      Factories/
-      Flows/
-      Handlers/
-      Mediators/
-      Providers/
-      Registries/
-      Repositories/
-      Serializers/
-      Services/
-      Storages/
-      Spawners/
-      Systems/
-    Other/
-      Adapters/
-      Builders/
-      Commands/
-      Converters/
-      Decorators/
-      Mappers/
-      Processors/
-      StateMachines/
-      States/
-      Strategies/
-    Static/
-      Constants/
-      Errors/
-      Extensions/
-      Utilities/
-      Validation/
-    Components/
-      <Name>Component.cs
-      Navigation/
-      Popups/
-      Screens/
-      StateMachines/
-      States/
-      Widgets/
-```
-
-Only create folders that the feature actually needs.
-
-`Scripts` is a closed taxonomy. Its direct children may only be `Abstract`,
-`DataHolders`, `Enums`, `Init`, `Managers`, `Other`, `Static`, and `Components`. Do
-not put C# files directly in `Scripts`.
-
-`DataHolders`, `Managers`, `Other`, and `Static` are category
-roots and also do not contain C# files directly. Their scripts must be placed
-in one of the documented suffix-specific subfolders. Additional organizational
-subfolders are allowed when they preserve the suffix rule.
-Ordinary `*Component` scripts live directly in `Scripts/Components`. Specialized
-states, state machines, screens, popups, widgets and navigation retain role folders;
-context-shared mediator handlers use `Components/Handlers`. Context-shared network
-components may use `Components/Networking`. Do not nest `Components/Components`.
-
-Use the following decision order for every script:
-
-1. Interface or abstract base type -> `Abstract`.
-2. Enum -> `Enums`.
-3. Feature composition or explicitly invoked initialization -> `Init`.
-4. Test fixture or test-only support type -> the owning context's
-   `Tests/Editor` or `Tests/Play`.
-5. Any `static class` -> the matching `Static` subfolder.
-6. Passive data-only type -> the matching `DataHolders` subfolder.
-7. `MonoBehaviour` or a descendant -> the matching `Components` subfolder.
-8. Non-MonoBehaviour behavioral object bound `AsSingle` in the owning DI
-   container -> the matching `Managers` subfolder.
-9. Any remaining feature-owned behavior -> a suffix-specific subfolder under
-   `Other`.
-
-The nature of the type takes precedence over how it happens to be bound. A
-`MonoBehaviour` bound from the scene as a single instance remains a `View`; a
-config instance passed through DI remains a `DataHolder`.
-
-Every feature must have:
-
-- a folder named after the feature;
-- a clear owner context;
-- `Scripts/Init/<Feature>Feature.cs` when it participates in the feature
-  lifecycle;
-- feature-owned code and resources inside the feature folder;
-- names that remain unambiguous within the context's flat namespace.
-
-Examples:
-
-```text
-Contexts/GameCore/Features/Movement
-Contexts/GameCore/Features/Player
-Contexts/Template/Features/Popup
-Contexts/Template/Features/SignalBus
-Contexts/Template/Features/PopupSignalBusBridge
-```
-
-Feature folders express ownership but do not extend the namespace.
+Every feature has a clear owner context, keeps its code and resources inside
+that feature, and uses `Scripts/Init/<Feature>Feature.cs` when it participates
+in the unified lifecycle. Feature folders express ownership, not namespaces.
+Mandatory Clean Architecture layer folders are not part of the project standard.
 
 ### Strict Folder And Suffix Rule
 
-Every concrete subfolder contains only scripts with its assigned suffix. A
-suffix describes a type's responsibility and must not be selected merely to
-make a file fit an existing folder.
-
-Rules:
-
-- One file contains one top-level type.
-- The file name matches the top-level type, with the documented `T` filename
-  option for generic types in `CONVENTIONS.md`.
-- Prefixes such as `I` and `Base` do not replace a required category suffix:
-  `IMovementService` and `BaseMovementSystem` are valid abstract names.
-  Abstract subject/marker contracts such as `IScene` may omit a role suffix.
-- Do not mix suffixes inside a folder. For example, `Managers/Services` cannot
-  contain a `MovementFactory`.
-- Do not create `Misc`, `Common`, `Helpers`, or `Utils` as escape-hatch folders.
-- A new concrete category suffix and subfolder must be documented in
-  `CONVENTIONS.md` before introduction; architectural responsibility and
-  dependency constraints belong here. A contract role alone needs no folder.
-- A type that changes from passive data to behavior must be renamed and moved
-  to the folder matching its new responsibility.
-- A feature-owned production `static class` is always placed under `Static`,
-  never under `Managers`, `Other`, `DataHolders`, or `Components`. Context-owned
-  shared static classes follow the direct context `Scripts/<Category>` rule.
+Use the [canonical placement rules](CONVENTIONS.md#script-placement) and
+[role tables](CONVENTIONS.md#script-categories-and-suffixes). Document a new
+category in CONVENTIONS before introducing it; define any new ownership,
+dependency, or lifecycle constraints here. A contract role alone needs no folder.
 
 ### Managers
 
-`Managers` contains behavioral, non-MonoBehaviour objects whose lifetime is
-managed by DI with `AsSingle` in the owning container. `AsSingle` means one
-instance per owning Project or Scene container, not necessarily one global
-instance for the whole application.
+Managers are non-MonoBehaviour behavioral objects managed by DI in their
+owning container. `AsSingle` means one instance per owning Project or Scene
+container, rather than one application-global instance. See the
+[Manager roles](CONVENTIONS.md#managers), including
+[System and Service](CONVENTIONS.md#system-and-service).
 
-| Folder | Required suffix | Role and usage |
-| --- | --- | --- |
-| `Accumulators` | `Accumulator` | Collects transient values or transitions until an explicit read/consume boundary. The owning feature controls initialization and lifetime. |
-| `Controllers` | `Controller` | Coordinates one non-visual use case or translates input into calls to gameplay contracts. Visual MonoBehaviour controllers belong directly to `Scripts/Components`. |
-| `Coordinators` | `Coordinator` | Orchestrates a multi-step workflow involving several services or systems. Application and scene flow coordinators belong here. |
-| `Factories` | `Factory` | Creates injected objects or aggregates and hides construction details. The factory is a singleton even when the objects it creates are transient. |
-| `Flows` | `Flow` | Executes one explicitly ordered, awaitable lifecycle or use-case pipeline. A Flow is invoked by its owner and never starts itself from a Unity callback. |
-| `Handlers` | `Handler` | Handles one command, request, callback, or message contract. A handler should have one clear input responsibility. |
-| `Mediators` | `Mediator` | Mediates several contracts without exposing their concrete implementations. Cross-feature mediation must still follow the Bridge rules. |
-| `Providers` | `Provider` | Supplies a value, resource, environment capability, or strategy-selected implementation without owning the consumer workflow. |
-| `Registries` | `Registry` | Maintains identity-to-instance or key-to-value registration and lookup for runtime objects. |
-| `Repositories` | `Repository` | Provides an abstraction over stored or queryable collections and persistence boundaries. |
-| `Serializers` | `Serializer` | Converts a selected data format to and from its runtime representation. |
-| `Services` | `Service` | Provides a specific capability through operations and queries; may own state and resources needed for that capability. |
-| `Storages` | `Storage` | Stores and retrieves raw data through a selected persistence mechanism. |
-| `Spawners` | `Spawner` | Coordinates creation, network spawning, registration, and initial placement of runtime entities. |
-| `Systems` | `System` | Owns the operation of a runtime subsystem: its active objects, state, interaction rules, transitions, or lifecycle. |
+The existing open-generic `IDebugLogger<>` binding to
+`FeatureDebugLoggerService<>` is an explicit `AsCached` case: one instance per
+closed generic type per context. `BaseFeatureInstaller` owns this registration;
+it does not change the default lifetime for other Managers. See
+[Logging](features/LOGGING.md#feature-logging).
 
-The criteria, examples, and overlap between these two roles are defined in
-[`CONVENTIONS.md`, System and Service](CONVENTIONS.md#system-and-service).
-State, lifecycle methods, Unity API access, and tick invocation do not select
-the suffix. Both roles follow the same Managers DI and explicit initialization
-constraints. Their names do not impose a System-to-Service dependency hierarchy;
-ownership and public contracts determine dependency direction. Existing clear
-names such as `SceneFlowService` remain valid when both role descriptions fit.
-
-Managers must not:
-
-- inherit from `MonoBehaviour`;
-- locate dependencies through scene searches or service locators;
-- initialize themselves from constructors, `Start`, or background tasks;
-- directly depend on another implementation feature.
-
-Interfaces for Managers live in `Abstract`, not beside their implementations.
-For example:
-
-```text
-Scripts/Abstract/IMovementService.cs
-Scripts/Managers/Services/MovementService.cs
-```
+Managers must not locate dependencies through scene searches or service
+locators, start initialization from constructors or detached background tasks,
+or depend on another feature's internal implementation. Their initialization
+is invoked by the owning feature after bindings are installed.
 
 ### DataHolders
 
-`DataHolders` contains passive data representations. These types may define
-constructors, serialization attributes, simple default values, and trivial
-value equality, but they do not perform workflows, call services, load assets,
-resolve dependencies, or mutate unrelated objects.
-
-| Folder | Required suffix | Role and usage |
-| --- | --- | --- |
-| `Configs` | `Config` | Authored or loaded configuration values. A config may be a plain class or `ScriptableObject`, but it contains no runtime service behavior. |
-| `Data` | `Data` | Internal feature state or a value bundle that does not represent a transport contract. Use the most specific name, such as `PlayerInputData`. |
-| `Descriptors` | `Descriptor` | Immutable description of how another object is identified or processed. |
-| `DTOs` | `DTO` | A transport representation used at a serialization, network, backend, or persistence boundary. Its shape follows the external contract. |
-| `Models` | `Model` | A long-lived runtime state representation owned by a feature. Models are passive data holders; they may change through their owner but do not resolve dependencies or execute workflows. |
-| `Payloads` | `Payload` | Immutable or short-lived parameters for a command, factory, spawn request, navigation request, or signal. |
-
-Use the uppercase `DTO` suffix: `PlayerStateDTO`. The folder remains `DTOs`
-because it names the category.
-
-Data holders must not be used as disguised services. If a type has methods such
-as `Load`, `Save`, `Spawn`, `Send`, `Update`, or `Initialize`, it normally does
-not belong in `DataHolders`.
+Use the [DataHolders rules](CONVENTIONS.md#dataholders) for passive data,
+configuration, settings, and transport shapes. Passing a config through DI
+does not make it a Manager or give it ownership of a workflow.
 
 ### Components
 
-`Components` contains presentation and scene-facing scripts. Every type in this
-folder must inherit from `MonoBehaviour` or
-`UnityEngine.UIElements.VisualElement`, directly or through a project base
-class. Plain C# presenters, services, and controllers are not Components.
-
-| Folder | Required suffix | Role and usage |
-| --- | --- | --- |
-| Root of `Components` | `Component` | General scene or prefab behavior attached to a GameObject when no more specific role applies. |
-| `Navigation` | `NavigationView` | MonoBehaviour presentation for navigation controls, transitions, or scene/screen navigation state. Navigation services remain Managers. |
-| `Popups` | `PopupView` | Popup presentation and serialized popup references. Popup control logic remains an injected Manager. |
-| `Screens` | `ScreenView` | Full-screen or major panel presentation owned by a screen flow. |
-| `StateMachines` | `StateMachine` | MonoBehaviour state machine attached to a scene object or prefab. |
-| `States` | `State` | MonoBehaviour state attached to a scene object or prefab. |
-| `Widgets` | `WidgetView` | Reusable, smaller UI presentation embedded in a screen or popup. |
-
-View rules:
-
-- Components receive runtime dependencies through DI.
-- Serialized fields reference scene objects, prefabs, assets, and visual
-  configuration; they are not service-locator substitutes.
-- A presentation View forwards user or Unity events to an injected contract
-  and renders state. It does not own business rules.
-- A View state machine or state owns only bounded transition/state processing;
-  reusable operations remain in processors, services, or systems.
-- Unity callbacks may update local presentation but must not start feature or
-  application initialization.
+Use the [Components categories](CONVENTIONS.md#components) for Unity-facing
+types. Components receive runtime dependencies through DI; serialized fields
+reference scene objects, prefabs, assets, and visual configuration.
+Presentation Views render state and forward events to injected contracts.
+Unity-bound states own bounded processing and delegate reusable operations.
+Local Unity callbacks must not start feature or application initialization.
 
 ### Other
 
-`Other` contains feature-owned behavior that is neither a DI `AsSingle`
-Manager, passive data, a View, nor one of the special top-level categories.
-Every type still lives in a suffix-specific subfolder.
-
-| Folder | Required suffix | Role and usage |
-| --- | --- | --- |
-| `Adapters` | `Adapter` | Translates one API or contract into another, especially at external SDK boundaries. |
-| `Builders` | `Builder` | Incrementally constructs a complex value or object description. |
-| `Commands` | `Command` | Represents an executable operation with explicit inputs. Passive command parameters are Payloads instead. |
-| `Converters` | `Converter` | Converts between two representations without owning persistence or workflow. |
-| `Decorators` | `Decorator` | Wraps one contract to add behavior while preserving that contract. |
-| `Editor` | `Editor`, `EditorWindow`, `AttributeDrawer` | Editor-only inspectors/tooling, windows, and Unity property drawers. Context-owned tooling uses the same suffixes. |
-| `Mappers` | `Mapper` | Maps fields between domain, data, DTO, or View representations. |
-| `Processors` | `Processor` | Applies one focused processing step, commonly as part of a state or data pipeline. |
-| `StateMachines` | `StateMachine` | Owns transitions and the active state for a bounded behavior. |
-| `States` | `State` | Implements one behavioral state used by a state machine. Passive stored state remains `Data`. |
-| `Strategies` | `Strategy` | Encapsulates a replaceable algorithm selected by the caller or DI composition. |
-
-`MonoBehaviour` state machines and states belong in `Components/StateMachines` and
-`Components/States`; `Other/StateMachines` and `Other/States` contain only plain C#
-implementations.
-
-If an `Other` object becomes a long-lived DI `AsSingle`, move it to the most
-appropriate Managers role rather than keeping it under `Other`.
+Use the [Other roles](CONVENTIONS.md#other) for remaining feature-owned
+behavior. If an object becomes a long-lived DI-managed dependency, move it
+to its actual Managers role. Adapter dependencies still follow the public
+contract and context-direction rules.
 
 ### Abstract
 
-`Abstract` contains contracts and abstract foundations:
-
-- interfaces use the `I` prefix with a meaningful capability or subject name,
-  such as `IMovementService`, `INetworkEntityFactory`, `IPlayerDataAccessor`,
-  or `IScene`;
-- abstract base classes use the `Base` prefix and retain their semantic suffix,
-  such as `BaseMovementState` or `BaseNetworkEntityFactory`;
-- concrete implementations are forbidden in this folder.
-
-The contract role vocabulary and its boundaries are defined in
-[`CONVENTIONS.md`, Abstract](CONVENTIONS.md#abstract). It includes Manager
-roles and the established `Accessor`, `Mutator`, `Reader`, `Logger`, `Probe`,
-`Presenter`, `Contributor`, `Backend`, `Drawable`, and `Collection` roles,
-with `Contract` as a fallback. Subject/marker interfaces need no artificial
-role suffix. These contract names do not introduce additional script folders.
-
-Interface names describe the consumer's capability; implementation names
-describe their role or mechanism, so their suffixes need not match. A
-`Mutator` may inherit an `Accessor` when reading belongs to that API, but this
-is not mandatory inheritance for every mutation contract.
-
-An interface belongs to the feature that owns the contract, not automatically
-to the feature that first implements it.
-
-The `Base` prefix applies to all top-level abstract classes in contexts, not
-only files in Abstract. The documented generic definition families
-`ScreenDefinition<TScreen, TSettings>`, `SceneDefinition<TScene, TSettings>`,
-`PopupDefinition<TPopup, TPayload, TResponse>`, and
-`LoadingScreenDefinition<TScreen, TSettings>` retain their existing names
-above the corresponding non-generic `Base*Definition` in Template. Nested
-implementation types and Shared primitives follow their own naming scope.
+The [contract vocabulary and abstract-base naming](CONVENTIONS.md#abstract)
+are maintained in CONVENTIONS. A contract belongs to the feature that owns
+the capability, regardless of where its first implementation lives.
+Runtime consumers use those public contracts; feature groups and installers
+compose implementations.
 
 ### Static
 
-`Static` contains every production `static class` owned by the feature. Static
-classes are separated by responsibility and may not be placed elsewhere merely
-because another category has a similar name.
-
-| Folder | Required suffix | Role and usage |
-| --- | --- | --- |
-| `Constants` | `Constants`, `Keys`, or `Defaults` | Compile-time constants, stable identifiers, documented defaults, and immutable `static readonly` values for one cohesive concept. |
-| `Errors` | `Errors` | Static catalog of stable error definitions, codes, or factory methods. Runtime error state is not static. |
-| `Extensions` | `Extensions` | Cohesive extension methods for one target concept. Avoid unrelated extension collections. |
-| `Utilities` | `Utility` | Stateless reusable operations that cannot be expressed as extensions and do not require injected dependencies. |
-| `Validation` | `Validation` | Stateless validation functions that return results without executing the validated workflow. |
-
-Static rules:
-
-- Every type under `Static` is declared `static`.
-- Mutable global state, cached services, runtime registries, and service-locator
-  access are forbidden.
-- A static operation that needs an injected service must become a Manager or an
-  `Other` strategy instead.
-- Constants must not load configuration or assets.
-- `Utility` is permitted only for a cohesive, specifically named responsibility;
-  generic names such as `GameUtility` or `CommonUtility` are forbidden.
+Follow the [Static rules](CONVENTIONS.md#static), including the bounded Debug
+Visualization facade exception. Runtime state and backend lifecycle remain
+owned by DI objects, rather than by their static facade.
 
 ### Tests
 
-Tests are owned by their context rather than stored inside production Feature
-folders. They are separated only by execution environment:
-
-```text
-Contexts/<Context>/Tests/
-  Editor/
-    <Subject>Tests.cs
-  Play/
-    <Subject>Tests.cs
-```
-
-| Folder | Required suffix | Role and usage |
-| --- | --- | --- |
-| `Editor` | `Tests` | Fast Edit Mode tests for plain C# behavior, DI bindings, data conversion, validation, and editor-safe logic that does not require a running scene. |
-| `Play` | `Tests` | Play Mode tests requiring Unity lifecycle, scenes, prefabs, MonoBehaviours, frame progression, or runtime integration. |
-
-Test rules:
-
-- Tests are placed directly in `Contexts/<Context>/Tests/Editor` or
-  `Contexts/<Context>/Tests/Play`; do not create `Scripts/Tests` inside a
-  Feature or nested production-category folders.
-- Shared types do not have dedicated test fixtures. Test feature behavior and
-  integration contracts instead of duplicating tests for `Shared` primitives.
-- Test fixture files and fixture types end with `Tests`, not `Test`.
-- Tests use the same flat context namespace as their production feature. The
-  required `Tests` type suffix and the `Tests` path distinguish test code; test
-  folders do not extend the namespace.
-- Production code must not reference a test namespace or test-only type.
-- Editor tests must not be used to hide logic that belongs in a Play test.
-- Play tests must enter scenes through the supported flow when testing
-  application initialization.
-- Production code is compiled into `ProjectCore.Runtime`. Editor and Play tests
-  use separate test assemblies and reference the runtime assembly explicitly.
-- Test assemblies are excluded from normal player builds and must not be used
-  as production dependencies.
+Test placement and fixture naming are defined in
+[CONVENTIONS](CONVENTIONS.md#tests). Tests share their context's flat namespace;
+their path and assembly distinguish them from production code.
+Production uses the existing `ProjectCore.Runtime` assembly; Editor and Play
+tests use separate assemblies and explicitly reference it. Preserve these
+assembly definitions and references; do not add new `.asmdef` files.
+Test assemblies are excluded from normal player builds and must not be
+production dependencies. Tests of startup enter scenes through the supported
+Preloader flow.
 
 ### Enums
 
-`Enums` contains only enum declarations, one enum per file. Enum names are
-singular or plural and use a semantic suffix when it clarifies the value category:
-
-| Suffix | Use |
-| --- | --- |
-| `Type` | Selects one category or implementation kind. |
-| `State` | Represents a state-machine or lifecycle state. |
-| `Status` | Represents the outcome or current condition of an operation. |
-| `Mode` | Selects an operating mode that changes behavior. |
-| `Reason` | Explains why an event, transition, or failure occurred. |
-
-Do not append `Enum`. Prefer `MovementState` over `MovementStates` or
-`MovementStateEnum`.
+Enum naming is defined in [CONVENTIONS](CONVENTIONS.md#enums).
 
 ### Init
 
-`Init` contains composition and lifecycle types that are invoked by the unified
-initialization flow.
-
-| Required suffix | Role and usage |
-| --- | --- |
-| `Feature` | Feature entry that declares its bindings and lifecycle participants. |
-| `FeatureGroup` | Explicitly ordered composition of several features. It contains no feature behavior itself. |
-| `Installer` | Zenject composition root that registers bindings only. |
-| `Initializer` | Async initialization implementation explicitly invoked and awaited by the owning flow. |
-| `EntryPoint` | Root trigger for a complete flow. `ApplicationEntryPoint` in Preloader is the only application entry point. |
-
-No `Init` type may start an independent initialization chain from `Awake` or
-`Start`. A scene `Initializer` is called by the persistent game-flow
-coordinator after its installer has completed.
+Composition type roles are defined in [CONVENTIONS](CONVENTIONS.md#init).
+An Initializer is explicitly invoked and awaited by its owning flow.
+The lifecycle and initialization order are defined below.
 
 ## Initialization Flow
 
@@ -1105,199 +788,47 @@ External packages are excluded from this convention.
 
 ## Naming Convention
 
+`CONVENTIONS.md` is the source of truth for naming and coding style.
+
 ### Code
 
-- Types, methods, properties, events, and namespaces use `PascalCase`.
-- Interfaces start with `I`.
-- Top-level abstract classes in contexts start with `Base`, except for the
-  four generic definition families described under Abstract.
-- Private instance fields use `_camelCase`.
-- A C# file name matches its primary type name, with the documented generic
-  `T` filename option.
-- Feature entry points use `<Feature>Feature`.
-- Context composition roots use `<Context>ContextInstaller`; explicitly invoked
-  scene initialization contracts use `<Context>ContextInitializer`.
-- The persistent composition root uses `ProjectContextInstaller`. It binds the
-  Project initialization contracts but does not start a second bootstrap flow.
-- `ApplicationEntryPoint` is the only application bootstrap type.
-- Avoid duplicated segments such as `Prototype.Prototype`.
-- Feature-owned types use a subject or feature term when a short name would
-  be ambiguous in the flat context namespace. The name composition and
-  mechanism qualifier rules are defined in
-  [`CONVENTIONS.md`](CONVENTIONS.md#type-name-composition); the full feature
-  name is not a mandatory prefix.
-- Names must describe responsibility rather than implementation details such
-  as `Manager`, `Helper`, or `Utils`, unless the type genuinely represents a
-  broad utility API.
-
-Canonical abbreviation forms and boolean member naming are defined in
-[`CONVENTIONS.md`](CONVENTIONS.md#naming). Project-owned identifiers use `Id`,
-`UI`, `HUD`, `DTO`, `FPS`, `FOV`, `Json`, and `Ntp`; SDK-required names keep
-their original spelling. Boolean state/settings members use `Is`, `Has`,
-`Can`, or `Should`, with `Was` for historical input/sample notifications.
-Operation-result methods and framework-required members are excluded.
-
-`CONVENTIONS.md` is the source of truth for naming. It also defines
-[generic parameter and type name composition](CONVENTIONS.md#type-name-composition),
-[injection method names](CONVENTIONS.md#injection-method-names),
-[`Empty`, `Default`, and `NoOp`](CONVENTIONS.md#empty-default-and-noop),
-[nested implementation types](CONVENTIONS.md#nested-implementation-types), and
-[the scope of automated enforcement](CONVENTIONS.md#enforcement).
-Method injection uses `Construct` (or a distinct `ConstructBase<Type>` on
-a base) to supply dependencies. Initialization remains the explicitly awaited
-feature/context flow; method injection must not start another flow.
-The [DataHolders rules](CONVENTIONS.md#dataholders) explain why an authored
-settings or catalog type retains the final `Config` suffix.
-
-Spelling mistakes are not accepted in paths or identifiers. In particular,
-legacy names must be corrected as follows:
-
-```text
-Proyotype -> Prototype
-Enteties  -> Entities
-Paterns   -> Patterns
-```
+Use its [Naming](CONVENTIONS.md#naming),
+[Type Name Composition](CONVENTIONS.md#type-name-composition),
+[Injection Method Names](CONVENTIONS.md#injection-method-names),
+[Empty, Default, and NoOp](CONVENTIONS.md#empty-default-and-noop), and
+[Nested Implementation Types](CONVENTIONS.md#nested-implementation-types).
+Injecting dependencies does not start initialization; it remains part of the
+explicitly awaited feature/context flow.
 
 ### Folders
 
-Use the canonical folder names below consistently:
-
-```text
-Abstract
-Animations
-Assets
-Catalogs
-Components
-Configs
-Constants
-Controllers
-DTOs
-Data
-Definitions
-Enums
-Features
-Init
-InputActions
-Materials
-Mediators
-Models
-Other
-PanelSettings
-Prefabs
-References
-Resources
-Scenes
-Scripts
-Serializers
-Services
-Sprites
-StateMachines
-Storages
-Systems
-UI
-UserData
-```
+Use the canonical [Source Layout](CONVENTIONS.md#source-layout),
+[Feature Layout](CONVENTIONS.md#feature-layout), and
+[category tables](CONVENTIONS.md#script-categories-and-suffixes).
 
 ### Unity Assets
 
-- Scenes use `Scene_<Context>[_<Detail>]`.
-- Prefabs use `Prefab_<Feature>_<Purpose>`.
-- Materials use `Material_<Purpose>`.
-- ScriptableObject asset files use `Config_<OwnerContext>_<FeatureOrRole>_<Detail>`.
-- Resource instance ownership may differ from the context defining its C# type.
-- Sprites use `Sprite_`, references `Reference_`, clips `Animation_`, controllers
-  `AnimatorController_`, input action sets `InputActions_`, and UI themes `Theme_`.
-- The full resource naming table and semantic folders are defined in
-  [`CONVENTIONS.md`](CONVENTIONS.md#unity-resource-naming).
-- `CreateAssetMenu.fileName` follows
-  `Config_<Context>_<Feature>_<Detail>`.
-- `CreateAssetMenu.menuName` follows
-  `SO/<Context>/<Feature>/<Detail>`.
-
-Example:
-
-```csharp
-[CreateAssetMenu(
-    fileName = "Config_GameCore_Movement_Locomotion",
-    menuName = "SO/GameCore/Movement/Locomotion")]
-public sealed class LocomotionMovementConfig : ScriptableObject
-{
-}
-```
-
-When renaming Unity assets, move their `.meta` files with them. When renaming
-serialized fields or managed-reference types, use the applicable migration
-attributes such as `FormerlySerializedAs` or `MovedFrom`.
+Resource names, semantic folders, owner names, CreateAssetMenu, and rename
+compatibility are defined in
+[Unity Resource Naming](CONVENTIONS.md#unity-resource-naming).
+An instance's owning context may differ from the context that defines its type.
 
 ## Coding Rules
 
-- Keep business rules in services or domain objects.
-- Keep Unity references and presentation changes in components, systems,
-  controllers, and views.
-- Services must not depend directly on views.
-- Expose shared services through interfaces when multiple consumers require a
-  stable contract.
-- Use UniTask for asynchronous context and feature workflows; do not use it in
-  `Shared`.
-- Register scene-lifetime features in the owning context installer.
-- Register application-lifetime features through `ProjectContextInstaller` or
-  a feature group owned by the Project context.
-- Register startup-only features through `PreloaderContextInstaller`; never
-  resolve Preloader-scoped instances from a later gameplay scene.
-- Keep project-wide resources in `Assets/ProjectCore/Assets`.
-- Keep feature-owned data and presentation assets inside the feature.
-- Do not commit passwords, tokens, credentials, or keystores.
+Coding style, member order, and API visibility are maintained in
+[CONVENTIONS](CONVENTIONS.md#c-and-unity-coding-rules). Ownership and runtime
+behavior continue to follow this document's dependency, DI, and lifecycle
+rules. In particular, Services must not depend directly on Views; integration
+uses the appropriate public presentation contract.
 
 ## Architecture Validation
 
-Run the project-owned validator from the repository root:
+Use Strict validation for local verification and CI. It returns a nonzero
+exit code for Error diagnostics; heuristic Warnings require review.
+The current baseline has zero errors and warnings.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\Tools\Architecture\Validate-Architecture.ps1 `
-  -Mode Report
-```
-
-`Report` mode prints all diagnostics but returns a successful exit code. Use
-`-SummaryOnly` for counts and `-OutputPath` for a JSON report:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\Tools\Architecture\Validate-Architecture.ps1 `
-  -Mode Report `
-  -SummaryOnly `
-  -OutputPath Logs\ArchitectureValidation.json
-```
-
-After legacy violations are removed, CI and local verification use strict mode:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\Tools\Architecture\Validate-Architecture.ps1 `
-  -Mode Strict `
-  -SummaryOnly
-```
-
-`Strict` returns a non-zero exit code when an Error diagnostic exists. Warnings
-identify heuristic checks that require review and do not fail strict mode.
-
-The validator checks:
-
-- path ownership and legacy roots;
-- context and Shared namespaces;
-- external dependencies in Shared;
-- flat feature ownership and `Scripts` taxonomy;
-- folder/suffix correspondence;
-- static, Manager, component, enum, abstract, Init, and test type rules;
-- resource prefixes, semantic folders, owner names, `.meta` presence,
-  CreateAssetMenu context spelling, and empty folders;
-- known spelling and legacy suffix errors;
-- file/type correspondence and one top-level type per file;
-- suspicious `Awake`, `OnEnable`, `Start`, and `async void` initialization.
-
-The validator intentionally reports possible lifecycle and DI issues as
-Warnings when static source inspection cannot prove them. Compilation, tests,
-and manual architecture review remain required.
-
-Detailed rule families and the positive regression fixture are documented in
-[`Tools/Architecture/README.md`](../Tools/Architecture/README.md).
+Commands, diagnostic families, regression fixtures, and analysis limits are
+maintained in [the validator README](../Tools/Architecture/README.md).
+The [Enforcement section](CONVENTIONS.md#enforcement) distinguishes automated
+structure checks from semantic naming review. A clean report does not replace
+compilation, Unity tests, serialized-reference checks, or architecture review.

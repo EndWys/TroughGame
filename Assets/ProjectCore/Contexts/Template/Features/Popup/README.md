@@ -151,8 +151,8 @@ Use `Dismiss()` for a close button that produces no response. Use
 
 ```csharp
 [CreateAssetMenu(
-    fileName = "Config_Gameplay_Inventory_DeleteItemPopup",
-    menuName = "SO/Gameplay/Inventory/DeleteItemPopup")]
+    fileName = "Config_TechnicalPrototype_Inventory_DeleteItemPopup",
+    menuName = "SO/TechnicalPrototype/Inventory/DeleteItemPopup")]
 public sealed class DeleteItemPopupDefinition
     : PopupDefinition<
         DeleteItemPopupView,
@@ -162,9 +162,9 @@ public sealed class DeleteItemPopupDefinition
 }
 ```
 
-1. Store UXML, USS, textures, and fonts under the implementation feature's
-   `Assets`.
-2. Store the concrete definition asset under its `Assets`.
+1. Store UXML in the owning feature's `Assets/UI/UXML` and USS in
+   `Assets/UI/USS`; other resources use their corresponding Assets categories.
+2. Store the concrete definition asset under its `Assets/Definitions`.
 3. Assign the popup UXML to the definition.
 4. Add the definition to the scene `PopupCatalogConfig`.
 

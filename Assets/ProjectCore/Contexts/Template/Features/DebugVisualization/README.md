@@ -3,11 +3,12 @@
 Debug Visualization provides runtime debug drawing, channel filtering, object
 inspection, and a UI Toolkit HUD for editor and development builds.
 
-`DebugVisualizationUtility` is a stateless static facade used by gameplay
+`DebugVisualizationUtility` is a static drawing facade used by gameplay
 code. `DebugVisualizationSystem` owns the runtime runner, drawing state, and
 lifecycle through DI. `DebugVisualizationRegistry` owns registered inspection
 targets and reflection caches. When the feature is disabled or unavailable,
-the facade routes calls to a no-op backend.
+the facade routes calls to a no-op backend. It retains only a replaceable
+backend reference; runtime state and backend lifecycle remain DI-owned.
 
 `DebugVisualizationFeature` is installed in `ProjectContext`. It connects the
 facade to the context-owned system, initializes the feature assets when Debug
@@ -62,7 +63,7 @@ public sealed class EnemyDebugComponent : BaseDebugInspectableComponent
     [SerializeField, DebugValue(
         "AI/Stats",
         Label = "Move Speed",
-        Display = DebugVisualizationValueDisplay.HudAndWorld)]
+        Display = DebugVisualizationValueDisplay.HUDAndWorld)]
     private float _moveSpeed = 4f;
 
     [SerializeField, DebugRadius(
@@ -112,11 +113,11 @@ targets and draw state, and destroys the runtime runner.
 
 ## Feature assets
 
-- `Assets/Config_Template_DebugVisualization_Settings.asset` controls
+- `Assets/Configs/Config_Template_DebugVisualization_Settings.asset` controls
   HUD startup, draw limits, default style, and channel styles.
-- `Assets/Config_Template_DebugVisualization_PanelSettings.asset`
+- `Assets/UI/PanelSettings/Config_Template_DebugVisualization_PanelSettings.asset`
   configures the UI Toolkit panel.
-- `Assets/USS/Document_Template_DebugVisualization_HUD.uss`
+- `Assets/UI/USS/Document_Template_DebugVisualization_HUD.uss`
   defines HUD presentation.
 - `Assets/Scenes/Scene_Template_DebugVisualization_Example.unity`
   contains the example scene.

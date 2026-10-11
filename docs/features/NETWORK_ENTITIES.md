@@ -23,6 +23,20 @@ validate and decode it. Type and Index are computed properties. Equality and
 hashing use Value; ToString is for diagnostics only. Validation and errors live
 in the feature's static `NetworkEntityIdValidation` and `NetworkEntityIdErrors`.
 
+## Component operations
+
+Consumers inject `IGameEntityComponentService`, implemented by
+`GameEntityComponentService`. It supports predicate search, sorted search,
+collecting entity IDs, and `ApplyToAll<TComponent>(Action<TComponent>)`.
+ApplyToAll invokes the action over a snapshot of matching component references.
+This is an operations contract, rather than a read-only Accessor.
+
+Combat's `IDamageableEntityService` and `IDamageSourceEntityService` provide
+the same operations restricted to their corresponding Base*Component types.
+They are registered by CombatFeature and live in Managers/Services; damage
+application remains a component responsibility. MovementSystem retains its
+existing delegation to the general component service.
+
 ## Lifetime and authority
 
 `NetworkEntityIdFactory` maintains a monotonically increasing counter per type

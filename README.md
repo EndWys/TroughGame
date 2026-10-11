@@ -23,6 +23,9 @@ are initialized through the common application flow.
 
 ## Development rules
 
+The [documentation index](docs/README.md) lists current standards and feature
+guides.
+
 - Use DI for services, systems, factories, and other functional dependencies.
 - Place Features directly under their context; connect them through public
   contracts and injected adapters.
@@ -39,9 +42,6 @@ documented in
 Detailed coding, member-order, naming, suffix, resource, and folder conventions
 are documented separately in
 [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md).
-
-Migration stages and their status are documented in
-[`docs/ARCHITECTURE_MIGRATION.md`](docs/ARCHITECTURE_MIGRATION.md).
 
 The standard authored hierarchy for gameplay scenes is documented in
 [`docs/SCENE_HIERARCHY_STANDARD.md`](docs/SCENE_HIERARCHY_STANDARD.md).

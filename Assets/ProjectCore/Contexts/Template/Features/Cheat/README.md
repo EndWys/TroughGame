@@ -27,9 +27,8 @@ by the service and is not entered by the caller.
 Create a context-owned handler and a narrow contract used by its Feature:
 
 ```csharp
-public interface IPlayerCheatHandler
+public interface IPlayerCheatHandler : ICheatHandler
 {
-    public void Initialize();
 }
 
 public sealed class PlayerCheatHandler : BaseCheatHandler, IPlayerCheatHandler
@@ -50,12 +49,16 @@ initialize it from the owning Feature's explicit initialization step:
 
 ```csharp
 BindInterfacesAsSingle<PlayerCheatHandler>();
-Resolve<IPlayerCheatHandler>().Initialize();
+ResolveAs<IPlayerCheatHandler, PlayerCheatHandler>().Initialize();
 ```
 
 Because `BaseCheatHandler` implements `IDisposable`, its registration is
 removed with the owning DI context. The Cheat Feature contains no project- or
 game-specific handlers.
+
+The marker contract identifies this handler's binding. Implementation-only
+startup is invoked through `ResolveAs` in the feature initialization step;
+it does not add an Initialize method to the consumer contract.
 
 Custom converters follow the same ownership rule: keep the returned
 `IDisposable` in the registering context-owned object and dispose it during

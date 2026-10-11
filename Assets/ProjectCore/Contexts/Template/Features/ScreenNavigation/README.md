@@ -111,8 +111,8 @@ not override `ParentScreenType`.
 
 ```csharp
 [CreateAssetMenu(
-    fileName = "Config_Gameplay_ShopScreen",
-    menuName = "SO/Gameplay/Screens/Shop")]
+    fileName = "Config_TechnicalPrototype_Shop_Screen",
+    menuName = "SO/TechnicalPrototype/Shop/Screen")]
 public sealed class ShopScreenDefinition
     : ScreenDefinition<ShopScreenView, ShopScreenSettings>
 {
@@ -124,8 +124,9 @@ Omit `ParentScreenType` when `ShopScreenView` must be a root screen.
 
 ### 4. Register presentation assets
 
-1. Store UXML, USS, textures, and fonts under the feature's `Assets`.
-2. Create the concrete screen definition asset under `Assets`.
+1. Store UXML in `Assets/UI/UXML` and USS in `Assets/UI/USS`; other resources
+   use their categories under the feature's `Assets`.
+2. Create the concrete screen definition asset under `Assets/Definitions`.
 3. Assign the screen UXML to the definition asset.
 4. Add the definition asset to the scene `ScreenCatalogConfig`.
 

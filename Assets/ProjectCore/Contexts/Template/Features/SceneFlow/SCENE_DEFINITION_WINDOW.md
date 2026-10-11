@@ -10,7 +10,9 @@ index, and adds the definition to `SceneCatalogConfig`.
 
 - A `SceneCatalogConfig` asset.
 - A concrete `SceneDefinition<TScene, TSettings>` C# type.
-- An existing scene, or an existing folder below `Assets` for a new scene.
+- An existing scene, or an existing context-owned `Assets/Scenes` folder for
+  a new scene. Scene locations and names follow
+  [Unity Resource Naming](../../../../../../docs/CONVENTIONS.md#unity-resource-naming).
 
 ## Existing Scene
 
@@ -25,10 +27,16 @@ cannot be registered when another catalog entry already uses the same `TScene`.
 ## New Scene
 
 1. Select `Scene Catalog`.
-2. Enter an existing `Scene Directory` below `Assets` and a `Scene File Name`.
+2. Choose an existing `Scene Directory` under
+   `Assets/ProjectCore/Contexts/<Context>/Assets/Scenes` or
+   `Assets/ProjectCore/Contexts/<Context>/Features/<Feature>/Assets/Scenes`.
+   Nested scene folders are allowed. The window has no default context.
+   Enter `Scene_<Context>[_<Detail>]` as the `Scene File Name`.
 3. Select `Definition Type`.
 4. Select **Create Scene And Definition**.
 
 The window creates an empty scene, saves it, creates the definition asset beside
-it, and registers both. Add the required `SceneContext` and context installer
-before using the new scene at runtime.
+it, and registers both. A scene name that does not match the folder's context
+is rejected. For a gameplay scene, add the composition required by the
+[Scene Hierarchy Standard](../../../../../../docs/SCENE_HIERARCHY_STANDARD.md)
+before using it at runtime.

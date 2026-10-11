@@ -68,7 +68,7 @@ performs synchronous emergency cleanup.
 1. Create immutable settings implementing `ILoadingScreenSettings`.
 2. Create a View inheriting `BaseLoadingScreenView<TSettings>` in
    `Scripts/Components/Screens`.
-3. Create its UXML and USS in `Assets`.
+3. Create its UXML in `Assets/UI/UXML` and USS in `Assets/UI/USS`.
 4. Create a definition inheriting
    `LoadingScreenDefinition<TView, TSettings>`.
 5. Create the definition asset and assign its UXML.

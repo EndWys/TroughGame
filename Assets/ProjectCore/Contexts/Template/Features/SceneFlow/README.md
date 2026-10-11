@@ -70,3 +70,9 @@ passed by consumers.
 
 `IGameSceneLifecycle` is implemented by the scene context initializer. Its
 `ExitAsync` runs before Unity unloads the previous scene.
+
+Presenter cleanup runs in `finally` with `CancellationToken.None` and hides
+presenters in reverse order. A presenter's HideAsync failure is logged and
+does not interrupt cleanup of the remaining presenters or replace the
+transition result. `IsTransitioning` stays true until cleanup finishes, so
+another transition cannot begin while the previous transition UI is closing.

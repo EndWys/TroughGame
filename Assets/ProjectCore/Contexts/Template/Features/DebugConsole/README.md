@@ -18,6 +18,10 @@ for the current build.
 - Widget Views only render supplied data and report user actions. They do not
   resolve or retain services.
 
+`DebugConsoleFeature` resolves and retains `IClassFactory` during its explicit
+initialization. Runtime enable/disable callbacks use that factory to create
+the console; they do not resolve dependencies from the container.
+
 When Runtime Console is allowed, the System collects up to `MaxLogs` entries
 even while the window is closed or temporarily disabled. Enabling the tool
 creates and attaches the View; disabling it removes only the View. System and

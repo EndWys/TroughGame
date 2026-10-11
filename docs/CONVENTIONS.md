@@ -6,26 +6,11 @@ TroughGame. Architecture ownership and dependency direction are defined in
 
 ## Source Layout
 
-Project code is organized below `Assets/ProjectCore`:
-
-```text
-Assets/ProjectCore/
-  Assets/
-  Contexts/<Context>/
-    Assets/
-    Scripts/                 # context-shared scripts, no feature lifecycle
-    Features/<Feature>/
-    Tests/
-      Editor/
-      Play/
-  Shared/
-    Attributes/
-    Collections/
-    Modifiers/
-    Patterns/
-    Results/
-  ThirdParty/
-```
+Project code is organized below `Assets/ProjectCore`. The context and root layout
+is maintained in
+[`ARCHITECTURE_RULES.md`, Architecture](ARCHITECTURE_RULES.md#architecture).
+This document defines the physical layout inside those owners and the
+type/resource naming conventions.
 
 `Template` is project-agnostic reusable code. `Shared` is independent of
 external APIs and may reference only .NET APIs. Shared Unity property
@@ -155,10 +140,37 @@ inherit the corresponding non-generic `Base*Definition` in their owning
 Template features. Shared primitives follow their existing independent naming
 conventions; this context-category rule does not rename `HandlerPayload`.
 
+### Script Placement
+
+Choose the folder by the type's responsibility, in this order:
+
+1. Test fixture or test-only support type: the owning context's Tests/Editor
+   or Tests/Play.
+2. Interface or abstract contract foundation: Abstract. An abstract base that
+   already has a concrete category, such as a MonoBehaviour state or a
+   ScriptableObject definition, may remain in that category; it still follows
+   the Base naming rule and its documented exceptions.
+3. Enum: Enums.
+4. Composition or explicitly invoked initialization: Init.
+5. Static class: the matching Static subfolder.
+6. Passive data, including authored configs: the matching DataHolders subfolder.
+7. MonoBehaviour or VisualElement: the matching Components location.
+8. Behavioral object that is neither MonoBehaviour nor VisualElement and has
+   a DI-managed lifetime: the matching Managers subfolder.
+9. Remaining feature-owned behavior: the matching Other subfolder.
+
+The type's nature takes precedence over its binding: a scene component bound
+as one instance remains a Component, and a config passed through DI remains a
+DataHolder. Rename and move a type when its responsibility changes. Do not
+introduce a suffix solely to fit an existing folder.
+
 ### Managers
 
 Non-`MonoBehaviour` behavioral objects registered as DI `AsSingle` in their
-owning container. Interfaces belong in `Abstract`.
+owning container. Interfaces belong in `Abstract`. The existing open-generic
+feature logger is the documented AsCached exception; its registration and
+lifetime are defined in
+[`ARCHITECTURE_RULES.md`, Managers](ARCHITECTURE_RULES.md#managers).
 
 | Folder | Suffix | Meaning |
 | --- | --- | --- |
@@ -325,6 +337,9 @@ Visualization only.
 | Extensions | `Extensions` | Cohesive extension methods for one target concept. |
 | Utilities | `Utility` | Stateless cohesive operations that are not extensions. |
 | Validation | `Validation` | Stateless validation of inputs and configuration. |
+
+A Utility must have a cohesive, specifically named responsibility; generic
+names such as `GameUtility` or `CommonUtility` are not permitted.
 
 Keep validation rules and `Validate*` methods in feature-owned static
 `*Validation` classes. Components and lifecycle entries invoke those classes
@@ -530,8 +545,11 @@ Keep related overloads together. Do not use regions to hide unrelated members.
 
 - Use `using` directives only when a type from the namespace is referenced;
   remove unused usings.
-- Keep business rules in domain/services, Unity references in views/components,
-  and external SDK access behind adapters/providers.
+- Keep business rules in the owning behavioral types and presentation changes
+  in Components/Views. Reusable Unity operations may belong to Services,
+  Strategies, or Processors within their bounded responsibility, as in
+  LevelCollisionService. External integrations are consumed through injected
+  contracts; Unity API access alone does not select a category.
 - Use UniTask for asynchronous runtime/initialization workflows; Shared must
   not depend on UniTask.
 - Do not start application work from `Awake`, `OnEnable`, or arbitrary `Start`.
