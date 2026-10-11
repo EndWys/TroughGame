@@ -15,7 +15,7 @@ namespace ProjectCore.Prototype
         private IClimbDetectorDataMutator _climbDetectorDataMutator;
 
         [Inject]
-        private void Constructor(IClimbDetectorDataMutator climbDetectorDataMutator)
+        private void Construct(IClimbDetectorDataMutator climbDetectorDataMutator)
         {
             _climbDetectorDataMutator = climbDetectorDataMutator;
         }

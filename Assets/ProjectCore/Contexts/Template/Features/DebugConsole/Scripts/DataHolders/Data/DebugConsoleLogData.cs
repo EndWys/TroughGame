@@ -10,13 +10,13 @@ namespace ProjectCore.Template
             string stackTrace,
             LogType type)
         {
-            ID = id;
+            Id = id;
             Message = message;
             StackTrace = stackTrace;
             Type = type;
         }
 
-        public int ID { get; }
+        public int Id { get; }
         public string Message { get; }
         public string StackTrace { get; }
         public LogType Type { get; }

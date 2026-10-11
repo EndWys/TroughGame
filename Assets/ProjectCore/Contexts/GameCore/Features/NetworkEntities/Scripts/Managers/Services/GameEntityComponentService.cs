@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace ProjectCore.GameCore
 {
-    public sealed class GameEntityComponentAccessorService : IGameEntityComponentAccessor
+    public sealed class GameEntityComponentService : IGameEntityComponentService
     {
         private readonly NetworkEntityRegistry _networkEntityRegistry;
 
-        public GameEntityComponentAccessorService(NetworkEntityRegistry networkEntityRegistry)
+        public GameEntityComponentService(NetworkEntityRegistry networkEntityRegistry)
         {
             _networkEntityRegistry = networkEntityRegistry ??
                 throw new ArgumentNullException(nameof(networkEntityRegistry));

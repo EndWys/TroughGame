@@ -9,7 +9,7 @@ namespace ProjectCore.GameCore
             BindAsSingle<NetworkEntityRegistry>();
             BindAsSingle<NetworkEntityIdFactory>();
             BindAsSingle<NetworkEntitySpawner>();
-            BindAsSingle<IGameEntityComponentAccessor, GameEntityComponentAccessorService>();
+            BindAsSingle<IGameEntityComponentService, GameEntityComponentService>();
 
             BindInterfacesAndSelfFromComponentInHierarchyAsSingle<ZenjectNetworkObjectProvider>();
         }

@@ -7,7 +7,7 @@ namespace ProjectCore.Template
 {
     internal sealed class DebugVisualizationRunnerComponent : MonoBehaviour
     {
-        private readonly List<DebugVisualizationHudValueData> _persistentValues = new();
+        private readonly List<DebugVisualizationHUDValueData> _persistentValues = new();
         private readonly List<PersistentWorldLabel> _persistentWorldLabels = new();
         private readonly Dictionary<Object, int> _worldLabelStack = new();
         private readonly Dictionary<Object, WorldOwnerLabel> _worldOwnerLabels = new();
@@ -19,25 +19,25 @@ namespace ProjectCore.Template
         private BoundedBuffer<DebugVisualizationDrawCommand> _draws;
         private DebugVisualizationSettingsConfig _settings;
         private Material _lineMaterial;
-        private float _nextHudValuesRefreshTime;
+        private float _nextHUDValuesRefreshTime;
         private bool _hudVisible;
 
-        private DebugVisualizationHudAdapter _hudController;
-        private DebugVisualizationHudWidgetView _hudView;
+        private DebugVisualizationHUDAdapter _hudController;
+        private DebugVisualizationHUDWidgetView _hudView;
 
-        public bool HudVisible
+        public bool IsHUDVisible
         {
             get => _hudVisible;
             set
             {
                 _hudVisible = value;
-                UpdateHudVisibility();
+                UpdateHUDVisibility();
             }
         }
 
         public IReadOnlyCollection<string> Channels => _channelNames;
         internal IReadOnlyList<string> ChannelNames => _channelNames;
-        internal IReadOnlyList<DebugVisualizationHudValueData> PersistentValues => _persistentValues;
+        internal IReadOnlyList<DebugVisualizationHUDValueData> PersistentValues => _persistentValues;
 
         public void Initialize(
             IDebugVisualizationBackend backend,
@@ -51,11 +51,11 @@ namespace ProjectCore.Template
             _settings = settings;
             _draws = new BoundedBuffer<DebugVisualizationDrawCommand>(
                 Mathf.Max(1, settings.MaxTransientDraws));
-            _hudController = new DebugVisualizationHudAdapter(backend);
-            _hudView = new DebugVisualizationHudWidgetView(_hudController);
+            _hudController = new DebugVisualizationHUDAdapter(backend);
+            _hudView = new DebugVisualizationHUDWidgetView(_hudController);
             _hudView.Attach(gameObject, panelSettings, hudStyleSheet);
             _hudController.Refresh();
-            HudVisible = settings.ShowHudOnStart;
+            IsHUDVisible = settings.ShouldShowHUDOnStart;
         }
 
         public void Add(DebugVisualizationDrawCommand command)
@@ -68,7 +68,7 @@ namespace ProjectCore.Template
         {
             channel = string.IsNullOrWhiteSpace(channel) ? DebugVisualizationUtility.DefaultChannel : channel;
             RegisterChannel(channel);
-            _persistentValues.Add(new DebugVisualizationHudValueData(
+            _persistentValues.Add(new DebugVisualizationHUDValueData(
                 owner != null ? owner.name : "Unknown", channel, label, value));
         }
 
@@ -139,9 +139,9 @@ namespace ProjectCore.Template
             _registry.Refresh(_backend);
             _draws.RemoveAll(static draw => draw.IsExpired);
 
-            if (_hudVisible && Time.unscaledTime >= _nextHudValuesRefreshTime)
+            if (_hudVisible && Time.unscaledTime >= _nextHUDValuesRefreshTime)
             {
-                _nextHudValuesRefreshTime = Time.unscaledTime + 0.1f;
+                _nextHUDValuesRefreshTime = Time.unscaledTime + 0.1f;
                 _hudController?.RefreshValuesOnly();
             }
         }
@@ -178,7 +178,7 @@ namespace ProjectCore.Template
             DrawWorldLabels();
         }
 
-        private void UpdateHudVisibility()
+        private void UpdateHUDVisibility()
         {
             _hudView?.SetVisible(_hudVisible);
         }

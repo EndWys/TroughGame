@@ -5,15 +5,15 @@ namespace ProjectCore.Template
     public sealed class DebugVisualizationExampleTargetComponent : MonoBehaviour, IDebugDrawable
     {
         [SerializeField,
-         DebugValue("Examples/Stats", Label = "Health", Display = DebugVisualizationValueDisplay.Hud)]
+         DebugValue("Examples/Stats", Label = "Health", Display = DebugVisualizationValueDisplay.HUD)]
         private float _health = 100f;
 
         [SerializeField,
-         DebugValue("Examples/Stats", Label = "Regen", Display = DebugVisualizationValueDisplay.Hud)]
+         DebugValue("Examples/Stats", Label = "Regen", Display = DebugVisualizationValueDisplay.HUD)]
         private float _regenPerSecond = 4f;
 
         [SerializeField,
-         DebugValue("Examples/State", Label = "State", Display = DebugVisualizationValueDisplay.Hud)]
+         DebugValue("Examples/State", Label = "State", Display = DebugVisualizationValueDisplay.HUD)]
         private string _state = "Patrol";
 
         [SerializeField,

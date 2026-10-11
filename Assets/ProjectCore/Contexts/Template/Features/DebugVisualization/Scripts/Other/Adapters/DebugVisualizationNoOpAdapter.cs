@@ -9,19 +9,19 @@ namespace ProjectCore.Template
     {
         private static readonly IReadOnlyList<string> EmptyChannels =
             Array.AsReadOnly(Array.Empty<string>());
-        private static readonly IReadOnlyList<DebugVisualizationHudValueData> EmptyValues =
-            Array.AsReadOnly(Array.Empty<DebugVisualizationHudValueData>());
+        private static readonly IReadOnlyList<DebugVisualizationHUDValueData> EmptyValues =
+            Array.AsReadOnly(Array.Empty<DebugVisualizationHUDValueData>());
 
         public bool IsInitialized => false;
 
-        public bool HudVisible
+        public bool IsHUDVisible
         {
             get => false;
             set { }
         }
 
         public IReadOnlyList<string> ChannelNames => EmptyChannels;
-        public IReadOnlyList<DebugVisualizationHudValueData> PersistentValues => EmptyValues;
+        public IReadOnlyList<DebugVisualizationHUDValueData> PersistentValues => EmptyValues;
 
         public void Initialize(
             DebugVisualizationSettingsConfig settings,

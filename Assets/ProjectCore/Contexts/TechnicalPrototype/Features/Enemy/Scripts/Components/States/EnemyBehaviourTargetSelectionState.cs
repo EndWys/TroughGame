@@ -6,7 +6,7 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class EnemyBehaviourTargetSelectionState : EnemyBehaviourState
+    public sealed class EnemyBehaviourTargetSelectionState : BaseEnemyBehaviourState
     {
         private EnemyInputSourceComponent _inputSource;
         private IEnemyTargetMutator _targetMutator;

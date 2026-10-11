@@ -16,8 +16,8 @@ namespace ProjectCore.Template
         public event Action<int> LogSelected;
         public event Action<DebugConsoleCheatPayload> CheatSubmitted;
         public event Action<string> VisualizationPathRequested;
-        public event Action<DebugVisualizationHudAdapter.ChannelTreeNode> VisualizationNodeRequested;
-        public event Action<DebugVisualizationHudAdapter.ChannelTreeNode, bool> VisualizationChannelsChanged;
+        public event Action<DebugVisualizationHUDAdapter.ChannelTreeNode> VisualizationNodeRequested;
+        public event Action<DebugVisualizationHUDAdapter.ChannelTreeNode, bool> VisualizationChannelsChanged;
         public event Action<float> Ticked;
 
         public void Initialize(DebugConsoleSettings settings);
@@ -25,18 +25,18 @@ namespace ProjectCore.Template
         public void ShowTab(DebugConsoleTabTypes tab);
         public void RenderLogs(
             IReadOnlyList<DebugConsoleLogData> logs,
-            int? selectedLogID);
+            int? selectedLogId);
         public void RenderLogDetails(string details);
         public void RenderAutocomplete(IReadOnlyList<CheatCommandDescriptor> commands);
         public void RenderCheats(IReadOnlyList<CheatCommandDescriptor> commands);
         public void SetCommandInput(string command);
         public void SetLogFilters(DebugConsoleLogFiltersData filters);
         public void RenderDebugVisualization(
-            DebugVisualizationHudAdapter.ChannelTreeNode currentNode,
+            DebugVisualizationHUDAdapter.ChannelTreeNode currentNode,
             IReadOnlyList<string> breadcrumbParts,
-            IReadOnlyDictionary<string, List<DebugVisualizationHudValueData>> valueGroups);
+            IReadOnlyDictionary<string, List<DebugVisualizationHUDValueData>> valueGroups);
         public void RenderDebugVisualizationValues(
-            IReadOnlyDictionary<string, List<DebugVisualizationHudValueData>> valueGroups);
+            IReadOnlyDictionary<string, List<DebugVisualizationHUDValueData>> valueGroups);
         public void RenderDebugVisualizationUnavailable();
         public void RenderPerformance(DebugConsolePerformanceData data);
         public void FocusCommandInput();

@@ -8,10 +8,14 @@ namespace ProjectCore.Template
     public sealed class DebugToolsSettingsConfig : ScriptableObject
     {
         [Header("Build Availability")]
-        [SerializeField] private bool _enabledInEditor = true;
-        [SerializeField] private bool _enabledInDevelopmentBuild = true;
-        [SerializeField] private bool _enabledInReleaseBuild;
-        [SerializeField] private bool _enabledOnDedicatedServer;
+        [UnityEngine.Serialization.FormerlySerializedAs("_enabledInEditor")]
+        [SerializeField] private bool _isEnabledInEditor = true;
+        [UnityEngine.Serialization.FormerlySerializedAs("_enabledInDevelopmentBuild")]
+        [SerializeField] private bool _isEnabledInDevelopmentBuild = true;
+        [UnityEngine.Serialization.FormerlySerializedAs("_enabledInReleaseBuild")]
+        [SerializeField] private bool _isEnabledInReleaseBuild;
+        [UnityEngine.Serialization.FormerlySerializedAs("_enabledOnDedicatedServer")]
+        [SerializeField] private bool _isEnabledOnDedicatedServer;
 
         [Header("Modules")]
         [SerializeField] private bool _consoleEnabled = true;
@@ -21,10 +25,10 @@ namespace ProjectCore.Template
         [Header("Console")]
         [SerializeField] private DebugConsoleSettings _consoleSettings = new();
 
-        public bool EnabledInEditor => _enabledInEditor;
-        public bool EnabledInDevelopmentBuild => _enabledInDevelopmentBuild;
-        public bool EnabledInReleaseBuild => _enabledInReleaseBuild;
-        public bool EnabledOnDedicatedServer => _enabledOnDedicatedServer;
+        public bool IsEnabledInEditor => _isEnabledInEditor;
+        public bool IsEnabledInDevelopmentBuild => _isEnabledInDevelopmentBuild;
+        public bool IsEnabledInReleaseBuild => _isEnabledInReleaseBuild;
+        public bool IsEnabledOnDedicatedServer => _isEnabledOnDedicatedServer;
         public DebugConsoleSettings ConsoleSettings => _consoleSettings;
 
         public bool IsInitiallyEnabled(DebugToolTypes tool)

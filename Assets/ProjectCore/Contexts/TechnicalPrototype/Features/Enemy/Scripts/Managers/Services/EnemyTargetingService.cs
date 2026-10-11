@@ -6,22 +6,22 @@ namespace ProjectCore.TechnicalPrototype
 {
     public sealed class EnemyTargetingService : IEnemyTargetingService
     {
-        private readonly IGameEntityComponentAccessor _gameEntityComponentAccessor;
+        private readonly IGameEntityComponentService _gameEntityComponentService;
         private readonly NetworkEntityRegistry _networkEntityRegistry;
 
         public EnemyTargetingService(
-            IGameEntityComponentAccessor gameEntityComponentAccessor,
+            IGameEntityComponentService gameEntityComponentService,
             NetworkEntityRegistry networkEntityRegistry)
         {
-            _gameEntityComponentAccessor = gameEntityComponentAccessor ??
-                throw new ArgumentNullException(nameof(gameEntityComponentAccessor));
+            _gameEntityComponentService = gameEntityComponentService ??
+                throw new ArgumentNullException(nameof(gameEntityComponentService));
             _networkEntityRegistry = networkEntityRegistry ??
                 throw new ArgumentNullException(nameof(networkEntityRegistry));
         }
 
         public bool HasAvailableTarget()
         {
-            return _gameEntityComponentAccessor.TryFindEntityId<ITargetableNetworkEntity>(
+            return _gameEntityComponentService.TryFindEntityId<ITargetableNetworkEntity>(
                 _ => true,
                 out _);
         }
@@ -54,7 +54,7 @@ namespace ProjectCore.TechnicalPrototype
             Vector2 origin,
             out NetworkEntityIdData targetEntityId)
         {
-            return _gameEntityComponentAccessor.TryFindFirstEntityIdSortedBy<
+            return _gameEntityComponentService.TryFindFirstEntityIdSortedBy<
                 ITargetableNetworkEntity,
                 float>(
                 target => (target.TargetPosition - origin).sqrMagnitude,

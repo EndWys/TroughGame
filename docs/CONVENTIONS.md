@@ -105,9 +105,55 @@ instead of duplicated between the two bases.
 
 ### Abstract
 
-Contracts and abstract foundations only. Interfaces use `I` plus a semantic
-suffix (`IMovementService`); abstract bases use `Base` plus a semantic suffix
-(`BaseNetworkStateMachine`). Concrete implementations do not belong here.
+Contracts and abstract foundations only. Interfaces use `I` plus a meaningful
+capability or subject name (`IMovementService`, `IScene`). Abstract bases use
+`Base` plus a semantic suffix (`BaseNetworkStateMachine`). Concrete
+implementations do not belong here.
+
+An interface describes the capability available to its consumer; the concrete
+type describes its implementation role or mechanism. Their suffixes need not
+match: `ILocalInputReader` is implemented by `LocalInputProvider`,
+`ISceneTransitionPresenter` by `SceneLoadingScreenAdapter`, and `IDebugLogger`
+by `DebugLoggerService`. One implementation may satisfy several contracts.
+
+Manager role names may also name interfaces. Additional established contract
+roles are defined below; they do not introduce folders or concrete type
+categories. All feature contracts remain in the owning feature's `Abstract`.
+
+| Role | Responsibility and boundary | Existing example |
+| --- | --- | --- |
+| `Accessor` | Reads state without exposing mutation or its storage implementation. | `IEnemyTargetAccessor` |
+| `Mutator` | Provides controlled changes to state; may also expose reading. Use instead of the legacy `Changer`. | `IEnemyTargetMutator` |
+| `Reader` | Obtains input or source values; may capture a snapshot before reading. Does not provide arbitrary writes to that source. | `ILocalInputReader` |
+| `Logger` | Accepts diagnostic messages at defined severity levels; does not expose log storage or UI management. | `IDebugLogger` |
+| `Probe` | Performs a bounded observation/query and reports its result; does not own the workflow that acts on it. | `IMovementObstacleProbe` |
+| `Presenter` | Shows or hides a particular presentation for a caller; does not own the caller's application flow. | `ISceneTransitionPresenter` |
+| `Contributor` | Supplies behavior or registrations to composition owned by another object; does not become that composition's coordinator. | `IEnemyMovementAbilityContributor` |
+| `Backend` | Implements the operations and lifecycle behind a public facade; consumers normally use the narrower public contract. | `IDebugVisualizationBackend` (internal) |
+| `Drawable` | Supplies drawing commands through the provided drawing context; does not own rendering infrastructure. | `IDebugDrawable` |
+| `Collection` | Exposes a cohesive typed group and its queries; use an explicit mutation contract if registration or removal is needed. | `IEnemyAbilityCollection` |
+| `Contract` | Groups a cohesive capability only when neither a subject name nor a more precise role describes it. Use sparingly. | Fallback for a new capability, not a required suffix. |
+
+Subject and marker interfaces may omit a role suffix when the subject itself
+is clear: `IScene`, `ICameraTarget`, `ILocalCamera`, and `IEnemyAbility`.
+Do not append `Service` or `Contract` solely to match a suffix table.
+
+`Mutator` may inherit `Accessor` when its consumers also need the read API,
+as in `IEnemyTargetMutator : IEnemyTargetAccessor` and
+`IStateDataMutator<TStatesType> : IStateDataAccessor<TStatesType>`. Inheritance
+is a capability decision, not a requirement for every mutator. An interface
+belongs to the feature that owns the contract, regardless of where it is
+first implemented.
+
+The `Base` prefix also applies to top-level abstract classes in other context
+categories, including Components and DataHolders. The four generic definition
+families are the explicit exception: `ScreenDefinition<TScreen, TSettings>`,
+`SceneDefinition<TScene, TSettings>`,
+`PopupDefinition<TPopup, TPayload, TResponse>`, and
+`LoadingScreenDefinition<TScreen, TSettings>`. They retain their names and
+inherit the corresponding non-generic `Base*Definition` in their owning
+Template features. Shared primitives follow their existing independent naming
+conventions; this context-category rule does not rename `HandlerPayload`.
 
 ### Managers
 
@@ -127,13 +173,64 @@ owning container. Interfaces belong in `Abstract`.
 | Registries | `Registry` | Maintains keyed runtime registrations and lookup. |
 | Repositories | `Repository` | Abstracts stored/queryable collections or persistence. |
 | Serializers | `Serializer` | Serializes and deserializes a selected data format. |
-| Services | `Service` | Exposes a capability and owns its state/operations. |
+| Services | `Service` | Provides a specific capability through operations and queries; may own state and resources needed for that capability. |
 | Storages | `Storage` | Stores and retrieves raw data through a selected persistence mechanism. |
 | Spawners | `Spawner` | Creates, registers, and places runtime entities. |
-| Systems | `System` | Applies ongoing runtime rules to entities or state. |
+| Systems | `System` | Owns the operation of a runtime subsystem: its active objects, state, interaction rules, transitions, or lifecycle. |
 
 Managers must not use service locators, scene searches, or self-starting Unity
 callbacks. A long-lived object that is not DI `AsSingle` belongs elsewhere.
+
+#### System and Service
+
+Choose the suffix by the responsibility exposed to consumers:
+
+- Use `System` for the owner of a runtime subsystem. For example,
+  `ScreenNavigationSystem` maintains screen history and manages screen
+  transitions and lifecycle; `PopupSystem` manages active windows, completion,
+  cancellation, and input blocking. A subsystem may have one active object,
+  as in `LoadingScreenSystem`, and may delegate work to components, as in
+  `DebugVisualizationSystem`.
+- Use `Service` for a specific capability invoked through operations or
+  queries. For example, `EnemySteeringService` calculates steering,
+  `EnemyTargetingService` selects targets, and `LocalSaveService` provides
+  save/load operations through storage and serializer contracts. The service
+  may keep state, subscriptions, buffers, or resources for that capability.
+
+These roles can overlap. When both descriptions fit, choose the name that
+best explains the primary API and responsibility to consumers. Preserve an
+established, clear name unless it misrepresents that responsibility;
+`SceneFlowService` remains valid for its scene-transition capability even
+though it also owns transition state and scene lifecycle. This convention
+does not require every feature to have a System or a Service, or require both
+roles to coexist in separate classes.
+
+The following traits do not determine the suffix:
+
+- State, collections, `Initialize`, `Dispose`, events, or asynchronous methods
+  are valid for both roles.
+- Per-frame or network-tick invocation does not require `System`.
+  `MovementSimulationService.Simulate` operates on a supplied body even when
+  called from `NetworkTick`. A System may operate through explicit commands
+  and events without its own tick method.
+- Unity API access does not require `System`. `LevelCollisionService` uses
+  Physics2D through its Strategy and Probe contracts. Only `Shared` has the
+  .NET-only dependency restriction; Services still follow the architecture's
+  dependency rules and must not depend directly on Views.
+- Class size and the feature's informal description as a "system" do not
+  determine the role.
+
+`System` does not imply Unity ECS or a new scheduler; `Service` does not imply
+stateless or pure C# behavior. Both follow the existing Managers DI and
+explicit initialization rules. Their suffixes do not establish dependency
+direction or a mandatory System-to-Service hierarchy; ownership and public
+contracts determine those dependencies.
+
+A class that only forwards generic component queries or caller-supplied
+actions does not acquire subsystem rules from a `System` name. Describe the
+capability it actually provides, or remove a redundant wrapper after checking
+its consumers. Role selection is a code-review decision; the architecture
+validator checks folder/suffix correspondence, not these behavioral semantics.
 
 ### DataHolders
 
@@ -156,6 +253,14 @@ services, load assets, or execute workflows.
 Use the uppercase `DTO` abbreviation in type names, for example
 `PlayerStateDTO`. Types with `Load`, `Save`, `Spawn`,
 `Send`, or `Initialize` behavior are not data holders.
+
+The final suffix identifies the type's role; the preceding words describe its
+contents. `DebugToolsSettingsConfig` is an authored `Config` containing
+settings, while `DebugConsoleSettings` is the settings value it supplies.
+`LocalConfigCatalogConfig` is a `Config` containing a catalog of configuration
+references. `SettingsConfig` and `CatalogConfig` therefore retain the final
+`Config` and live in `DataHolders/Configs`; they do not introduce new suffixes
+or folders. Resource instances follow Unity Resource Naming below.
 
 ### Components
 
@@ -189,7 +294,7 @@ view, or special category.
 | Commands | `Command` | Executable operation with explicit inputs. |
 | Converters | `Converter` | Converts between representations. |
 | Decorators | `Decorator` | Wraps a contract while preserving it. |
-| Editor | `Editor` or `EditorWindow` | Editor-only inspectors, drawers, and tooling. |
+| Editor | `Editor`, `EditorWindow`, or `AttributeDrawer` | Editor-only inspectors/tooling, windows, or Unity property drawers respectively. The same suffixes apply to context-owned and feature-owned scripts. |
 | Mappers | `Mapper` | Maps fields between model/data/DTO/view forms. |
 | Processors | `Processor` | Performs one focused pipeline step. |
 | StateMachines | `StateMachine` | Owns bounded transitions and active state. |
@@ -268,14 +373,26 @@ startup boundary.
 
 - Types, methods, properties, events, namespaces: `PascalCase`.
 - Interfaces: `I` prefix (`IPlayerService`).
-- Abstract bases: `Base` prefix when useful (`BaseNetworkStateMachine`).
+- Top-level abstract classes in contexts: `Base` prefix
+  (`BaseNetworkStateMachine`), with the generic definition-family exception
+  documented under Abstract. Nested implementation types and Shared primitives
+  do not inherit the context-category rule.
 - Private instance and static fields: `_camelCase`.
 - Constants: `PascalCase` (`DefaultTimeout`), not screaming snake case.
 - Local variables and parameters: `camelCase`.
-- Established abbreviations may preserve their conventional uppercase form,
-  including `UI`, `HUD`, `ID`, `DTO`, `FOV`, and `FPS`. Apply the same form
-  consistently across related fields, properties, methods, and types.
-- Boolean members use `Is`, `Has`, `Can`, or `Should` prefixes.
+- Project-owned identifiers use the canonical abbreviation forms below.
+  Apply them consistently across types, methods, properties, fields, and
+  parameters. At the start of a camelCase identifier, lowercase the abbreviation
+  (`hudStyleSheet`, `_hudStyleSheet`, `id`); embedded abbreviations retain their
+  canonical form (`ShouldShowHUDOnStart`, `_selectedLogId`, `ChangeFOV`).
+  External API names and framework-required overrides retain the SDK spelling,
+  for example Unity's `GetInstanceID`.
+- Boolean state fields and properties use `Is`, `Has`, `Can`, or `Should`
+  prefixes (`_isVisible`, `IsEnabledInEditor`, `ShouldOpenOnStart`). `Was` is
+  allowed for historical/sample notifications such as `WasPressed` and
+  `WasReleased`. This rule does not apply to operation-result methods such as
+  `TryGet`, `TryFind`, `Equals`, `Execute(..., out result)` or comparison
+  operators, nor to framework-required members.
 - Async methods end with `Async`; cancellation tokens end with
   `CancellationToken` and are passed explicitly.
 - Event names use past-tense notifications (`Initialized`, `SceneLoaded`).
@@ -293,6 +410,89 @@ startup boundary.
 Namespaces are flat below the owning context: `ProjectCore.<Context>` or
 `Shared`. Folder depth and feature responsibility do not extend the namespace. Third-party
 code keeps its original namespace.
+
+| Concept | Canonical form | Examples |
+| --- | --- | --- |
+| Identifier | `Id` | `NetworkEntityIdData`, `TargetId`, `logId` |
+| User interface | `UI` | `BuildUI`, `uiRoot` |
+| Heads-up display | `HUD` | `DebugVisualizationHUDWidgetView`, `hudStyleSheet` |
+| Data transfer object | `DTO` | `LocalSaveDocumentDTO<TData>` |
+| Frames per second | `FPS` | `FPS`, `fps` |
+| Field of view | `FOV` | `ChangeFOV`, `newFOVValue`, `_fovSmoothTime` |
+| JSON format | `Json` | `JsonLocalSaveSerializer` |
+| Network Time Protocol | `Ntp` | `NtpTimeProvider` |
+
+### Type Name Composition
+
+For new context-owned types, prefer `[I|Base]<Subject><Detail><Role>` when
+these segments help describe the responsibility. `I` and `Base` apply only
+to their documented type kinds; detail is optional, and subject contracts may
+omit the role as described under Abstract. Use a subject or feature term to
+avoid ambiguity in the flat context namespace, without repeating the full
+feature name mechanically. For example, `NetworkEntitySpawner` identifies
+both its subject and role.
+
+A mechanism qualifier may precede the subject when it distinguishes
+implementations: `JsonLocalSaveSerializer` and `NtpTimeProvider`. This is a
+readability convention, not a rigid ordering grammar. Preserve meaningful
+existing names; reorder them when a related change resolves ambiguity or
+incorrect responsibility, rather than for word order alone.
+
+Generic parameters describe their purpose: `TSettings`, `TPayload`,
+`TScene`, `TFeature`, or `TStateType`. `T` remains appropriate for a universal
+operation with a single type parameter, such as `ReadValue<T>`. Preserve
+parameter names required by external SDK contracts. This rule is independent
+of the documented `T` filename suffix for generic types.
+
+### Injection Method Names
+
+Project-owned Zenject method injection uses `[Inject] Construct(...)`.
+This is a dependency injection method, not a C# constructor or a second
+initialization entry point. Non-Unity objects still prefer actual constructor
+injection. Explicit method injection on other objects uses the same name.
+
+When a base needs a distinct injection method name, use
+`ConstructBase<Type>(...)`, for example `ConstructBaseNetworkEntityComponent`
+on `BaseNetworkEntityComponent`. A plain `Construct` is also valid on a base
+when a distinct name is unnecessary. This convention does not rename injected
+fields/properties or framework-required methods.
+
+### Empty, Default, and NoOp
+
+| Qualifier | Meaning | Existing example |
+| --- | --- | --- |
+| `Empty` | A valid value or registration with no contents/payload. | `EmptySceneSettings`, `EmptyPopupPayload` |
+| `Default` | The selected configuration or implementation used when no alternative is chosen; it may have behavior and non-empty values. | `DefaultLoadingScreenView`, `DefaultLoadingScreenDefinition` |
+| `NoOp` | A valid behavioral implementation that performs no effects while honoring its contract's return values and lifecycle. | `DebugVisualizationNoOpAdapter` |
+
+Choose by semantics, not as interchangeable spellings. These qualifiers do
+not replace the final role suffix or change the owning category. They may
+follow the subject when that reads naturally, as in
+`DebugVisualizationNoOpAdapter`.
+
+### Nested Implementation Types
+
+The file/type and category suffix rules apply to top-level types. A nested
+implementation type may use a short name scoped by its containing type,
+such as `CheatRegistration`, `ConverterRegistration`, `ChannelTreeNode`,
+or `State`; it does not require a separate file, feature prefix, `Base`
+prefix, or top-level category suffix. It still follows casing, meaningful
+naming, visibility, and member ordering rules. Serialization compatibility
+rules still apply if a serialized nested type is renamed.
+
+Keep a type nested while its responsibility is local to the containing type.
+When extracted into a shared top-level API or dependency, give it an
+unambiguous context-level name and place it in its actual role category.
+
+### Enforcement
+
+The architecture validator checks objective structure rules, including
+file/type correspondence, category suffixes, interface prefixes, and
+top-level abstract base prefixes with documented exceptions. It does not
+infer a contract's responsibility from its name. Contract role selection,
+word order, generic parameter meaning, injection method naming, and the
+`Empty`/`Default`/`NoOp` distinction are reviewed against this document.
+A clean validator report does not certify all naming semantics.
 
 ## Member Order
 

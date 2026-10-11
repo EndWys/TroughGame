@@ -1,13 +1,14 @@
 namespace ProjectCore.Template
 {
-    public readonly struct DebugVisualizationHudValueData
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "ProjectCore.Template", sourceAssembly: "ProjectCore.Runtime", sourceClassName: "DebugVisualizationHudValueData")]
+    public readonly struct DebugVisualizationHUDValueData
     {
         public readonly string OwnerName;
         public readonly string Channel;
         public readonly string Label;
         public readonly object Value;
 
-        public DebugVisualizationHudValueData(string ownerName, string channel, string label, object value)
+        public DebugVisualizationHUDValueData(string ownerName, string channel, string label, object value)
         {
             OwnerName = ownerName;
             Channel = channel;

@@ -20,12 +20,12 @@ namespace ProjectCore.Template
 
         private IDebugConsoleView _view;
         private DebugConsoleSettings _settings;
-        private DebugVisualizationHudAdapter _visualizationAdapter;
+        private DebugVisualizationHUDAdapter _visualizationAdapter;
         private CancellationTokenSource _viewCancellationTokenSource;
         private DebugConsoleLogFiltersData _logFilters = DebugConsoleLogFiltersData.Default;
         private DebugConsoleTabTypes _activeTab = DebugConsoleTabTypes.Logs;
         private string _commandInput = string.Empty;
-        private int? _selectedLogID;
+        private int? _selectedLogId;
         private int _historyIndex;
         private float _nextPerformanceUpdateTime;
         private float _nextVisualizationUpdateTime;
@@ -50,7 +50,7 @@ namespace ProjectCore.Template
                     $"{nameof(DebugConsoleController)} is already initialized.");
 
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _isVisible = settings.OpenOnStart;
+            _isVisible = settings.ShouldOpenOnStart;
             _isInitialized = true;
         }
 
@@ -216,13 +216,13 @@ namespace ProjectCore.Template
 
         private void OnLogsClearRequested()
         {
-            _selectedLogID = null;
+            _selectedLogId = null;
             _system.ClearLogs();
         }
 
-        private void OnLogSelected(int logID)
+        private void OnLogSelected(int logId)
         {
-            _selectedLogID = logID;
+            _selectedLogId = logId;
             RenderLogs();
         }
 
@@ -239,7 +239,7 @@ namespace ProjectCore.Template
         }
 
         private void OnVisualizationNodeRequested(
-            DebugVisualizationHudAdapter.ChannelTreeNode node)
+            DebugVisualizationHUDAdapter.ChannelTreeNode node)
         {
             EnsureVisualizationAdapter();
             if (node.HasChildren)
@@ -255,7 +255,7 @@ namespace ProjectCore.Template
         }
 
         private void OnVisualizationChannelsChanged(
-            DebugVisualizationHudAdapter.ChannelTreeNode node,
+            DebugVisualizationHUDAdapter.ChannelTreeNode node,
             bool enabled)
         {
             EnsureVisualizationAdapter();
@@ -346,14 +346,14 @@ namespace ProjectCore.Template
                     continue;
 
                 _visibleLogs.Add(log);
-                if (_selectedLogID.HasValue && log.ID == _selectedLogID.Value)
+                if (_selectedLogId.HasValue && log.Id == _selectedLogId.Value)
                     selectedLog = log;
             }
 
-            if (_selectedLogID.HasValue && selectedLog == null)
-                _selectedLogID = null;
+            if (_selectedLogId.HasValue && selectedLog == null)
+                _selectedLogId = null;
 
-            _view.RenderLogs(_visibleLogs, _selectedLogID);
+            _view.RenderLogs(_visibleLogs, _selectedLogId);
             _view.RenderLogDetails(selectedLog == null
                 ? "Select a log entry to see stacktrace/details."
                 : string.IsNullOrWhiteSpace(selectedLog.StackTrace)
@@ -417,9 +417,9 @@ namespace ProjectCore.Template
             }
 
             EnsureVisualizationAdapter();
-            DebugVisualizationHudAdapter.ChannelTreeNode root =
+            DebugVisualizationHUDAdapter.ChannelTreeNode root =
                 _visualizationAdapter.BuildTree();
-            DebugVisualizationHudAdapter.ChannelTreeNode current =
+            DebugVisualizationHUDAdapter.ChannelTreeNode current =
                 _visualizationAdapter.ResolveCurrentNode(root);
             _view.RenderDebugVisualization(
                 current,
@@ -444,7 +444,7 @@ namespace ProjectCore.Template
         private void EnsureVisualizationAdapter()
         {
             _visualizationAdapter ??=
-                new DebugVisualizationHudAdapter(_debugVisualizationSystem);
+                new DebugVisualizationHUDAdapter(_debugVisualizationSystem);
         }
 
         private void RenderPerformance()

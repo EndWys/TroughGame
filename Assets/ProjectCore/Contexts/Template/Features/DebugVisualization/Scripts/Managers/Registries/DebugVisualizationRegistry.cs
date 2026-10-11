@@ -41,13 +41,13 @@ namespace ProjectCore.Template
             if (target == null)
                 return;
 
-            int targetID = target.GetInstanceID();
-            if (!_targetIDs.Remove(targetID))
+            int targetId = target.GetInstanceID();
+            if (!_targetIDs.Remove(targetId))
                 return;
 
             for (int i = _targets.Count - 1; i >= 0; i--)
             {
-                if (_targets[i].TargetID == targetID)
+                if (_targets[i].TargetId == targetId)
                     _targets.RemoveAt(i);
             }
         }
@@ -65,7 +65,7 @@ namespace ProjectCore.Template
                 RegisteredTarget registered = _targets[i];
                 if (registered.Target == null)
                 {
-                    _targetIDs.Remove(registered.TargetID);
+                    _targetIDs.Remove(registered.TargetId);
                     _targets.RemoveAt(i);
                     continue;
                 }
@@ -170,7 +170,7 @@ namespace ProjectCore.Template
             public readonly Object Target;
             public readonly IReadOnlyList<InspectedMember> Members;
             public readonly IDebugDrawable Drawable;
-            public readonly int TargetID;
+            public readonly int TargetId;
 
             public RegisteredTarget(
                 Object target,
@@ -180,7 +180,7 @@ namespace ProjectCore.Template
                 Target = target;
                 Members = members;
                 Drawable = drawable;
-                TargetID = target.GetInstanceID();
+                TargetId = target.GetInstanceID();
             }
         }
 
@@ -294,7 +294,7 @@ namespace ProjectCore.Template
                 object value,
                 IDebugVisualizationBackend backend)
             {
-                if ((_display & DebugVisualizationValueDisplay.Hud) != 0)
+                if ((_display & DebugVisualizationValueDisplay.HUD) != 0)
                     backend.AddPersistentValue(target, _channel, _label, value);
 
                 if ((_display & DebugVisualizationValueDisplay.World) == 0

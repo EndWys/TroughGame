@@ -10,8 +10,8 @@ namespace ProjectCore.Template
     {
         private static readonly IReadOnlyList<string> EmptyChannels =
             Array.AsReadOnly(Array.Empty<string>());
-        private static readonly IReadOnlyList<DebugVisualizationHudValueData> EmptyValues =
-            Array.AsReadOnly(Array.Empty<DebugVisualizationHudValueData>());
+        private static readonly IReadOnlyList<DebugVisualizationHUDValueData> EmptyValues =
+            Array.AsReadOnly(Array.Empty<DebugVisualizationHUDValueData>());
 
         private readonly IDebugVisualizationRegistry _registry;
 
@@ -26,20 +26,20 @@ namespace ProjectCore.Template
 
         public bool IsInitialized => _runner != null;
 
-        public bool HudVisible
+        public bool IsHUDVisible
         {
-            get => _runner != null && _runner.HudVisible;
+            get => _runner != null && _runner.IsHUDVisible;
             set
             {
                 if (_runner != null)
-                    _runner.HudVisible = value;
+                    _runner.IsHUDVisible = value;
             }
         }
 
         public IReadOnlyList<string> ChannelNames =>
             _runner != null ? _runner.ChannelNames : EmptyChannels;
 
-        public IReadOnlyList<DebugVisualizationHudValueData> PersistentValues =>
+        public IReadOnlyList<DebugVisualizationHUDValueData> PersistentValues =>
             _runner != null ? _runner.PersistentValues : EmptyValues;
 
         public void Initialize(

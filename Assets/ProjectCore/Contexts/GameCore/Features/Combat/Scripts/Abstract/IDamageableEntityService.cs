@@ -3,24 +3,24 @@ using System.Collections.Generic;
 
 namespace ProjectCore.GameCore
 {
-    public interface IDamageSourceSystem
+    public interface IDamageableEntityService
     {
         void FillEntityIds(
-            Predicate<BaseDamageSourceComponent> predicate,
+            Predicate<BaseDamageableComponent> predicate,
             ICollection<NetworkEntityIdData> results);
 
         bool TryFindEntityId(
-            Predicate<BaseDamageSourceComponent> predicate,
+            Predicate<BaseDamageableComponent> predicate,
             out NetworkEntityIdData entityId);
 
         void FillEntityIdsSortedBy<TSortKey>(
-            Func<BaseDamageSourceComponent, TSortKey> sortKeySelector,
+            Func<BaseDamageableComponent, TSortKey> sortKeySelector,
             ICollection<NetworkEntityIdData> results);
 
         bool TryFindFirstEntityIdSortedBy<TSortKey>(
-            Func<BaseDamageSourceComponent, TSortKey> sortKeySelector,
+            Func<BaseDamageableComponent, TSortKey> sortKeySelector,
             out NetworkEntityIdData entityId);
 
-        void ApplyToAll(Action<BaseDamageSourceComponent> action);
+        void ApplyToAll(Action<BaseDamageableComponent> action);
     }
 }

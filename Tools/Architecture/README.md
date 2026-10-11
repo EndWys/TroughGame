@@ -58,6 +58,20 @@ imports, qualified names, aliases, generic arity, multiline generic bases,
 ambiguous imports, framework namesakes, Managers, context-owned Components, and cycles.
 Generated fixtures are created in a temporary directory and removed after the run.
 
+Run naming-rule regression checks:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\Tools\Architecture\Test-NamingValidation.ps1
+```
+
+The naming runner checks the same `Editor`, `EditorWindow`, and
+`AttributeDrawer` suffixes for context and feature tooling. It also verifies
+that top-level abstract classes require `Base` outside Abstract, while the
+four documented Template generic definition families and Shared primitives
+retain their naming scope. Negative fixtures check the exception's owner,
+generic arity, and base type. Each case checks exact diagnostics and exit codes.
+
 ## Diagnostic Families
 
 | Prefix | Area |
@@ -72,7 +86,7 @@ Generated fixtures are created in a temporary directory and removed after the ru
 | `TYPE` | File/type correspondence and top-level type count |
 | `ABSTRACT`, `ENUM`, `STATIC` | Special type category rules |
 | `MANAGER`, `VIEW`, `DI` | DI-managed and MonoBehaviour placement |
-| `NAME` | Known spelling and legacy suffix rules |
+| `NAME` | Known spelling, interface/base prefixes, and legacy suffix rules |
 | `INIT` | Initialization callback and `async void` checks |
 | `TEST` | Flat Editor and Play test placement |
 | `ASSET` | Own resource naming, ownership, placement, metadata and authoring |
@@ -121,6 +135,12 @@ stateful service, or lifecycle participant remains feature-owned.
 
 ## Static Analysis Limits
 
+- The naming vocabulary is defined in `docs/CONVENTIONS.md`. Contract and
+  implementation suffixes need not match, subject interfaces may omit a role
+  suffix, and nested implementation types do not follow top-level category
+  suffix rules. Contract responsibility, word order, generic parameter meaning,
+  injection method names, and `Empty`/`Default`/`NoOp` semantics require code
+  review; a clean validator report does not certify these naming decisions.
 - MonoBehaviour inheritance is resolved from project-owned types and the known
   roots `UnityEngine.MonoBehaviour`, `Fusion.NetworkBehaviour`, and
   `UnityEngine.UIElements.VisualElement`. Type identities include the namespace

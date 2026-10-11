@@ -8,7 +8,7 @@ namespace ProjectCore.Template
     [CustomEditor(typeof(DebugVisualizationSettingsConfig))]
     public sealed class DebugVisualizationConfigEditor : UnityEditor.Editor
     {
-        private SerializedProperty _showHudOnStart;
+        private SerializedProperty _shouldShowHUDOnStart;
         private SerializedProperty _maxTransientDraws;
         private SerializedProperty _defaultStyle;
         private SerializedProperty _channelStyles;
@@ -17,7 +17,7 @@ namespace ProjectCore.Template
 
         private void OnEnable()
         {
-            _showHudOnStart = serializedObject.FindProperty("_showHudOnStart");
+            _shouldShowHUDOnStart = serializedObject.FindProperty("_shouldShowHUDOnStart");
             _maxTransientDraws = serializedObject.FindProperty("_maxTransientDraws");
             _defaultStyle = serializedObject.FindProperty("_defaultStyle");
             _channelStyles = serializedObject.FindProperty("_channelStyles");
@@ -27,7 +27,7 @@ namespace ProjectCore.Template
         {
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(_showHudOnStart);
+            EditorGUILayout.PropertyField(_shouldShowHUDOnStart);
             EditorGUILayout.PropertyField(_maxTransientDraws);
             EditorGUILayout.PropertyField(_defaultStyle, true);
 

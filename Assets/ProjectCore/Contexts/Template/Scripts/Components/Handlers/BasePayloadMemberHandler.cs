@@ -3,8 +3,8 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace ProjectCore.Template
 {
-    [MovedFrom(true, sourceNamespace: "Domain", sourceAssembly: "ProjectCore.Runtime", sourceClassName: null)]
-    public abstract class PayloadMemberHandler<TPayload> : MemberHandler
+    [MovedFrom(true, sourceNamespace: "ProjectCore.Template", sourceAssembly: "ProjectCore.Runtime", sourceClassName: "PayloadMemberHandler")]
+    public abstract class BasePayloadMemberHandler<TPayload> : BaseMemberHandler
         where TPayload : HandlerPayload
     {
         public override void Handle(HandlerPayload payload)

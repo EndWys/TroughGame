@@ -437,12 +437,6 @@ function Test-FeatureScriptPath {
                 -Message 'Interface names must start with I.'
         }
 
-        if ($isAbstract -and -not $primary.Name.StartsWith('Base')) {
-            Add-Diagnostic -Severity 'Error' -Rule 'NAME003' `
-                -Path $FileRecord.RelativePath -Line $primary.Line `
-                -Message 'Abstract class names must start with Base.'
-        }
-
         return $true
     }
 
@@ -505,7 +499,7 @@ function Test-FeatureScriptPath {
             Commands = @('Command')
             Converters = @('Converter')
             Decorators = @('Decorator')
-            Editor = @('Editor', 'EditorWindow')
+            Editor = @('Editor', 'EditorWindow', 'AttributeDrawer')
             Mappers = @('Mapper')
             Processors = @('Processor')
             StateMachines = @('StateMachine')
@@ -683,11 +677,6 @@ function Test-ContextSharedScriptPath {
                     -Message 'Interface names must start with I.'
             }
 
-            if ($isAbstract -and -not $primary.Name.StartsWith('Base')) {
-                Add-Diagnostic -Severity 'Error' -Rule 'NAME003' `
-                    -Path $FileRecord.RelativePath -Line $primary.Line `
-                    -Message 'Abstract class names must start with Base.'
-            }
         }
     } elseif ($category -eq 'Enums') {
         if ($null -ne $primary -and $primary.Kind -ne 'enum') {
@@ -718,7 +707,7 @@ function Test-ContextSharedScriptPath {
                 Payloads = @('Payload')
             }
             Other = @{
-                Editor = @('AttributeDrawer')
+                Editor = @('Editor', 'EditorWindow', 'AttributeDrawer')
                 Adapters = @('Adapter')
                 Builders = @('Builder')
                 Commands = @('Command')
@@ -899,6 +888,34 @@ foreach ($record in $fileRecords) {
 
     if ($contextMatch.Success) {
         $expectedNamespace = 'ProjectCore.' + $contextMatch.Groups['context'].Value
+        $primary = $typeInfo.PrimaryType
+        if ($null -ne $primary -and $primary.Kind -eq 'class' -and
+            $primary.Modifiers -match '(^|\s)abstract($|\s)' -and
+            -not $primary.Name.StartsWith('Base')) {
+            # These generic API families intentionally sit above a non-generic
+            # Base*Definition. The exception does not permit arbitrary *Definition types.
+            $genericDefinitionFamilies = @{
+                ScreenDefinition = @{ Feature = 'ScreenNavigation'; Arity = 2 }
+                SceneDefinition = @{ Feature = 'SceneFlow'; Arity = 2 }
+                PopupDefinition = @{ Feature = 'Popup'; Arity = 3 }
+                LoadingScreenDefinition = @{ Feature = 'LoadingScreen'; Arity = 2 }
+            }
+            $isGenericDefinition = $false
+            if ($genericDefinitionFamilies.ContainsKey($primary.Name)) {
+                $family = $genericDefinitionFamilies[$primary.Name]
+                $familyPath = 'Assets/ProjectCore/Contexts/Template/Features/' +
+                    $family.Feature + '/Scripts/DataHolders/Definitions/'
+                $isGenericDefinition = $primary.IsGeneric -and
+                    $primary.Identity.EndsWith('#' + $family.Arity) -and
+                    $record.RelativePath.StartsWith($familyPath, [System.StringComparison]::Ordinal) -and
+                    ('Base' + $primary.Name) -in $primary.Bases
+            }
+            if (-not $isGenericDefinition) {
+                Add-Diagnostic -Severity 'Error' -Rule 'NAME003' `
+                    -Path $record.RelativePath -Line $primary.Line `
+                    -Message 'Top-level abstract context classes must start with Base, except documented generic definition families.'
+            }
+        }
     } elseif ($record.RelativePath -match '^Assets/ProjectCore/Shared/' -or
         $record.RelativePath -match '^Assets/Shared/') {
         $expectedNamespace = 'Shared'

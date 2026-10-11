@@ -6,8 +6,8 @@ namespace ProjectCore.GameCore
     {
         protected override void InstallBindings()
         {
-            BindAsSingle<IDamageableSystem, DamageableSystem>();
-            BindAsSingle<IDamageSourceSystem, DamageSourceSystem>();
+            BindAsSingle<IDamageableEntityService, DamageableEntityService>();
+            BindAsSingle<IDamageSourceEntityService, DamageSourceEntityService>();
         }
     }
 }

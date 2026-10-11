@@ -27,7 +27,7 @@ namespace ProjectCore.Prototype
         private Vector3 _currentVelocity;
         
         private float _targetFOV;
-        private float _currentFovVelocity;
+        private float _currentFOVVelocity;
         
         private void Start()
         {
@@ -64,9 +64,9 @@ namespace ProjectCore.Prototype
             }
         }
 
-        public void ChangeFov(float newFovValue)
+        public void ChangeFOV(float newFOVValue)
         {
-            _targetFOV = newFovValue;
+            _targetFOV = newFOVValue;
         }
 
         private void UpdateCameraPosition(bool immediate)
@@ -104,7 +104,7 @@ namespace ProjectCore.Prototype
                 return;
             }
             
-            _cameraComponent.fieldOfView = Mathf.SmoothDamp(_cameraComponent.fieldOfView, _targetFOV, ref _currentFovVelocity, _fovSmoothTime);
+            _cameraComponent.fieldOfView = Mathf.SmoothDamp(_cameraComponent.fieldOfView, _targetFOV, ref _currentFOVVelocity, _fovSmoothTime);
         }
     }
 }

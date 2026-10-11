@@ -3,47 +3,47 @@ using System.Collections.Generic;
 
 namespace ProjectCore.GameCore
 {
-    public sealed class DamageSourceSystem : IDamageSourceSystem
+    public sealed class DamageSourceEntityService : IDamageSourceEntityService
     {
-        private readonly IGameEntityComponentAccessor _gameEntityComponentAccessor;
+        private readonly IGameEntityComponentService _gameEntityComponentService;
 
-        public DamageSourceSystem(IGameEntityComponentAccessor gameEntityComponentAccessor)
+        public DamageSourceEntityService(IGameEntityComponentService gameEntityComponentService)
         {
-            _gameEntityComponentAccessor = gameEntityComponentAccessor ??
-                throw new ArgumentNullException(nameof(gameEntityComponentAccessor));
+            _gameEntityComponentService = gameEntityComponentService ??
+                throw new ArgumentNullException(nameof(gameEntityComponentService));
         }
 
         public void FillEntityIds(
             Predicate<BaseDamageSourceComponent> predicate,
             ICollection<NetworkEntityIdData> results)
         {
-            _gameEntityComponentAccessor.FillEntityIds(predicate, results);
+            _gameEntityComponentService.FillEntityIds(predicate, results);
         }
 
         public bool TryFindEntityId(
             Predicate<BaseDamageSourceComponent> predicate,
             out NetworkEntityIdData entityId)
         {
-            return _gameEntityComponentAccessor.TryFindEntityId(predicate, out entityId);
+            return _gameEntityComponentService.TryFindEntityId(predicate, out entityId);
         }
 
         public void FillEntityIdsSortedBy<TSortKey>(
             Func<BaseDamageSourceComponent, TSortKey> sortKeySelector,
             ICollection<NetworkEntityIdData> results)
         {
-            _gameEntityComponentAccessor.FillEntityIdsSortedBy(sortKeySelector, results);
+            _gameEntityComponentService.FillEntityIdsSortedBy(sortKeySelector, results);
         }
 
         public bool TryFindFirstEntityIdSortedBy<TSortKey>(
             Func<BaseDamageSourceComponent, TSortKey> sortKeySelector,
             out NetworkEntityIdData entityId)
         {
-            return _gameEntityComponentAccessor.TryFindFirstEntityIdSortedBy(sortKeySelector, out entityId);
+            return _gameEntityComponentService.TryFindFirstEntityIdSortedBy(sortKeySelector, out entityId);
         }
 
         public void ApplyToAll(Action<BaseDamageSourceComponent> action)
         {
-            _gameEntityComponentAccessor.ApplyToAll(action);
+            _gameEntityComponentService.ApplyToAll(action);
         }
     }
 }

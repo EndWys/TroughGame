@@ -17,7 +17,7 @@ namespace ProjectCore.Template
 
         private BoundedBuffer<DebugConsoleLogData> _logs;
         private BoundedBuffer<string> _commandHistory;
-        private int _nextLogID;
+        private int _nextLogId;
         private bool _isAvailable;
         private bool _isInitialized;
 
@@ -137,7 +137,7 @@ namespace ProjectCore.Template
         private void AddLog(string message, string stackTrace, LogType type)
         {
             _logs.Add(new DebugConsoleLogData(
-                _nextLogID++,
+                _nextLogId++,
                 message ?? string.Empty,
                 stackTrace ?? string.Empty,
                 type));

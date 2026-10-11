@@ -7,8 +7,8 @@ namespace ProjectCore.Template
     internal sealed class DebugConsoleVisualizationWidgetView : VisualElement
     {
         private readonly Action<string> _pathRequested;
-        private readonly Action<DebugVisualizationHudAdapter.ChannelTreeNode> _nodeRequested;
-        private readonly Action<DebugVisualizationHudAdapter.ChannelTreeNode, bool>
+        private readonly Action<DebugVisualizationHUDAdapter.ChannelTreeNode> _nodeRequested;
+        private readonly Action<DebugVisualizationHUDAdapter.ChannelTreeNode, bool>
             _channelsChanged;
         private readonly ScrollView _channels;
         private readonly ScrollView _values;
@@ -16,8 +16,8 @@ namespace ProjectCore.Template
 
         public DebugConsoleVisualizationWidgetView(
             Action<string> pathRequested,
-            Action<DebugVisualizationHudAdapter.ChannelTreeNode> nodeRequested,
-            Action<DebugVisualizationHudAdapter.ChannelTreeNode, bool> channelsChanged)
+            Action<DebugVisualizationHUDAdapter.ChannelTreeNode> nodeRequested,
+            Action<DebugVisualizationHUDAdapter.ChannelTreeNode, bool> channelsChanged)
         {
             _pathRequested = pathRequested;
             _nodeRequested = nodeRequested;
@@ -26,15 +26,15 @@ namespace ProjectCore.Template
             _values = new ScrollView();
             _breadcrumbs = new VisualElement();
 
-            BuildUi();
+            BuildUI();
         }
 
         public VisualElement Root => this;
 
         public void Render(
-            DebugVisualizationHudAdapter.ChannelTreeNode currentNode,
+            DebugVisualizationHUDAdapter.ChannelTreeNode currentNode,
             IReadOnlyList<string> breadcrumbParts,
-            IReadOnlyDictionary<string, List<DebugVisualizationHudValueData>> valueGroups)
+            IReadOnlyDictionary<string, List<DebugVisualizationHUDValueData>> valueGroups)
         {
             _breadcrumbs.Clear();
             _channels.Clear();
@@ -59,20 +59,20 @@ namespace ProjectCore.Template
                 });
             }
 
-            foreach (DebugVisualizationHudAdapter.ChannelTreeNode node in currentNode.Children)
+            foreach (DebugVisualizationHUDAdapter.ChannelTreeNode node in currentNode.Children)
                 DrawChannelNode(node);
 
             RenderValues(valueGroups);
         }
 
         public void RenderValues(
-            IReadOnlyDictionary<string, List<DebugVisualizationHudValueData>> valueGroups)
+            IReadOnlyDictionary<string, List<DebugVisualizationHUDValueData>> valueGroups)
         {
             _values.Clear();
-            foreach (KeyValuePair<string, List<DebugVisualizationHudValueData>> pair in valueGroups)
+            foreach (KeyValuePair<string, List<DebugVisualizationHUDValueData>> pair in valueGroups)
             {
                 _values.Add(new Label(pair.Key));
-                foreach (DebugVisualizationHudValueData value in pair.Value)
+                foreach (DebugVisualizationHUDValueData value in pair.Value)
                     _values.Add(new Label($"  {value.Label}: {value.Value}"));
             }
         }
@@ -85,7 +85,7 @@ namespace ProjectCore.Template
             _values.Add(new Label("Debug Visualization is disabled."));
         }
 
-        private void BuildUi()
+        private void BuildUI()
         {
             name = "DebugVisualization";
             AddToClassList("console-tab");
@@ -109,7 +109,7 @@ namespace ProjectCore.Template
         }
 
         private void DrawChannelNode(
-            DebugVisualizationHudAdapter.ChannelTreeNode node)
+            DebugVisualizationHUDAdapter.ChannelTreeNode node)
         {
             var row = new VisualElement();
             row.AddToClassList("console-dviz-channel-row");
@@ -126,12 +126,12 @@ namespace ProjectCore.Template
         }
 
         private static bool AreAllChannelsEnabled(
-            DebugVisualizationHudAdapter.ChannelTreeNode node)
+            DebugVisualizationHUDAdapter.ChannelTreeNode node)
         {
             if (node.Channel != null && !node.IsEnabled)
                 return false;
 
-            foreach (DebugVisualizationHudAdapter.ChannelTreeNode child in node.Children)
+            foreach (DebugVisualizationHUDAdapter.ChannelTreeNode child in node.Children)
             {
                 if (!AreAllChannelsEnabled(child))
                     return false;

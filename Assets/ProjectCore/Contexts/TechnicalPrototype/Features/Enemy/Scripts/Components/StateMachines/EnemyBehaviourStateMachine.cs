@@ -6,7 +6,7 @@ namespace ProjectCore.TechnicalPrototype
 {
     public sealed class EnemyBehaviourStateMachine : BaseNetworkEntityStateMachine<
         EnemyBehaviourStateType,
-        EnemyBehaviourState,
+        BaseEnemyBehaviourState,
         EnemyBehaviourPayload>
     {
         [SerializeField] private EnemyBehaviourDisabledState _disabledState;
@@ -18,7 +18,7 @@ namespace ProjectCore.TechnicalPrototype
         {
             InitializeStateMachine();
 
-            foreach (EnemyBehaviourState state in States.Values)
+            foreach (BaseEnemyBehaviourState state in States.Values)
             {
                 state.Init();
             }
@@ -29,10 +29,10 @@ namespace ProjectCore.TechnicalPrototype
             }
         }
 
-        public override Dictionary<EnemyBehaviourStateType, EnemyBehaviourState>
+        public override Dictionary<EnemyBehaviourStateType, BaseEnemyBehaviourState>
             CreateStatesDictionary()
         {
-            return new Dictionary<EnemyBehaviourStateType, EnemyBehaviourState>
+            return new Dictionary<EnemyBehaviourStateType, BaseEnemyBehaviourState>
             {
                 { EnemyBehaviourStateType.Disabled, _disabledState },
                 { EnemyBehaviourStateType.TargetSelection, _targetSelectionState },

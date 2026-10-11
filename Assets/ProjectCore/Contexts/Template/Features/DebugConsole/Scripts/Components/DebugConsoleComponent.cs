@@ -27,9 +27,9 @@ namespace ProjectCore.Template
         private Action<int> _logSelected;
         private Action<DebugConsoleCheatPayload> _cheatSubmitted;
         private Action<string> _visualizationPathRequested;
-        private Action<DebugVisualizationHudAdapter.ChannelTreeNode>
+        private Action<DebugVisualizationHUDAdapter.ChannelTreeNode>
             _visualizationNodeRequested;
-        private Action<DebugVisualizationHudAdapter.ChannelTreeNode, bool>
+        private Action<DebugVisualizationHUDAdapter.ChannelTreeNode, bool>
             _visualizationChannelsChanged;
         private Action<float> _ticked;
 
@@ -113,14 +113,14 @@ namespace ProjectCore.Template
             remove => _visualizationPathRequested -= value;
         }
 
-        event Action<DebugVisualizationHudAdapter.ChannelTreeNode>
+        event Action<DebugVisualizationHUDAdapter.ChannelTreeNode>
             IDebugConsoleView.VisualizationNodeRequested
         {
             add => _visualizationNodeRequested += value;
             remove => _visualizationNodeRequested -= value;
         }
 
-        event Action<DebugVisualizationHudAdapter.ChannelTreeNode, bool>
+        event Action<DebugVisualizationHUDAdapter.ChannelTreeNode, bool>
             IDebugConsoleView.VisualizationChannelsChanged
         {
             add => _visualizationChannelsChanged += value;
@@ -159,7 +159,7 @@ namespace ProjectCore.Template
             _toggleKey = settings.ToggleKey;
             _panelSettings.sortingOrder = TopSortingOrder;
             _document.sortingOrder = TopSortingOrder;
-            BuildUi();
+            BuildUI();
             _isInitialized = true;
         }
 
@@ -201,9 +201,9 @@ namespace ProjectCore.Template
 
         void IDebugConsoleView.RenderLogs(
             IReadOnlyList<DebugConsoleLogData> logs,
-            int? selectedLogID)
+            int? selectedLogId)
         {
-            _logsTab.RenderLogs(logs, selectedLogID);
+            _logsTab.RenderLogs(logs, selectedLogId);
         }
 
         void IDebugConsoleView.RenderLogDetails(string details)
@@ -234,15 +234,15 @@ namespace ProjectCore.Template
         }
 
         void IDebugConsoleView.RenderDebugVisualization(
-            DebugVisualizationHudAdapter.ChannelTreeNode currentNode,
+            DebugVisualizationHUDAdapter.ChannelTreeNode currentNode,
             IReadOnlyList<string> breadcrumbParts,
-            IReadOnlyDictionary<string, List<DebugVisualizationHudValueData>> valueGroups)
+            IReadOnlyDictionary<string, List<DebugVisualizationHUDValueData>> valueGroups)
         {
             _debugVisualizationTab.Render(currentNode, breadcrumbParts, valueGroups);
         }
 
         void IDebugConsoleView.RenderDebugVisualizationValues(
-            IReadOnlyDictionary<string, List<DebugVisualizationHudValueData>> valueGroups)
+            IReadOnlyDictionary<string, List<DebugVisualizationHUDValueData>> valueGroups)
         {
             _debugVisualizationTab.RenderValues(valueGroups);
         }
@@ -262,7 +262,7 @@ namespace ProjectCore.Template
             _logsTab.FocusInput();
         }
 
-        private void BuildUi()
+        private void BuildUI()
         {
             _document.panelSettings = _panelSettings;
 
@@ -288,7 +288,7 @@ namespace ProjectCore.Template
                 direction => _historyNavigationRequested?.Invoke(direction),
                 filters => _logFiltersChanged?.Invoke(filters),
                 () => _logsClearRequested?.Invoke(),
-                logID => _logSelected?.Invoke(logID),
+                logId => _logSelected?.Invoke(logId),
                 _fontSize);
             _cheatsTab = new DebugConsoleCheatsWidgetView(
                 payload => _cheatSubmitted?.Invoke(payload));

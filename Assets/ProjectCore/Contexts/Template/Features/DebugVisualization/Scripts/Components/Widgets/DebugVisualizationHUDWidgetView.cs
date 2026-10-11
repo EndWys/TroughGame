@@ -8,9 +8,10 @@ using UnityEngine.InputSystem;
 
 namespace ProjectCore.Template
 {
-    internal sealed class DebugVisualizationHudWidgetView : VisualElement
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "ProjectCore.Template", sourceAssembly: "ProjectCore.Runtime", sourceClassName: "DebugVisualizationHudWidgetView")]
+    internal sealed class DebugVisualizationHUDWidgetView : VisualElement
     {
-        private readonly DebugVisualizationHudAdapter _controller;
+        private readonly DebugVisualizationHUDAdapter _controller;
 
         private UIDocument _document;
         private VisualElement _window;
@@ -24,7 +25,7 @@ namespace ProjectCore.Template
         private bool _isFolded;
         private float _expandedWindowHeight = 520f;
 
-        public DebugVisualizationHudWidgetView(DebugVisualizationHudAdapter controller)
+        public DebugVisualizationHUDWidgetView(DebugVisualizationHUDAdapter controller)
         {
             _controller = controller;
             _controller.View = this;
@@ -45,7 +46,7 @@ namespace ProjectCore.Template
             documentRoot.Add(this);
             AddToClassList("debugviz-root");
 
-            BuildUi();
+            BuildUI();
             RenderFull();
         }
 
@@ -96,7 +97,7 @@ namespace ProjectCore.Template
             Clear();
         }
 
-        private void BuildUi()
+        private void BuildUI()
         {
             Clear();
             AddToClassList("debugviz-root");
@@ -171,7 +172,7 @@ namespace ProjectCore.Template
             clearButton.AddToClassList("debugviz-small-button");
             _breadcrumbRow.Add(clearButton);
 
-            var colorsToggle = new Toggle("Value Colors") { value = _controller.UseChannelValueColors };
+            var colorsToggle = new Toggle("Value Colors") { value = _controller.ShouldUseChannelValueColors };
             colorsToggle.AddToClassList("debugviz-color-toggle");
             colorsToggle.RegisterValueChangedCallback(
                 evt => _controller.SetUseChannelValueColors(evt.newValue));
@@ -195,7 +196,7 @@ namespace ProjectCore.Template
                 DrawChannelRow(current.Children[i]);
         }
 
-        private void DrawChannelRow(DebugVisualizationHudAdapter.ChannelTreeNode node)
+        private void DrawChannelRow(DebugVisualizationHUDAdapter.ChannelTreeNode node)
         {
             var row = new VisualElement();
             row.AddToClassList("debugviz-channel-row");
@@ -242,7 +243,7 @@ namespace ProjectCore.Template
                 DrawValueGroup(group.Key, group.Value);
         }
 
-        private void DrawValueGroup(string ownerName, List<DebugVisualizationHudValueData> values)
+        private void DrawValueGroup(string ownerName, List<DebugVisualizationHUDValueData> values)
         {
             if (values.Count == 0)
                 return;
@@ -255,7 +256,7 @@ namespace ProjectCore.Template
             {
                 var value = values[i];
                 Label label;
-                if (_controller.UseChannelValueColors)
+                if (_controller.ShouldUseChannelValueColors)
                 {
                     var color = ColorUtility.ToHtmlStringRGBA(
                 _controller.GetStyle(value.Channel).VisibleColor);

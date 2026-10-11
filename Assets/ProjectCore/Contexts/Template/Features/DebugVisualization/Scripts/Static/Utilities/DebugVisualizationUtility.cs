@@ -25,10 +25,10 @@ namespace ProjectCore.Template
             }
         }
 
-        public static bool HudVisible
+        public static bool IsHUDVisible
         {
-            get => _system.HudVisible;
-            set => _system.HudVisible = value;
+            get => _system.IsHUDVisible;
+            set => _system.IsHUDVisible = value;
         }
 
         internal static void Attach(IDebugVisualizationBackend system)

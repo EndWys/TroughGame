@@ -3,7 +3,7 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class EnemyBehaviourDisabledState : EnemyBehaviourState
+    public sealed class EnemyBehaviourDisabledState : BaseEnemyBehaviourState
     {
         private EnemyInputSourceComponent _inputSource;
 

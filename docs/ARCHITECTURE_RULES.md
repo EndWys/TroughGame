@@ -613,13 +613,17 @@ make a file fit an existing folder.
 Rules:
 
 - One file contains one top-level type.
-- The file name matches the top-level type exactly.
-- Prefixes such as `I` and `Base` do not replace the role suffix:
+- The file name matches the top-level type, with the documented `T` filename
+  option for generic types in `CONVENTIONS.md`.
+- Prefixes such as `I` and `Base` do not replace a required category suffix:
   `IMovementService` and `BaseMovementSystem` are valid abstract names.
+  Abstract subject/marker contracts such as `IScene` may omit a role suffix.
 - Do not mix suffixes inside a folder. For example, `Managers/Services` cannot
   contain a `MovementFactory`.
 - Do not create `Misc`, `Common`, `Helpers`, or `Utils` as escape-hatch folders.
-- A new suffix and subfolder must be documented here before it is introduced.
+- A new concrete category suffix and subfolder must be documented in
+  `CONVENTIONS.md` before introduction; architectural responsibility and
+  dependency constraints belong here. A contract role alone needs no folder.
 - A type that changes from passive data to behavior must be renamed and moved
   to the folder matching its new responsibility.
 - A feature-owned production `static class` is always placed under `Static`,
@@ -646,10 +650,18 @@ instance for the whole application.
 | `Registries` | `Registry` | Maintains identity-to-instance or key-to-value registration and lookup for runtime objects. |
 | `Repositories` | `Repository` | Provides an abstraction over stored or queryable collections and persistence boundaries. |
 | `Serializers` | `Serializer` | Converts a selected data format to and from its runtime representation. |
-| `Services` | `Service` | Exposes an application or feature capability to multiple consumers and owns the capability's state or operations. |
+| `Services` | `Service` | Provides a specific capability through operations and queries; may own state and resources needed for that capability. |
 | `Storages` | `Storage` | Stores and retrieves raw data through a selected persistence mechanism. |
 | `Spawners` | `Spawner` | Coordinates creation, network spawning, registration, and initial placement of runtime entities. |
-| `Systems` | `System` | Executes ongoing runtime rules over entities, components, or feature state. Use it for runtime behavior rather than storage or external API access. |
+| `Systems` | `System` | Owns the operation of a runtime subsystem: its active objects, state, interaction rules, transitions, or lifecycle. |
+
+The criteria, examples, and overlap between these two roles are defined in
+[`CONVENTIONS.md`, System and Service](CONVENTIONS.md#system-and-service).
+State, lifecycle methods, Unity API access, and tick invocation do not select
+the suffix. Both roles follow the same Managers DI and explicit initialization
+constraints. Their names do not impose a System-to-Service dependency hierarchy;
+ownership and public contracts determine dependency direction. Existing clear
+names such as `SceneFlowService` remain valid when both role descriptions fit.
 
 Managers must not:
 
@@ -731,6 +743,7 @@ Every type still lives in a suffix-specific subfolder.
 | `Commands` | `Command` | Represents an executable operation with explicit inputs. Passive command parameters are Payloads instead. |
 | `Converters` | `Converter` | Converts between two representations without owning persistence or workflow. |
 | `Decorators` | `Decorator` | Wraps one contract to add behavior while preserving that contract. |
+| `Editor` | `Editor`, `EditorWindow`, `AttributeDrawer` | Editor-only inspectors/tooling, windows, and Unity property drawers. Context-owned tooling uses the same suffixes. |
 | `Mappers` | `Mapper` | Maps fields between domain, data, DTO, or View representations. |
 | `Processors` | `Processor` | Applies one focused processing step, commonly as part of a state or data pipeline. |
 | `StateMachines` | `StateMachine` | Owns transitions and the active state for a bounded behavior. |
@@ -748,23 +761,35 @@ appropriate Managers role rather than keeping it under `Other`.
 
 `Abstract` contains contracts and abstract foundations:
 
-- interfaces use the `I` prefix and retain their semantic role suffix, such as
-  `IMovementService`, `INetworkEntityFactory`, or `IPlayerDataAccessor`;
+- interfaces use the `I` prefix with a meaningful capability or subject name,
+  such as `IMovementService`, `INetworkEntityFactory`, `IPlayerDataAccessor`,
+  or `IScene`;
 - abstract base classes use the `Base` prefix and retain their semantic suffix,
   such as `BaseMovementState` or `BaseNetworkEntityFactory`;
 - concrete implementations are forbidden in this folder.
 
-Manager contract interfaces reuse the Manager suffix definitions above. The
-following additional contract suffixes are allowed:
+The contract role vocabulary and its boundaries are defined in
+[`CONVENTIONS.md`, Abstract](CONVENTIONS.md#abstract). It includes Manager
+roles and the established `Accessor`, `Mutator`, `Reader`, `Logger`, `Probe`,
+`Presenter`, `Contributor`, `Backend`, `Drawable`, and `Collection` roles,
+with `Contract` as a fallback. Subject/marker interfaces need no artificial
+role suffix. These contract names do not introduce additional script folders.
 
-| Suffix | Role and usage |
-| --- | --- |
-| `Accessor` | Exposes read-only access to feature or entity data. |
-| `Mutator` | Exposes controlled mutation of data without exposing its storage implementation. Prefer it over the vague legacy suffix `Changer`. |
-| `Contract` | Groups a cohesive capability only when no more specific semantic suffix exists. Use sparingly. |
+Interface names describe the consumer's capability; implementation names
+describe their role or mechanism, so their suffixes need not match. A
+`Mutator` may inherit an `Accessor` when reading belongs to that API, but this
+is not mandatory inheritance for every mutation contract.
 
 An interface belongs to the feature that owns the contract, not automatically
 to the feature that first implements it.
+
+The `Base` prefix applies to all top-level abstract classes in contexts, not
+only files in Abstract. The documented generic definition families
+`ScreenDefinition<TScreen, TSettings>`, `SceneDefinition<TScene, TSettings>`,
+`PopupDefinition<TPopup, TPayload, TResponse>`, and
+`LoadingScreenDefinition<TScreen, TSettings>` retain their existing names
+above the corresponding non-generic `Base*Definition` in Template. Nested
+implementation types and Shared primitives follow their own naming scope.
 
 ### Static
 
@@ -1084,9 +1109,11 @@ External packages are excluded from this convention.
 
 - Types, methods, properties, events, and namespaces use `PascalCase`.
 - Interfaces start with `I`.
-- Abstract base types start with `Base` when the prefix clarifies their role.
+- Top-level abstract classes in contexts start with `Base`, except for the
+  four generic definition families described under Abstract.
 - Private instance fields use `_camelCase`.
-- A C# file name must match its primary type name.
+- A C# file name matches its primary type name, with the documented generic
+  `T` filename option.
 - Feature entry points use `<Feature>Feature`.
 - Context composition roots use `<Context>ContextInstaller`; explicitly invoked
   scene initialization contracts use `<Context>ContextInitializer`.
@@ -1094,13 +1121,33 @@ External packages are excluded from this convention.
   Project initialization contracts but does not start a second bootstrap flow.
 - `ApplicationEntryPoint` is the only application bootstrap type.
 - Avoid duplicated segments such as `Prototype.Prototype`.
-- Feature-owned types should start with the feature or domain term when a short
-  name would be ambiguous in the flat context namespace. Examples:
-  `CombatDamageableSystem`, `MovementStateMachine`, `NetworkEntitySpawner`,
-  and `PlayerSpawnController`.
+- Feature-owned types use a subject or feature term when a short name would
+  be ambiguous in the flat context namespace. The name composition and
+  mechanism qualifier rules are defined in
+  [`CONVENTIONS.md`](CONVENTIONS.md#type-name-composition); the full feature
+  name is not a mandatory prefix.
 - Names must describe responsibility rather than implementation details such
   as `Manager`, `Helper`, or `Utils`, unless the type genuinely represents a
   broad utility API.
+
+Canonical abbreviation forms and boolean member naming are defined in
+[`CONVENTIONS.md`](CONVENTIONS.md#naming). Project-owned identifiers use `Id`,
+`UI`, `HUD`, `DTO`, `FPS`, `FOV`, `Json`, and `Ntp`; SDK-required names keep
+their original spelling. Boolean state/settings members use `Is`, `Has`,
+`Can`, or `Should`, with `Was` for historical input/sample notifications.
+Operation-result methods and framework-required members are excluded.
+
+`CONVENTIONS.md` is the source of truth for naming. It also defines
+[generic parameter and type name composition](CONVENTIONS.md#type-name-composition),
+[injection method names](CONVENTIONS.md#injection-method-names),
+[`Empty`, `Default`, and `NoOp`](CONVENTIONS.md#empty-default-and-noop),
+[nested implementation types](CONVENTIONS.md#nested-implementation-types), and
+[the scope of automated enforcement](CONVENTIONS.md#enforcement).
+Method injection uses `Construct` (or a distinct `ConstructBase<Type>` on
+a base) to supply dependencies. Initialization remains the explicitly awaited
+feature/context flow; method injection must not start another flow.
+The [DataHolders rules](CONVENTIONS.md#dataholders) explain why an authored
+settings or catalog type retains the final `Config` suffix.
 
 Spelling mistakes are not accepted in paths or identifiers. In particular,
 legacy names must be corrected as follows:

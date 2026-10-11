@@ -412,8 +412,8 @@ namespace ProjectCore.Template
                 sceneContext.Container.Resolve<IMovementCollisionStrategy>(),
                 Is.TypeOf<LevelCollisionService>());
             Assert.That(sceneContext.Container.Resolve<IMovementSystem>(), Is.Not.Null);
-            Assert.That(sceneContext.Container.Resolve<IDamageableSystem>(), Is.Not.Null);
-            Assert.That(sceneContext.Container.Resolve<IDamageSourceSystem>(), Is.Not.Null);
+            Assert.That(sceneContext.Container.Resolve<IDamageableEntityService>(), Is.Not.Null);
+            Assert.That(sceneContext.Container.Resolve<IDamageSourceEntityService>(), Is.Not.Null);
             Assert.That(
                 sceneContext.Container.Resolve<List<INetworkEntityFactory>>(),
                 Has.Exactly(1).TypeOf<PlayerNetworkEntityFactory>());

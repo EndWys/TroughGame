@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ProjectCore.GameCore
 {
-    public interface IGameEntityComponentAccessor
+    public interface IGameEntityComponentService
     {
         void FillEntityIds<TComponent>(
             Predicate<TComponent> predicate,

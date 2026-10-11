@@ -3,19 +3,20 @@ using System.Collections.Generic;
 
 namespace ProjectCore.Template
 {
-    internal sealed class DebugVisualizationHudAdapter
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "ProjectCore.Template", sourceAssembly: "ProjectCore.Runtime", sourceClassName: "DebugVisualizationHudAdapter")]
+    internal sealed class DebugVisualizationHUDAdapter
     {
         private readonly IDebugVisualizationSystem _system;
         private string _currentChannelPath = string.Empty;
-        private bool _useChannelValueColors;
+        private bool _shouldUseChannelValueColors;
 
-        public DebugVisualizationHudAdapter(IDebugVisualizationSystem system)
+        public DebugVisualizationHUDAdapter(IDebugVisualizationSystem system)
         {
             _system = system;
         }
 
         public string CurrentChannelPath => _currentChannelPath;
-        public bool UseChannelValueColors => _useChannelValueColors;
+        public bool ShouldUseChannelValueColors => _shouldUseChannelValueColors;
 
         public void ResetPath()
         {
@@ -27,7 +28,7 @@ namespace ProjectCore.Template
             View?.RequestRenderFull();
         }
 
-        public DebugVisualizationHudWidgetView View { get; set; }
+        public DebugVisualizationHUDWidgetView View { get; set; }
 
         public void RefreshValuesOnly()
         {
@@ -36,10 +37,10 @@ namespace ProjectCore.Template
 
         public void SetUseChannelValueColors(bool enabled)
         {
-            if (_useChannelValueColors == enabled)
+            if (_shouldUseChannelValueColors == enabled)
                 return;
 
-            _useChannelValueColors = enabled;
+            _shouldUseChannelValueColors = enabled;
             View?.RequestRenderValuesOnly();
         }
 
@@ -119,9 +120,9 @@ namespace ProjectCore.Template
                 SetChannelsEnabled(node.Children[i], enabled);
         }
 
-        public IReadOnlyDictionary<string, List<DebugVisualizationHudValueData>> BuildValueGroups()
+        public IReadOnlyDictionary<string, List<DebugVisualizationHUDValueData>> BuildValueGroups()
         {
-            var groups = new SortedDictionary<string, List<DebugVisualizationHudValueData>>();
+            var groups = new SortedDictionary<string, List<DebugVisualizationHUDValueData>>();
             var values = _system.PersistentValues;
 
             for (var i = 0; i < values.Count; i++)
@@ -132,7 +133,7 @@ namespace ProjectCore.Template
 
                 if (!groups.TryGetValue(value.OwnerName, out var ownerValues))
                 {
-                    ownerValues = new List<DebugVisualizationHudValueData>();
+                    ownerValues = new List<DebugVisualizationHUDValueData>();
                     groups.Add(value.OwnerName, ownerValues);
                 }
 

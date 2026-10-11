@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public abstract class EnemyBehaviourState : MonoBehaviour,
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "ProjectCore.TechnicalPrototype", sourceAssembly: "ProjectCore.Runtime", sourceClassName: "EnemyBehaviourState")]
+    public abstract class BaseEnemyBehaviourState : MonoBehaviour,
         IState<EnemyBehaviourStateType, EnemyBehaviourPayload>
     {
         public virtual void Init() { }

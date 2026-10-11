@@ -7,7 +7,7 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class EnemyBehaviourChasingState : EnemyBehaviourState
+    public sealed class EnemyBehaviourChasingState : BaseEnemyBehaviourState
     {
         [SerializeField] private EnemyChaseConfig _chaseConfig;
         private EnemyInputSourceComponent _inputSource;

@@ -15,7 +15,7 @@ namespace ProjectCore.Prototype
         private IGroundDetectorDataMutator _groundDetectorDataMutator;
 
         [Inject]
-        private void Constructor(IGroundDetectorDataMutator groundDetectorDataMutator)
+        private void Construct(IGroundDetectorDataMutator groundDetectorDataMutator)
         {
             _groundDetectorDataMutator = groundDetectorDataMutator;
         }

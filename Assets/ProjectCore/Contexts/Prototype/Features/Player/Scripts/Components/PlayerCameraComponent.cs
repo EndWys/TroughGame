@@ -39,7 +39,7 @@ namespace ProjectCore.Prototype
                 return;
             }
 
-            _cameraController.ChangeFov(playerMovementStateChangedPayload.MovementStates == MovementStates.Run ? _baseFOV + _bustedFOVBonus : _baseFOV);
+            _cameraController.ChangeFOV(playerMovementStateChangedPayload.MovementStates == MovementStates.Run ? _baseFOV + _bustedFOVBonus : _baseFOV);
         }
     }
 }

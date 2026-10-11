@@ -138,13 +138,13 @@ namespace ProjectCore.Template
         private static bool ResolveBuildAvailability(DebugToolsSettingsConfig settings)
         {
 #if UNITY_SERVER
-            return settings.EnabledOnDedicatedServer;
+            return settings.IsEnabledOnDedicatedServer;
 #elif UNITY_EDITOR
-            return settings.EnabledInEditor;
+            return settings.IsEnabledInEditor;
 #else
             return Debug.isDebugBuild
-                ? settings.EnabledInDevelopmentBuild
-                : settings.EnabledInReleaseBuild;
+                ? settings.IsEnabledInDevelopmentBuild
+                : settings.IsEnabledInReleaseBuild;
 #endif
         }
     }

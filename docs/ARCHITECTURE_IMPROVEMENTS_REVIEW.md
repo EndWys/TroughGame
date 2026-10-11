@@ -3,6 +3,11 @@
 Дата: 2026-10-09. Проверенная ревизия: `bf7717e` и текущий рабочий каталог.
 Объект проверки: `docs/ARCHITECTURE_IMPROVEMENTS_PLAN.md`, пункты L1–L7 и G1–G7.
 
+После аудита component API переименован из `IGameEntityComponentAccessor` /
+`GameEntityComponentAccessorService` в `IGameEntityComponentService` /
+`GameEntityComponentService`. Ссылки обновлены; выводы и исходные имена
+в историческом анализе сохранены.
+
 ## Заключение
 
 **План полезен как список кандидатов, но его полный объём не подтверждён как
@@ -126,10 +131,10 @@ elapsed time и reset. Размещение такого правила в state
 
 ### L3. Entity queries
 
-[Accessor:44](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Managers/Services/GameEntityComponentAccessorService.cs:44)
+[ComponentService:44](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Managers/Services/GameEntityComponentService.cs:44)
 создаёт IDs list для первого результата. Predicate overload registry дополнительно
 [создаёт componentBuffer:195](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Managers/Registries/NetworkEntityRegistry.cs:195).
-Nearest query [строка 108](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Managers/Services/GameEntityComponentAccessorService.cs:108)
+Nearest query [строка 108](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Managers/Services/GameEntityComponentService.cs:108)
 материализует IDs и второй раз ищет компоненты; сортировки в этом методе нет.
 AI действительно вызывает nearest query через
 [EnemyTargetingService:53](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Managers/Services/EnemyTargetingService.cs:53).
@@ -149,7 +154,7 @@ partitioning остаются неизвестными.
 - Predicate/selector — callbacks. Для direct traversal нужно явно запретить
   mutation либо сохранить snapshot там, где она допустима. Short-circuit также
   меняет количество вызовов predicate; query predicates должны быть без side effects.
-- [ApplyToAll:141](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Managers/Services/GameEntityComponentAccessorService.cs:141)
+- [ApplyToAll:141](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Managers/Services/GameEntityComponentService.cs:141)
   собирает **components snapshot**, а не только IDs. Это позволяет вызвать action
   для уже полученных ссылок при изменении registry. Оставить этот контракт,
   отдельно уточнив, допустима ли работа с компонентом уже despawned объекта.

@@ -9,13 +9,14 @@ namespace ProjectCore.Template
         menuName = "SO/Template/DebugVisualization/Settings")]
     public sealed class DebugVisualizationSettingsConfig : ScriptableObject
     {
-        [SerializeField] private bool _showHudOnStart = true;
+        [UnityEngine.Serialization.FormerlySerializedAs("_showHudOnStart")]
+        [SerializeField] private bool _shouldShowHUDOnStart = true;
         [SerializeField, Min(32)] private int _maxTransientDraws = 1024;
         [SerializeField]
         private DebugVisualizationStyleData _defaultStyle = DebugVisualizationStyleData.Default;
         [SerializeField] private List<DebugVisualizationChannelStyleConfig> _channelStyles = new();
 
-        public bool ShowHudOnStart => _showHudOnStart;
+        public bool ShouldShowHUDOnStart => _shouldShowHUDOnStart;
         public int MaxTransientDraws => _maxTransientDraws;
         public DebugVisualizationStyleData DefaultStyle => _defaultStyle;
         public IReadOnlyList<DebugVisualizationChannelStyleConfig> ChannelStyles => _channelStyles;

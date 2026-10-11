@@ -50,7 +50,7 @@ namespace ProjectCore.Template
 
         public void RenderLogs(
             IReadOnlyList<DebugConsoleLogData> logs,
-            int? selectedLogID)
+            int? selectedLogId)
         {
             VisualElement selected = null;
 
@@ -61,10 +61,10 @@ namespace ProjectCore.Template
                 line.text = log.Message;
                 line.style.color = GetColor(log.Type);
                 line.style.display = DisplayStyle.Flex;
-                line.userData = log.ID;
+                line.userData = log.Id;
                 line.RemoveFromClassList("console-log-entry-selected");
 
-                if (selectedLogID.HasValue && selectedLogID.Value == log.ID)
+                if (selectedLogId.HasValue && selectedLogId.Value == log.Id)
                 {
                     line.AddToClassList("console-log-entry-selected");
                     selected = line;
@@ -212,8 +212,8 @@ namespace ProjectCore.Template
 
         private void OnLogLineClicked(ClickEvent clickEvent)
         {
-            if (clickEvent.currentTarget is Label { userData: int logID })
-                _logSelected?.Invoke(logID);
+            if (clickEvent.currentTarget is Label { userData: int logId })
+                _logSelected?.Invoke(logId);
         }
 
         private void EmitFilters()

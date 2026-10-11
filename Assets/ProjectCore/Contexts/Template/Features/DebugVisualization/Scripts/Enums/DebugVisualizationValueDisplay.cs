@@ -6,8 +6,8 @@ namespace ProjectCore.Template
     public enum DebugVisualizationValueDisplay
     {
         None = 0,
-        Hud = 1,
+        HUD = 1,
         World = 2,
-        HudAndWorld = Hud | World
+        HUDAndWorld = HUD | World
     }
 }

@@ -13,7 +13,7 @@ namespace ProjectCore.Template
         public string Channel { get; }
         public string Label { get; set; }
         public bool Filled { get; set; }
-        public DebugVisualizationValueDisplay ValueDisplay { get; set; } = DebugVisualizationValueDisplay.Hud;
+        public DebugVisualizationValueDisplay ValueDisplay { get; set; } = DebugVisualizationValueDisplay.HUD;
         public float WorldYOffset { get; set; } = 2f;
     }
 }

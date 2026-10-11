@@ -11,7 +11,7 @@ namespace ProjectCore.Template
         private float Uptime => Time.realtimeSinceStartup - _startTime;
 
         [DebugValue("ConsoleTest/System", Label = "FPS")]
-        private int Fps => Mathf.RoundToInt(1f / Mathf.Max(Time.unscaledDeltaTime, 0.0001f));
+        private int FPS => Mathf.RoundToInt(1f / Mathf.Max(Time.unscaledDeltaTime, 0.0001f));
 
         [DebugValue("ConsoleTest/Gameplay/Player", Label = "Health")]
         private int Health => 100 - (int)((Time.realtimeSinceStartup * 7f) % 55f);

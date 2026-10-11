@@ -74,17 +74,17 @@ namespace ProjectCore.Template
         {
             EditorGUILayout.LabelField("Build Availability", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(
-                _serializedSettings.FindProperty("_enabledInEditor"), new GUIContent("Editor"));
+                _serializedSettings.FindProperty("_isEnabledInEditor"), new GUIContent("Editor"));
             EditorGUILayout.PropertyField(
-                _serializedSettings.FindProperty("_enabledInDevelopmentBuild"),
+                _serializedSettings.FindProperty("_isEnabledInDevelopmentBuild"),
                 new GUIContent("Development Build"));
             EditorGUILayout.PropertyField(
-                _serializedSettings.FindProperty("_enabledInReleaseBuild"), new GUIContent("Release Build"));
+                _serializedSettings.FindProperty("_isEnabledInReleaseBuild"), new GUIContent("Release Build"));
             EditorGUILayout.PropertyField(
-                _serializedSettings.FindProperty("_enabledOnDedicatedServer"),
+                _serializedSettings.FindProperty("_isEnabledOnDedicatedServer"),
                 new GUIContent("Dedicated Server"));
 
-            if (_serializedSettings.FindProperty("_enabledInReleaseBuild").boolValue)
+            if (_serializedSettings.FindProperty("_isEnabledInReleaseBuild").boolValue)
             {
                 EditorGUILayout.HelpBox(
                     "Debug tools are enabled in release builds.",
@@ -160,7 +160,7 @@ namespace ProjectCore.Template
             EditorGUILayout.LabelField("Console", EditorStyles.boldLabel);
             SerializedProperty consoleSettings = _serializedSettings.FindProperty("_consoleSettings");
             EditorGUILayout.PropertyField(
-                consoleSettings.FindPropertyRelative("_openOnStart"), new GUIContent("Open on Start"));
+                consoleSettings.FindPropertyRelative("_shouldOpenOnStart"), new GUIContent("Open on Start"));
             EditorGUILayout.PropertyField(
                 consoleSettings.FindPropertyRelative("_toggleKey"), new GUIContent("Toggle Key"));
             EditorGUILayout.PropertyField(

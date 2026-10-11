@@ -5,12 +5,12 @@ namespace ProjectCore.GameCore
 {
     public sealed class MovementSystem : IMovementSystem
     {
-        private readonly IGameEntityComponentAccessor _gameEntityComponentAccessor;
+        private readonly IGameEntityComponentService _gameEntityComponentService;
 
-        public MovementSystem(IGameEntityComponentAccessor gameEntityComponentAccessor)
+        public MovementSystem(IGameEntityComponentService gameEntityComponentService)
         {
-            _gameEntityComponentAccessor = gameEntityComponentAccessor ??
-                throw new ArgumentNullException(nameof(gameEntityComponentAccessor));
+            _gameEntityComponentService = gameEntityComponentService ??
+                throw new ArgumentNullException(nameof(gameEntityComponentService));
         }
 
         public void FillEntityIds<TMovementComponent>(
@@ -18,7 +18,7 @@ namespace ProjectCore.GameCore
             ICollection<NetworkEntityIdData> results)
             where TMovementComponent : class
         {
-            _gameEntityComponentAccessor.FillEntityIds(predicate, results);
+            _gameEntityComponentService.FillEntityIds(predicate, results);
         }
 
         public bool TryFindEntityId<TMovementComponent>(
@@ -26,7 +26,7 @@ namespace ProjectCore.GameCore
             out NetworkEntityIdData entityId)
             where TMovementComponent : class
         {
-            return _gameEntityComponentAccessor.TryFindEntityId(predicate, out entityId);
+            return _gameEntityComponentService.TryFindEntityId(predicate, out entityId);
         }
 
         public void FillEntityIdsSortedBy<TMovementComponent, TSortKey>(
@@ -34,7 +34,7 @@ namespace ProjectCore.GameCore
             ICollection<NetworkEntityIdData> results)
             where TMovementComponent : class
         {
-            _gameEntityComponentAccessor.FillEntityIdsSortedBy(sortKeySelector, results);
+            _gameEntityComponentService.FillEntityIdsSortedBy(sortKeySelector, results);
         }
 
         public bool TryFindFirstEntityIdSortedBy<TMovementComponent, TSortKey>(
@@ -42,14 +42,14 @@ namespace ProjectCore.GameCore
             out NetworkEntityIdData entityId)
             where TMovementComponent : class
         {
-            return _gameEntityComponentAccessor.TryFindFirstEntityIdSortedBy(sortKeySelector, out entityId);
+            return _gameEntityComponentService.TryFindFirstEntityIdSortedBy(sortKeySelector, out entityId);
         }
 
         public void ApplyToAll<TMovementComponent>(
             Action<TMovementComponent> action)
             where TMovementComponent : class
         {
-            _gameEntityComponentAccessor.ApplyToAll(action);
+            _gameEntityComponentService.ApplyToAll(action);
         }
     }
 }

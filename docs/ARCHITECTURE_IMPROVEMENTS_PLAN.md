@@ -8,6 +8,11 @@
 На момент составления плана была изменена только документация. Предложения ниже
 фиксируют исходный объём до независимого аудита и согласования приоритетов.
 
+В последующем этапе нейминга component API переименован из
+`IGameEntityComponentAccessor` / `GameEntityComponentAccessorService` в
+`IGameEntityComponentService` / `GameEntityComponentService`. Ссылки ведут
+к текущим файлам; старые имена в исходном анализе сохранены как исторические.
+
 ## Результат согласованного этапа — 2026-10-10
 
 После аудита реализован согласованный список из семи исправлений:
@@ -175,7 +180,7 @@ input struct только там, где это делает вызов поня
 
 ### L3. Уточнить семантику и стоимость entity queries — P2, структура + гипотеза о масштабе
 
-**Основание:** [GameEntityComponentAccessorService](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Managers/Services/GameEntityComponentAccessorService.cs:34)
+**Основание:** [GameEntityComponentService](D:/Repositories/TroughGame/Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Managers/Services/GameEntityComponentService.cs:34)
 создаёт временные списки даже для первого найденного ID. Метод
 `TryFindFirstEntityIdSortedBy` уже выбирает минимум линейно, **не сортирует**,
 но собирает ID и повторно получает компоненты. Steering многократно обходит врагов.
