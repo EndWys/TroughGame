@@ -12,11 +12,11 @@ namespace ProjectCore.TechnicalPrototype
     {
         private const string PrefabPath =
             "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/" +
-            "Implementations/Player/GraphicResources/Prefabs/" +
+            "Player/Assets/Prefabs/" +
             "Prefab_Player_NetworkEntity.prefab";
         private const string AnimationsPath =
             "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/" +
-            "Implementations/Player/GraphicResources/Animations";
+            "Player/Assets/Animations";
         private const float DodgeDurationSeconds = 0.2f;
 
         [Test]
@@ -86,9 +86,9 @@ namespace ProjectCore.TechnicalPrototype
 
             Assert.That(movement, Is.Not.Null);
             Assert.That(movement.GetComponent<PlayerMovementStateMachine>(), Is.Not.Null);
-            Assert.That(movement.GetComponent<IdleState>(), Is.Not.Null);
-            Assert.That(movement.GetComponent<LocomotionState>(), Is.Not.Null);
-            Assert.That(movement.GetComponent<DodgeState>(), Is.Not.Null);
+            Assert.That(movement.GetComponent<PlayerIdleState>(), Is.Not.Null);
+            Assert.That(movement.GetComponent<PlayerLocomotionState>(), Is.Not.Null);
+            Assert.That(movement.GetComponent<PlayerDodgeState>(), Is.Not.Null);
 
             SerializedObject movementStateMachine = new(movement.GetComponent<PlayerMovementStateMachine>());
             Assert.That(movementStateMachine.FindProperty("_idleState").objectReferenceValue, Is.Not.Null);
@@ -122,13 +122,13 @@ namespace ProjectCore.TechnicalPrototype
                 Is.SameAs(animator));
             Assert.That(serializedPlayerAnimator.FindProperty("_positionSource"), Is.Null);
 
-            SerializedObject locomotionState = new(movement.GetComponent<LocomotionState>());
+            SerializedObject locomotionState = new(movement.GetComponent<PlayerLocomotionState>());
             Assert.That(
                 locomotionState.FindProperty("_locomotionMovementConfig")
                     .objectReferenceValue,
                 Is.Not.Null);
             Assert.That(locomotionState.FindProperty("_movementBody").objectReferenceValue, Is.Not.Null);
-            SerializedObject dodgeState = new(movement.GetComponent<DodgeState>());
+            SerializedObject dodgeState = new(movement.GetComponent<PlayerDodgeState>());
             Assert.That(dodgeState.FindProperty("_movementBody").objectReferenceValue, Is.Not.Null);
             Assert.That(dodgeState.FindProperty("_dodgeMovementConfig").objectReferenceValue, Is.Not.Null);
         }
@@ -193,7 +193,7 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             AnimatorController controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(
-                AnimationsPath + "/Controller_Player.controller");
+                AnimationsPath + "/AnimatorController_Player_Movement.controller");
             Assert.That(controller, Is.Not.Null);
             Assert.That(controller.parameters.Select(parameter => parameter.name),
                 Is.EquivalentTo(new[] { "MovementState", "DirectionX", "DirectionY" }));

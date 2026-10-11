@@ -5,6 +5,6 @@ namespace ProjectCore.Template
 {
     public interface ICompoundMediator : IMediator
     {
-        protected List<MemberHandler> Handlers { get; }
+        protected List<BaseMemberHandler> Handlers { get; }
     }
 }

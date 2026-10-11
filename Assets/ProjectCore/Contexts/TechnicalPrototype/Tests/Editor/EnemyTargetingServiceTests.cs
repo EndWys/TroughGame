@@ -11,16 +11,16 @@ namespace ProjectCore.TechnicalPrototype
         [Test]
         public void TryFindNearestTargetReturnsClosestAvailableTarget()
         {
-            NetworkEntityIdData nearestId = new(new NetworkEntityTypeData("player"), 2);
-            var accessor = new TestGameEntityComponentAccessor(new Dictionary<
+            NetworkEntityIdData nearestId = new(NetworkEntityType.Player, 2);
+            var componentService = new TestGameEntityComponentService(new Dictionary<
                 NetworkEntityIdData,
                 ITargetableNetworkEntity>
             {
-                { new NetworkEntityIdData(new NetworkEntityTypeData("player"), 0), new TestTarget(new(8f, 0f)) },
+                { new NetworkEntityIdData(NetworkEntityType.Player, 0), new TestTarget(new(8f, 0f)) },
                 { nearestId, new TestTarget(new(2f, 0f)) },
-                { new NetworkEntityIdData(new NetworkEntityTypeData("player"), 1), new TestTarget(new(4f, 0f)) },
+                { new NetworkEntityIdData(NetworkEntityType.Player, 1), new TestTarget(new(4f, 0f)) },
             });
-            var service = new EnemyTargetingService(accessor, new NetworkEntityRegistry());
+            var service = new EnemyTargetingService(componentService, new NetworkEntityRegistry());
 
             bool found = service.TryFindNearestTarget(Vector2.zero, out NetworkEntityIdData result);
 
@@ -32,7 +32,7 @@ namespace ProjectCore.TechnicalPrototype
         public void HasAvailableTargetReturnsFalseWhenNoTargetIsRegistered()
         {
             var service = new EnemyTargetingService(
-                new TestGameEntityComponentAccessor(new Dictionary<
+                new TestGameEntityComponentService(new Dictionary<
                     NetworkEntityIdData,
                     ITargetableNetworkEntity>()),
                 new NetworkEntityRegistry());
@@ -50,11 +50,11 @@ namespace ProjectCore.TechnicalPrototype
             public Vector2 TargetPosition { get; }
         }
 
-        private sealed class TestGameEntityComponentAccessor : IGameEntityComponentAccessor
+        private sealed class TestGameEntityComponentService : IGameEntityComponentService
         {
             private readonly IReadOnlyDictionary<NetworkEntityIdData, ITargetableNetworkEntity> _targets;
 
-            public TestGameEntityComponentAccessor(
+            public TestGameEntityComponentService(
                 IReadOnlyDictionary<NetworkEntityIdData, ITargetableNetworkEntity> targets)
             {
                 _targets = targets;

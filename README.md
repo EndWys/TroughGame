@@ -23,9 +23,12 @@ are initialized through the common application flow.
 
 ## Development rules
 
+The [documentation index](docs/README.md) lists current standards and feature
+guides.
+
 - Use DI for services, systems, factories, and other functional dependencies.
-- Keep Features independent; connect them through Modules, Template Features,
-  or Bridge Features where appropriate.
+- Place Features directly under their context; connect them through public
+  contracts and injected adapters.
 - Keep Shared independent of external APIs except .NET.
 - Use `Shared` or `ProjectCore.{Context}` namespaces.
 - Keep application startup under the single `ApplicationEntryPoint` flow.
@@ -39,9 +42,6 @@ documented in
 Detailed coding, member-order, naming, suffix, resource, and folder conventions
 are documented separately in
 [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md).
-
-Migration stages and their status are documented in
-[`docs/ARCHITECTURE_MIGRATION.md`](docs/ARCHITECTURE_MIGRATION.md).
 
 The standard authored hierarchy for gameplay scenes is documented in
 [`docs/SCENE_HIERARCHY_STANDARD.md`](docs/SCENE_HIERARCHY_STANDARD.md).

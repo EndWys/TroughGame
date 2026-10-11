@@ -10,7 +10,7 @@ standard.
 ## Scope And Exceptions
 
 The standard applies to every new project-owned gameplay scene under
-`Assets/ProjectCore/Contexts/<Context>/GraphicResources/Scenes`.
+`Assets/ProjectCore/Contexts/<Context>/Assets/Scenes`.
 
 The following are explicit exceptions:
 

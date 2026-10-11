@@ -43,6 +43,35 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 
 The valid fixture must report `0 errors, 0 warnings`.
 
+Run the inheritance/type-name regression checks:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\Tools\Architecture\Test-TypeResolution.ps1
+```
+
+The runner checks exact diagnostic rules, file paths, and Strict exit codes.
+It includes the positive fixture and `Fixtures/TypeNamesInvalid`, where a plain
+class in Components must produce `VIEW001` even when another context has a valid
+MonoBehaviour with the same name. Other cases cover local-name precedence,
+imports, qualified names, aliases, generic arity, multiline generic bases,
+ambiguous imports, framework namesakes, Managers, context-owned Components, and cycles.
+Generated fixtures are created in a temporary directory and removed after the run.
+
+Run naming-rule regression checks:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File .\Tools\Architecture\Test-NamingValidation.ps1
+```
+
+The naming runner checks the same `Editor`, `EditorWindow`, and
+`AttributeDrawer` suffixes for context and feature tooling. It also verifies
+that top-level abstract classes require `Base` outside Abstract, while the
+four documented Template generic definition families and Shared primitives
+retain their naming scope. Negative fixtures check the exception's owner,
+generic arity, and base type. Each case checks exact diagnostics and exit codes.
+
 ## Diagnostic Families
 
 | Prefix | Area |
@@ -50,19 +79,23 @@ The valid fixture must report `0 errors, 0 warnings`.
 | `PATH` | Source ownership and legacy roots |
 | `NS` | Context and Shared namespaces |
 | `SHARED` | Forbidden Shared dependencies |
-| `FEATURE` | Modules, Implementations, Infrastructure, and Bridges ownership |
+| `FEATURE` | Flat feature ownership; obsolete role folders are rejected |
 | `SCRIPT` | Closed feature `Scripts` taxonomy |
 | `CONTEXT` | Shared context `Scripts/<Category>` |
 | `SUFFIX` | Folder and type suffix correspondence |
 | `TYPE` | File/type correspondence and top-level type count |
 | `ABSTRACT`, `ENUM`, `STATIC` | Special type category rules |
 | `MANAGER`, `VIEW`, `DI` | DI-managed and MonoBehaviour placement |
-| `NAME` | Known spelling and legacy suffix rules |
+| `NAME` | Known spelling, interface/base prefixes, and legacy suffix rules |
 | `INIT` | Initialization callback and `async void` checks |
 | `TEST` | Flat Editor and Play test placement |
+| `ASSET` | Own resource naming, ownership, placement, metadata and authoring |
 
 Errors are deterministic convention violations and fail Strict mode. Warnings
 are heuristic findings that require manual review.
+
+`TYPE004` reports an ambiguous base type when more than one known type is
+available through imports. Use a qualified type name or a `using` alias.
 
 `TEST001` requires every test fixture to live directly in
 `Contexts/<Context>/Tests/Editor` or `Contexts/<Context>/Tests/Play`.
@@ -96,14 +129,27 @@ The baseline is historical and is not an allowlist. Current strict validation
 must remain at zero errors and warnings.
 
 Context-owned scripts use the documented non-feature categories such as
-`Abstract`, `Enums`, `Extensions`, `DataHolders`, `Other`, and `Views`. Outside
+`Abstract`, `Enums`, `Extensions`, `DataHolders`, `Other`, and `Components`. Outside
 `Init`, these scripts must not participate in DI. A complete capability,
 stateful service, or lifecycle participant remains feature-owned.
 
 ## Static Analysis Limits
 
+- The naming vocabulary is defined in `docs/CONVENTIONS.md`. Contract and
+  implementation suffixes need not match, subject interfaces may omit a role
+  suffix, and nested implementation types do not follow top-level category
+  suffix rules. Contract responsibility, word order, generic parameter meaning,
+  injection method names, and `Empty`/`Default`/`NoOp` semantics require code
+  review; a clean validator report does not certify these naming decisions.
 - MonoBehaviour inheritance is resolved from project-owned types and the known
-  Unity/Fusion roots. An external custom base type may require manual review.
+  roots `UnityEngine.MonoBehaviour`, `Fusion.NetworkBehaviour`, and
+  `UnityEngine.UIElements.VisualElement`. Type identities include the namespace
+  and generic arity; each inheritance link uses its declaring file's namespace,
+  imports, and aliases. An external custom base type may require manual review.
+- Type parsing remains lightweight and assumes one primary top-level type and
+  one namespace per file, as required by project conventions. It is not a C#
+  compiler and does not model every language construct, such as nested types,
+  global using directives, or aliases to constructed generic types.
 - Manager `AsSingle`, open-generic `AsCached`, and Feature binding discovery is
   heuristic and produces a Warning when the binding cannot be found statically.
 - Lifecycle callback inspection intentionally produces Warnings because local
@@ -113,3 +159,30 @@ stateful service, or lifecycle participant remains feature-owned.
   serialized references still require Unity prefab or scene validation.
 - The validator does not replace Unity compilation, Test Runner, scene loading,
   prefab validation, or architecture review.
+
+## Resource validation
+
+Run `powershell -NoProfile -ExecutionPolicy Bypass -File
+Tools/Architecture/Test-ResourceValidation.ps1` from the repository root.
+The runner checks valid resource folders, negative naming/ownership/metadata cases,
+the ProjectContext and third-party exceptions, and SceneDefinition placement.
+
+Own non-C# resources under ProjectCore are checked; Plugins and ThirdParty are
+excluded. C# fixture metadata is not required by this resource stage. Existing
+SDK roots outside ProjectCore are not relocated or treated as project-owned content.
+
+| Rule | Check |
+| --- | --- |
+| ASSET001 | Matching resource .meta exists |
+| ASSET002 | Project/context/feature Assets root, with ProjectContext exception |
+| ASSET003 | Prefix and name pattern for the resource extension |
+| ASSET004 | Semantic folder; SceneDefinition exception requires its matching scene |
+| ASSET005 | Config owner matches its containing context |
+| ASSET006 | Empty folders, warning only |
+| ASSET007 | CreateAssetMenu context spelling matches the script context |
+
+`VIEW001` and `VIEW002` retain their IDs for compatibility but now validate
+`Scripts/Components`. Ordinary `*Component` scripts live in that root; role
+folders retain their suffixes and MonoBehaviour/VisualElement checks.
+The validator cannot infer semantic ownership from arbitrary serialized references;
+resource types and their configured instances may have different owners.

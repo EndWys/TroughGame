@@ -59,6 +59,49 @@ function Get-LineNumber {
     return ([regex]::Matches($Text.Substring(0, $Index), "`n").Count + 1)
 }
 
+function Split-TypeList {
+    param([string]$Text)
+
+    # Commas inside generic arguments do not separate base types.
+    $depth = 0
+    $start = 0
+    for ($index = 0; $index -lt $Text.Length; $index++) {
+        if ($Text[$index] -in @('<', '(')) { $depth++ }
+        elseif ($Text[$index] -in @('>', ')')) { $depth-- }
+        elseif ($Text[$index] -eq ',' -and $depth -eq 0) {
+            $Text.Substring($start, $index - $start).Trim()
+            $start = $index + 1
+        }
+    }
+    if ($start -lt $Text.Length) {
+        $Text.Substring($start).Trim()
+    }
+}
+
+function Get-TypeReference {
+    param([string]$Text)
+
+    $value = $Text.Trim()
+    $genericStart = $value.IndexOf('<')
+    $arity = 0
+    $name = $value
+    if ($genericStart -ge 0) {
+        $name = $value.Substring(0, $genericStart).Trim()
+        $arguments = $value.Substring($genericStart + 1)
+        if ($arguments.EndsWith('>')) {
+            $arguments = $arguments.Substring(0, $arguments.Length - 1)
+        }
+        $arity = @(Split-TypeList -Text $arguments).Count
+    }
+    return [pscustomobject]@{ Name = $name; Arity = $arity; Text = $value }
+}
+
+function Get-TypeIdentity {
+    param([string]$Name, [int]$Arity)
+
+    return ('{0}#{1}' -f $Name, $Arity)
+}
+
 function Get-TypeInfo {
     param([string]$Text)
 
@@ -68,32 +111,49 @@ function Get-TypeInfo {
 
     $typePattern = '(?m)^[ \t]{0,4}(?<mods>(?:(?:public|internal|private|protected|abstract|sealed|static|partial|readonly)\s+)*)' +
         '(?<kind>class|interface|struct|enum|record(?:\s+class|\s+struct)?)\s+' +
-        '(?<name>[A-Za-z_][A-Za-z0-9_]*)(?<generic>\s*<[^\r\n{]+?>)?' +
-        '(?:\s*:\s*(?<bases>[^\r\n{]+))?'
+        '(?<name>[A-Za-z_][A-Za-z0-9_]*)(?<generic>\s*<[^{};]+?>)?' +
+        '(?:\s*:\s*(?<bases>[^{;]+))?'
 
     $typeMatches = [regex]::Matches($Text, $typePattern)
     $primary = $null
+    $namespace = if ($namespaceMatch.Success) { $namespaceMatch.Groups['name'].Value } else { '' }
+    $usings = @()
+    $aliases = @{}
+    $usingMatches = [regex]::Matches($Text,
+        '(?m)^\s*using\s+(?:(?<alias>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*)?(?<name>(?:global::)?[A-Za-z_][A-Za-z0-9_\.]*)\s*;')
+    foreach ($usingMatch in $usingMatches) {
+        $usedName = $usingMatch.Groups['name'].Value
+        if ($usingMatch.Groups['alias'].Success) {
+            $aliases[$usingMatch.Groups['alias'].Value] = $usedName
+        } else {
+            $usings += $usedName -replace '^global::', ''
+        }
+    }
 
     if ($typeMatches.Count -gt 0) {
         $match = $typeMatches[0]
-        $bases = @()
+        $baseReferences = @()
         if ($match.Groups['bases'].Success) {
-            $baseText = $match.Groups['bases'].Value -replace '\s+where\s+.*$', ''
-            $bases = @($baseText.Split(',') | ForEach-Object {
-                $value = $_.Trim()
-                $value = $value -replace '<.*$', ''
-                if ($value.Contains('.')) {
-                    $value = $value.Substring($value.LastIndexOf('.') + 1)
-                }
-                $value
-            } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+            $baseText = $match.Groups['bases'].Value -replace '(?s)\s+where\s+.*$', ''
+            $baseReferences = @(Split-TypeList -Text $baseText | ForEach-Object {
+                Get-TypeReference -Text $_
+            })
         }
 
+        $declaration = Get-TypeReference -Text ($match.Groups['name'].Value + $match.Groups['generic'].Value)
+        $fullName = if ($namespace) { $namespace + '.' + $declaration.Name } else { $declaration.Name }
         $primary = [pscustomobject]@{
             Name = $match.Groups['name'].Value
+            Namespace = $namespace
+            Identity = Get-TypeIdentity -Name $fullName -Arity $declaration.Arity
+            Usings = $usings
+            Aliases = $aliases
+            Path = $null
             Kind = $match.Groups['kind'].Value
             Modifiers = $match.Groups['mods'].Value.Trim()
-            Bases = $bases
+            # Short names remain available for the existing feature-registration heuristic.
+            Bases = @($baseReferences | ForEach-Object { ($_.Name -split '\.')[-1] })
+            BaseReferences = $baseReferences
             IsGeneric = $match.Groups['generic'].Success
             Line = Get-LineNumber -Text $Text -Index $match.Index
         }
@@ -157,66 +217,113 @@ function Add-SuffixDiagnostic {
     }
 }
 
-function Test-IsMonoBehaviourType {
+function Test-KnownTypeIdentity {
+    param([string]$Identity)
+
+    return ($script:typeMap.ContainsKey($Identity) -or $Identity -in @(
+        'UnityEngine.MonoBehaviour#0', 'Fusion.NetworkBehaviour#0',
+        'UnityEngine.UIElements.VisualElement#0'))
+}
+
+function Resolve-BaseTypeIdentity {
     param(
-        [string]$TypeName,
-        [hashtable]$Visited
+        [pscustomobject]$Reference,
+        [pscustomobject]$DeclaringType
     )
 
-    if ([string]::IsNullOrWhiteSpace($TypeName)) {
-        return $false
+    $cacheKey = $DeclaringType.Path + '|' + $Reference.Text
+    if ($script:typeResolutionCache.ContainsKey($cacheKey)) {
+        return $script:typeResolutionCache[$cacheKey]
     }
 
-    if ($TypeName -in @('MonoBehaviour', 'NetworkBehaviour')) {
-        return $true
+    $name = $Reference.Name
+    $absolute = $name.StartsWith('global::')
+    $name = $name -replace '^global::', ''
+    $firstSegment = ($name -split '\.')[0]
+    if (-not $absolute -and $DeclaringType.Aliases.ContainsKey($firstSegment)) {
+        $name = ($DeclaringType.Aliases[$firstSegment] -replace '^global::', '') +
+            $name.Substring($firstSegment.Length)
+        $absolute = $true
     }
 
-    if ($Visited.ContainsKey($TypeName)) {
-        return $false
+    $resolved = $null
+    # Search the declaring namespace and its parents before file-level imports.
+    $scope = if ($absolute) { '' } else { $DeclaringType.Namespace }
+    while ($true) {
+        $candidate = if ($scope) { $scope + '.' + $name } else { $name }
+        $identity = Get-TypeIdentity -Name $candidate -Arity $Reference.Arity
+        if (Test-KnownTypeIdentity -Identity $identity) {
+            $resolved = $identity
+            break
+        }
+        if (-not $scope) { break }
+        $lastDot = $scope.LastIndexOf('.')
+        $scope = if ($lastDot -ge 0) { $scope.Substring(0, $lastDot) } else { '' }
     }
 
-    $Visited[$TypeName] = $true
-
-    if (-not $script:typeMap.ContainsKey($TypeName)) {
-        return $false
-    }
-
-    foreach ($baseType in $script:typeMap[$TypeName].Bases) {
-        if (Test-IsMonoBehaviourType -TypeName $baseType -Visited $Visited) {
-            return $true
+    if (-not $absolute -and $null -eq $resolved) {
+        $candidates = @($DeclaringType.Usings | ForEach-Object {
+            $identity = Get-TypeIdentity -Name ($_ + '.' + $name) -Arity $Reference.Arity
+            if (Test-KnownTypeIdentity -Identity $identity) { $identity }
+        } | Sort-Object -Unique)
+        if ($candidates.Count -eq 1) {
+            $resolved = $candidates[0]
+        } elseif ($candidates.Count -gt 1) {
+            Add-Diagnostic -Severity 'Error' -Rule 'TYPE004' `
+                -Path $DeclaringType.Path -Line $DeclaringType.Line `
+                -Message ("Base type '{0}' is ambiguous between: {1}. Qualify the name or use an alias." -f `
+                    $Reference.Text, ($candidates -join ', '))
         }
     }
 
+    $script:typeResolutionCache[$cacheKey] = $resolved
+    return $resolved
+}
+
+function Test-InheritsKnownType {
+    param(
+        [string]$Identity,
+        [string[]]$Roots,
+        [hashtable]$Visited
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Identity) -or $Visited.ContainsKey($Identity)) {
+        return $false
+    }
+    $Visited[$Identity] = $true
+    if (-not $script:typeMap.ContainsKey($Identity)) {
+        return ($Identity -in $Roots)
+    }
+    foreach ($type in $script:typeMap[$Identity]) {
+        foreach ($reference in $type.BaseReferences) {
+            $baseIdentity = Resolve-BaseTypeIdentity -Reference $reference -DeclaringType $type
+            if (Test-InheritsKnownType -Identity $baseIdentity -Roots $Roots -Visited $Visited) {
+                return $true
+            }
+        }
+    }
     return $false
+}
+
+function Test-IsMonoBehaviourType {
+    param(
+        [string]$Identity,
+        [hashtable]$Visited
+    )
+
+    return (Test-InheritsKnownType -Identity $Identity -Visited $Visited `
+        -Roots @('UnityEngine.MonoBehaviour#0', 'Fusion.NetworkBehaviour#0'))
 }
 
 function Test-IsViewType {
     param(
-        [string]$TypeName,
+        [string]$Identity,
         [hashtable]$Visited
     )
 
-    if (Test-IsMonoBehaviourType -TypeName $TypeName -Visited @{}) {
-        return $true
-    }
-
-    if ($TypeName -eq 'VisualElement') {
-        return $true
-    }
-
-    if ($Visited.ContainsKey($TypeName) -or -not $script:typeMap.ContainsKey($TypeName)) {
-        return $false
-    }
-
-    $Visited[$TypeName] = $true
-
-    foreach ($baseType in $script:typeMap[$TypeName].Bases) {
-        if (Test-IsViewType -TypeName $baseType -Visited $Visited) {
-            return $true
-        }
-    }
-
-    return $false
+    return (Test-InheritsKnownType -Identity $Identity -Visited $Visited `
+        -Roots @('UnityEngine.MonoBehaviour#0', 'Fusion.NetworkBehaviour#0',
+            'UnityEngine.UIElements.VisualElement#0'))
 }
 
 function Test-StaticClass {
@@ -228,6 +335,30 @@ function Test-StaticClass {
 
     return ($TypeInfo.PrimaryType.Kind -eq 'class' -and
         $TypeInfo.PrimaryType.Modifiers -match '(^|\s)static($|\s)')
+}
+
+function Test-ComponentScriptPath {
+    param([pscustomobject]$FileRecord, [string[]]$Segments, [string]$Rule)
+    $roles = @{
+        Navigation = @('NavigationView'); Popups = @('PopupView'); Screens = @('ScreenView')
+        StateMachines = @('StateMachine'); States = @('State'); Widgets = @('WidgetView')
+        Handlers = @('Handler'); Networking = @('Component')
+    }
+    $suffixes = @('Component')
+    if ($Segments.Count -gt 2) {
+        if (-not $roles.ContainsKey($Segments[1])) {
+            Add-Diagnostic -Severity 'Error' -Rule 'SCRIPT004' -Path $FileRecord.RelativePath -Line 1 `
+                -Message ('Unsupported Components subfolder: ' + $Segments[1])
+            return
+        }
+        $suffixes = $roles[$Segments[1]]
+    }
+    Add-SuffixDiagnostic -FileRecord $FileRecord -Suffixes $suffixes -Folder 'Scripts/Components'
+    $primary = $FileRecord.TypeInfo.PrimaryType
+    if ($null -ne $primary -and -not (Test-IsViewType -Identity $primary.Identity -Visited @{})) {
+        Add-Diagnostic -Severity 'Error' -Rule $Rule -Path $FileRecord.RelativePath -Line $primary.Line `
+            -Message 'Components must inherit from MonoBehaviour or VisualElement.'
+    }
 }
 
 function Test-FeatureScriptPath {
@@ -242,23 +373,24 @@ function Test-FeatureScriptPath {
     }
 
     $segments = @($match.Groups['rest'].Value.Split('/'))
-    $featureKinds = @('Modules', 'Implementations', 'Infrastructure', 'Bridges')
+    $legacyRoleFolders = @('Modules', 'Implementations', 'Infrastructure', 'Bridges')
 
-    if ($segments.Count -lt 1 -or $segments[0] -notin $featureKinds) {
+    if ($segments.Count -ge 3 -and $segments[0] -in $legacyRoleFolders -and
+        $segments[1] -ne 'Scripts') {
         Add-Diagnostic -Severity 'Error' -Rule 'FEATURE001' `
             -Path $FileRecord.RelativePath -Line 1 `
-            -Message 'Feature must be placed under Features/Modules, Features/Implementations, Features/Infrastructure, or Features/Bridges.'
+            -Message 'Feature role folders are obsolete; use Features/<Feature>/Scripts/<Category>.'
         return $true
     }
 
-    if ($segments.Count -lt 4 -or $segments[2] -ne 'Scripts') {
+    if ($segments.Count -lt 3 -or $segments[1] -ne 'Scripts') {
         Add-Diagnostic -Severity 'Error' -Rule 'SCRIPT001' `
             -Path $FileRecord.RelativePath -Line 1 `
             -Message 'Feature C# files must be placed under <Feature>/Scripts/<Category>.'
         return $true
     }
 
-    $scriptSegments = @($segments[3..($segments.Count - 1)])
+    $scriptSegments = @($segments[2..($segments.Count - 1)])
     $category = $scriptSegments[0]
     if ($category -eq 'Tests') {
         Add-Diagnostic -Severity 'Error' -Rule 'TEST001' `
@@ -269,7 +401,7 @@ function Test-FeatureScriptPath {
 
     $allowedRoots = @(
         'Abstract', 'DataHolders', 'Enums', 'Init', 'Managers', 'Navigation',
-        'Other', 'Static', 'Views')
+        'Other', 'Static', 'Components')
 
     if ($category -notin $allowedRoots) {
         Add-Diagnostic -Severity 'Error' -Rule 'SCRIPT002' `
@@ -280,6 +412,11 @@ function Test-FeatureScriptPath {
 
     $primary = $FileRecord.TypeInfo.PrimaryType
     if ($null -eq $primary) {
+        return $true
+    }
+
+    if ($category -eq 'Components') {
+        Test-ComponentScriptPath -FileRecord $FileRecord -Segments $scriptSegments -Rule 'VIEW001'
         return $true
     }
 
@@ -298,12 +435,6 @@ function Test-FeatureScriptPath {
             Add-Diagnostic -Severity 'Error' -Rule 'NAME002' `
                 -Path $FileRecord.RelativePath -Line $primary.Line `
                 -Message 'Interface names must start with I.'
-        }
-
-        if ($isAbstract -and -not $primary.Name.StartsWith('Base')) {
-            Add-Diagnostic -Severity 'Error' -Rule 'NAME003' `
-                -Path $FileRecord.RelativePath -Line $primary.Line `
-                -Message 'Abstract class names must start with Base.'
         }
 
         return $true
@@ -368,7 +499,7 @@ function Test-FeatureScriptPath {
             Commands = @('Command')
             Converters = @('Converter')
             Decorators = @('Decorator')
-            Editor = @('Editor', 'EditorWindow')
+            Editor = @('Editor', 'EditorWindow', 'AttributeDrawer')
             Mappers = @('Mapper')
             Processors = @('Processor')
             StateMachines = @('StateMachine')
@@ -381,15 +512,6 @@ function Test-FeatureScriptPath {
             Extensions = @('Extensions')
             Utilities = @('Utility')
             Validation = @('Validation')
-        }
-        Views = @{
-            Components = @('Component')
-            Navigation = @('NavigationView')
-            Popups = @('PopupView')
-            Screens = @('ScreenView')
-            StateMachines = @('StateMachine')
-            States = @('State')
-            Widgets = @('WidgetView')
         }
     }
 
@@ -411,7 +533,7 @@ function Test-FeatureScriptPath {
     }
 
     if ($category -eq 'Managers') {
-        if (Test-IsMonoBehaviourType -TypeName $primary.Name -Visited @{}) {
+        if (Test-IsMonoBehaviourType -Identity $primary.Identity -Visited @{}) {
             Add-Diagnostic -Severity 'Error' -Rule 'MANAGER001' `
                 -Path $FileRecord.RelativePath -Line $primary.Line `
                 -Message 'Managers must not inherit from MonoBehaviour.'
@@ -431,13 +553,6 @@ function Test-FeatureScriptPath {
         }
     }
 
-    if ($category -eq 'Views') {
-        if (-not (Test-IsViewType -TypeName $primary.Name -Visited @{})) {
-            Add-Diagnostic -Severity 'Error' -Rule 'VIEW001' `
-                -Path $FileRecord.RelativePath -Line $primary.Line `
-                -Message 'Views must inherit from MonoBehaviour or VisualElement, directly or through a known base type.'
-        }
-    }
 
     return $true
 }
@@ -469,6 +584,15 @@ function Test-ContextSharedScriptPath {
         Extensions = @('Extensions')
         Utilities = @('Utility')
         Validation = @('Validation')
+    }
+
+    if ($category -eq 'Components') {
+        Test-ComponentScriptPath -FileRecord $FileRecord -Segments $segments -Rule 'VIEW002'
+        if ($FileRecord.Text -match '(?m)^\s*using\s+Zenject\s*;|\[\s*Inject\s*\]|\bDiContainer\b|\.Bind(?:Interfaces|InterfacesAndSelf|InterfacesTo)?\s*[<(]') {
+            Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT003' -Path $FileRecord.RelativePath -Line 1 `
+                -Message 'Context-shared components must not participate in DI.'
+        }
+        return $true
     }
 
     if ($category -eq 'Initialization') {
@@ -553,11 +677,6 @@ function Test-ContextSharedScriptPath {
                     -Message 'Interface names must start with I.'
             }
 
-            if ($isAbstract -and -not $primary.Name.StartsWith('Base')) {
-                Add-Diagnostic -Severity 'Error' -Rule 'NAME003' `
-                    -Path $FileRecord.RelativePath -Line $primary.Line `
-                    -Message 'Abstract class names must start with Base.'
-            }
         }
     } elseif ($category -eq 'Enums') {
         if ($null -ne $primary -and $primary.Kind -ne 'enum') {
@@ -568,7 +687,7 @@ function Test-ContextSharedScriptPath {
     } elseif ($category -eq 'Navigation') {
         Add-SuffixDiagnostic -FileRecord $FileRecord `
             -Suffixes @('Scene', 'SceneDefinition') -Folder 'Context/Scripts/Navigation'
-    } elseif ($category -in @('DataHolders', 'Other', 'Views', 'Tests')) {
+    } elseif ($category -in @('DataHolders', 'Other', 'Tests')) {
         if ($segments.Count -lt 3) {
             Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
                 -Path $FileRecord.RelativePath -Line 1 `
@@ -588,7 +707,7 @@ function Test-ContextSharedScriptPath {
                 Payloads = @('Payload')
             }
             Other = @{
-                Editor = @('AttributeDrawer')
+                Editor = @('Editor', 'EditorWindow', 'AttributeDrawer')
                 Adapters = @('Adapter')
                 Builders = @('Builder')
                 Commands = @('Command')
@@ -600,16 +719,7 @@ function Test-ContextSharedScriptPath {
                 States = @('State')
                 Strategies = @('Strategy')
             }
-            Views = @{
-                Handlers = @('Handler')
-                Components = @('Component')
-                Navigation = @('NavigationView')
-                Popups = @('PopupView')
-                Screens = @('ScreenView')
-                StateMachines = @('StateMachine')
-                States = @('State')
-                Widgets = @('WidgetView')
-            }
+
         }
 
         if ($category -eq 'Tests') {
@@ -628,11 +738,6 @@ function Test-ContextSharedScriptPath {
                 -Suffixes $contextSuffixMaps[$category][$subfolder] `
                 -Folder ("Context/Scripts/{0}/{1}" -f $category, $subfolder)
 
-            if ($category -eq 'Views' -and -not (Test-IsViewType -TypeName $primary.Name -Visited @{})) {
-                Add-Diagnostic -Severity 'Error' -Rule 'VIEW002' `
-                    -Path $FileRecord.RelativePath -Line $primary.Line `
-                    -Message 'Context Views must inherit from MonoBehaviour or VisualElement.'
-            }
         }
     } else {
         Add-Diagnostic -Severity 'Error' -Rule 'CONTEXT002' `
@@ -694,6 +799,7 @@ $sourceFiles = @($sourceRoots | ForEach-Object {
 
 $fileRecords = New-Object System.Collections.ArrayList
 $typeMap = @{}
+$typeResolutionCache = @{}
 
 foreach ($file in $sourceFiles) {
     $text = Get-Content -LiteralPath $file.FullName -Raw
@@ -707,10 +813,12 @@ foreach ($file in $sourceFiles) {
     }
     [void]$fileRecords.Add($record)
 
-    if ($null -ne $typeInfo.PrimaryType -and
-        (-not $typeMap.ContainsKey($typeInfo.PrimaryType.Name) -or
-        (-not $typeInfo.PrimaryType.IsGeneric -and $typeMap[$typeInfo.PrimaryType.Name].IsGeneric))) {
-        $typeMap[$typeInfo.PrimaryType.Name] = $typeInfo.PrimaryType
+    if ($null -ne $typeInfo.PrimaryType) {
+        $primary = $typeInfo.PrimaryType
+        $primary.Path = $record.RelativePath
+        # Partial declarations share an identity; names from different namespaces do not.
+        $typeMap[$primary.Identity] = @($typeMap[$primary.Identity]) + @($primary) |
+            Where-Object { $null -ne $_ }
     }
 }
 
@@ -780,6 +888,34 @@ foreach ($record in $fileRecords) {
 
     if ($contextMatch.Success) {
         $expectedNamespace = 'ProjectCore.' + $contextMatch.Groups['context'].Value
+        $primary = $typeInfo.PrimaryType
+        if ($null -ne $primary -and $primary.Kind -eq 'class' -and
+            $primary.Modifiers -match '(^|\s)abstract($|\s)' -and
+            -not $primary.Name.StartsWith('Base')) {
+            # These generic API families intentionally sit above a non-generic
+            # Base*Definition. The exception does not permit arbitrary *Definition types.
+            $genericDefinitionFamilies = @{
+                ScreenDefinition = @{ Feature = 'ScreenNavigation'; Arity = 2 }
+                SceneDefinition = @{ Feature = 'SceneFlow'; Arity = 2 }
+                PopupDefinition = @{ Feature = 'Popup'; Arity = 3 }
+                LoadingScreenDefinition = @{ Feature = 'LoadingScreen'; Arity = 2 }
+            }
+            $isGenericDefinition = $false
+            if ($genericDefinitionFamilies.ContainsKey($primary.Name)) {
+                $family = $genericDefinitionFamilies[$primary.Name]
+                $familyPath = 'Assets/ProjectCore/Contexts/Template/Features/' +
+                    $family.Feature + '/Scripts/DataHolders/Definitions/'
+                $isGenericDefinition = $primary.IsGeneric -and
+                    $primary.Identity.EndsWith('#' + $family.Arity) -and
+                    $record.RelativePath.StartsWith($familyPath, [System.StringComparison]::Ordinal) -and
+                    ('Base' + $primary.Name) -in $primary.Bases
+            }
+            if (-not $isGenericDefinition) {
+                Add-Diagnostic -Severity 'Error' -Rule 'NAME003' `
+                    -Path $record.RelativePath -Line $primary.Line `
+                    -Message 'Top-level abstract context classes must start with Base, except documented generic definition families.'
+            }
+        }
     } elseif ($record.RelativePath -match '^Assets/ProjectCore/Shared/' -or
         $record.RelativePath -match '^Assets/Shared/') {
         $expectedNamespace = 'Shared'
@@ -918,6 +1054,97 @@ foreach ($record in $fileRecords) {
     }
 }
 
+# Own Unity resources: dependencies and imported SDK assets are excluded.
+$assetRoot = Join-Path $ProjectRoot 'Assets/ProjectCore'
+$resourceCount = 0
+if (Test-Path -LiteralPath $assetRoot) {
+    $resources = @(Get-ChildItem -LiteralPath $assetRoot -Recurse -File | Where-Object {
+        $_.Extension -notin @('.meta', '.cs', '.md', '.asmdef', '.asmref') -and
+        $_.FullName.Replace('\', '/') -notmatch '/(ThirdParty|Plugins)/'
+    })
+    $resourceCount = $resources.Count
+    foreach ($asset in $resources) {
+        $path = Get-RelativePath $asset.FullName
+        if (-not (Test-Path -LiteralPath ($asset.FullName + '.meta'))) {
+            Add-Diagnostic 'Error' 'ASSET001' $path 1 'Unity resources require a matching .meta file.'
+        }
+        if ($path -eq 'Assets/ProjectCore/Resources/ProjectContext.prefab') { continue }
+        if ($path -notmatch '^Assets/ProjectCore/(Assets/|Contexts/[^/]+/(Features/[^/]+/)?Assets/)') {
+            Add-Diagnostic 'Error' 'ASSET002' $path 1 'Own resources belong in project, context or feature Assets.'
+        }
+        $pattern = switch ($asset.Extension.ToLowerInvariant()) {
+            '.unity' { '^Scene_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$' }
+            '.prefab' { '^Prefab_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.asset' { '^Config_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+){2,}$' }
+            '.inputactions' { '^InputActions_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$' }
+            '.controller' { '^AnimatorController_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.anim' { '^Animation_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.mat' { '^Material_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$' }
+            '.png' { '^(Sprite|Reference)_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.uxml' { '^(Document|Screen|Popup|Widget|LoadingScreen)_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.uss' { '^(Document|Screen|Popup|Widget|LoadingScreen)_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.tss' { '^Theme_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            default { $null }
+        }
+        if ($null -ne $pattern -and $asset.BaseName -notmatch $pattern) {
+            Add-Diagnostic 'Error' 'ASSET003' $path 1 'Resource name does not match its type prefix and naming convention.'
+        }
+        $location = switch ($asset.Extension.ToLowerInvariant()) {
+            '.unity' { '/Assets/Scenes/' }
+            '.prefab' { '/Assets/Prefabs/' }
+            '.inputactions' { '/Assets/InputActions/' }
+            '.controller' { '/Assets/Animations/' }
+            '.anim' { '/Assets/Animations/' }
+            '.mat' { '/Assets/Materials/|/Assets/Rendering/' }
+            '.png' { '/Assets/(Sprites|Animations/Frames|References)/' }
+            '.uxml' { '/Assets/UI/UXML/' }
+            '.uss' { '/Assets/UI/USS/' }
+            '.tss' { '/Assets/UI/USS/' }
+            '.asset' {
+                if ($asset.BaseName -match '_PanelSettings$') { '/Assets/UI/PanelSettings/' }
+                elseif ($asset.BaseName -match 'Catalog$') { '/Assets/Catalogs/' }
+                elseif ($asset.BaseName -match '^Config_Project_Rendering_') { '/Assets/Rendering/' }
+                else { '/Assets/(Configs|Definitions)/' }
+            }
+            default { $null }
+        }
+        $sceneDefinition = $asset.Extension -eq '.asset' -and $path -match '/Assets/Scenes/Config_([^_]+)_SceneFlow_(.+)\.asset$'
+        if ($sceneDefinition) {
+            $context = $Matches[1]; $detail = $Matches[2]
+            $sceneName = if ($detail -eq $context) { "Scene_$context.unity" } else { "Scene_${context}_$detail.unity" }
+            $sceneDefinition = Test-Path -LiteralPath (Join-Path $asset.DirectoryName $sceneName)
+        }
+        if ($null -ne $location -and $path -notmatch $location -and -not $sceneDefinition) {
+            Add-Diagnostic 'Error' 'ASSET004' $path 1 'Resource is outside the semantic folder for its type; SceneDefinition must be beside its scene.'
+        }
+        if ($asset.Extension -eq '.asset' -and $path -match '/Contexts/([^/]+)/') {
+            $owner = $Matches[1]
+            if ($asset.BaseName -notmatch ('^Config_' + [regex]::Escape($owner) + '_')) {
+                Add-Diagnostic 'Error' 'ASSET005' $path 1 'Config owner in the name must match its containing context.'
+            }
+        }
+    }
+    foreach ($directory in Get-ChildItem -LiteralPath $assetRoot -Recurse -Directory | Where-Object {
+        $_.FullName.Replace('\', '/') -notmatch '/(ThirdParty|Plugins)/'
+    }) {
+        $contents = @(Get-ChildItem -LiteralPath $directory.FullName -Recurse -File | Where-Object Extension -ne '.meta')
+        if ($contents.Count -eq 0) {
+            Add-Diagnostic 'Warning' 'ASSET006' (Get-RelativePath $directory.FullName) 1 'Empty folder: remove obsolete structure rather than creating unused categories.'
+        }
+    }
+}
+foreach ($record in $fileRecords) {
+    if ($record.Text.Contains('CreateAssetMenu') -and $record.RelativePath -match '/Contexts/([^/]+)/') {
+        $context = $Matches[1]
+        foreach ($menu in [regex]::Matches($record.Text, 'menuName\s*=\s*"SO/([^/]+)/')) {
+            if ($menu.Groups[1].Value -cne $context) {
+                Add-Diagnostic 'Error' 'ASSET007' $record.RelativePath (Get-LineNumber $record.Text $menu.Index) `
+                    'CreateAssetMenu context must match the script context spelling.'
+            }
+        }
+    }
+}
+
 $orderedDiagnostics = @($diagnostics | Sort-Object `
     @{ Expression = { if ($_.Severity -eq 'Error') { 0 } else { 1 } } }, `
     Rule, Path, Line)
@@ -937,8 +1164,8 @@ if (-not $SummaryOnly) {
 }
 
 Write-Output ''
-Write-Output ("Architecture validation ({0}): {1} files, {2} errors, {3} warnings." -f `
-    $Mode, $fileRecords.Count, $errorCount, $warningCount)
+Write-Output ("Architecture validation ({0}): {1} scripts, {2} resources, {3} errors, {4} warnings." -f `
+    $Mode, $fileRecords.Count, $resourceCount, $errorCount, $warningCount)
 
 $ruleSummary = @($orderedDiagnostics | Group-Object Rule | Sort-Object Name)
 foreach ($group in $ruleSummary) {
@@ -962,6 +1189,7 @@ if (-not [string]::IsNullOrWhiteSpace($OutputPath)) {
         Mode = $Mode
         ProjectRoot = $ProjectRoot
         FilesChecked = $fileRecords.Count
+        ResourcesChecked = $resourceCount
         Errors = $errorCount
         Warnings = $warningCount
         Diagnostics = $orderedDiagnostics
