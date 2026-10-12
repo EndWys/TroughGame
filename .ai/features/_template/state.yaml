@@ -1,7 +1,7 @@
 # Copy this directory to .ai/features/<feature-kebab-case>/ before starting a feature.
 # Keep this file factual and compact. Store decision rationale in decisions.md.
 
-workflow_version: "1.2-tg.1"
+workflow_version: "1.3-tg.1"
 feature: <feature-kebab-case>
 stage: requirements
 status: in_progress # in_progress | waiting_for_approval | blocked | failed | complete

@@ -76,3 +76,7 @@ crashlytics-build.properties
 
 # Temporary agent workflow reports; feature state and templates stay tracked.
 /.ai/evidence/
+
+# Independent private Notion worker receipts, not feature workflow state.
+/.ai/notion/operations/
+/Tools/AI/__pycache__/

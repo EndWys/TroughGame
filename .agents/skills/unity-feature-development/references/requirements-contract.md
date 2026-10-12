@@ -6,6 +6,13 @@ Use this reference before requirements approval for an eligible new feature. Its
 
 Record the full contract in `.ai/features/<feature>/requirements.md` and its compact status/reference in `state.yaml`. The developer-facing response shows the same applicable content; the artifact is the durable record, not a substitute for review.
 
+For Notion sources, obtain the contract inputs from a dedicated
+`notion-feature-intake` subagent via `notion-project-coordination`. Record the
+returned page/task IDs, anchors/excerpts, observed source versions and proposed
+AC as values in your own requirements snapshot. The worker never accesses this
+file or feature state. A source page status is not contract approval. On resume,
+dispatch source refresh using the baseline values and inspect material deltas.
+
 ## Required contract
 
 ### 1. Goal

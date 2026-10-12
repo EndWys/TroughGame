@@ -6,6 +6,13 @@ Use this reference before starting or resuming a feature and before every write,
 
 ## Feature artifacts
 
+Notion is accessed through a dedicated worker and immutable packets. Its
+operation journal is independent of these artifacts. Do not put Notion queues,
+locks, publication statuses or journal paths in `state.yaml`, and do not let
+workers read/write `.ai/features/`. Copy source references and the approved
+snapshot into `requirements.md` from the returned values. Only the development
+agent owns feature artifacts and Git.
+
 Each feature directory contains:
 
 - `state.yaml` — compact factual index of status, approvals, repository snapshot and evidence;

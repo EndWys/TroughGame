@@ -156,8 +156,8 @@ else {
     $workflowStatus = Get-YamlScalar -Lines $stateLines -Key 'status'
     $lastUpdatedAt = Get-YamlScalar -Lines $stateLines -Key 'last_updated_at'
     $workflowVersion = Get-YamlScalar -Lines $stateLines -Key 'workflow_version'
-    if ($workflowVersion -ne '1.2-tg.1') {
-        Add-Finding -Findings $findings -Id 'AUD-VERSION' -Severity 'warning' -Category 'workflow-version' -Summary 'Workflow version differs from the installed TroughGame workflow.' -Evidence "Recorded: $workflowVersion; installed: 1.2-tg.1" -Recommendation 'Review gate/state compatibility before resuming; do not silently migrate existing state.'
+    if ($workflowVersion -ne '1.3-tg.1') {
+        Add-Finding -Findings $findings -Id 'AUD-VERSION' -Severity 'warning' -Category 'workflow-version' -Summary 'Workflow version differs from the installed TroughGame workflow.' -Evidence "Recorded: $workflowVersion; installed: 1.3-tg.1" -Recommendation 'Review gate/state compatibility before resuming; do not silently migrate existing state.'
     }
 
     if ($recordedFeature -ne $Feature) {

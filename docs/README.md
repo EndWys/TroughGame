@@ -15,6 +15,7 @@
 | Инструкции работы агента и обязательные проверки | [AGENTS.md](../AGENTS.md) |
 | Workflow новых фич: стадии, согласования, evidence и коммиты | [workflow-reference.md](ai-workflow/workflow-reference.md) |
 | Обзор проекта и карта точек интеграции для workflow | [project-overview.md](project-overview.md), [project-map.md](project-map.md) |
+| Notion: отдельные сабагенты, документация и связь с разработкой | [notion/README.md](notion/README.md) |
 
 Запуск и результаты адаптации workflow описаны в
 [ai-workflow/README.md](ai-workflow/README.md). Архитектура и стиль по-прежнему

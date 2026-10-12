@@ -5,7 +5,7 @@ description: Run TroughGame's workflow only for a new approved feature or an exp
 
 # Unity Feature Development
 
-Run the controlled feature workflow for TroughGame. Own the workflow state, evidence collection and automatic work inside approved scope; the developer owns product decisions, semantic approvals, Play Mode results and final readiness. Use workflow version `1.2-tg.1` for new states.
+Run the controlled feature workflow for TroughGame. Own the workflow state, evidence collection and automatic work inside approved scope; the developer owns product decisions, semantic approvals, Play Mode results and final readiness. Use workflow version `1.3-tg.1` for new states.
 
 ## Applicability
 
@@ -60,6 +60,13 @@ Developer instructions and existing project standards take priority. The active 
 
 ## Start or resume a feature
 
+For a feature sourced from Notion, read
+`docs/notion/feature-integration.md` and dispatch through the
+`notion-project-coordination` skill. A separate `notion-feature-intake` worker
+returns source snapshots and proposed requirements/AC. Consume its values in
+your own requirements contract, then apply the existing approval gates. Never
+call Notion MCP or read/write the worker journal yourself.
+
 1. Determine the feature identifier from the request; use a stable lowercase kebab-case name.
 2. Load `.ai/features/<feature>/state.yaml` if it exists. If not, create the feature directory from `.ai/features/_template/`, replace the feature placeholder, and remove illustrative decision records that do not represent a real pending decision.
 3. Read the paired `requirements.md`, `decisions.md`, `research.md`, `knowledge-promotion.md` and current subtask artifact when they exist. Keep YAML factual and compact; store long-form requirements, research, architecture, decisions and promotion records in their dedicated artifacts.
@@ -80,6 +87,21 @@ Developer instructions and existing project standards take priority. The active 
 ## Feature state and Git
 
 Follow `references/state-and-git.md` for state artifacts, reconciliation, checkpointing, automatic commit and evidence cleanup. A review acceptance alone does not commit work: the relevant required Play Mode result must pass first.
+
+Notion workers own independent `.ai/notion/operations/` journals. Do not share
+`state.yaml` or add remote synchronization fields to it. Send accepted facts,
+source observations and approvals as immutable values; keep your local approved
+requirements snapshot independently. Before implementation/resume, ask the
+intake worker to compare the current Notion sources with the supplied baseline.
+Material requirement changes follow the existing revision/approval gate.
+
+At meaningful accepted transitions, dispatch `publish_progress` or
+`update_documentation`. After explicit final readiness acceptance dispatch
+`finalize_feature` with actual AC/check/Play Mode evidence, exact accepted tasks,
+commit references and the intended existing feature business status. Remote
+updates are done by the documentation worker and verified in its receipt.
+Report local completion and publication separately if a remote operation fails;
+retry via the worker without redoing accepted implementation or changing gates.
 
 ## Stage routing
 

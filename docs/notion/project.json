@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "project": "TroughGame",
+  "timezone": "Europe/Kiev",
+  "language": "ru",
+  "binding_verified_on": "2026-10-12",
+  "binding_method": "Read-only Notion subagent fetch of supplied tasks database, ancestors and relation schemas",
+  "supplied_url": "https://app.notion.com/p/3f6ad1247d58804ebf55f9040a53a8e7?v=3f6ad1247d5880a48bfc000c3b98d826&source=copy_link",
+  "root_page_id": "3f6ad124-7d58-8019-890c-caaed5837cba",
+  "databases": {
+    "tasks": {
+      "database_id": "3f6ad124-7d58-804e-bf55-f9040a53a8e7",
+      "data_source_url": "collection://3f6ad124-7d58-8088-8ea3-000b6649aa03",
+      "supplied_view_url": "view://3f6ad124-7d58-80a4-8bfc-000c3b98d826",
+      "properties": {"title": "Name", "department": "Департамент", "status": "Статус", "planning": "Планирование", "feature": "Фича", "dependencies": "Зависит от", "acceptance": "Критерии готовности", "specification_feature": "Фича из спецификации"},
+      "property_types": {"Name": "title", "Департамент": "select", "Статус": "select", "Планирование": "select", "Фича": "relation", "Зависит от": "relation", "Критерии готовности": "text", "Фича из спецификации": "text"},
+      "status_values": ["Backlog", "Ready", "In progress", "Review", "Done"],
+      "department_values": ["GD", "Dev", "QA", "Art"],
+      "planning_values": ["В плане", "Объединена"]
+    },
+    "features": {
+      "database_id": "3f6ad124-7d58-80fd-b51f-d1fd0efc1ec9",
+      "data_source_url": "collection://3f6ad124-7d58-80d6-a049-000bdb6f99cb",
+      "stage_view_url": "view://3f6ad124-7d58-80f6-9072-000c7dc4fff8",
+      "all_view_url": "view://3f6ad124-7d58-80f4-b4e1-000cb9b98c72",
+      "properties": {"title": "Name", "description": "Описание", "order": "Порядок", "documents": "Документация", "tasks": "Задачи", "stage": "Этап", "development_status": "Статус разработки"},
+      "stage_values": ["Technical Prototype", "После Technical Prototype"],
+      "development_status_values": ["Не оценено", "Готово (базовая часть)", "Готово (минимальная основа)", "Каркас", "Запланировано", "Частично реализовано"]
+    },
+    "documents": {
+      "database_id": "3f6ad124-7d58-8088-a990-f58355b040c4",
+      "data_source_url": "collection://3f6ad124-7d58-80a7-b8a7-000bded02bfa",
+      "properties": {"title": "Name", "source": "Источник", "document_status": "Статус документа", "type": "Тип", "features": "Фичи", "stage": "Этап"},
+      "document_status_type": "text",
+      "stage_values": ["Весь проект", "Technical Prototype"],
+      "type_values": ["Этапы проекта", "Этап проекта", "Спецификация фичи", "Технические решения", "Артстиль", "Правила ведения", "Решение", "Концепция", "Аудит состояния"]
+    },
+    "ideas": {
+      "database_id": "3f6ad124-7d58-8011-a814-ca7e3e95b3f9",
+      "data_source_url": "collection://3f6ad124-7d58-800f-8a67-000b4cbe0385",
+      "properties": {"idea_status": "Статус идеи", "stage": "Этап"},
+      "idea_status_values": ["На обсуждении", "Принято"],
+      "stage_type": "text"
+    }
+  },
+  "standards": [
+    {"page_id": "3f7ad124-7d58-8140-9ce4-f30510f6a1b0", "title": "Стандарт документации TroughGame", "version_observed": "1.2", "last_edited_at_observed": "2026-10-12T14:41:35.562Z", "enabled_notion_skill": true},
+    {"page_id": "3f6ad124-7d58-8191-9899-d06a6b2bfa75", "title": "Как вести документацию и прогресс", "last_edited_at_observed": "2026-10-12T14:41:35.016Z"}
+  ],
+  "stage_sources": {
+    "current_stage_observed": "Technical Prototype",
+    "goals_page_id": "3f6ad124-7d58-81f4-91f0-ff0b98baf0b9",
+    "order_decision_page_id": "3f6ad124-7d58-81cc-aa5c-c8c82c531ce9",
+    "roadmap_page_id": "3f6ad124-7d58-81f8-9472-c6ed03756e1b"
+  },
+  "selection": {
+    "feature_order_property": "Порядок",
+    "task_status": "Ready",
+    "task_planning": "В плане",
+    "department_for_development": "Dev",
+    "require_dependencies_accepted": true,
+    "tie_breaker": "return_candidates_for_developer_selection",
+    "note": "Re-read current stage and decision before selection; tasks have no direct stage/priority/assignee properties. No task is claimed by a read."
+  },
+  "publication": {
+    "require_request_human_authorization": true,
+    "require_current_target_fetch": true,
+    "require_remote_readback": true,
+    "allow_schema_changes": false,
+    "allow_delete_archive_move": false,
+    "allow_comments_or_notifications": false,
+    "allow_creation_without_explicit_parent": false,
+    "feature_completion_value": "supplied_in_accepted_request_from_verified_existing_options",
+    "note": "These limits bound operations; configuration is not blanket permission to mutate pages. Exact target properties/sections arrive in each authorized request."
+  },
+  "local_authorities": ["docs/ARCHITECTURE_RULES.md", "docs/CONVENTIONS.md", "docs/SCENE_HIERARCHY_STANDARD.md"],
+  "metadata_limits": ["Source pages were returned as unverified", "Completeness/unknown-block metadata not exposed in preflight; absence is not zero omissions", "Some older page footers cite documentation v1.1; current standard observed v1.2", "Mappings are discovery snapshots and must be refreshed before use"]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "TroughGame Notion Documentation"
+  short_description: "Publish accepted facts and maintain project documents"
+  default_prompt: "Use $notion-project-documentation as a separate subagent to publish an authorized TroughGame documentation update with verified results."

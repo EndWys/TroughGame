@@ -1,0 +1,4 @@
+interface:
+  display_name: "TroughGame Notion Intake"
+  short_description: "Read project sources and prepare feature requirements"
+  default_prompt: "Use $notion-feature-intake as a separate subagent to prepare a source-backed feature contract from TroughGame Notion."

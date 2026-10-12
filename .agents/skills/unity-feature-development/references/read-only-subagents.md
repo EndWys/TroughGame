@@ -1,5 +1,12 @@
 # Read-only Subagents in Feature Development
 
+This reference governs optional code/research reviewers. Dedicated Notion
+workers are a separate user-authorized protocol in
+`docs/notion/operation-contract.md`; publication workers may perform scoped
+Notion writes and own private journals, never feature state/Git/Unity. Do not
+apply the code-reviewer's read-only restriction to an authorized publication
+operation or send that worker the feature state.
+
 ## When to delegate
 
 Delegation is optional and requires authorization from the developer or applicable higher-priority instructions in the active environment. This reference does not itself authorize spawning agents. When authorized, use it if independent inspection materially improves the current stage. Keep short searches and dependent reasoning with the main agent. Otherwise continue with a separate read-only pass by the main agent, without changing gates or deliverables.

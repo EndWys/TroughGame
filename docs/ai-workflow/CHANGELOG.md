@@ -1,5 +1,22 @@
 # Workflow changelog
 
+## 1.3-tg.1 — 2026-10-12
+
+- Added dedicated Notion dispatch, intake and documentation skills under the
+  developer's explicit separate-subagent requirement.
+- Bound existing tasks/features/docs/ideas IDs and schema from read-only MCP
+  discovery; reused the enabled Notion documentation standard v1.2.
+- Added immutable request/results and independent private Notion receipts.
+  Feature state gained no remote sync fields; workers cannot read/write it.
+- Added source-version refresh, authorized gate publication and verified final
+  documentation/task updates while preserving existing semantic approvals.
+- Added an offline journal helper and tests for replay identity, scoped writes,
+  partial outcomes and completion evidence. These do not claim remote tests.
+
+New states use `1.3-tg.1`. Existing `1.2-tg.1` states are not automatically
+migrated; adding the Notion publication/source contract to an active feature
+requires an explicit migration decision. See [Notion usage](../notion/README.md).
+
 ## 1.2-tg.1 — 2026-10-12
 
 Adapted from the supplied `rivaldom-unity-feature-workflow-porting-v1.2.zip`.
@@ -22,5 +39,5 @@ Adapted from the supplied `rivaldom-unity-feature-workflow-porting-v1.2.zip`.
 - Subagents remain optional and require authorization under the active agent
   environment; no delegation is needed to run the workflow.
 
-New states use `1.2-tg.1`. Existing workflow versions are migrated only by an
-explicit decision when gate or state semantics change.
+This was the initial adaptation. Existing workflow versions are migrated only
+by an explicit decision when gate or state semantics change.
