@@ -1,0 +1,157 @@
+# Copy this directory to .ai/features/<feature-kebab-case>/ before starting a feature.
+# Keep this file factual and compact. Store decision rationale in decisions.md.
+
+workflow_version: "1.2-tg.1"
+feature: <feature-kebab-case>
+stage: requirements
+status: in_progress # in_progress | waiting_for_approval | blocked | failed | complete
+current_subtask: null
+
+repository:
+  last_reconciled_at: null
+  working_tree_status: unknown # clean | changed | unknown
+  staged_paths: []
+  unstaged_paths: []
+  untracked_paths: []
+  ignored_paths: [] # developer-classified unrelated/generated paths; never stage
+  diff_fingerprint: null # deterministic fingerprint of the tracked staged + unstaged diff
+  stash_refs: [] # stash refs visible when the snapshot was captured
+  reconciliation_status: unknown # verified | mismatch | needs_developer_decision | unknown
+
+checkpoints: []
+# Checkpoint shape:
+# - id: CP-001
+#   subtask: FEAT-01
+#   kind: implementation # implementation | fix
+#   marker: <feature-kebab-case>/FEAT-01/CP-001
+#   approval_id: APR-001
+#   status: committed
+
+requirements:
+  source: null
+  reference: requirements.md
+  status: pending # pending | approved
+  approval:
+    by: null
+    at: null
+    reference: null
+
+research:
+  status: pending # pending | complete | changed
+  reference: research.md
+  recorded_at: null
+
+acceptance_criteria: []
+
+plan:
+  revision: 0
+  status: pending # pending | approved | changed
+  approval:
+    by: null
+    at: null
+    reference: null
+
+subtasks: []
+# Subtask shape:
+# - id: FEAT-01
+#   title: null
+#   status: pending # pending | waiting_for_architecture_approval | in_progress | waiting_for_review | waiting_for_play_mode | accepted | blocked
+#   dependencies: []
+#   scope:
+#     allowed: []
+#     out_of_scope: []
+#   validation: []
+#   architecture:
+#     status: pending # pending | approved | changed
+#     reference: subtasks/FEAT-01.md
+#     approval_id: null
+#   audit:
+#     status: pending # pending | passed | findings_required
+#     finding_ids: []
+#     recorded_at: null
+
+approvals: []
+# Approval shape:
+# - id: APR-001
+#   gate: requirements # requirements | plan | architecture | scope_expansion | review | play_mode | plan_change | final_readiness
+#   subject: null
+#   decision: approved # approved | rejected | changes_requested
+#   by: null
+#   at: null
+#   reference: null
+
+pending_questions: []
+# Question shape:
+# - id: Q-001
+#   question: null
+#   blocking_stage: null
+#   status: open # open | answered | superseded
+#   answer_reference: null
+
+decisions: []
+# Decision shape:
+# - id: DEC-001
+#   title: null
+#   status: proposed # proposed | approved | rejected | superseded
+#   reference: decisions.md#dec-001
+
+interruptions: []
+# Optional correction-loop shape:
+# - id: INT-001
+#   kind: architecture_feedback # architecture_feedback | review_correction | post_play_mode_bug | developer_requested_change
+#   origin_stage: subtask_architecture
+#   subtask: FEAT-01
+#   status: active # active | complete | return_pending | resumed
+#   trigger_reference: null
+#   completion_evidence: []
+#   return_decision_reference: null
+
+validation_evidence: []
+# Evidence shape:
+# - id: VAL-001
+#   scope: null
+#   kind: compile # compile | test | editor | play_mode | build | manual
+#   command: null
+#   status: not_run # passed | failed | not_run | not_available
+#   result_path: null
+#   evidence_retention: retained # retained | cleaned
+#   recorded_at: null
+
+final_verification:
+  status: pending # pending | complete | attention_required
+  report_path: final-verification.md
+  reported_to_developer_at: null
+  recorded_at: null
+
+workflow_audit:
+  status: not_run # not_run | complete | attention_required
+  result_path: null
+  report_path: null
+  evidence_retention: retained # retained | cleaned
+  recorded_at: null
+  reported_to_developer_at: null
+
+knowledge_promotion:
+  status: pending # pending | not_applicable | waiting_for_decision | applying | complete
+  reference: knowledge-promotion.md
+  candidates: []
+# Candidate shape:
+# - id: KNP-001
+#   status: proposed # proposed | approved | rejected | change_requested | applied
+#   target: null
+#   reference: knowledge-promotion.md#knp-001
+#   approval_id: null
+#   evidence: []
+#   validation_evidence: []
+#   commit: null
+
+evidence_cleanup:
+  status: pending # pending | complete | partial
+  completed_at: null
+  removed_directories: []
+
+next_action:
+  owner: agent # agent | developer
+  description: Analyze requirements and prepare the requirements approval gate.
+
+last_updated_at: null

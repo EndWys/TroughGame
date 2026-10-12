@@ -32,3 +32,29 @@ git diff --check
 - Preserve Unity `.meta` files.
 - Prefer Unity-safe moves/renames: keep `.meta` files with their assets.
 - Do not revert user changes unless explicitly asked.
+
+## New Feature Workflow
+
+- For a new feature from approved requirements, or an explicit continuation of
+  its recorded workflow, use `.agents/skills/unity-feature-development/SKILL.md`.
+  Standalone fixes, research, reviews, existing-feature improvements, and tooling
+  setup do not create feature workflow state.
+- The workflow reference is `docs/ai-workflow/workflow-reference.md`.
+  Existing project standards above remain authoritative. Archived source
+  documents under `docs/ai-workflow/sources/` are historical references only.
+- Keep explicit requirements, plan, local architecture, review, Play Mode, and
+  final readiness gates. Existing authorization carries across sessions;
+  never interpret silence as approval.
+- Accepted feature subtasks may be committed automatically only after their
+  required Play Mode scenario passes and applicable checks pass. Stage only
+  accepted paths and related state; preserve unrelated work and staged changes.
+  This permission does not authorize push, merge, release, or tooling commits.
+- Keep resumable feature records in `.ai/features/<feature>/`; temporary
+  validation evidence belongs in ignored `.ai/evidence/`.
+- Use `Tools/AI/validate-unity.ps1` for connected-Editor compilation/tests when
+  relevant. CLI resolution: `-UnityCliPath`, `TROUGHGAME_UNITY_CLI_PATH`, PATH,
+  then the standard Windows Unity CLI install location. The value is the CLI
+  executable, not the Unity Editor. Do not start a fallback Editor silently.
+- Subagent inspection is optional and only used when the user or applicable
+  higher-priority instructions authorize delegation. The main agent owns state,
+  Git, Unity mutations, and developer communication.

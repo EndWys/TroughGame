@@ -13,6 +13,12 @@
 | Авторская иерархия игровых сцен | [SCENE_HIERARCHY_STANDARD.md](SCENE_HIERARCHY_STANDARD.md) |
 | Команды валидатора, диагностические коды, fixtures и пределы анализа | [Tools/Architecture/README.md](../Tools/Architecture/README.md) |
 | Инструкции работы агента и обязательные проверки | [AGENTS.md](../AGENTS.md) |
+| Workflow новых фич: стадии, согласования, evidence и коммиты | [workflow-reference.md](ai-workflow/workflow-reference.md) |
+| Обзор проекта и карта точек интеграции для workflow | [project-overview.md](project-overview.md), [project-map.md](project-map.md) |
+
+Запуск и результаты адаптации workflow описаны в
+[ai-workflow/README.md](ai-workflow/README.md). Архитектура и стиль по-прежнему
+определяются существующими стандартами выше.
 
 Root README остаётся кратким обзором. Его краткие напоминания и AGENTS
 ссылаются на стандарты; полные таблицы правил там не дублируются.
