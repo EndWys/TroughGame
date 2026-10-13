@@ -1,101 +1,51 @@
-# Project Research Reference
+# Project Research and Feature Plan
 
 ## Purpose
 
-Use this reference before feature decomposition. The goal is a short, evidence-based Research Brief and initial feature plan that connect approved behavior to the relevant existing project systems before any subtask architecture is proposed. The same applicable content is shown to the developer in chat and preserved in the feature artifact.
+Before decomposition, connect approved behavior to actual project mechanisms.
+Inspect relevant areas; feature-name search or one missing match does not prove
+absence. Save accepted research/plan in `research.md`, status/reference in state,
+and show applicable content in chat.
 
-Research is conditional: inspect only concerns that can affect the requested feature. Do not pad the result with empty areas or raw search output.
+## Source Check
 
-Record the approved brief in `.ai/features/<feature>/research.md` and its compact status/reference in `state.yaml`.
-
-## Requirements source check
-
-For each material requirement and Acceptance Criterion, record its authoritative source: document section/page, approved developer answer or existing approved decision.
-
-Before asking a requirements question:
-
-1. Re-read the authoritative document and search its relevant section.
-2. State the exact source that was checked.
-3. Ask only if the source is absent, contradicts another authority, or leaves a behavior or implementation-impacting choice genuinely open.
-
-Do not ask a developer to repeat a requirement that is directly specified by an authoritative source.
+Each material requirement/AC identifies a document section, developer answer,
+or accepted decision. Re-read before asking and name the checked section.
+Only absent, conflicting, or truly open behavior/validation choices require questions;
+do not re-ask defined rules.
 
 ## Research Brief
 
-Use only relevant rows.
-
-| Requirement / AC | Requirement authority | Concern and search basis | Existing evidence or negative finding | Reuse decision | Planning implication |
+| RQ/AC | Requirement Authority | Concern / Search Basis | Existing Implementation / Bounded Negative Finding | Reuse Decision | Planning Impact |
 | --- | --- | --- | --- | --- | --- |
-| `RQ-##` | `<GDD section/page or decision>` | `<responsibility/data boundary>` | `<concrete path/type/API, or bounded search result>` | `<reuse, extend or new>` | `<scope, ordering, risk or validation consequence>` |
+| ID | Section/decision | Responsibility/data | Actual path/type/API/asset or search bounds | Reuse / extend / create | Order, scope, risk, check |
 
-The `Existing evidence` column must name a verifiable artifact when one exists: path, type, interface, method, prefab, ScriptableObject, installer or test utility. A negative finding states the searched responsibility and location, not merely “nothing found”.
+Inspect applicable gameplay/player state; Fusion, authority, peer roles, reconnect;
+UI/navigation/serialized references; configuration/DI/initialization; persistence,
+backend/API, telemetry/localization; tests and Play Mode. For public-contract changes
+find implementations, callers, and parallel variants.
+When it determines ownership/order, show the actual path:
+trigger → owner → model/system → event/replication → View/outcome.
+Use discovered types, members, events, and objects; omit irrelevant diagrams.
 
-## Relevant concern prompts
+## Initial Plan
 
-Consider these only when the feature can interact with them:
-
-- gameplay rules, income/rewards/inventory and player state;
-- Fusion synchronization, peer ownership, reconnect and peer authority;
-- UI/View ownership, navigation, prefabs, serialized references and visual assets;
-- configuration, ScriptableObjects, DI registration and initialization ownership;
-- persistence, backend/API, telemetry and localization;
-- existing tests, validation utilities and realistic Play Mode scenarios.
-
-For a changed public contract, also search its implementations, callers and parallel variants before proposing a signature or behavior change.
-
-## From research to plan
-
-### Confirmed integration map
-
-When it materially determines ownership, scope or subtask ordering, show the discovered end-to-end path:
-
-```text
-<existing trigger>
-  -> <existing owner>
-  -> <existing model or system>
-  -> <existing event, state update or replication>
-  -> <existing View or observable result>
-```
-
-Name real discovered types, methods, events and Unity objects. Omit this map when the change does not have a relevant cross-system path.
-
-### Proposed initial feature plan
-
-| ID | Verifiable outcome | Included scope | Reuse / expected change | Dependencies | Validation |
+| ID | Verifiable Outcome | Included Systems / Files / Objects | Reuse / Change | Dependencies | Validation |
 | --- | --- | --- | --- | --- | --- |
-| `FEAT-01` | `<concrete result>` | `<systems, known files and Unity objects>` | `<reuse, extend or new>` | `<predecessor and reason, if any>` | `<automated and Play Mode>` |
+| `FEAT-01` | Concrete outcome | Research-backed scope | Actual mechanism | Predecessor and reason | Automated / Play Mode |
 
-The plan must name:
+Define reused mechanisms, justified order, ownership boundaries, and an experiment/
+decision for each material unknown. Explain every dependency in a multi-subtask
+FEAT chain. Do not split only by DTO/interface artifacts. Overlapping scope requires
+an explicit dependency/approval. Distinguish fact, inference, and proposal.
 
-- the existing mechanisms that each subtask will reuse or extend;
-- the evidence-based dependency ordering between subtasks;
-- scope boundaries justified by ownership or a verified non-impact;
-- a spike or a developer decision for each material unresolved unknown.
-
-Every listed subtask is a proposal until the developer approves the initial plan. Do not create it in state, begin its local architecture or modify project files before that approval.
-
-### Execution order
-
-Show the dependency sequence when there is more than one subtask:
-
-```text
-FEAT-01 -> FEAT-02 -> FEAT-03
-```
-
-State the reason for each dependency; do not use arrows as a substitute for it.
-
-### Scope boundaries and unresolved decisions
-
-Include only relevant items:
-
-| Topic | Evidence | Effect | Required developer decision |
+| Boundary / Unknown | Evidence | Impact | Required Decision |
 | --- | --- | --- | --- |
-| `<scope boundary or real unknown>` | `<research finding>` | `<effect on plan or behavior>` | `<smallest concrete decision, only if needed>` |
+| Material question | Discovered fact | Behavior/plan | Minimal choice if needed |
 
-Observed evidence, inference and proposal must remain distinguishable. Do not present an unverified assumption as an existing project convention. Omit empty boundary, risk or decision sections.
+## Approval and Result
 
-## Developer-facing research and plan approval
-
-Present the complete applicable Research Brief, integration map and proposed initial plan in chat before requesting approval. Do not reduce the response to raw search logs or a link to `research.md`: the developer must be able to review the evidence, scope, ordering, risks and validation without opening the artifact.
-
-The approval request states that approval records the listed subtasks as the initial feature plan and starts local architecture for the first subtask. A request for changes revises research or the plan before any subtask work begins.
+Show research, applicable integration map, and the full proposed initial plan before
+asking. Approval fixes the listed subtasks and starts the first local architecture.
+Before approval do not create subtasks in state, design them, or change the project.
+Feedback revises research/plan. A `research.md` link or raw search log is not a handoff.

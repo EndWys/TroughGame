@@ -1,0 +1,52 @@
+# Только самостоятельные баги. Дефекты фичи используют состояние родителя и case.md.
+bugfix_version: "1.0"
+bug: <bug-kebab-id>
+mode: standalone
+stage: intake
+status: in_progress # in_progress | waiting_for_approval | blocked | failed | complete
+case_reference: case.md
+revision: 0
+diagnostic_iteration: 0
+
+repository:
+  last_reconciled_at: null
+  working_tree_status: unknown
+  expected_paths: []
+  ignored_paths: []
+  diff_fingerprint: null
+  reconciliation_status: unknown
+
+diagnosis:
+  status: pending # pending | confirmed | leading_hypothesis | insufficient_evidence | not_reproduced
+  evidence: []
+
+diagnostic_plan:
+  revision: 0
+  status: pending # pending | not_applicable | proposed | approved | changed | completed
+  approval_reference: null
+
+fix_plan:
+  revision: 0
+  status: pending # pending | proposed | approved | changed
+  selected_option: null
+  approval_reference: null
+
+approvals: []
+# Каждая запись: gate, точный subject/revision, by, at, source/reference, decision.
+# Согласования: diagnostic_plan | fix_plan | scope_revision | review | retest_acceptance.
+checks: []
+# Каждая запись: name, required, status, command/scenario, evidence, revision, executor.
+review:
+  status: pending
+  approval_reference: null
+retest:
+  status: pending
+  approval_reference: null
+delivery:
+  commit: null
+  status: pending
+
+next_action:
+  owner: agent
+  description: Собрать ожидаемое/фактическое поведение и проанализировать имеющиеся подтверждения.
+last_updated_at: null

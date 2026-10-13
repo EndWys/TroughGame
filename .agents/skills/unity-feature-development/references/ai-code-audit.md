@@ -1,72 +1,39 @@
-# AI Code Audit
+# Code Audit
 
 ## Purpose
 
-Use this reference after implementation and relevant automated validation, before developer diff review. The audit independently searches for concrete risks in the approved subtask diff and relevant Unity assets; it is not a routine confirmation that code looks acceptable.
+Perform a separate review after implementation/checks, before developer review.
+Compare all relevant code/Unity changes with approved architecture, scope,
+results, `docs/ARCHITECTURE_RULES.md`, and `docs/CONVENTIONS.md`.
 
-Read `docs/ARCHITECTURE_RULES.md` and `docs/CONVENTIONS.md` before auditing handwritten C#. Compare the diff against the approved local architecture, approved scope and validation evidence.
+## Review Areas
 
-## Audit focus
+Inspect concrete risks: correctness/state/null/errors; ownership/DI; readiness/
+order/subscriptions/async/cancellation/disposal; Fusion authority/sync/serialization;
+scene/prefab/Inspector/config bindings; CPU/GC/lifetime; maintainability/extension;
+scope/design compliance. Omit empty items, subjective style preferences, and
+speculation without an exact location and consequence.
 
-Inspect only risk areas that can materially affect the approved change:
+## Severity
 
-- behavior correctness, state consistency, null and error paths;
-- ownership, dependency direction, composition, OOP/SOLID and project architecture;
-- lifecycle readiness, initialization order, subscriptions, async/cancellation, disposal and resource release;
-- Fusion/network authority, synchronization and serialization;
-- Unity prefab, scene, Inspector, ScriptableObject and configuration bindings;
-- CPU cost, allocation/GC pressure and resource lifetime;
-- readability, extension boundaries and code-style violations that create a maintenance or correctness risk;
-- scope compliance and agreement with the approved local architecture and validation plan.
-
-Do not produce empty checklist rows. Do not report style preference, speculative risk or generic advice without a concrete location and consequence.
-
-## Criticality
-
-| Level | Meaning | Workflow effect |
+| Level | Meaning | Action |
 | --- | --- | --- |
-| `P0 — Blocker` | Crash, broken gameplay, data or network corruption, severe lifecycle failure, invalid Unity binding, or a feature that cannot be reliably verified. | Return to implementation; do not begin developer review. |
-| `P1 — Required correction` | Architecture or reliability violation with a concrete consequence, substantial performance risk, or a project-convention violation that compromises maintainability. | Return to implementation; repeat applicable validation and audit. |
-| `P2 — Recommendation` | Concrete extensibility, readability or optimization improvement while the approved behavior remains correct. | Show during developer review; do not refactor it without approval. |
+| `P0` | Crash, broken gameplay, data/network corruption, severe lifecycle/binding failure, or unreliable validation | Fix before review |
+| `P1` | Reliability/architecture violation, material performance risk, or convention breach affecting maintenance | Fix, repeat checks/audit |
+| `P2` | Supported extension/clarity/optimization improvement with correct behavior | Present; no unapproved refactoring |
 
-Do not create a `P3` category. Omit trivial, subjective or consequence-free comments.
+Do not create P3; omit trivial preferences without consequences.
 
-## Findings
+## Result and Transitions
 
-Every actionable finding uses this table:
+The code-audit response shows required/recommended finding counts, reviewed diff,
+approved architecture, and actually inspected areas.
 
-| ID | Risk point | Type | Criticality | Evidence / rationale | Consequence | Smallest recommended correction |
+| ID | Path / Type.Member / Unity Object | Category | Level | Evidence | Consequence | Minimal Fix |
 | --- | --- | --- | --- | --- | --- | --- |
-| `AUD-01` | `Assets/.../Type.cs:Type.Member(...)` | `<lifecycle / architecture / allocation / readability / ...>` | `P0`, `P1` or `P2` | `<concrete observed condition>` | `<observable or maintenance effect>` | `<smallest in-scope correction>` |
+| AUD-01 | Verified location | Lifecycle/architecture/allocations | P0/P1/P2 | Fact | Effect | Approved scope or proposed revision |
 
-The risk point names a path and concrete type/member or Unity object. `Type` describes the risk category, not a vague quality label. A correction that expands scope remains a recommendation or scope-expansion decision; the audit does not authorize the expansion.
-
-## Developer-facing audit result
-
-Start with the result and reviewed scope:
-
-```markdown
-## AI CODE AUDIT — `FEAT-01`
-
-**Result:** `<N>` required corrections, `<N>` recommendations.
-
-### Reviewed scope
-
-- **Diff:** `<approved paths and Unity assets>`.
-- **Compared against:** approved local architecture, `docs/ARCHITECTURE_RULES.md`, `docs/CONVENTIONS.md`.
-- **Relevant risk areas:** `<only areas actually examined>`.
-
-### Findings
-
-<findings table>
-
-### Required next step
-
-<workflow action dictated by the highest finding criticality>
-```
-
-When there are no actionable findings, do not show an empty table. State `**Result:** No actionable findings.`, identify the reviewed scope and relevant analysis areas, then proceed to developer diff review.
-
-## State and progression
-
-Record the audit status, finding IDs and timestamp in the current subtask state. `P0` or `P1` returns to implementation, then requires relevant validation and a new AI audit. `P2` findings remain visible in developer review; the developer decides whether they become approved changes.
+If none, explicitly state no actionable findings, reviewed scope, and next review.
+Audit does not permit scope expansion. Record status, finding IDs, and time in
+the subtask. P0/P1 return to correction/checks/audit; P2 remain visible to the
+developer. Actual defects use embedded `unity-bugfix`.

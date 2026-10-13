@@ -9,8 +9,8 @@ import sys
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-READ_OPERATIONS = {"bootstrap_project", "prepare_feature_context", "refresh_source_context"}
-WRITE_OPERATIONS = {"publish_progress", "update_documentation", "finalize_feature"}
+READ_OPERATIONS = {"bootstrap_project", "prepare_feature_context", "prepare_bug_context", "refresh_source_context"}
+WRITE_OPERATIONS = {"publish_progress", "update_documentation", "finalize_feature", "finalize_bugfix"}
 STATUSES = {"completed", "blocked", "conflict", "partial", "failed"}
 IDENTIFIER = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 PAGE_ID = re.compile(r"^(?:[0-9a-f]{32}|[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})$", re.I)
@@ -42,7 +42,7 @@ def validate_request(request, root=PROJECT_ROOT):
     require(isinstance(request, dict), "Request must be an object")
     allowed = {"schema_version", "operation_id", "operation", "project", "feature_id",
                "targets", "input", "authorization", "baseline", "local_read_paths"}
-    require(not set(request) - allowed, "Unknown request fields; do not pass workflow state")
+    require(not set(request) - allowed, "Unknown request fields; do not pass development state")
     require(request.get("schema_version") == 1, "Unsupported request schema")
     require(IDENTIFIER.fullmatch(request.get("operation_id", "")), "Invalid operation_id")
     operation = request.get("operation")
@@ -55,7 +55,7 @@ def validate_request(request, root=PROJECT_ROOT):
     require(len({t["page_id"] for t in targets}) == len(targets), "Duplicate target IDs")
     data = request.get("input")
     require(isinstance(data, dict), "input must contain immutable values")
-    require(not {"feature_state", "workflow_state", "state_path"} & set(data), "Shared feature state is forbidden")
+    require(not {"feature_state", "bug_state", "workflow_state", "state_path"} & set(data), "Shared development state is forbidden")
     require(isinstance(request.get("baseline", []), list), "baseline must be a list")
     paths = request.get("local_read_paths", [])
     require(isinstance(paths, list), "local_read_paths must be a list")
@@ -97,7 +97,7 @@ def validate_request(request, root=PROJECT_ROOT):
         if kind == "create_page" or (kind == "content" and change.get("mode") == "append"):
             marker = f'TroughGame/{request["operation_id"]}/{change["change_id"]}'
             require(change.get("publication_marker") == marker and marker in change.get("content", ""), "Append/create needs its deterministic publication marker in authorized content")
-    if operation == "finalize_feature":
+    if operation in {"finalize_feature", "finalize_bugfix"}:
         acceptance = data.get("final_acceptance", {})
         require(all(acceptance.get(k) for k in ("by", "reference", "scope")), "Explicit final acceptance is required")
         criteria = data.get("mandatory_acceptance_criteria")
@@ -105,8 +105,36 @@ def validate_request(request, root=PROJECT_ROOT):
         require(isinstance(criteria, list) and criteria, "Mandatory AC results are required")
         require(isinstance(checks, list) and checks, "Required check results are required")
         require(all(c.get("status") == "passed" and c.get("evidence") for c in criteria + checks), "Mandatory checks/AC must pass with evidence")
-        require(any(c.get("kind") == "play_mode" for c in checks), "Required Play Mode evidence is missing")
-        require(data.get("task_ids") and data.get("feature_status"), "Exact accepted task IDs and feature business status are required")
+        if operation == "finalize_feature":
+            require(any(c.get("kind") == "play_mode" for c in checks), "Required Play Mode evidence is missing")
+            require(data.get("task_ids") and data.get("feature_status"), "Exact accepted task IDs and feature business status are required")
+        else:
+            require(IDENTIFIER.fullmatch(data.get("bug_id", "")), "Exact bug_id is required")
+            cause = data.get("confirmed_cause", {})
+            approval = data.get("fix_approval", {})
+            require(cause.get("summary") and cause.get("evidence"), "Confirmed cause evidence is required")
+            require(all(approval.get(k) for k in ("by", "reference", "scope")), "Exact fix approval is required")
+            review = data.get("review_acceptance", {})
+            require(all(review.get(k) for k in ("by", "reference", "diff_reference")), "Explicit final diff review acceptance is required")
+            require(acceptance.get("diff_reference") == review["diff_reference"], "Retest acceptance must cover the reviewed diff")
+            original = data.get("original_scenario", {})
+            require(original.get("status") == "passed" and original.get("evidence"), "Original bug scenario must pass with evidence")
+            regression = data.get("regression_check", {})
+            require((regression.get("status") == "passed" and regression.get("evidence")) or
+                    (regression.get("status") == "not_applicable" and regression.get("reason")), "Regression result or justified not-applicable case is required")
+            require(isinstance(data.get("play_mode_required"), bool), "Explicit Play Mode applicability is required")
+            if data["play_mode_required"]:
+                require(any(c.get("kind") == "play_mode" for c in checks), "Required Play Mode evidence is missing")
+            else:
+                require(bool(data.get("play_mode_not_required_reason")), "Not-required Play Mode needs a validation-plan reason")
+            require("feature_status" not in data, "Bugfix cannot finalize a feature")
+            require(all(t.get("entity_type") in {"task", "document"} for t in targets), "Bugfix targets must be exact tasks/documents")
+            task_ids = data.get("task_ids")
+            require(isinstance(task_ids, list) and task_ids and
+                    set(task_ids) == {t["page_id"] for t in targets if t["entity_type"] == "task"}, "Bug task IDs must match authorized task targets")
+            require(all("Статус разработки" not in c.get("properties", {}) for c in changes), "Bugfix cannot change feature development status")
+            require(set(task_ids) <= {c["page_id"] for c in changes if c.get("kind") == "properties" and
+                                     c.get("properties", {}).get("Статус") == "Done"}, "Bug closure must include exact accepted task Done updates")
     return request
 
 

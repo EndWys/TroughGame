@@ -51,7 +51,7 @@ class OperationTests(unittest.TestCase):
             journal.initialize(self.request, self.root)
 
     def test_state_path_and_traversal_are_rejected(self):
-        for path in (".ai/features/player/state.yaml", "../outside", ".ai/notion/operations/other"):
+        for path in (".ai/features/player/state.yaml", ".ai/bugs/player/state.yaml", "../outside", ".ai/notion/operations/other"):
             with self.subTest(path=path):
                 self.request["local_read_paths"] = [path]
                 with self.assertRaises(ValueError):
@@ -135,6 +135,59 @@ class OperationTests(unittest.TestCase):
         marker = "TroughGame/progress-001/status-001"
         change.update(publication_marker=marker, content="Принято\n" + marker)
         journal.validate_request(self.request, self.root)
+
+    def accepted_bug_request(self):
+        self.write_request()
+        self.request["operation"] = "finalize_bugfix"
+        self.request["targets"][0]["entity_type"] = "task"
+        self.request["input"]["changes"][0]["properties"] = {"Статус": "Done"}
+        self.request["input"].update(
+            bug_id="duplicate-callback", confirmed_cause={"summary": "Subscription retained", "evidence": "Failing reproducer"},
+            fix_approval={"by": "Human", "reference": "approved diff plan", "scope": "rev2"},
+            review_acceptance={"by": "Human", "reference": "accepted final diff", "diff_reference": "diff-rev2"},
+            final_acceptance={"by": "Human", "reference": "accepted retest", "scope": "rev2", "diff_reference": "diff-rev2"},
+            mandatory_acceptance_criteria=[{"status": "passed", "evidence": "one callback per event"}],
+            checks=[{"kind": "test", "status": "passed", "evidence": "regression"}],
+            original_scenario={"status": "passed", "evidence": "repeat original scenario"},
+            regression_check={"status": "passed", "evidence": "fails before, passes after"},
+            play_mode_required=False, play_mode_not_required_reason="Pure contract test; accepted validation scope",
+            task_ids=[PAGE])
+
+    def test_bug_context_is_read_only_without_feature_state(self):
+        self.request["operation"] = "prepare_bug_context"
+        journal.initialize(self.request, self.root)
+        self.assertFalse((self.root / ".ai/bugs").exists())
+        self.request["input"]["bug_state"] = {}
+        with self.assertRaisesRegex(ValueError, "Shared development"):
+            journal.validate_request(self.request, self.root)
+
+    def test_bug_closure_accepts_exact_tasks_without_feature_status(self):
+        self.accepted_bug_request()
+        journal.validate_request(self.request, self.root)
+        self.request["input"]["feature_status"] = "Готово (базовая часть)"
+        with self.assertRaisesRegex(ValueError, "cannot finalize a feature"):
+            journal.validate_request(self.request, self.root)
+        del self.request["input"]["feature_status"]
+        self.request["targets"][0]["entity_type"] = "feature"
+        with self.assertRaisesRegex(ValueError, "exact tasks/documents"):
+            journal.validate_request(self.request, self.root)
+
+    def test_bug_closure_requires_cause_approval_and_retest(self):
+        self.accepted_bug_request()
+        for key in ("confirmed_cause", "fix_approval", "review_acceptance", "original_scenario", "regression_check"):
+            broken = copy.deepcopy(self.request)
+            broken["input"][key] = {}
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                journal.validate_request(broken, self.root)
+        self.request["input"]["play_mode_required"] = True
+        with self.assertRaisesRegex(ValueError, "Play Mode"):
+            journal.validate_request(self.request, self.root)
+
+    def test_bug_retest_cannot_accept_a_different_diff(self):
+        self.accepted_bug_request()
+        self.request["input"]["final_acceptance"]["diff_reference"] = "different-diff"
+        with self.assertRaisesRegex(ValueError, "reviewed diff"):
+            journal.validate_request(self.request, self.root)
 
 
 if __name__ == "__main__":

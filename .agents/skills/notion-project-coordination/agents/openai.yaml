@@ -1,4 +1,4 @@
 interface:
-  display_name: "TroughGame Notion Coordination"
-  short_description: "Delegate Notion work with isolated requests and results"
-  default_prompt: "Use $notion-project-coordination to delegate a bounded TroughGame Notion operation to its dedicated subagent."
+  display_name: "TroughGame: Координация Notion"
+  short_description: "Поручения Notion-сабагентам и независимые результаты"
+  default_prompt: "Используй $notion-project-coordination: передай ограниченную операцию Notion отдельному сабагенту."

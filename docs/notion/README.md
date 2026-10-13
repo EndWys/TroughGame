@@ -1,63 +1,65 @@
-# Notion и документация TroughGame
+# Notion and TroughGame Documentation
 
-Установлены три project-local навыка:
+## Purpose and Roles
 
-| Навык | Роль |
+Three project-local skills provide Notion integration:
+
+| Skill | Role |
 | --- | --- |
-| [notion-project-coordination](../../.agents/skills/notion-project-coordination/SKILL.md) | Основной агент отправляет поручение отдельному сабагенту и принимает результат |
-| [notion-feature-intake](../../.agents/skills/notion-feature-intake/SKILL.md) | Сабагент читает этап, фичи, задачи, решения и возвращает требования/предложенные AC |
-| [notion-project-documentation](../../.agents/skills/notion-project-documentation/SKILL.md) | Сабагент публикует принятые факты, актуализирует документацию и статусы |
+| [notion-project-coordination](../../.agents/skills/notion-project-coordination/SKILL.md) | Main agent dispatches a separate worker and consumes its result |
+| [notion-feature-intake](../../.agents/skills/notion-feature-intake/SKILL.md) | Worker reads stage/features/tasks/decisions and returns requirements/proposed acceptance criteria (AC) |
+| [notion-project-documentation](../../.agents/skills/notion-project-documentation/SKILL.md) | Worker publishes accepted facts and updates documents/statuses |
 
-Notion MCP уже подключён; read-only preflight 2026-10-12 проверил вашу базу
-[«Задачи»](https://app.notion.com/p/3f6ad1247d58804ebf55f9040a53a8e7), её проектного
-предка TroughGame и relations к фичам, документам и идеям. Статические IDs,
-properties и реальные options — в [project.json](project.json). Живая схема
-перечитывается перед использованием.
+Read-only Notion MCP preflight on 2026-10-12 verified the supplied
+[tasks database](https://app.notion.com/p/3f6ad1247d58804ebf55f9040a53a8e7), its
+TroughGame ancestor, and feature/document/idea relations. Static IDs/properties/
+actual options are in [project.json](project.json). Re-fetch live schemas before use.
+Use the existing enabled [TroughGame documentation standard](https://app.notion.com/p/3f7ad1247d5881409ce4f30510f6a1b0)
+for page presentation; do not create a competing standard. The [requirements map](documentation-standard.md)
+identifies relevant sections.
 
-Существующий включённый Notion-навык
-[«Стандарт документации TroughGame»](https://app.notion.com/p/3f7ad1247d5881409ce4f30510f6a1b0)
-используется как источник оформления; не создаём конкурирующий стандарт.
-[Карта требований](documentation-standard.md) указывает его применимые разделы.
+## Handoff and Ownership
 
-Каждое поручение использует [контракт](operation-contract.md): ID операции,
-точные targets, полномочия, неизменяемые входные факты и результат с проверенными
-изменениями. Основной агент не вызывает Notion MCP. Сабагент не читает/не меняет
-`.ai/features/`; его журнал — `.ai/notion/operations/`, игнорируемый Git.
-Не устанавливается общая state-машина или поля синхронизации в feature YAML.
-Изоляция задаётся поручением и владением, а не отдельной песочницей процесса.
+Every dispatch uses the [contract](operation-contract.md): operation ID, exact targets,
+authority, immutable facts, and verified-change result. The main agent never calls
+Notion MCP. Workers never read/write `.ai/features/` or `.ai/bugs/`; journals live in
+Git-ignored `.ai/notion/operations/`. `prepare_bug_context` prepares task context;
+`finalize_bugfix` publishes accepted results/closes exact bug tasks, not features/stages.
+No shared state machine or Notion sync fields in feature YAML. Isolation is defined
+by requests/ownership, not a separate process sandbox.
 
-Примеры запросов:
+## Invocation
 
-- «Подготовь требования новой фичи по этой задаче Notion: `<URL>`».
-- «Посмотри текущий этап и предложи следующую готовую Dev-задачу».
-- «Опубликуй принятый результат и обнови документацию этой фичи».
-- «Актуализируй этот документ по подтверждённым изменениям, без запуска фичи».
+Example requests, rendered in the developer's language during actual interaction:
 
-Существующие согласования разработки сохраняются. В задачах `Статус` — select
-со значениями `Backlog`, `Ready`, `In progress`, `Review`, `Done`. У фич свой
-`Статус разработки`; подходящее значение передаётся в принятом запросе.
-`Объединена` не означает Done. Статическая проверка и принятие владельцем
-не выдаются за выполненный игровой или сетевой тест.
+- Prepare new-feature requirements from this Notion task URL.
+- Inspect the current stage and propose the next ready Dev task.
+- Publish the accepted result and update this feature's documentation.
+- Update this document from verified changes without starting a feature.
 
-Закрытие после финального принятия: актуальные результаты и документация →
-подтверждённые результаты задач → финальный статус фичи. При частичном сбое
-сабагент сохраняет receipt и проверяет реальные эффекты до повторения. Код
-заново не выполняется ради ремонта публикации. Подробности:
+## Approvals and Completion
+
+Development gates persist. Task `Статус` is a `select` with `Backlog`, `Ready`,
+`In progress`, `Review`, `Done`. Features have separate `Статус разработки`;
+accepted requests specify actual intended options. `Объединена` is not Done.
+Static inspection/owner acceptance is not an executed game/network test.
+After final acceptance: current results/documents → verified task results → final
+feature status. Partial failures retain worker receipts and reconcile actual effects
+before retry. Do not repeat implementation to repair publication. See
 [feature-integration.md](feature-integration.md).
 
-Проверки локальных инструментов (Python 3.12+, только standard library):
+## Checks and Limits
+
+Local tool checks (Python 3.12+, standard library only):
 
 ```powershell
 python -m unittest discover -s Tools/AI -p test_notion_operations.py -v
 powershell -NoProfile -ExecutionPolicy Bypass -File .\Tools\AI\Test-WorkflowTools.ps1
 ```
 
-На машине без `python` в PATH используйте Python из workspace dependencies.
-Skills вызываются по поручению или из feature workflow; фоновые расписания,
-автоматическая бесконечная обработка backlog и новый Notion-agent service не
-устанавливаются. Изменения схемы/создание баз, удаление, комментарии и уведомления
-не входят в обычную публикацию. Локальный snapshot архитектурных правил пока
-остаётся действующим источником; переход к зеркалам требует отдельного решения.
-
-Результаты проверок и границы испытаний:
-[IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md).
+Use bundled Python when absent from PATH. Skills run on request/from feature work;
+no background scheduler, endless backlog processing, or separate Notion-agent service.
+Schema/database creation, deletion, comments, notifications are not routine publication.
+Local architecture remains authoritative; switching to mirrored standards requires
+a separate decision. Local instruction formatting follows the
+[common workflow standard](../ai-workflow/DOCUMENTATION_STANDARD.md).

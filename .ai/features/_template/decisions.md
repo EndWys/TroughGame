@@ -1,22 +1,23 @@
 # Feature Decisions
 
-Use this file for approved or pending decisions that need more context than `state.yaml`. Keep `state.yaml` as the compact index: each decision here must have a matching `DEC-*` record there.
+Keep accepted/pending decisions that need more context than `state.yaml`.
+State remains a compact index; each record has a matching `DEC-*` entry there.
 
 ## Decision Index
 
-| ID | Status | Decision | Impact | Approval reference |
+| ID | Status | Decision | Impact | Approval Reference |
 | --- | --- | --- | --- | --- |
 
 ## Decision Records
 
-### DEC-001 Decision title
+### DEC-001 Decision Title
 
-- **Status:** Proposed (`Proposed` / `Approved` / `Rejected` / `Superseded`)
+- **Status:** Proposed (`proposed` / `approved` / `rejected` / `superseded`).
 - **Decision:**
-- **Why it is needed:**
+- **Reason:**
 - **Options considered:**
-- **Impact:** affected requirements, subtasks, scope, files or Unity objects.
-- **Approval:** developer, date and message/reference; leave blank until explicit approval.
-- **Evidence:** relevant requirement, experiment, diff, validation result or log path.
+- **Impact:** requirements, subtasks, scope, files, or Unity objects.
+- **Approval:** developer, date, message/reference; blank until explicit acceptance.
+- **Evidence:** requirement, experiment, diff, validation, or log path.
 
-<!-- Copy this record for each decision. Remove DEC-001 before feature work begins if no decision is pending. -->
+<!-- Copy for each decision. Remove the DEC-001 example before work if no decision is pending. -->

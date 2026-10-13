@@ -1,44 +1,44 @@
-# Read-only Subagents in Feature Development
+# Read-Only Inspection Subagents
 
-This reference governs optional code/research reviewers. Dedicated Notion
-workers are a separate user-authorized protocol in
-`docs/notion/operation-contract.md`; publication workers may perform scoped
-Notion writes and own private journals, never feature state/Git/Unity. Do not
-apply the code-reviewer's read-only restriction to an authorized publication
-operation or send that worker the feature state.
+## Purpose and Scope
 
-## When to delegate
+Optional research/code-review delegation only when the developer or applicable
+instructions authorize it. Short searches and dependent reasoning stay with the
+main agent. Without authorization/subagents, perform a separate read-only review
+yourself while preserving gates/results.
+Notion uses its separately authorized `docs/notion/operation-contract.md`: workers
+may publish scoped remote changes and own journals, but not feature/bug state,
+Git, or Unity. Code-review restrictions do not revoke authorized Notion publication.
 
-Delegation is optional and requires authorization from the developer or applicable higher-priority instructions in the active environment. This reference does not itself authorize spawning agents. When authorized, use it if independent inspection materially improves the current stage. Keep short searches and dependent reasoning with the main agent. Otherwise continue with a separate read-only pass by the main agent, without changing gates or deliverables.
+## Tasks and Boundaries
 
-Useful boundaries include:
-
-| Stage | Independent read-only assignments |
+| Stage | Suitable Independent Inspection |
 | --- | --- |
-| Project research | Trace separate relevant responsibilities, such as gameplay state, UI/Unity integration, networking/peer authority or configuration. |
-| Local architecture | Check one proposed dependency or lifecycle chain against its real owners while the main agent prepares the design. |
-| AI code audit | Independently inspect the completed, validated diff for distinct risk areas; at least one reviewer should inspect the full relevant diff when feasible. |
-| Bug diagnosis | Investigate separate plausible causes in existing logs, code paths or lifecycle evidence. |
+| Research | Distinct gameplay/UI/network/config concerns |
+| Architecture | Separate dependency or lifecycle chain |
+| Audit | Distinct material risks; one reviewer may inspect the whole diff |
+| Diagnosis | Different causes in existing data/logs/code |
 
-Do not split work by arbitrary file count. Do not delegate requirements approval, product or architecture decisions, feature-state transitions, Git integration, implementation, Unity mutations, test runs or developer communication. A subagent finding is evidence to assess, not approval or a completed stage.
+Do not divide by file count. Do not delegate approvals, product/design decisions,
+feature transitions, Git, implementation, Unity mutations, tests, or developer
+communication. A finding requires verification; it is not stage acceptance.
 
-## Handoff contract
+## Request and Result
 
-Give each subagent:
+Provide feature/stage, approved context, exact question, areas/diff snapshot/logs,
+and exclusions. Ask for actual paths/types/members/objects, evidence, uncertainty,
+and integration impact. Prohibit writes to files/state, Git, Editor mutations,
+test runs, and decisions for the developer. Keep tasks few and non-overlapping;
+unfinished agent output is not a fact/API.
+A shared checkout may expose equal permissions: read-only is an instruction,
+not a sandbox. Use enforced permissions if available; otherwise compare
+`git status --short` before/after and investigate unexpected edits.
 
-- the current feature and stage, approved requirement or subtask context, and the precise question;
-- the repository areas, diff snapshot or existing logs to inspect, with any relevant exclusions;
-- a requested result containing concrete paths, types/members or Unity objects, supporting evidence, uncertainty and integration implications;
-- an explicit read-only boundary: no file/state/Git writes, Editor changes, test execution or developer-facing decisions.
+## Synthesis and Completion
 
-Use a small number of assignments with non-overlapping questions. Parallelism means the inspection runs concurrently; it does not let one agent assume another's unfinished API or findings.
-
-Subagents in a shared checkout may have the same filesystem permissions as the main agent; the read-only handoff is a behavioral boundary, not a separate sandbox. Prefer an enforced read-only role when the active Codex surface offers one. Otherwise capture `git status --short` before delegation and inspect it again after results return; investigate any unexpected change before using the results or continuing the workflow.
-
-## Synthesis and gate ownership
-
-Wait for all relevant delegated work before presenting the stage result. The main agent checks material claims in source, reconciles conflicting findings and fills any uncovered concern. It alone writes the Research Brief, architecture, audit findings or bug diagnosis, updates feature state and requests approval.
-
-For AI audit, delegate only after the implementation diff and applicable automated validation are stable. If a correction changes the diff, assess whether affected delegated findings must be repeated. The complete relevant diff still receives the audit required by `ai-code-audit.md`; splitting risk areas never reduces that coverage.
-
-Do not persist a separate subagent report by default. Record only findings that affect the feature artifact, evidence or decision. Delegation itself creates no subtask, approval gate or workflow-state transition.
+Await material results, verify claims in sources, resolve contradictions/gaps.
+Only the main agent records research/architecture/audit/diagnosis/state and asks
+the developer. Delegate audit after a stable diff and applicable checks; after
+correction assess whether affected reviews need repeating. The whole relevant
+diff remains covered. Do not retain separate agent reports by default; retain
+consequential facts. Delegation creates no FEAT or new approval gate.

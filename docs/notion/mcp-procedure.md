@@ -1,42 +1,51 @@
-# Live MCP procedure
+# Notion MCP Procedure
 
-Discover tools from the active Notion MCP connection; do not copy an API manual
-or assume capabilities from another installation. Current read-only preflight
-on 2026-10-12 verified search, fetch, tool access inspection, row/view queries,
-property/content editing and page creation as advertised. A tool being available
-does not grant access to every target or authorize all of its operations.
+## Purpose
 
-Use Notion search for EVERY content search. Fetch exact supplied/resolved IDs
-for content and schema. Prefer existing relation IDs or saved views for bounded
-selection; confirm pagination/completeness. Fetch `collection://` sources for
-schema and do not confuse database, source and view IDs. Current task `Статус`
-is a select, not a Notion status property. Avoid assumed SQL column names;
-the actual exposed schema owns query fields. Do not broaden a search to other
-connected services or projects to fill missing project requirements.
+Define read and verified-write procedures for separate Notion workers. Discover
+actual tools from the current connection; do not copy an API manual or assume another
+installation's capabilities. Read-only preflight on 2026-10-12 showed advertised
+search/fetch/access inspection, row/view queries, property/content edits, page creation.
+Tool availability grants neither every target's access nor arbitrary operation authority.
 
-Before content writes read `notion://docs/enhanced-markdown-spec` using Notion
-fetch or its resource reader. Do not fetch that URI through web tools. Use
-native Notion mentions for internal page/database/person/date references,
-preserve icons and exact child/entity tags, and match existing page style.
-Referenced child `<page>`/`<database>` tags may move entities; mentions are
-references. Table cells are rich text; indentation affects nested blocks.
+## Reading and Preparation
 
-Fetch targets before changing them. Prefer smallest unique `update_content`
-replacements; `insert_content` only prepends/appends. Preserve unrelated content.
-Refetch after structural/multipart edits, and verify requested properties after
-updates. Surface warnings, truncation and unknown blocks. Never bypass child
-deletion protection or delete/archive/move entities under routine publication.
+Use Notion search for **every content search**. Fetch content/schema by exact supplied/
+resolved IDs. Prefer relation IDs/saved views for bounded selection; check pagination/
+completeness. Fetch `collection://` schemas; distinguish database/source/view IDs.
+Task `Статус` currently has type `select`, not `status`. Actual schema controls query
+fields, not assumed SQL names. Do not expand to unrelated projects/services for missing
+requirements.
+Before content edits read `notion://docs/enhanced-markdown-spec` through Notion fetch/
+resource reader, never web tools. Use native mentions for pages/databases/people/dates;
+preserve icons, exact child tags, existing style. `<page>`/`<database>` tags can move
+entities; mentions reference them. Table cells contain rich text; indentation affects
+nested blocks.
 
-For an asynchronous write, retain its operation/task ID and wait for its final
-outcome before readback. An accepted request is not a completed remote write.
-On timeout or ambiguous failure, fetch the target and search the exact stable
-publication marker if creation outcome is unknown. Reconcile once, then return
-partial/blocked if uncertainty persists. Do not retry blindly or create duplicates.
+## Writing and Verification
 
-Authentication failure stops further live operations until the connection
-changes. Distinguish auth, page permission, unsupported capability, quota,
-missing content, and schema mismatch in the result. If advanced analysis is
-unavailable, use available bounded rows/view queries only when they preserve
-the same scope and completeness; otherwise report the limitation. If the MCP
-requires its access/upgrade card, follow the tool's returned instructions and
-include its recovery link in the caller handoff.
+Fetch targets before edits. Prefer smallest unique `update_content` replacements;
+`insert_content` only prepends/appends. Preserve unrelated content. Re-fetch after
+structural/multipart edits and verify requested properties. Report warnings/truncation/
+unknown blocks. Do not bypass child-deletion protection; routine publication never
+removes/archives/moves entities.
+For asynchronous writes retain operation/task ID and await final outcome before
+readback. Accepted request is not completed publication. On timeout/ambiguous failure
+fetch target; search the exact stable publication marker for uncertain creation.
+Reconcile once, then return `partial`/`blocked` if uncertainty remains. No blind retry/
+duplicate creation.
+
+## Limits and Recovery
+
+Auth failure stops live operations until the connection changes. Distinguish auth,
+page permission, unsupported capability, quota, missing content, schema mismatch.
+When advanced analysis is unavailable, use bounded row/view queries only if they
+preserve scope/completeness; otherwise report the limit. If MCP requires its access/
+upgrade card, follow returned tool instructions and include its recovery link in
+caller handoff.
+
+## Related Documents
+
+- [Operation contract](operation-contract.md).
+- [Notion documentation standard](documentation-standard.md).
+- [Common workflow standard](../ai-workflow/DOCUMENTATION_STANDARD.md).

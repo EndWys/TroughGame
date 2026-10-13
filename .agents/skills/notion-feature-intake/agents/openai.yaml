@@ -1,4 +1,4 @@
 interface:
-  display_name: "TroughGame Notion Intake"
-  short_description: "Read project sources and prepare feature requirements"
-  default_prompt: "Use $notion-feature-intake as a separate subagent to prepare a source-backed feature contract from TroughGame Notion."
+  display_name: "TroughGame: Чтение контекста Notion"
+  short_description: "Источники, требования фичи и контекст баг-задачи"
+  default_prompt: "Используй $notion-feature-intake: подготовь контекст фичи или баг-задачи TroughGame отдельным сабагентом."

@@ -1,35 +1,35 @@
-# Project binding discovery
+# Notion Project Binding
 
-`docs/notion/project.json` is static project configuration. Bootstrap returns a
-proposal, not a remote mutation or permission to choose a different workspace.
+## Purpose
 
-Start with the human-supplied destination ID. `app.notion.com` URLs may require
-using their raw page UUID with fetch; a `v=` parameter is an unverified view ID,
-not the database/data-source ID. Fetch discovers the entity type. For a database,
-fetch its returned `collection://` sources for exact schemas and relations.
+`bootstrap_project` prepares a proposal for static `docs/notion/project.json`.
+It neither mutates remote content nor permits choosing another workspace.
 
-Verify stages, features, tasks, decisions and documentation destinations by
-their real relationships. They may be views of one database, separate databases
-or pages: do not require a new database hierarchy. Map existing properties and
-statuses instead of creating assumed `Status`, `Stage`, or `Feature` properties.
+## Discovery and Evidence
 
-Return for each mapping: exact ID, URL, title/type, schema property name/type,
-relation direction, status values, evidence of project membership, and source
-completeness. Include nested pages/content referenced by the selected task.
-Missing roles remain null with an explanation; they are not a request to create
-pages automatically. Binding is usable for an operation only when that
-operation's required roles/mappings are verified.
+Start at the developer's supplied destination. `app.notion.com` may require the
+raw UUID for fetching; `v=` likely identifies a view, not database/source.
+Fetch establishes entity type. For databases read returned `collection://` sources
+and actual schemas/relations.
+Verify stages/features/tasks/decisions/documents through project relations. They
+may be pages, separate databases, or views of one database; no new hierarchy is
+required. Map actual properties/statuses. Return ID/URL/title/type, exact property
+names/types, relation direction, options, project membership, completeness.
+Read selected task material. Missing roles remain `null` with an explanation,
+not automatic permission to create pages. Readiness depends on the operation's
+required roles/fields.
 
-Propose selection criteria from the actual plan: stage, eligibility, priority,
-dependencies and a tie-breaker. If two candidates remain equally valid, ask the
-caller to select or approve a stable rule. Do not claim a task merely by reading
-it; a claim/status change is a separate authorized publication operation.
+## Selection and Write Scope
 
-For writes, identify allowed existing pages/properties/sections, configured
-creation parents (if any), and permitted lifecycle transitions. Preserve human
-authored fields. Broad workspace traversal, deleting/archive operations, schema
-changes, due dates, reassignment and notifications need explicit task scope.
+Selection uses stage, eligibility, order/priority, dependencies, and tie-breaker.
+Return ambiguity to the main agent. Task claiming/status changes are separately
+authorized operations, not side effects of reading.
+For publication define exact pages/properties/sections, authorized creation parents,
+and state transitions. Preserve human fields. Arbitrary traversal, schema changes/
+delete/archive/move, dates/assignees, notifications require specific separate requests.
 
-Current repository standards retain authority until a specific document's
-Notion canonical owner and repository mirror are agreed. Do not establish that
-priority by interpreting a page title or a newer modification date.
+## Source Authority
+
+Repository standards remain authoritative until an explicit decision selects a
+specific Notion canonical owner/local mirror. Page titles/newer edit times alone
+do not change precedence.

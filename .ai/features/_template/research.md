@@ -1,24 +1,25 @@
 # Feature Research
 
-Record the approved Research Brief here. Keep `state.yaml` as the compact index and link to this file from `research.reference`.
+Retain the accepted research brief. `state.yaml` remains a compact index and
+references this artifact through `research.reference`.
 
-## Requirements source check
+## Requirement Source Check
 
-| Requirement / AC | Authoritative source | Source checked | Open question |
+| Requirement / Acceptance Criterion (AC) | Authoritative Source | Source Check | Open Question |
 | --- | --- | --- | --- |
 
 ## Research Brief
 
-| Requirement / AC | Requirement authority | Concern and search basis | Existing implementation or bounded negative finding | Reuse / extension decision | Planning implication |
+| Requirement / AC | Authority | Concern / Search Basis | Existing Implementation / Bounded Negative Finding | Reuse / Extension | Planning Impact |
 | --- | --- | --- | --- | --- | --- |
 
-## Proposed initial plan
+## Proposed Initial Plan
 
-| ID | Verifiable outcome | Included scope | Reuse / expected change | Dependencies | Validation |
+| ID | Verifiable Outcome | Scope | Reuse / Expected Change | Dependencies | Validation |
 | --- | --- | --- | --- | --- | --- |
 
 ## Approval
 
-- **Status:** Pending
-- **Developer approval:**
+- **Status:** Pending decision.
+- **Developer decision:**
 - **Reference:**

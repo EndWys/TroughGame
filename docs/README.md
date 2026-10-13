@@ -1,36 +1,34 @@
-# Документация TroughGame
+# TroughGame Documentation
 
-Документация содержит действующие стандарты и руководства возможностей.
-При изменении правила обновляем документ-владелец; остальные документы
-ссылаются на него.
+This index identifies authoritative standards and capability guides. Update the
+owning document when a rule changes; other documents reference that owner.
 
-## Действующие стандарты
+## Authoritative Standards
 
-| Тема | Документ-владелец |
+| Topic | Owner |
 | --- | --- |
-| Contexts, Features, владение, зависимости, DI и инициализация | [ARCHITECTURE_RULES.md](ARCHITECTURE_RULES.md) |
-| Папки внутри владельца, категории, суффиксы, нейминг, стиль и имена ресурсов | [CONVENTIONS.md](CONVENTIONS.md) |
-| Авторская иерархия игровых сцен | [SCENE_HIERARCHY_STANDARD.md](SCENE_HIERARCHY_STANDARD.md) |
-| Команды валидатора, диагностические коды, fixtures и пределы анализа | [Tools/Architecture/README.md](../Tools/Architecture/README.md) |
-| Инструкции работы агента и обязательные проверки | [AGENTS.md](../AGENTS.md) |
-| Workflow новых фич: стадии, согласования, evidence и коммиты | [workflow-reference.md](ai-workflow/workflow-reference.md) |
-| Обзор проекта и карта точек интеграции для workflow | [project-overview.md](project-overview.md), [project-map.md](project-map.md) |
-| Notion: отдельные сабагенты, документация и связь с разработкой | [notion/README.md](notion/README.md) |
+| Contexts/features, ownership, dependencies, DI, initialization | [ARCHITECTURE_RULES.md](ARCHITECTURE_RULES.md) |
+| Owner folders, categories, suffixes, naming, style, resource names | [CONVENTIONS.md](CONVENTIONS.md) |
+| Authored gameplay scene hierarchy | [SCENE_HIERARCHY_STANDARD.md](SCENE_HIERARCHY_STANDARD.md) |
+| Validator commands, diagnostic codes, fixtures, analysis limits | [Tools/Architecture/README.md](../Tools/Architecture/README.md) |
+| Agent instructions/mandatory checks | [AGENTS.md](../AGENTS.md) |
+| Instruction/skill/template presentation and language | [DOCUMENTATION_STANDARD.md](ai-workflow/DOCUMENTATION_STANDARD.md) |
+| New-feature stages/gates/evidence/commits | [workflow-reference.md](ai-workflow/workflow-reference.md) |
+| Bug diagnosis/accepted fixes/feature interruptions | [bugfix-reference.md](ai-workflow/bugfix-reference.md) |
+| Workflow discovery/integration | [project-overview.md](project-overview.md), [project-map.md](project-map.md) |
+| Separate Notion workers/documentation/development integration | [notion/README.md](notion/README.md) |
 
-Запуск и результаты адаптации workflow описаны в
-[ai-workflow/README.md](ai-workflow/README.md). Архитектура и стиль по-прежнему
-определяются существующими стандартами выше.
+Invocation is described in [ai-workflow/README.md](ai-workflow/README.md).
+Architecture/style remain governed by existing standards above. Root README stays
+brief; it and AGENTS reference policy rather than duplicating complete rule tables.
 
-Root README остаётся кратким обзором. Его краткие напоминания и AGENTS
-ссылаются на стандарты; полные таблицы правил там не дублируются.
+## Capability Guides
 
-## Руководства возможностей
-
-- [Network Entities](features/NETWORK_ENTITIES.md): uint ID, протокол, lifetime
-  и component-query API.
-- [Local Config](features/LOCAL_CONFIG.md): каталоги, lookup и владение config.
-- [Logging](features/LOGGING.md): feature-категории, logger lifetime и handlers.
-- README внутри Template Features: [Cheat](../Assets/ProjectCore/Contexts/Template/Features/Cheat/README.md),
+- [Network Entities](features/NETWORK_ENTITIES.md): uint IDs, protocol, lifetime,
+  component-query API.
+- [Local Config](features/LOCAL_CONFIG.md): catalogs, lookup, config ownership.
+- [Logging](features/LOGGING.md): feature categories, logger lifetime, handlers.
+- Template feature READMEs: [Cheat](../Assets/ProjectCore/Contexts/Template/Features/Cheat/README.md),
   [Command Line](../Assets/ProjectCore/Contexts/Template/Features/CommandLine/README.md),
   [Debug Tools](../Assets/ProjectCore/Contexts/Template/Features/DebugTools/README.md),
   [Debug Console](../Assets/ProjectCore/Contexts/Template/Features/DebugConsole/README.md),
@@ -39,5 +37,5 @@ Root README остаётся кратким обзором. Его кратки�
   [Local Save](../Assets/ProjectCore/Contexts/Template/Features/LocalSave/README.md),
   [Popup](../Assets/ProjectCore/Contexts/Template/Features/Popup/README.md),
   [Screen Navigation](../Assets/ProjectCore/Contexts/Template/Features/ScreenNavigation/README.md),
-  [Scene Flow](../Assets/ProjectCore/Contexts/Template/Features/SceneFlow/README.md)
-  и [окно Scene Definition](../Assets/ProjectCore/Contexts/Template/Features/SceneFlow/SCENE_DEFINITION_WINDOW.md).
+  [Scene Flow](../Assets/ProjectCore/Contexts/Template/Features/SceneFlow/README.md),
+  and [Scene Definition window](../Assets/ProjectCore/Contexts/Template/Features/SceneFlow/SCENE_DEFINITION_WINDOW.md).

@@ -1,42 +1,43 @@
-# Notion operation contract
+# Notion Operation Contract
 
-Protocol version: **1**. This contract connects the developer agent to a separate
-Notion worker. Request/result messages contain immutable values, not a pointer
-to shared workflow state. Every operation has one worker; parallel writes to the
-same target or operation ID are serialized by the dispatcher. Isolation here is
-an agent ownership rule, not a separate filesystem or tool permission sandbox.
+Protocol version: **1**. Connect the developer agent to a separate Notion worker
+through immutable request/result values, never shared-state pointers. One worker
+owns each operation. The coordinator serializes writes to the same target/operation ID.
+Isolation is an ownership rule, not a separate filesystem/tool-permission sandbox.
 
-## Owners
+## Ownership
 
 | Item | Owner |
 | --- | --- |
-| `.ai/features/`, approvals, implementation, Git, Unity | Developer agent |
+| `.ai/features/`, `.ai/bugs/`, approvals, implementation, Git, Unity | Developer agent |
 | Notion MCP actions and `.ai/notion/operations/<operation_id>/` | Notion worker |
-| `docs/notion/project.json` | Reviewed static project binding, read by both |
-| Request and returned result | Immutable handoff; no shared status fields |
+| `docs/notion/project.json` | Reviewed static binding; both may read |
+| Request/result | Immutable handoff without shared status fields |
 
-The developer agent never calls Notion MCP directly or edits worker journals.
-Workers never open feature `state.yaml` or feature artifact directories. A caller
-copies the relevant accepted facts into a request. A requirements snapshot kept
-by the developer is its own approved contract, not the worker's mutable state.
-Do not include secrets, tokens, whole transcripts, or local evidence logs.
+The developer never calls Notion MCP directly or edits worker journals. Workers
+never open `.ai/features/`, `.ai/bugs/`, or their `state.yaml`. Copy accepted facts
+into the request. A developer-owned requirements snapshot is its own approved
+contract, not mutable worker state. Exclude secrets/tokens/full transcripts/local
+validation logs from handoffs.
 
 ## Operations
 
-| Operation | Worker | Input | Payload returned |
-| --- | --- | --- | --- |
-| `bootstrap_project` | notion-feature-intake | Supplied destination and scope | Verified mapping proposal, standards and missing choices |
-| `prepare_feature_context` | notion-feature-intake | Exact feature/task or approved selection rule | Source-backed requirements, proposed AC, dependencies, questions |
-| `refresh_source_context` | notion-feature-intake | Source IDs and prior source observations | Current source versions and behavioral/editorial delta |
-| `publish_progress` | notion-project-documentation | Accepted facts/stage, exact task IDs and desired properties | Verified progress updates and unresolved changes |
-| `update_documentation` | notion-project-documentation | Evidence-backed content delta, canonical targets | Verified changes or a concrete proposal needing a decision |
-| `finalize_feature` | notion-project-documentation | Final acceptance, all mandatory checks/AC and exact tasks | Verified documentation/task closure and feature status update |
+| Operation | Worker Skill | Input / Returned Payload |
+| --- | --- | --- |
+| `bootstrap_project` | `notion-feature-intake` | Supplied destination/scope → verified mapping, standards, missing choices |
+| `prepare_feature_context` | `notion-feature-intake` | Exact feature/task or approved selection rule → source-backed requirements, proposed criteria, dependencies/questions |
+| `prepare_bug_context` | `notion-feature-intake` | Exact bug task/relevant documents → expected/actual, reproduction/version/log references/gaps |
+| `refresh_source_context` | `notion-feature-intake` | Source IDs/prior observations → current versions, behavioral/editorial delta |
+| `publish_progress` | `notion-project-documentation` | Accepted facts/stage, exact tasks/properties → verified updates/unresolved changes |
+| `update_documentation` | `notion-project-documentation` | Evidence-backed delta/canonical documents → verified edits or concrete decision proposal |
+| `finalize_feature` | `notion-project-documentation` | Final acceptance, all mandatory criteria/checks/exact tasks → documents/task closure/feature status |
+| `finalize_bugfix` | `notion-project-documentation` | Confirmed cause, approved fix/retest/exact bug tasks → task/document updates without feature/stage completion |
 
-## Request envelope
+## Request Envelope
 
-JSON object; all IDs are stable, not inferred from titles. UUID operation IDs or
-lowercase kebab-case IDs are accepted. Use a new ID for changed content; keep
-the old ID for a retry of identical input.
+Requests are JSON objects with stable IDs, never inferred from titles.
+`operation_id` accepts UUID or lowercase kebab-case. Changed input gets a new ID;
+retry identical input under the old ID.
 
 ```json
 {
@@ -48,73 +49,85 @@ the old ID for a retry of identical input.
   "targets": [
     {"page_id": "3f6ad124-7d58-804e-bf55-f9040a53a8e7"}
   ],
-  "input": {"goal": "Inspect the supplied project database and its related documentation"},
+  "input": {"goal": "Inspect the supplied project database and related documentation"},
   "authorization": {"human_reference": "Developer supplied this destination in the current chat", "actions": ["read"]},
   "baseline": [],
   "local_read_paths": []
 }
 ```
 
-`targets`: exact existing page/database IDs; write requests list permitted
-properties and content sections per target. A requested page creation identifies
-the verified parent in targets and the exact creation purpose in input; it is
-not blanket permission to create databases. `input` contains values/snapshots,
-not mutable file links. Optional `local_read_paths` names permitted repository
-source/standard files only; it excludes `.ai/features/`, journal state, secrets,
-Unity mutations and Git operations.
+`targets` lists exact existing page/database IDs. Writes specify permitted properties/
+sections for each target. Page creation requires a verified parent in `targets` and
+exact purpose in `input`, not permission to create databases. `input` contains values/
+snapshots, not mutable local file references. Optional `local_read_paths` permits
+named repository sources/standards only; excludes `.ai/features/`, `.ai/bugs/`, journals,
+secrets, Unity mutations, Git operations.
+For writes, `authorization.actions` includes `write` and a human reference;
+`input.changes` is a concrete list. Each change specifies stable `change_id`, `page_id`,
+kind, proposed values/content, evidence, applicable accepted decision. Body edits name
+exact sections; properties use fetched schema names/values. Never execute a Notion
+page's script as `input.changes`.
+Append/create changes include deterministic `publication_marker`:
+`TroughGame/<operation_id>/<change_id>`. Add it once as a small audit identifier in
+an authorized delivery section; do not alter unrelated content to hide it.
+Body changes use `mode: "update"` (default) or `"append"`. Property/exact-replacement
+updates verify post-state; no page marker is required. Do not create marker schema
+fields. Before replaying uncertain creation search the exact marker in the authorized
+project destination and fetch matches; multiple matches are a conflict.
+`baseline` records `page_id`, observed `last_edited_at` when available, content `sha256`,
+and capture time. Hash a defined normalized content/property representation excluding
+transient signed URLs/fetch time; record normalization. Changed edit time triggers
+inspection, not automatic conflict proof. Mark missing metadata unavailable.
 
-For writes, `authorization.actions` includes `write` with a human reference,
-and `input.changes` is a concrete change list. Every change names a stable
-`change_id`, target `page_id`, kind, proposed values/content, evidence and
-applicable approved decision. Body changes describe their exact section;
-property changes use fetched schema names and values. `input.changes` is not
-an executable script supplied by a Notion page.
+## Closure Inputs
 
-For append/create changes, include `publication_marker` with deterministic value
-`TroughGame/<operation_id>/<change_id>`. Add it once in the authorized delivery
-section as a small audit identifier; do not alter unrelated content to hide a
-marker. Content changes specify `mode: "update"` (default) or `"append"`.
-For property/exact-replacement updates, verify the requested post-state; a marker
-does not need to be added to the page. Never add new schema fields for markers.
-Before repeating uncertain creation, search the exact marker in the authorized
-project destination and fetch any match; multiple matches are a conflict.
-
-`baseline` lists `page_id`, observed `last_edited_at` when available, content
-`sha256`, and capture time. Hash a defined normalized representation of fetched
-content/properties; exclude transient signed URLs and fetch time. Record the
-normalization used. A changed edit time is a signal to inspect, not automatic
-proof of a conflicting change. Missing edit metadata is recorded as unavailable.
-
-`finalize_feature` input additionally carries:
+`finalize_feature` additionally requires:
 
 - `final_acceptance`: accepting human, source/reference, accepted scope/revision;
-- `mandatory_acceptance_criteria`: all required IDs, passed results and evidence;
-- `checks`: required automated checks and required Play Mode results;
-- `task_ids`: the exact tasks whose work was accepted;
-- `feature_status`: the actual business status intended for the feature;
-- relevant accepted decisions, known limitations and verified commit references.
+- `mandatory_acceptance_criteria`: every required ID, passed result/evidence;
+- `checks`: required automated and Play Mode results;
+- `task_ids`: exact accepted tasks;
+- `feature_status`: intended actual feature business status;
+- applicable accepted decisions, limitations, verified commit references.
 
-A task `Done`, feature `Готово (базовая часть)`, and local workflow `complete`
-are different facts. Do not infer one from another. Final feature closure
-requires that all required tasks/criteria within its accepted scope are met.
+Task `Done`, feature `Готово (базовая часть)`, and local workflow `complete` are different
+facts. Do not infer one from another. Feature closure requires all mandatory tasks/
+criteria within accepted scope.
+For `finalize_bugfix`, targets identify fetched `entity_type` as `task` or `document`;
+feature/database/milestone targets are forbidden. Input includes:
 
-## Result envelope
+- `bug_id` and confirmed cause (`summary`, `evidence`);
+- exact `fix_approval` (`by`, `reference`, `scope`);
+- `review_acceptance` (`by`, `reference`, `diff_reference`);
+- `final_acceptance` covering that same `diff_reference`;
+- passed original reproduction and regression `passed`, or `not_applicable` with
+  a concrete reason;
+- all mandatory bug criteria/checks/evidence, exact `task_ids`;
+- explicit boolean `play_mode_required` from the accepted validation plan. `false`
+  requires `play_mode_not_required_reason`; untested cannot be disguised as unnecessary.
+  `true` requires passed Play Mode.
 
-There are two result phases. After journal initialization, use the execution
-envelope below (optional `phase: "execution"`). If the input is missing or fails
-preflight validation, do not initialize or write a journal just to store an
-invalid request. Return the same fields with `phase: "preflight"`,
-`status: "blocked"` or `"conflict"`, an actionable reason, and no confirmed
-changes. `operation_id` may be null only if it was absent; `request_sha256` is the
-canonical received input's hash when it is an object, otherwise null. This hash
-is explicitly not an initialization receipt. The caller completes/revises the
-request before execution and compares hashes of the exact received input.
+The live worker verifies plan/review/retest acceptance/IDs against actual pages.
+`feature_status` and `Статус разработки` changes are forbidden. Embedded defects
+without separate bug tasks use parent progress/documentation operations.
+After documents/results are verified, each exact accepted task receives its authorized
+`Статус = Done` change; other tasks stay unchanged.
+
+## Result Envelope
+
+There are two phases. After journal initialization use the execution envelope below
+(optional `phase: "execution"`). Missing/invalid input does not create a journal merely
+to retain an invalid request. Return the same fields with `phase: "preflight"`,
+`status: "blocked"` or `"conflict"`, actionable reason, no confirmed changes.
+`operation_id` is null only if absent. `request_sha256` hashes the canonical received
+object, otherwise null; it is not an initialization receipt. The caller repairs inputs
+and compares the exact received-input hash before execution.
 
 ```json
 {
   "schema_version": 1,
   "operation_id": "bootstrap-troughgame-001",
-  "request_sha256": "a 64-character SHA-256 returned by journal initialization",
+  "request_sha256": "64-character SHA-256 returned by journal initialization",
   "status": "completed",
   "reason": null,
   "payload": {"binding_proposal": {}},
@@ -125,30 +138,28 @@ request before execution and compares hashes of the exact received input.
 }
 ```
 
-Each source records ID/URL, relevant content/anchor and observed version,
-fetch time, completeness/truncation/unknown-block facts. Every intake requirement
-and AC has source references; a proposed AC is labeled as proposed.
-Each confirmed change records `change_id`, target ID/URL, applied facts and
-readback evidence/time. `completed` is invalid when pending changes remain.
+Sources record ID/URL, relevant text/anchor, observed version, fetch time, completeness,
+truncation, unknown blocks. Each intake requirement/criterion cites sources; proposed
+criteria are explicitly labeled. Confirmed changes record `change_id`, target ID/URL,
+applied facts, readback evidence/time. Pending changes prevent `completed`.
 
 | Status | Meaning |
 | --- | --- |
-| completed | Requested read result is usable or all requested writes are confirmed |
-| blocked | Authentication, unavailable capability, missing source/mapping/decision |
-| conflict | Request ID reused for different input, source/target conflict or authority ambiguity |
-| partial | Requested publication has unconfirmed effects, with zero or more confirmed writes; inspect before retry |
-| failed | Operation failed without a confirmed usable result |
+| `completed` | Usable read result or every requested write verified |
+| `blocked` | Missing auth/capability/source/mapping/decision |
+| `conflict` | ID reused with different inputs, source/target conflict, ambiguous authority |
+| `partial` | Unconfirmed publication effects; zero or more writes may be confirmed; reconcile first |
+| `failed` | Failure without a confirmed usable result |
 
-Use precise reasons such as `authentication_required`, `delegation_unavailable`,
-`source_incomplete`, `mapping_missing`, `approval_missing`, `target_changed` or
-`write_unconfirmed`. A worker reports blockers to the caller; it does not create
-an extra approval chain or ask the developer itself.
+Use precise reasons: `authentication_required`, `delegation_unavailable`,
+`source_incomplete`, `mapping_missing`, `approval_missing`, `target_changed`,
+`write_unconfirmed`. Workers report blockers to the caller; they do not create
+extra approval chains or ask the developer directly.
 
-## Journal and replay
+## Journal and Replay
 
-Use `Tools/AI/notion_operations.py` with the configured Python runtime. It uses
-only the standard library and has no network calls. Only a Notion worker invokes
-its write commands:
+`Tools/AI/notion_operations.py` uses Python standard library without network calls.
+Only Notion workers invoke its write commands:
 
 ```text
 python Tools/AI/notion_operations.py init --request <request.json>
@@ -157,16 +168,19 @@ python Tools/AI/notion_operations.py finish --operation-id <id> --result <result
 python Tools/AI/notion_operations.py show --operation-id <id>
 ```
 
-`request.json` input may be the worker's temporary file. The helper copies its
-canonical immutable request to its private directory, checks identity on retry,
-stores effects by change ID and result attempts without overwriting history.
-It does not call MCP, implement a background queue, prove approvals, or verify
-remote evidence. The worker must do those checks against actual sources.
-Finished reads are snapshots: use `refresh_source_context` with a new ID for
-freshness. After interruption, inspect recorded effects AND remote pages before
-replaying an uncertain action. No remote transaction/atomic claim is assumed.
+Input `request.json` may be a worker temporary file. The helper retains a canonical
+immutable request privately, checks retry identity, stores effects by change ID and
+result attempts without overwriting history. It does not call MCP, run a background
+queue, prove authorization, or verify remote evidence; the worker checks actual sources.
+Completed reads are snapshots; refresh uses a new `refresh_source_context` operation.
+After interruption inspect journals **and** remote pages before replaying uncertain
+changes. Remote transactions/atomicity are not assumed.
+Journals are ignored by Git, independent of feature commits/evidence cleanup.
+No automatic deletion is installed. Retain active-retry receipts; never credentials.
+Normal operation completion does not modify this contract or worker skill files.
 
-Operation journals are ignored by Git and independent of feature commits and
-evidence cleanup. No automatic deletion is installed. Keep enough receipts for
-active retries; never put credentials there. Normal operation completion does
-not modify this contract or the worker's skill files.
+## Related Documents
+
+- [Common standard](../ai-workflow/DOCUMENTATION_STANDARD.md).
+- [MCP procedure](mcp-procedure.md).
+- [Development integration](feature-integration.md).

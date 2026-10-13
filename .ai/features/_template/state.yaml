@@ -1,7 +1,7 @@
-# Copy this directory to .ai/features/<feature-kebab-case>/ before starting a feature.
-# Keep this file factual and compact. Store decision rationale in decisions.md.
+# Перед запуском фичи скопируйте каталог в .ai/features/<feature-kebab-case>/.
+# Храните краткие факты; основания решений записывайте в decisions.md.
 
-workflow_version: "1.3-tg.1"
+workflow_version: "1.4-tg.1"
 feature: <feature-kebab-case>
 stage: requirements
 status: in_progress # in_progress | waiting_for_approval | blocked | failed | complete
@@ -13,13 +13,13 @@ repository:
   staged_paths: []
   unstaged_paths: []
   untracked_paths: []
-  ignored_paths: [] # developer-classified unrelated/generated paths; never stage
-  diff_fingerprint: null # deterministic fingerprint of the tracked staged + unstaged diff
-  stash_refs: [] # stash refs visible when the snapshot was captured
+  ignored_paths: [] # посторонние/сгенерированные пути по классификации разработчика; не добавлять в индекс
+  diff_fingerprint: null # детерминированный отпечаток отслеживаемых изменений в индексе и вне него
+  stash_refs: [] # ссылки stash, видимые при создании снимка
   reconciliation_status: unknown # verified | mismatch | needs_developer_decision | unknown
 
 checkpoints: []
-# Checkpoint shape:
+# Форма контрольной точки:
 # - id: CP-001
 #   subtask: FEAT-01
 #   kind: implementation # implementation | fix
@@ -52,7 +52,7 @@ plan:
     reference: null
 
 subtasks: []
-# Subtask shape:
+# Форма подзадачи:
 # - id: FEAT-01
 #   title: null
 #   status: pending # pending | waiting_for_architecture_approval | in_progress | waiting_for_review | waiting_for_play_mode | accepted | blocked
@@ -71,9 +71,9 @@ subtasks: []
 #     recorded_at: null
 
 approvals: []
-# Approval shape:
+# Форма согласования:
 # - id: APR-001
-#   gate: requirements # requirements | plan | architecture | scope_expansion | review | play_mode | plan_change | final_readiness
+#   gate: requirements # requirements | plan | architecture | scope_expansion | review | play_mode | plan_change | final_readiness | bug_diagnostic_plan | bug_fix_plan
 #   subject: null
 #   decision: approved # approved | rejected | changes_requested
 #   by: null
@@ -81,7 +81,7 @@ approvals: []
 #   reference: null
 
 pending_questions: []
-# Question shape:
+# Форма вопроса:
 # - id: Q-001
 #   question: null
 #   blocking_stage: null
@@ -89,16 +89,16 @@ pending_questions: []
 #   answer_reference: null
 
 decisions: []
-# Decision shape:
+# Форма решения:
 # - id: DEC-001
 #   title: null
 #   status: proposed # proposed | approved | rejected | superseded
 #   reference: decisions.md#dec-001
 
 interruptions: []
-# Optional correction-loop shape:
+# Необязательная форма цикла исправления:
 # - id: INT-001
-#   kind: architecture_feedback # architecture_feedback | review_correction | post_play_mode_bug | developer_requested_change
+#   kind: architecture_feedback # architecture_feedback | review_correction | post_play_mode_bug | developer_requested_change | defect_investigation
 #   origin_stage: subtask_architecture
 #   subtask: FEAT-01
 #   status: active # active | complete | return_pending | resumed
@@ -107,7 +107,7 @@ interruptions: []
 #   return_decision_reference: null
 
 validation_evidence: []
-# Evidence shape:
+# Форма подтверждения:
 # - id: VAL-001
 #   scope: null
 #   kind: compile # compile | test | editor | play_mode | build | manual
@@ -135,7 +135,7 @@ knowledge_promotion:
   status: pending # pending | not_applicable | waiting_for_decision | applying | complete
   reference: knowledge-promotion.md
   candidates: []
-# Candidate shape:
+# Форма кандидата:
 # - id: KNP-001
 #   status: proposed # proposed | approved | rejected | change_requested | applied
 #   target: null
@@ -152,6 +152,6 @@ evidence_cleanup:
 
 next_action:
   owner: agent # agent | developer
-  description: Analyze requirements and prepare the requirements approval gate.
+  description: Проанализировать требования и подготовить их согласование.
 
 last_updated_at: null

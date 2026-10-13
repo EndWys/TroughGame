@@ -1,70 +1,63 @@
 ---
 name: notion-feature-intake
-description: Read TroughGame Notion stage plans, features, tasks, and decisions and return a source-backed requirements handoff. Run as the dedicated Notion subagent for bootstrap, intake, or source refresh; do not develop code or approve requirements.
+description: Read TroughGame Notion plans, features, bug tasks and decisions and return source-backed requirements or bug context. Run as the dedicated Notion subagent for bootstrap, intake or source refresh; do not develop code or approve changes.
 ---
 
-# Notion Feature Intake
+# Notion Context Intake
 
-Execute one read-only Notion operation as a separate subagent. If invoked by
-the main agent, dispatch through `notion-project-coordination` first.
+## Purpose and Scope
 
-Read [the contract](../../../docs/notion/operation-contract.md),
-[project binding](../../../docs/notion/project.json), and
-[connector procedure](../../../docs/notion/mcp-procedure.md).
-For `bootstrap_project`, read [binding discovery](references/project-binding.md).
+Execute one read-only operation as a dedicated worker. Main-agent invocation must
+route through `notion-project-coordination`. Read the
+[contract](../../../docs/notion/operation-contract.md),
+[binding](../../../docs/notion/project.json),
+[MCP procedure](../../../docs/notion/mcp-procedure.md),
+[common standard](../../../docs/ai-workflow/DOCUMENTATION_STANDARD.md).
+For `bootstrap_project` read [project binding](references/project-binding.md).
 
-## Isolation
+## Ownership
 
-Do not read or edit `.ai/features/`, feature `state.yaml`, the caller's Git
-index, runtime code, Unity assets, or another operation's mutable journal.
-Read repository standards only when the request includes those allowed paths.
-Write only this operation's `.ai/notion/operations/<operation_id>/` journal.
-Return the result to the caller; do not send messages/comments to people or
-change remote pages, statuses, schema, or project policy.
+Do not read/write `.ai/features/`, `.ai/bugs/`, developer state, Git, runtime code,
+Unity assets, or another mutable journal. Read repository standards only from
+permitted input paths. Write only your `.ai/notion/operations/<operation_id>/`.
+Return results to the main agent; do not mutate remote pages/statuses/schema/policy
+or send messages/comments.
 
-## Prepare or refresh context
+## Operation Steps
 
-1. Validate the request and journal its immutable inputs using
-   `Tools/AI/notion_operations.py`. An existing operation ID with different
-   input is a conflict. For a completed operation, return its stored result;
-   source freshness requires a new refresh operation, not a silent rewrite.
-   Invalid/incomplete input returns a preflight result without a journal or
-   remote calls. Use the bundled Python runtime when Python is absent from PATH.
-   Wait for successful initialization before ANY live connector reads; do not
-   run initialization and remote fetches in parallel. If initialization fails,
-   resolve the runtime/input error first or return the preflight blocker.
-2. Discover the live connector tools and check access. On authentication or
-   unavailable capability, return a blocked result with the exact error; do
-   not repeatedly retry an unchanged connection failure.
-3. Search content with the Notion search tool; fetch exact supplied IDs and
-   related pages. Verify project membership, source completeness, relations,
-   stage/feature/task ownership, and status/property mappings. Search snippets
-   alone do not establish requirements or approvals.
-4. If a feature is named, use it. For an explicit "next ready task" request,
-   use the verified selection rule, active stage, priorities, dependencies,
-   current status, and full candidate set. If selection is ambiguous or the
-   query is incomplete, return candidates/questions instead of guessing.
-5. Read the feature's specification, related tasks, decisions and relevant
-   existing docs. Return goal, source-backed `RQ-*`, proposed measurable `AC-*`,
-   explicit exclusions, dependencies, confirmed decisions, and blocking
-   questions. Label source facts, proposed criteria, and uncertainty separately.
-   Do not introduce architecture, classes, gameplay rules or requirements that
-   are absent from the sources. Status `Ready` is not human contract approval.
-6. Include page IDs/URLs, selected task IDs, version observations (edit time
-   when exposed and normalized content hashes), source excerpts/anchors, and
-   completeness metadata. Compare a refresh with the supplied baseline and
-   separate behavior/scope changes from editorial changes. Do not change the
-   caller's approved contract yourself.
-7. Record and return the result envelope. Missing material pages, unresolved
-   authority conflicts, or truncated required content cannot be reported as a
-   usable completed contract. Return the partial facts with `blocked` or
-   `conflict` and an actionable reason.
+1. Validate the request and initialize `Tools/AI/notion_operations.py` journal.
+   Same ID/different input is a conflict; completed operations return saved results.
+   Fresh reads need new refresh requests. Invalid/incomplete input returns `preflight`
+   without journal/MCP. Use bundled Python when absent from PATH. Await successful
+   initialization before any MCP read; do not run initialization and fetch concurrently.
+2. Discover current tools/check access. Auth/capability failures return exact reasons;
+   do not repeatedly test an unchanged connection.
+3. Every content search uses Notion search; fetch exact IDs/related pages directly.
+   Verify project membership, completeness, relations, owners, and schemas. Search
+   snippets do not prove requirements/approval.
+4. Use the supplied feature. If asked to choose next work, verify stage, selection
+   rule, priority/order, dependencies, statuses, complete candidate set. Ambiguity/
+   incomplete selection returns candidates/questions. `Ready` is not contract approval;
+   reading does not claim a task.
+5. Read specifications/tasks/decisions/applicable documents. Return goal, supported
+   `RQ-*`, proposed observable acceptance criteria (`AC-*`), exclusions/dependencies/
+   accepted decisions/blocking questions. Distinguish fact/proposal/unknown. Do not
+   invent missing mechanics/classes/architecture.
+6. Include task/source IDs/URLs, edit times when exposed, normalized hashes, sections/
+   excerpts/completeness metadata. Refresh compares the supplied baseline and separates
+   behavior/scope delta from editorial changes. Do not revise the accepted developer contract.
+7. Record/return the contract result. Missing material sources, authority conflicts,
+   or truncated mandatory content prevent usable `completed`; return findings with
+   `blocked`/`conflict` and a concrete reason.
 
-## Bootstrap result
+## Special Results
 
-Return verified IDs, schema/status mappings, relevant standards, selection-rule
-options, write-scope candidates, and uncertainties as a binding proposal.
-Only the caller applies an agreed proposal to static `docs/notion/project.json`.
-You do not own that configuration as mutable runtime state. Existing Notion
-skills may be reused when actually available and compatible with this boundary;
-never assume an uninstalled skill or copy an unrelated workflow into the task.
+`bootstrap_project` returns verified IDs/schemas/statuses, standards, selection/write
+scope options, and unknowns. The main agent applies the accepted `project.json`
+proposal; configuration is not worker state. Use actually available compatible
+Notion skills; do not assume missing installations or copy an unrelated process.
+`prepare_bug_context` reads the exact bug task and relevant sources: authoritative
+expected behavior, reported actual behavior, reproduction/version/peer roles/log
+references/dependencies/source versions/gaps. It is not diagnosis/fix or a new-feature
+contract. Do not create bug properties/databases, close tasks, or open `.ai/bugs/`;
+diagnosis belongs to the developer.

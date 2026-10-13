@@ -1,0 +1,4 @@
+interface:
+  display_name: "TroughGame: Диагностика багов Unity"
+  short_description: "Диагностика, согласованные правки и повторные проверки"
+  default_prompt: "Используй $unity-bugfix: исследуй дефект TroughGame и следуй согласованиям диагностики и фикса."
