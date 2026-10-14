@@ -1,7 +1,7 @@
 # Перед запуском фичи скопируйте каталог в .ai/features/<feature-kebab-case>/.
 # Храните краткие факты; основания решений записывайте в decisions.md.
 
-workflow_version: "1.4-tg.1"
+workflow_version: "1.5-tg.1"
 feature: <feature-kebab-case>
 stage: requirements
 status: in_progress # in_progress | waiting_for_approval | blocked | failed | complete

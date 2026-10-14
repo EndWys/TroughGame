@@ -10,6 +10,7 @@ owning document when a rule changes; other documents reference that owner.
 | Contexts/features, ownership, dependencies, DI, initialization | [ARCHITECTURE_RULES.md](ARCHITECTURE_RULES.md) |
 | Owner folders, categories, suffixes, naming, style, resource names | [CONVENTIONS.md](CONVENTIONS.md) |
 | Authored gameplay scene hierarchy | [SCENE_HIERARCHY_STANDARD.md](SCENE_HIERARCHY_STANDARD.md) |
+| Runtime UI Toolkit presentation (MVVM default, scoped MVP), binding and lifetime | [UI_TOOLKIT_STANDARD.md](UI_TOOLKIT_STANDARD.md) |
 | Validator commands, diagnostic codes, fixtures, analysis limits | [Tools/Architecture/README.md](../Tools/Architecture/README.md) |
 | Agent instructions/mandatory checks | [AGENTS.md](../AGENTS.md) |
 | Instruction/skill/template presentation and language | [DOCUMENTATION_STANDARD.md](ai-workflow/DOCUMENTATION_STANDARD.md) |

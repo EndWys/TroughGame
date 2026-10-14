@@ -28,7 +28,7 @@ try {
     $null = git -C $fixtureRoot init --quiet
     Assert-True ($LASTEXITCODE -eq 0) 'Could not initialize fixture repository.'
     Set-Content -LiteralPath (Join-Path $fixtureFeature 'state.yaml') -Encoding utf8 -Value @'
-workflow_version: "1.4-tg.1"
+workflow_version: "1.5-tg.1"
 feature: smoke-test
 stage: requirements
 status: in_progress

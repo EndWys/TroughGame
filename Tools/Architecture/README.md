@@ -135,6 +135,13 @@ stateful service, or lifecycle participant remains feature-owned.
 
 ## Static Analysis Limits
 
+- `Other/ViewModels` and `Other/Presenters` accept concrete `*ViewModel` and
+  `*Presenter` presentation objects respectively under
+  context/feature ownership. Suffix checks do not prove MVVM responsibilities,
+  plain C# inheritance, per-view lifetime or approval of an MVP choice; review these against
+  [UI_TOOLKIT_STANDARD.md](../../docs/UI_TOOLKIT_STANDARD.md). ViewModels are not
+  passive Models or container-lifetime Managers; the same applies to Presenters.
+
 - The naming vocabulary is defined in `docs/CONVENTIONS.md`. Contract and
   implementation suffixes need not match, subject interfaces may omit a role
   suffix, and nested implementation types do not follow top-level category
@@ -170,6 +177,13 @@ the ProjectContext and third-party exceptions, and SceneDefinition placement.
 Own non-C# resources under ProjectCore are checked; Plugins and ThirdParty are
 excluded. C# fixture metadata is not required by this resource stage. Existing
 SDK roots outside ProjectCore are not relocated or treated as project-owned content.
+
+Common UI resources use root `Assets/ProjectCore/Assets` semantic folders from
+[CONVENTIONS](../../docs/CONVENTIONS.md#common-ui-resource-layout). Font source
+assets (`.ttf`, `.otf`) require `Font_` naming and `Assets/Fonts` placement.
+Resource fixtures cover the shared root layout and invalid names/folders.
+Cross-context UI references and common-resource consumers still require reference
+inspection/review; this path validator does not enforce the dependency graph.
 
 | Rule | Check |
 | --- | --- |

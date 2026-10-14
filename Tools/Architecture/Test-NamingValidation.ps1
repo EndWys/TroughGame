@@ -71,6 +71,21 @@ Add-Case 'Definition exception requires the corresponding BaseDefinition' `
     'Assets/ProjectCore/Contexts/Template/Features/SceneFlow/Scripts/DataHolders/Definitions/SceneDefinitionT.cs' `
     'public abstract class SceneDefinition<TScene, TSettings> : OtherDefinition' @('NAME003')
 
+foreach ($owner in @('Scripts', 'Features/Fixture/Scripts')) {
+    Add-Case "$owner accepts a per-view ViewModel" `
+        "Assets/ProjectCore/Contexts/Template/$owner/Other/ViewModels/FixtureViewModel.cs" `
+        'public sealed class FixtureViewModel'
+    Add-Case "$owner rejects the wrong ViewModels suffix" `
+        "Assets/ProjectCore/Contexts/Template/$owner/Other/ViewModels/FixtureModel.cs" `
+        'public sealed class FixtureModel' @('SUFFIX001')
+    Add-Case "$owner accepts a per-view Presenter" `
+        "Assets/ProjectCore/Contexts/Template/$owner/Other/Presenters/FixturePresenter.cs" `
+        'public sealed class FixturePresenter'
+    Add-Case "$owner rejects the wrong Presenters suffix" `
+        "Assets/ProjectCore/Contexts/Template/$owner/Other/Presenters/FixtureController.cs" `
+        'public sealed class FixtureController' @('SUFFIX001')
+}
+
 try {
     New-Item -ItemType Directory -Path $fixtureRoot | Out-Null
     for ($index = 0; $index -lt $cases.Count; $index++) {

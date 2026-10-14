@@ -27,6 +27,18 @@ adding a competing implementation. `ObjectFactoryFeature` installs the
 context-local `IClassFactory`; runtime construction with injected dependencies
 uses that context's factory.
 
+Runtime UI work uses [unity-ui-toolkit](../.agents/skills/unity-ui-toolkit/SKILL.md)
+and [the runtime UI standard](UI_TOOLKIT_STANDARD.md). Inspect Template
+ScreenNavigation/Popup READMEs, typed definitions, scene catalogs and their
+UIDocument hosts before adding a screen/popup. MVVM is the default; justified MVP
+uses the same architecture approval. Feature-owned per-view ViewModels/Presenters
+use `Scripts/Other/ViewModels` or `Scripts/Other/Presenters` respectively;
+resource reuse searches actual owning-feature
+and root common UI assets under `Assets/ProjectCore/Assets` according to
+[the common resource layout](CONVENTIONS.md#common-ui-resource-layout).
+Concrete-context UI resources stay private to that context; Template remains
+reusable. This specialization reuses the current feature/bug host.
+
 Startup path:
 
 ```text

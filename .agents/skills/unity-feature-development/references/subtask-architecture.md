@@ -41,6 +41,15 @@ Use the lifecycle reference where applicable.
 
 ## Approval and Result
 
+For runtime UI use [unity-ui-toolkit](../../unity-ui-toolkit/SKILL.md) and its
+[architecture forms](../../unity-ui-toolkit/references/response-formats.md).
+Show hierarchy, asset search/inventory, selected presentation/data/input contracts, per-view
+lifetime, scaling and collection strategy as applicable. Include these in this
+one approval; do not add a second architecture gate. The approved implementation
+sequence includes visual prototype acceptance before complete functional wiring.
+MVVM is the default; an MVP proposal includes concrete benefit, the compact MVVM
+alternative, View contract and one state/action owner in this same approval.
+
 Do not defer material owners/contracts/lifecycle prerequisites/Unity objects/
 integration boundaries to implementation. Missing evidence requires a technical
 question/experiment and a stop. The developer sees scope, objects, behavior,

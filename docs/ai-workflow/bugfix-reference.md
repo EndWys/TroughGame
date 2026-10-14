@@ -10,6 +10,11 @@ fix; uncertainty leads to approved data collection until proven cause or a concr
 
 ## Stages and Gates
 
+UI-related defects use [unity-ui-toolkit](../../.agents/skills/unity-ui-toolkit/SKILL.md)
+inside the same case/host state. Its technical forms supplement diagnostic/fix
+proposals and rendered/binding/input checks. Preserve this workflow's causal and
+approval gates; targeted corrections do not require a complete new screen design.
+
 | Stage | Deliverable | Decision / Transition |
 | --- | --- | --- |
 | Intake | Expected/actual, authority, steps, version/roles/logs | Blocking gaps only |

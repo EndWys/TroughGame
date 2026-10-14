@@ -6,7 +6,7 @@ Product documents are under `docs/Project docs/`; read the document selected by
 the developer for each feature. Their presence alone does not approve a feature
 or resolve a product decision.
 
-Verified during workflow adaptation on 2026-10-12:
+Technology snapshot verified on 2026-10-12; runtime UI workflow added on 2026-10-14:
 
 | Concern | Existing technology / source |
 | --- | --- |
@@ -15,6 +15,7 @@ Verified during workflow adaptation on 2026-10-12:
 | Networking | Photon Fusion, `GameCore/Features/NetworkEntities` |
 | Async | UniTask, `Packages/manifest.json` |
 | Rendering / input | URP and Input System, `Packages/manifest.json` |
+| Runtime UI | UI Toolkit with Template ScreenNavigation/Popup; [presentation standard](UI_TOOLKIT_STANDARD.md) (MVVM default, approved MVP choices) and [UI skill](../.agents/skills/unity-ui-toolkit/SKILL.md) |
 | Editor automation | `com.unity.pipeline` `0.7.0-exp.1`; installed Unity CLI |
 | Tests | Unity Test Framework; existing Editor and Play assemblies in Template |
 | Static verification | `Tools/Architecture/Validate-Architecture.ps1 -Mode Strict` |

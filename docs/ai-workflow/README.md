@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Feature workflow version: **1.4-tg.1**. Bugfix workflow version: **1.0**.
+Feature workflow version: **1.5-tg.1**. Bugfix workflow version: **1.0**.
 Follow the [common standard](DOCUMENTATION_STANDARD.md); version compatibility is
 recorded in [CHANGELOG.md](CHANGELOG.md).
 
@@ -10,6 +10,7 @@ recorded in [CHANGELOG.md](CHANGELOG.md).
 | --- | --- | --- |
 | New feature | [workflow-reference.md](workflow-reference.md) | [unity-feature-development](../../.agents/skills/unity-feature-development/SKILL.md) |
 | Standalone/embedded bug | [bugfix-reference.md](bugfix-reference.md) | [unity-bugfix](../../.agents/skills/unity-bugfix/SKILL.md) |
+| Runtime UI specialization | [UI_TOOLKIT_STANDARD.md](../UI_TOOLKIT_STANDARD.md) | [unity-ui-toolkit](../../.agents/skills/unity-ui-toolkit/SKILL.md) |
 | Notion sources/publication | [notion/README.md](../notion/README.md) | Coordination, intake, and publication through separate workers |
 
 ## Invocation and Roles
@@ -23,6 +24,13 @@ same FEAT/interruption/state. The developer approves requirements, plan, archite
 diff, Play Mode, and readiness. The agent works between gates. Accepted subtasks
 commit after required passed checks/Play Mode. Push/merge/release need separate
 requests. Notion owns independent journals and never receives development state.
+
+Use $unity-ui-toolkit for a screen, popup, widget or UI-related defect. It operates
+inside the current feature/bugfix task with no independent state. Its consolidated
+hierarchy/resource/presentation plan uses the host approval; MVVM is the default
+and justified MVP choices are accepted there. New UI adds visual prototype
+acceptance before complete logic. Stage-specific response forms show architecture,
+changes, evidence and the next action. Tooling installation does not start a task.
 
 ## Files and Tools
 
