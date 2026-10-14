@@ -15,6 +15,12 @@ accepted and visible. Preserve `.meta`, asset paths, and assemblies.
 
 ## Checks and Acceptance
 
+For runtime UI changes use [UI verification](../../unity-ui-toolkit/references/validation.md)
+and its [stage forms](../../unity-ui-toolkit/references/response-formats.md).
+Retest the actual affected resolution/content/input/lifecycle conditions and
+binding/collection mechanism. Source inspection is not a rendered/runtime pass.
+Keep the exact approved bug correction and the existing causal/acceptance gates.
+
 Run applicable AGENTS checks and `Tools/AI/validate-unity.ps1` with narrow modes/filters
 and actual evidence. Repeat original/adjacent behavior. Network/lifecycle fixes cover
 applicable roles and spawn/despawn/scene/reuse transitions. Compare performance in

@@ -27,6 +27,12 @@ A FEAT link does not hide material API/serialization/lifecycle choices.
 
 ## Implementation and Review
 
+For runtime UI extend the applicable handoff with
+[UI stage forms](../../unity-ui-toolkit/references/response-formats.md): hierarchy,
+resources, accepted presentation pattern/synchronization/lifetime, visual prototype comparison and resolution/input
+evidence. Visual prototype review accepts only that revision's presentation;
+the complete subtask diff still needs this workflow's final review and Play Mode.
+
 Start with delivered behavior. Group by area while accounting for every changed
 production file/Unity asset.
 

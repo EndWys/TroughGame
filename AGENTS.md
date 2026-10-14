@@ -68,6 +68,26 @@ git diff --check
   higher-priority instructions authorize delegation. The main agent owns state,
   Git, Unity mutations, and developer communication.
 
+## Runtime UI Toolkit
+
+- Use `.agents/skills/unity-ui-toolkit/SKILL.md` for runtime UI Toolkit screens,
+  popups, reusable UI elements and UI-related defects. Use installed `unity:ui-uitk`
+  for technical guidance and verify APIs against the installed project version.
+- Follow `docs/UI_TOOLKIT_STANDARD.md`: MVVM by default, with MVP only as an
+  explained and accepted architecture choice. Use one plain C# per-view owner of
+  presentation state/actions (ViewModel or Presenter), existing DI/factory and
+  navigation/popup lifetimes. No global presentation singleton or Unity UI in Shared.
+- Approve hierarchy, resources and presentation architecture together through the host
+  gate. For new UI accept the visual prototype before complete functional wiring;
+  final diff review and required Play Mode/retest remain distinct.
+- Common game UI resources belong to `Assets/ProjectCore/Assets`, grouped as
+  defined in `docs/CONVENTIONS.md#common-ui-resource-layout`. Context-private UI
+  assets are not direct dependencies of other contexts; Template remains reusable.
+  Inspect owning-feature and root common assets before requesting resources.
+  Generate only agreed prototype art and identify temporary assets explicitly.
+- Keep the current feature/bug host state and checkpoint. UI specialization creates
+  no independent state or subagent; targeted defects preserve the bugfix gates.
+
 ## Notion Documentation
 
 - Dispatch through `.agents/skills/notion-project-coordination/SKILL.md`.

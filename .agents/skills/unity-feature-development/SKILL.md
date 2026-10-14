@@ -9,7 +9,7 @@ description: Run TroughGame's workflow for a new feature from approved requireme
 
 The agent owns state, research, implementation, and available checks within
 approved scope. The developer accepts product decisions, architecture, Play Mode
-results, and final readiness. New states use `1.4-tg.1`.
+results, and final readiness. New states use `1.5-tg.1`.
 Use for a new feature from agreed requirements or an explicit recorded continuation.
 Standalone bugs, research, reviews, tooling setup, and existing-feature improvements
 do not create feature state. Reopen a completed workflow only when explicitly requested.
@@ -28,6 +28,7 @@ Developer instructions and existing project standards take precedence.
 | Prepare requirements | [requirements-contract.md](references/requirements-contract.md) |
 | Research and decomposition | [project-research.md](references/project-research.md) |
 | Local architecture | [subtask-architecture.md](references/subtask-architecture.md) |
+| Runtime UI screen, popup, widget or UI-related defect | [unity-ui-toolkit](../unity-ui-toolkit/SKILL.md) |
 | Lifecycle, UI, pooling, RPC, coroutine, UniTask | [unity-lifecycle-safety.md](references/unity-lifecycle-safety.md) |
 | Code audit | [ai-code-audit.md](references/ai-code-audit.md) |
 | Stage handoff and developer response | [stage-deliverables.md](references/stage-deliverables.md), [response-style.md](references/response-style.md) |
@@ -53,6 +54,14 @@ sync fields to feature YAML. Refresh source observations before resume/implement
 material changes require an approved revision.
 
 ## Start and Resume
+
+For runtime UI, use `unity-ui-toolkit` in this agent and the same FEAT/state.
+Its hierarchy/resources/presentation proposal extends the local architecture approval;
+new UI visual prototype acceptance occurs inside implementation before complete
+logic. It does not replace final diff review or Play Mode. Preserve existing host
+approval/state shapes; see its workflow integration for subject/revision records.
+Older active states require an explicit compatibility decision before adding the
+new prototype gate. Do not silently update their workflow version.
 
 1. Choose a stable `feature-kebab-case`.
 2. Load `.ai/features/<feature>/state.yaml`; if absent, use `.ai/features/_template/`,

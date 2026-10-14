@@ -2,7 +2,7 @@
 
 ## Purpose and Scope
 
-Version **1.4-tg.1**. Use for a new feature from agreed requirements or an explicit
+Version **1.5-tg.1**. Use for a new feature from agreed requirements or an explicit
 continuation of a recorded feature. Standalone bugs, research, reviews, tooling setup,
 and ordinary existing-code improvements do not create feature state.
 The user selected staged approvals and automatic local accepted-subtask commits after
@@ -34,6 +34,17 @@ acceptance criteria (AC) prove behavior while audit separately finds concrete ri
   Never hide unavailable audit or attention findings.
 
 ## Stages and Deliverables
+
+Runtime UI uses [unity-ui-toolkit](../../.agents/skills/unity-ui-toolkit/SKILL.md)
+inside the same host FEAT/state. The UI hierarchy/resources/presentation plan extends the
+architecture gate; new UI visual prototype acceptance precedes complete logic
+within implementation. It never accepts the complete subtask diff. Final review,
+Play Mode and checkpoint rules remain. MVVM is the default; the existing architecture
+gate can accept a justified MVP choice with exact responsibilities and synchronization.
+No extra gate is added. See its
+[integration contract](../../.agents/skills/unity-ui-toolkit/references/workflow-integration.md).
+For older active versions, agree gate compatibility explicitly before adopting
+the new prototype step; do not silently migrate state.
 
 | Stage | Deliverable / Decision |
 | --- | --- |

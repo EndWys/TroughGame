@@ -1,5 +1,26 @@
 # Workflow Version History
 
+## 1.5-tg.1 — 2026-10-14
+
+- Added unity-ui-toolkit for runtime screen/popup/widget design, resources,
+  responsive layout, MVVM, data/input binding and dynamic collections.
+- Runtime UI uses MVVM by default; MVP requires a concrete benefit and acceptance
+  through the existing architecture gate. Each presentation unit has one state/
+  action owner, with common DI/navigation/lifecycle and verification rules.
+- Per-view Other/ViewModels and Other/Presenters naming and validation support.
+- Root common UI owner is `Assets/ProjectCore/Assets`, grouped by resource type;
+  context-private UI is not reused directly across concrete contexts. Defined
+  search/promotion/change rules and font naming/folder checks.
+- Stage-specific UI response forms describe hierarchy, architecture/resources,
+  exact changes, evidence and next actions in the developer's request language.
+- UI specialization reuses host state/approvals/checkpoint; Notion stays isolated.
+  Consolidated UI architecture/resource approval extends the existing host gate.
+- New UI adds visual prototype acceptance before complete logic. This acceptance
+  does not replace final diff review/Play Mode. Targeted bugs keep v1.0 bugfix gates.
+
+New feature states use 1.5-tg.1. Older active states require an explicit gate
+compatibility decision before adopting the prototype step; no automatic migration.
+
 ## 1.4-tg.1 — 2026-10-12
 
 - Added unity-bugfix v1.0: causal analysis, likelihood/complexity estimates, approved

@@ -25,6 +25,7 @@ for Editor operations and the scene hierarchy standard for scenes.
 | Start/resume, standalone/embedded | [state-and-integration.md](references/state-and-integration.md) |
 | Every handoff/approval | [response-formats.md](references/response-formats.md) |
 | Implementation, checks, commit, Notion | [verification-and-delivery.md](references/verification-and-delivery.md) |
+| UI layout, input, binding, navigation, lifetime or collection defects | [unity-ui-toolkit](../unity-ui-toolkit/SKILL.md) |
 
 ## Stages and Gates
 
@@ -46,6 +47,12 @@ experiment needs revision. Complete available authorized preparation before aski
 Silence and compilation success prove neither consent nor original-case remediation.
 
 ## Stop Conditions
+
+For runtime UI defects use `unity-ui-toolkit` in this agent, with this workflow's
+case/host state. Add UI-specific context, probes, exact hierarchy/binding changes
+and render/input evidence. Its technical forms supplement causal analysis and
+approved diagnostic/fix plans; do not force a whole-screen prototype/redesign or
+unrelated MVVM migration. This workflow retains review/retest and delivery gates.
 
 Diagnostic approval permits described probes, not a production fix. Fix approval
 permits the selected correction, not hypothesis investigation or unrelated cleanup.

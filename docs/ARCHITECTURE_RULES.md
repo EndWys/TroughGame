@@ -821,6 +821,24 @@ behavior continue to follow this document's dependency, DI, and lifecycle
 rules. In particular, Services must not depend directly on Views; integration
 uses the appropriate public presentation contract.
 
+## Runtime UI Toolkit
+
+Use [UI_TOOLKIT_STANDARD.md](UI_TOOLKIT_STANDARD.md) for runtime UI presentation:
+MVVM by default and MVP only as an explained, accepted architecture choice.
+It owns ViewModel/Presenter boundaries, synchronization and presentation lifetime.
+Domain services do not depend on Views, ViewModels or Presenters. Construct per-view presentation objects through
+the existing DI/factory flow; do not bind them as global scene/application
+singletons. Reuse Template ScreenNavigation/Popup definitions, catalogs and hosts.
+Existing UI migration requires approved scope. Folder/suffix ownership remains
+with CONVENTIONS.
+
+Context-owned UI resources are consumed within their owning context. Cross-context
+UI reuse uses root-owned common resources under `Assets/ProjectCore/Assets` or
+project-independent Template resources. Do not reference another concrete
+context's private UI assets directly; promote genuinely common resources through
+an approved ownership change. Root common UI must not depend on concrete-context
+UI assets. Resource instances may still use reusable Template types.
+
 ## Architecture Validation
 
 Use Strict validation for local verification and CI. It returns a nonzero

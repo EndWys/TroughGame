@@ -505,6 +505,8 @@ function Test-FeatureScriptPath {
             StateMachines = @('StateMachine')
             States = @('State')
             Strategies = @('Strategy')
+            ViewModels = @('ViewModel')
+            Presenters = @('Presenter')
         }
         Static = @{
             Constants = @('Constants', 'Keys', 'Defaults')
@@ -718,6 +720,8 @@ function Test-ContextSharedScriptPath {
                 StateMachines = @('StateMachine')
                 States = @('State')
                 Strategies = @('Strategy')
+                ViewModels = @('ViewModel')
+                Presenters = @('Presenter')
             }
 
         }
@@ -1081,6 +1085,8 @@ if (Test-Path -LiteralPath $assetRoot) {
             '.anim' { '^Animation_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
             '.mat' { '^Material_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*$' }
             '.png' { '^(Sprite|Reference)_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.ttf' { '^Font_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
+            '.otf' { '^Font_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
             '.uxml' { '^(Document|Screen|Popup|Widget|LoadingScreen)_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
             '.uss' { '^(Document|Screen|Popup|Widget|LoadingScreen)_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
             '.tss' { '^Theme_[A-Z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$' }
@@ -1097,6 +1103,8 @@ if (Test-Path -LiteralPath $assetRoot) {
             '.anim' { '/Assets/Animations/' }
             '.mat' { '/Assets/Materials/|/Assets/Rendering/' }
             '.png' { '/Assets/(Sprites|Animations/Frames|References)/' }
+            '.ttf' { '/Assets/Fonts/' }
+            '.otf' { '/Assets/Fonts/' }
             '.uxml' { '/Assets/UI/UXML/' }
             '.uss' { '/Assets/UI/USS/' }
             '.tss' { '/Assets/UI/USS/' }

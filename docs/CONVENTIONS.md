@@ -40,7 +40,7 @@ adapt reusable feature-framework behavior to its external contracts.
 <Feature>/
   Assets/                   # non-C# resources owned by the feature
     Configs/ Catalogs/ Definitions/
-    Prefabs/ Materials/ Sprites/ Animations/ InputActions/ Scenes/ References/
+    Prefabs/ Materials/ Sprites/ Fonts/ Animations/ InputActions/ Scenes/ References/
     UI/
       UXML/ USS/ PanelSettings/
   Scripts/
@@ -55,7 +55,7 @@ adapt reusable feature-framework behavior to its external contracts.
       Spawners/ Systems/
     Other/
       Adapters/ Builders/ Commands/ Converters/ Decorators/ Editor/
-      Mappers/ Processors/ StateMachines/ States/ Strategies/
+      Mappers/ Presenters/ Processors/ StateMachines/ States/ Strategies/ ViewModels/
     Static/
       Constants/ Errors/ Extensions/ Utilities/ Validation/
     Components/
@@ -308,10 +308,17 @@ view, or special category.
 | Decorators | `Decorator` | Wraps a contract while preserving it. |
 | Editor | `Editor`, `EditorWindow`, or `AttributeDrawer` | Editor-only inspectors/tooling, windows, or Unity property drawers respectively. The same suffixes apply to context-owned and feature-owned scripts. |
 | Mappers | `Mapper` | Maps fields between model/data/DTO/view forms. |
+| Presenters | `Presenter` | Plain C# per-view presentation owner in approved MVP; explicitly updates a narrow View contract. |
 | Processors | `Processor` | Performs one focused pipeline step. |
 | StateMachines | `StateMachine` | Owns bounded transitions and active state. |
 | States | `State` | One behavior state used by a state machine. |
 | Strategies | `Strategy` | Replaceable algorithm selected by caller or DI. |
+| ViewModels | `ViewModel` | Plain C# presentation behavior owned by one view instance; constructor-injected dependencies do not make it a container-lifetime Manager. |
+
+ViewModels and Presenters follow [the runtime UI standard](UI_TOOLKIT_STANDARD.md). They are not
+passive `DataHolders/Models`, `MonoBehaviour`/`VisualElement` components, or scene
+singletons. Their contracts and abstract bases belong in `Scripts/Abstract`.
+MVVM is the default; Presenter placement does not itself approve the MVP exception.
 
 `MonoBehaviour` state machines and states belong in `Components/StateMachines` and
 `Components/States`; `Other/StateMachines` and `Other/States` contain only plain C#
@@ -573,6 +580,7 @@ Keep related overloads together. Do not use regions to hide unrelated members.
 - ScriptableObject assets: `Config_<OwnerContext>_<FeatureOrRole>_<Detail>`.
 - `CreateAssetMenu.menuName`: `SO/<Context>/<Feature>/<Detail>`.
 - Sprites: `Sprite_<FeatureOrRole>_<ActionOrPurpose>[_<Direction>][_<Frame>]`.
+- Fonts: `Font_<FeatureOrRole>_<Purpose>` in `Assets/Fonts`.
 - Reference images: `Reference_<Context>_<Purpose>` in `Assets/References`.
 - Animation clips: `Animation_<Feature>_<Action>[_<Direction>]`. Existing combined
   action/direction names remain compatible; normalize them when editing animation content.
@@ -583,7 +591,8 @@ Keep related overloads together. Do not use regions to hide unrelated members.
   shared styles may use `Document_<Owner>_<Feature>_<Purpose>`. TSS uses `Theme_`.
 - Keep feature-owned resources in `<Feature>/Assets`, grouped by resource type.
 - Context composition resources live in `Contexts/<Context>/Assets`; project-wide
-  rendering and default input settings live in `Assets/ProjectCore/Assets`.
+  rendering, default input settings and common game UI resources live in
+  `Assets/ProjectCore/Assets`.
 - Ownership of a resource instance can differ from ownership of its reusable C#
   type. Application catalogs belong to `Project/Assets/Catalogs`; the scene's
   gameplay input belongs to that scene context. Reusable Template defaults stay in Template.
@@ -596,3 +605,29 @@ Keep related overloads together. Do not use regions to hide unrelated members.
 - Move Unity `.meta` files together with renamed assets.
 - Use `FormerlySerializedAs` or `MovedFrom` when serialized fields/types are
   renamed.
+
+## Common UI Resource Layout
+
+The owner of game UI resources shared across contexts is
+`Assets/ProjectCore/Assets`, not any concrete context. Use semantic resource
+folders with a CommonUI group:
+
+```text
+Assets/ProjectCore/Assets/
+  UI/
+    UXML/CommonUI/
+    USS/CommonUI/          # shared tokens, component styles and themes
+    PanelSettings/        # shared panel policies only when actually needed
+  Sprites/CommonUI/
+    Buttons/ Icons/ Backgrounds/
+  Fonts/CommonUI/
+```
+
+Create only needed directories. Examples: `Widget_CommonUI_Button.uxml`,
+its `Widget_CommonUI_Button.uss`, `Document_CommonUI_Tokens.uss`,
+`Theme_CommonUI_Runtime.tss`, `Sprite_CommonUI_Button_Primary.png`, and
+`Font_CommonUI_Body.ttf`. These are naming examples, not existing assets.
+Feature-specific screens/art and temporary prototype resources stay with their
+owning feature. Reusable project-independent Template assets retain their owner.
+Promotion and shared-resource change rules belong to
+[the runtime UI standard](UI_TOOLKIT_STANDARD.md#common-ui-resources).
