@@ -148,6 +148,11 @@ GameObject:
   - component: {fileID: 930001003}
   - component: {fileID: 1058331315508964277}
   - component: {fileID: 3994379520493875385}
+  - component: {fileID: 8692851226458253613}
+  - component: {fileID: 858513717818811587}
+  - component: {fileID: 6958273542947100757}
+  - component: {fileID: 4239369989050134497}
+  - component: {fileID: 3002148073478740213}
   m_Layer: 0
   m_Name: Prefab_Player_NetworkEntity
   m_TagString: Untagged
@@ -256,7 +261,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerNetworkEntityComponent
   _inputSourceComponent: {fileID: 930001002}
+  _playerActionComponent: {fileID: 8692851226458253613}
+  _combatHurtboxComponent: {fileID: 6958273542947100757}
+  _combatHitProbeComponent: {fileID: 858513717818811587}
+  _combatDebugVisualizationComponent: {fileID: 3002148073478740213}
   _playerMediatorComponent: {fileID: 930001003}
+  _actionControllerComponent: {fileID: 4239369989050134497}
   _movementStateMachine: {fileID: 3893509649565096512}
   _movementBodyComponent: {fileID: 7885406040919925618}
   _cameraTargetComponent: {fileID: 930001001}
@@ -305,6 +315,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cf772b69f1d45b9a3c03a42aa5d9e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerInputSourceComponent
+  _actionBufferLifetimeSeconds: 0.15
 --- !u!114 &930001003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,6 +329,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerMediatorComponent
   _playerAnimatorComponent: {fileID: 7152336791540273603}
+  _movementStateMachine: {fileID: 3893509649565096512}
 --- !u!114 &1058331315508964277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -333,6 +345,7 @@ MonoBehaviour:
   _playerNetworkEntity: {fileID: 8489854188152957200}
   _inputSource: {fileID: 930001002}
   _movementBody: {fileID: 7885406040919925618}
+  _combatHitProbe: {fileID: 858513717818811587}
 --- !u!114 &3994379520493875385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,6 +358,80 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a518aba6acaec7a4c80d2baf97e50129, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.TargetableNetworkEntityComponent
+--- !u!114 &8692851226458253613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309667084643460771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6700a1de071ac5648b31b6303b996d2f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerActionComponent
+  _attackConfig: {fileID: 11400000, guid: e1e007f3ee218cc47b7e29ccaccfd410, type: 2}
+--- !u!114 &858513717818811587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309667084643460771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02fad42070da2764db4fe46c53b395d8, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.CombatHitProbeComponent
+--- !u!114 &6958273542947100757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309667084643460771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cc475d105998ec45ad9cc9cd98c77e9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.CombatHurtboxComponent
+  _shape:
+    _shapeType: 0
+    _offset: {x: 0, y: 0.2}
+    _radius: 0.25
+    _size: {x: 0, y: 0}
+    _rotationDegrees: 0
+--- !u!114 &4239369989050134497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309667084643460771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b7a0de8a42f6b14599233af262ca92d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerActionControllerComponent
+  _inputSource: {fileID: 930001002}
+  _combatAction: {fileID: 8692851226458253613}
+  _movementStateMachine: {fileID: 3893509649565096512}
+  _dodgeState: {fileID: 964983221566649930}
+--- !u!114 &3002148073478740213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309667084643460771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfbb5d448924ca34dba3ae12070ce4b9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.CombatDebugVisualizationComponent
+  _hurtbox: {fileID: 6958273542947100757}
+  _contactSource: {fileID: 858513717818811587}
+  _contactHighlightSeconds: 0.2
 --- !u!1 &5577852976947837429
 GameObject:
   m_ObjectHideFlags: 0
@@ -358,6 +445,7 @@ GameObject:
   - component: {fileID: 964983221566649931}
   - component: {fileID: 964983221566649929}
   - component: {fileID: 964983221566649930}
+  - component: {fileID: 7097864012017895641}
   m_Layer: 0
   m_Name: Movement
   m_TagString: Untagged
@@ -395,6 +483,7 @@ MonoBehaviour:
   _idleState: {fileID: 964983221566649931}
   _locomotionState: {fileID: 964983221566649929}
   _dodgeState: {fileID: 964983221566649930}
+  _attackState: {fileID: 7097864012017895641}
   _inputSource: {fileID: 930001002}
 --- !u!114 &964983221566649931
 MonoBehaviour:
@@ -408,6 +497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49081024c46c4eaf9acedafcc609088c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.IdleState
+  _movementBody: {fileID: 7885406040919925618}
 --- !u!114 &964983221566649929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,3 +526,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.DodgeState
   _movementBody: {fileID: 7885406040919925618}
   _dodgeMovementConfig: {fileID: 11400000, guid: 7b064509350d44c5a34d122b4e0f3a26, type: 2}
+--- !u!114 &7097864012017895641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5577852976947837429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a085d45ca5d3ec4fb08e9c79f7d1237, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.PlayerAttackState
+  _movementBody: {fileID: 7885406040919925618}

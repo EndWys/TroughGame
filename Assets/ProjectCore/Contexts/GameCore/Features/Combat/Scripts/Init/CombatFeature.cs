@@ -8,6 +8,7 @@ namespace ProjectCore.GameCore
         {
             BindAsSingle<IDamageableEntityService, DamageableEntityService>();
             BindAsSingle<IDamageSourceEntityService, DamageSourceEntityService>();
+            BindAsSingle<ICombatTargetQuery, CombatTargetQueryService>();
         }
     }
 }

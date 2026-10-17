@@ -1,3 +1,4 @@
+using System;
 using ProjectCore.GameCore;
 using UnityEngine;
 using Zenject;
@@ -6,6 +7,7 @@ namespace ProjectCore.TechnicalPrototype
 {
     public sealed class PlayerInputSourceComponent : BaseEntityInputSourceComponent<PlayerInputFrameData>
     {
+        [SerializeField, Min(0.001f)] private float _actionBufferLifetimeSeconds = 0.15f;
         private IInputBufferController _inputBufferController;
         private PlayerInputFrameData _currentInput;
         private bool _hasInput;
@@ -22,14 +24,24 @@ namespace ProjectCore.TechnicalPrototype
             return _hasInput;
         }
 
-        public override void Init()
+        protected override void OnInitialize()
+        {
+            if (float.IsNaN(_actionBufferLifetimeSeconds) || float.IsInfinity(_actionBufferLifetimeSeconds) ||
+                _actionBufferLifetimeSeconds <= 0f)
+                throw new InvalidOperationException("Action buffer lifetime must be finite and positive.");
+            _currentInput = default;
+            _hasInput = false;
+        }
+
+        protected override void OnResetLocalRuntime()
         {
             _currentInput = default;
             _hasInput = false;
         }
 
-        public override void NetworkTick()
+        protected override void OnNetworkTick()
         {
+            if (!ParentNetworkBehaviour.HasStateAuthority && !ParentNetworkBehaviour.HasInputAuthority) return;
             if (!ParentNetworkBehaviour.GetInput(out PlayerInputData input))
             {
                 _currentInput = default;
@@ -37,11 +49,12 @@ namespace ProjectCore.TechnicalPrototype
                 return;
             }
 
-            if (input is { DodgePressed: true, MoveDirection: { sqrMagnitude: > 0f } })
+            ushort commandId = input.LatestActionCommandId;
+            if (commandId == PlayerInputActionConstants.AttackCommandId ||
+                commandId == MovementInputCommandConstants.DodgeCommandId && input.MoveDirection.sqrMagnitude > 0f)
             {
                 _inputBufferController.BufferCommand(
-                    new(MovementInputCommandConstants.DodgeCommandId),
-                    MovementInputCommandConstants.DodgeInputBufferLifetimeSeconds);
+                    new(commandId), _actionBufferLifetimeSeconds);
             }
 
             _currentInput = new(Vector2.ClampMagnitude(input.MoveDirection, 1f));

@@ -16,7 +16,7 @@ namespace ProjectCore.TechnicalPrototype
         public IReadOnlyList<MonoBehaviour> AbilityComponents =>
             _abilityComponents ?? Array.Empty<MonoBehaviour>();
 
-        public override void Init()
+        protected override void OnInitialize()
         {
             MonoBehaviour[] abilityComponents = _abilityComponents ?? Array.Empty<MonoBehaviour>();
             var abilities = new List<IEnemyAbility>(abilityComponents.Length);

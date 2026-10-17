@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "feature": "combat-system",
+  "subtask": "FEAT-01",
+  "architecture_revision": 7,
+  "contract_revision": 1,
+  "base_commit": "d9d3914e6b54c62659b0cdeacbcbf18d12dec90b",
+  "files": [
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionAccessor.cs",
+      "sha256": "e79ed67fd80da4459c0da5a64492b2677fe0776cb66c3df65ad4b414197ea4de"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionMutator.cs",
+      "sha256": "d0844867c5ce4e1a39f27d4b19b615a702efc7182a670c6f6d22812523683080"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionSnapshotAccessor.cs",
+      "sha256": "96d0a6e19f2860c4bccefdbc4b77fcf416dffc1ba9bdd67ba97f598873d46009"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionStateAccessor.cs",
+      "sha256": "df562e8640a087d6aefd71e1f54bad0f636b4bc67609fdeb88155f3a008c8c85"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatHurtbox.cs",
+      "sha256": "d327ddf6ce98eebbf3ce891bf0b5343d4e3b8d8e5cd7c1661c3eb89a995ced72"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatTargetQuery.cs",
+      "sha256": "32db16f799daeb7e9283e6c6d56e2c6bb9ef0e18026ca1bf3819cee286a06949"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Configs/CombatActionProfileConfig.cs",
+      "sha256": "33ed4f551f7e16a31672bdfaf1be3fb78eb14c7d10d1ed55ebb11b96b7bd3590"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Configs/CombatAttackConfig.cs",
+      "sha256": "b3492cfad055278e5b54251f59e4aae4c0411aa622900becb4c261867dcaec97"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatActionSnapshotData.cs",
+      "sha256": "548d6280abebdf665363f512a5d44f31bf1c6e8c3133e4d1d82a20ff99f3bc48"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatActionTimingData.cs",
+      "sha256": "af79169dfcbff5e37e44f975bd04cac48cc92304554d75b4b8df89e2bd2740f5"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatContactData.cs",
+      "sha256": "d2732ffc333bcf413a16c56ff5cb905a4763a46552538fafcacc11f9b62978c9"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatShapeData.cs",
+      "sha256": "7a5b95deb53fa93ba1faa7de3b8a07b18ec01bb0a6f158fd71b68716cfded038"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Models/CombatActionStateModel.cs",
+      "sha256": "88be59ea5aa450464303d9845a18caed9845878eb3e3c8c00abb4d89864a38ed"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Settings/CombatShapeSettings.cs",
+      "sha256": "96831a507b8a6dfdc50b85451bc1edfb658608a865d0f8017240dab9f4408812"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Enums/CombatActionKind.cs",
+      "sha256": "9da6bdece372706e919031e4d578f783a5020e8445e43471fe47fa6b414680ba"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Enums/CombatActionPhase.cs",
+      "sha256": "335ab856783d7ddf0cafbef669505a07e9df648e6c0f7a76f7577af3f307c568"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Enums/CombatShapeType.cs",
+      "sha256": "64d72446d43efc613ee999c7c4f42cf1507bed27936f82a0b9561b82be2499e9"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Input/Scripts/Abstract/IInputBufferController.cs",
+      "sha256": "d9428c69d914f781dafb640c3e8cad171c9b38ee4a179b8cb080c2f6c72cf354"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Input/Scripts/DataHolders/Descriptors/InputBufferCommandDescriptor.cs",
+      "sha256": "2495bfe448ef6c5e9ef09dc50234cfbba526de8b8077dc8b1857bf49996dbb29"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Input/Scripts/DataHolders/Models/InputBufferStateModel.cs",
+      "sha256": "228d48e2c90814b13c4d6e8303ececc1179d4b730ef04bf1ad8b6de093840cd0"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Input/Scripts/Managers/Controllers/InputBufferController.cs",
+      "sha256": "eb3cd1b7d5381037536d75e0b9c397011ff66bf327fb8f587f2922d015e1e92f"
+    }
+  ]
+}

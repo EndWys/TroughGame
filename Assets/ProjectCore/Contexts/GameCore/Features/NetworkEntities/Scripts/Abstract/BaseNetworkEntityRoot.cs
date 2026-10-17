@@ -9,10 +9,14 @@ namespace ProjectCore.GameCore
     public abstract class BaseNetworkEntityRoot :
         NetworkBehaviour,
         INetworkBehaviourAccessor,
+        INetworkEntityIdAccessor,
+        IEntityPositionAccessor,
         IComposite<INetworkEntityComponent>
     {
         private readonly List<INetworkEntityComponent> _components = new();
+        private readonly NetworkEntityComponentLifecycleProcessor _lifecycle = new();
         private NetworkEntityRegistry _networkEntityRegistry;
+        private NetworkEntityIdData _registeredEntityId;
 
         [Networked] private uint NetworkEntityIdValue { get; set; }
 
@@ -26,6 +30,8 @@ namespace ProjectCore.GameCore
         public IReadOnlyList<INetworkEntityComponent> Components => _components;
 
         public NetworkBehaviour ParentNetworkBehaviour => this;
+
+        public UnityEngine.Vector2 Position => transform.position;
 
         public NetworkEntityIdData EntityId => new(NetworkEntityIdValue);
 
@@ -44,26 +50,22 @@ namespace ProjectCore.GameCore
 
         public override void Spawned()
         {
-            BeforeComponentsInitialized();
-            RegisterEntity();
-            SetComponents(CreateComponents());
-            InitComponents();
-            AfterComponentsInitialized();
+            _lifecycle.Initialize(InitializeRuntime, ResetLocalRuntime);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
-            UnregisterEntity();
+            _lifecycle.Reset(ResetLocalRuntime);
         }
 
         public override void FixedUpdateNetwork()
         {
-            NetworkTickComponents();
+            if (_lifecycle.IsInitialized) NetworkTickComponents();
         }
 
         public override void Render()
         {
-            ClientRenderComponents();
+            if (_lifecycle.IsInitialized) ClientRenderComponents();
         }
 
         protected abstract IEnumerable<INetworkEntityComponent> CreateComponents();
@@ -71,6 +73,28 @@ namespace ProjectCore.GameCore
         protected virtual void BeforeComponentsInitialized() { }
 
         protected virtual void AfterComponentsInitialized() { }
+
+        private void InitializeRuntime()
+        {
+            BeforeComponentsInitialized();
+            RegisterEntity();
+            SetComponents(CreateComponents());
+            InitComponents();
+            AfterComponentsInitialized();
+        }
+
+        private void ResetLocalRuntime()
+        {
+            try
+            {
+                NetworkEntityComponentLifecycleProcessor.ResetComponents(_components);
+            }
+            finally
+            {
+                _components.Clear();
+                UnregisterEntity();
+            }
+        }
 
         private void RegisterEntity()
         {
@@ -80,11 +104,13 @@ namespace ProjectCore.GameCore
             }
 
             _networkEntityRegistry.Register(this);
+            _registeredEntityId = EntityId;
         }
 
         private void UnregisterEntity()
         {
-            _networkEntityRegistry?.Unregister(this);
+            _networkEntityRegistry?.Unregister(this, _registeredEntityId);
+            _registeredEntityId = NetworkEntityIdData.None;
         }
 
         private void SetComponents(IEnumerable<INetworkEntityComponent> components)

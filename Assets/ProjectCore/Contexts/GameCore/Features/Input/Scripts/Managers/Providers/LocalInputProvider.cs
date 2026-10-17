@@ -13,6 +13,7 @@ namespace ProjectCore.GameCore
 
         private InputActionAsset _inputActions;
         private bool _hasCapturedSample;
+        private ulong _pressSequence;
 
         public void Initialize(InputActionAsset inputActions)
         {
@@ -61,7 +62,8 @@ namespace ProjectCore.GameCore
                     action.IsPressed(),
                     buttonState.WasPressed,
                     buttonState.WasReleased,
-                    buttonState.WasPerformed);
+                    buttonState.WasPerformed,
+                    buttonState.PressSequence);
                 buttonState.ResetTransitions();
             }
 
@@ -138,7 +140,12 @@ namespace ProjectCore.GameCore
 
         private void OnActionStarted(InputAction.CallbackContext context)
         {
-            _buttonStates[context.action.id].WasPressed = true;
+            ButtonInputState buttonState = _buttonStates[context.action.id];
+            buttonState.WasPressed = true;
+            if (context.action.type == InputActionType.Button)
+            {
+                buttonState.PressSequence = checked(++_pressSequence);
+            }
         }
 
         private void OnActionPerformed(InputAction.CallbackContext context)
@@ -161,6 +168,7 @@ namespace ProjectCore.GameCore
             public bool WasPressed { get; set; }
             public bool WasReleased { get; set; }
             public bool WasPerformed { get; set; }
+            public ulong PressSequence { get; set; }
             public LocalButtonStateData CapturedState { get; set; }
 
             public void ResetTransitions()

@@ -30,6 +30,20 @@ namespace ProjectCore.TechnicalPrototype
             "Assets/ProjectCore/Contexts/TechnicalPrototype/Assets/Scenes/" +
             "Scene_TechnicalPrototype.unity";
 
+        [TestCase("Prefab_Enemy_NetworkEntity")]
+        [TestCase("Prefab_Enemy_Dash_NetworkEntity")]
+        public void CombatHurtboxIsIncludedInEnemyPrefab(string prefabName)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Assets/Prefabs/" + prefabName + ".prefab");
+            var hurtbox = prefab.GetComponent<CombatHurtboxComponent>();
+            Assert.That(hurtbox, Is.Not.Null);
+            Assert.That(new SerializedObject(prefab.GetComponent<EnemyNetworkEntityInstaller>())
+                .FindProperty("_movementBodyComponent"), Is.Null);
+            Assert.That(new SerializedObject(prefab.GetComponent<EnemyNetworkEntityComponent>())
+                .FindProperty("_combatHurtboxComponent").objectReferenceValue, Is.SameAs(hurtbox));
+        }
+
         [Test]
         public void EnemyPrefabComposesNetworkBehaviourFoundation()
         {

@@ -14,12 +14,20 @@ namespace ProjectCore.TechnicalPrototype
         IMovementStateDataMutator<PlayerMovementState>,
         IMovementStateTimerMutator,
         IInputBufferStateMutator,
-        IPlayerFacingDirectionMutator
+        IPlayerFacingDirectionMutator,
+        ICombatActionMutator,
+        ICombatAttackResolver,
+        ICombatInvulnerabilityMutator
     {
         #region Components
 
         [SerializeField] private PlayerInputSourceComponent _inputSourceComponent;
+        [SerializeField] private PlayerCombatActionComponent _playerActionComponent;
+        [SerializeField] private CombatHurtboxComponent _combatHurtboxComponent;
+        [SerializeField] private CombatHitProbeComponent _combatHitProbeComponent;
+        [SerializeField] private CombatDebugVisualizationComponent _combatDebugVisualizationComponent;
         [SerializeField] private PlayerMediatorComponent _playerMediatorComponent;
+        [SerializeField] private PlayerActionControllerComponent _actionControllerComponent;
         [SerializeField] private PlayerMovementStateMachine _movementStateMachine;
         [SerializeField] private TransformMovementBodyComponent _movementBodyComponent;
         [SerializeField] private CameraTargetComponent _cameraTargetComponent;
@@ -46,7 +54,17 @@ namespace ProjectCore.TechnicalPrototype
         [Networked, OnChangedRender(nameof(OnFacingDirectionChanged))]
         public PlayerFacingDirection FacingDirection { get; private set; }
         [Networked] public TickTimer MovementStateTimer { get; private set; }
+        [Networked] public TickTimer InvulnerabilityTimer { get; private set; }
         [Networked] private InputBufferStateModel InputBufferStateValue { get; set; }
+        [Networked] private CombatActionStateModel ActionStateValue { get; set; }
+        [Networked] private Vector2 LatestInputDirectionValue { get; set; }
+
+        public CombatActionStateModel ActionState => ActionStateValue;
+        public Vector2 LatestInputDirection => LatestInputDirectionValue;
+        public CombatActionSnapshotData ActionSnapshot => _playerActionComponent.ActionSnapshot;
+
+        public void SetActionState(in CombatActionStateModel state) => ActionStateValue = state;
+        public void SetLatestInputDirection(Vector2 direction) => LatestInputDirectionValue = direction;
 
         #endregion
 
@@ -66,18 +84,27 @@ namespace ProjectCore.TechnicalPrototype
 
         #region Movement State Timing
 
+        public int? StateTimerEndTick => MovementStateTimer.IsRunning ? MovementStateTimer.TargetTick : null;
+
         public bool IsStateTimerFinished =>
             MovementStateTimer.IsRunning && MovementStateTimer.ExpiredOrNotRunning(Runner);
 
-        public void StartStateTimer(float durationSeconds)
+        public void StartStateTimerTicks(int durationTicks)
         {
-            if (durationSeconds <= 0f)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(durationSeconds), "State timer duration must be positive.");
-            }
+            if (durationTicks <= 0) throw new ArgumentOutOfRangeException(nameof(durationTicks));
+            MovementStateTimer = TickTimer.CreateFromTicks(Runner, durationTicks);
+        }
 
-            MovementStateTimer = TickTimer.CreateFromSeconds(Runner, durationSeconds);
+        public bool IsInvulnerable => Object != null && Object.IsValid && Runner != null &&
+            InvulnerabilityTimer.IsRunning &&
+            !InvulnerabilityTimer.ExpiredOrNotRunning(Runner);
+
+        public void SetInvulnerabilityUntilTick(int? endTick)
+        {
+            if (!HasStateAuthority && !HasInputAuthority) return;
+            int remaining = endTick.HasValue ? unchecked(endTick.Value - Runner.Tick.Raw) : 0;
+            InvulnerabilityTimer = remaining > 0
+                ? TickTimer.CreateFromTicks(Runner, remaining) : TickTimer.None;
         }
 
         public void StopStateTimer()
@@ -143,6 +170,14 @@ namespace ProjectCore.TechnicalPrototype
 
         protected override void BeforeComponentsInitialized()
         {
+            if (HasStateAuthority)
+            {
+                ActionStateValue = default;
+                LatestInputDirectionValue = default;
+                InputBufferStateValue = default;
+                MovementStateTimer = TickTimer.None;
+                InvulnerabilityTimer = TickTimer.None;
+            }
             if (HasStateAuthority || HasInputAuthority)
             {
                 Runner.SetIsSimulated(Object, true);
@@ -161,9 +196,14 @@ namespace ProjectCore.TechnicalPrototype
             return new INetworkEntityComponent[]
             {
                 _inputSourceComponent,
+                _combatHurtboxComponent,
+                _playerActionComponent,
                 _playerMediatorComponent,
+                _actionControllerComponent,
                 _movementStateMachine,
                 _movementBodyComponent,
+                _combatHitProbeComponent,
+                _combatDebugVisualizationComponent,
                 _cameraTargetComponent,
                 _targetableNetworkEntityComponent,
             };
@@ -172,6 +212,12 @@ namespace ProjectCore.TechnicalPrototype
         #endregion
 
         #region Movement State Mutation
+
+
+        public bool TryGetAttack(ushort actionId, out CombatAttackConfig attack)
+        {
+            return _playerActionComponent.TryGetAttack(actionId, out attack);
+        }
 
         public void ChangeMovementState(PlayerMovementState newState)
         {

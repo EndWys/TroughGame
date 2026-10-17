@@ -7,5 +7,6 @@ namespace ProjectCore.TechnicalPrototype
     {
         public Vector2 MoveDirection { get; set; }
         public bool DodgePressed { get; set; }
+        public ushort LatestActionCommandId { get; set; }
     }
 }

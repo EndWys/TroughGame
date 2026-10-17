@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4890edcb5bc2e78419074a34fe15c4df, type: 3}
   m_Name: Config_Template_DebugVisualization_Settings
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.Template.DebugVisualizationSettingsConfig
-  _showHudOnStart: 0
+  _shouldShowHUDOnStart: 0
   _maxTransientDraws: 1024
   _defaultStyle:
     Color: {r: 1, g: 1, b: 1, a: 1}
@@ -78,3 +78,27 @@ MonoBehaviour:
       LineWidth: 0.03
       Duration: 1
       DepthTest: 1
+  - _channel: Player/Combat
+    _style:
+      Color: {r: 1, g: 1, b: 1, a: 1}
+      FillColor: {r: 1, g: 1, b: 1, a: 0.12}
+      TextSize: 18
+      LineWidth: 0.03
+      Duration: 1
+      DepthTest: 1
+  - _channel: Combat/Hurtboxes/Idle
+    _style:
+      Color: {r: 0, g: 1, b: 0, a: 1}
+      FillColor: {r: 0, g: 1, b: 0, a: 0.12}
+      TextSize: 18
+      LineWidth: 0.03
+      Duration: 0
+      DepthTest: 0
+  - _channel: Combat/Hurtboxes/Contact
+    _style:
+      Color: {r: 1, g: 0, b: 0, a: 1}
+      FillColor: {r: 1, g: 0, b: 0, a: 0.12}
+      TextSize: 18
+      LineWidth: 0.03
+      Duration: 0
+      DepthTest: 0

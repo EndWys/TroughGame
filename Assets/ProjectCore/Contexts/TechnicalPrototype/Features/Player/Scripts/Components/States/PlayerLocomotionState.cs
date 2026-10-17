@@ -55,10 +55,6 @@ namespace ProjectCore.TechnicalPrototype
             {
                 new PlayerFourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload>(
                     facingDirectionMutator: _facingDirectionMutator),
-                new DodgeTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
-                    inputBufferController: _inputBufferController,
-                    dodgeCommandId: MovementInputCommandConstants.DodgeCommandId,
-                    dodgeMovementState: PlayerMovementState.Dodge),
                 new LocomotionProcessor<PlayerMovementState, PlayerMovementPayload>(
                     movementBodyVelocityMutator: _movementBody,
                     locomotionMovementConfig: _locomotionMovementConfig),

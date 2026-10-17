@@ -28,7 +28,7 @@ namespace ProjectCore.TechnicalPrototype
             _hasInput = false;
         }
 
-        public override void Init()
+        protected override void OnInitialize()
         {
             ClearInput();
         }

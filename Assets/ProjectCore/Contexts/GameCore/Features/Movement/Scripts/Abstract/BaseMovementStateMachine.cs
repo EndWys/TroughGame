@@ -11,7 +11,7 @@ namespace ProjectCore.GameCore
     {
         protected abstract TStateType InitialState { get; }
 
-        public override void Init()
+        protected override void OnInitialize()
         {
             InitializeStateMachine();
 
@@ -31,7 +31,7 @@ namespace ProjectCore.GameCore
             return CreateMovementStatesDictionary();
         }
 
-        public override void NetworkTick()
+        protected override void OnNetworkTick()
         {
             if (!ShouldSimulateMovement())
             {

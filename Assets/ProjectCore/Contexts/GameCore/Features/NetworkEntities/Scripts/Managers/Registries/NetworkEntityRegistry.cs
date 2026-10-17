@@ -54,7 +54,12 @@ namespace ProjectCore.GameCore
                 return;
             }
 
-            NetworkEntityIdData entityId = entity.EntityId;
+            Unregister(entity, entity.EntityId);
+        }
+
+        internal void Unregister(BaseNetworkEntityRoot entity, NetworkEntityIdData entityId)
+        {
+            if (entity == null || !entityId.IsValid) return;
 
             if (_entitiesById.TryGetValue(entityId, out BaseNetworkEntityRoot registeredEntity) &&
                 registeredEntity == entity)

@@ -17,7 +17,7 @@ namespace ProjectCore.Prototype
 
         private FollowCameraComponent _cameraController;
 
-        public override void Init()
+        protected override void OnInitialize()
         {
             if (!ParentNetworkBehaviour.HasInputAuthority)
             {

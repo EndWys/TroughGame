@@ -1,0 +1,950 @@
+{
+  "schema_version": 1,
+  "feature": "combat-system",
+  "subtask": "FEAT-01",
+  "review_revision": 6,
+  "architecture_revision": 16,
+  "status": "accepted",
+  "base_commit": "d9d3914e6b54c62659b0cdeacbcbf18d12dec90b",
+  "baseline_review5_digest": "053bf5b931ab037047b6ff80e277c09c4ab5cef6abeca01882f75178e4ca2968",
+  "source_digest": "e78a9162ea55b1fcf8311fd8f6ce68561eaf52420683d6f5869765efcdb65ca5",
+  "recorded_at": "2026-10-17T19:12:48.8034175+00:00",
+  "files": [
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/CameraTarget/Scripts/Components/CameraTargetComponent.cs",
+      "sha256": "953f8ae206de584ed8aeaf259c4ee1f588c64c3925fac005d4e7d5762624cf70",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionAccessor.cs",
+      "sha256": "e79ed67fd80da4459c0da5a64492b2677fe0776cb66c3df65ad4b414197ea4de",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionAccessor.cs.meta",
+      "sha256": "b475c34747e692da3a71274b616e5084db3a8887926e90a70b0ded9e97ca74b5",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionMutator.cs",
+      "sha256": "d0844867c5ce4e1a39f27d4b19b615a702efc7182a670c6f6d22812523683080",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionMutator.cs.meta",
+      "sha256": "fde71f6c908af9b7cb8a992f582dd320528038ea3324a38ba30a98ea06353ea5",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionSnapshotAccessor.cs",
+      "sha256": "96d0a6e19f2860c4bccefdbc4b77fcf416dffc1ba9bdd67ba97f598873d46009",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionSnapshotAccessor.cs.meta",
+      "sha256": "f0132c42de7d1324b3571cbc27cad52eed235289997b1114723e5d5319a32944",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionStateAccessor.cs",
+      "sha256": "df562e8640a087d6aefd71e1f54bad0f636b4bc67609fdeb88155f3a008c8c85",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatActionStateAccessor.cs.meta",
+      "sha256": "2245a28dedc659ae30ef55a7ec30ecd58ac155723cce0282b2489b92807c6d7c",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatAttackResolver.cs",
+      "sha256": "4b39c366d258ff63783a3720b07e507c79e0f5b5aad2b7349117cc8054a72640",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatAttackResolver.cs.meta",
+      "sha256": "c9c66cc09867d44d92b5c6042467ff1b5b238fa2e5f5e28508f6fd6046ca44c9",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatContactAccessor.cs",
+      "sha256": "102e59be2acaca7f3d45435fade7a7ef4b712d7a606acb27a4d147f91e66997f",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatContactAccessor.cs.meta",
+      "sha256": "4e22cc3a7fd9162d09e13fe3de9feb826175fb074afce9d6a0f704b9316c2726",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatHurtbox.cs",
+      "sha256": "d327ddf6ce98eebbf3ce891bf0b5343d4e3b8d8e5cd7c1661c3eb89a995ced72",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatHurtbox.cs.meta",
+      "sha256": "c1ff3c224ffde044d6e0fe99313715469c6707157cc3d9269d2416d78935411e",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatInvulnerabilityAccessor.cs",
+      "sha256": "4409c6f18d358fa6718f29faa0f0ac929b0720dc1bb9be118e3c7a90e5b37939",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatInvulnerabilityAccessor.cs.meta",
+      "sha256": "5632ebceabe84c774d6f7663bb3250c5c77689038607476dab3662ac2ae50810",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatInvulnerabilityMutator.cs",
+      "sha256": "875f0659c74ef9cbd700150f35fde3510b2de98a235ca2791e7d74e9bfb686a2",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatInvulnerabilityMutator.cs.meta",
+      "sha256": "9b834ee58588a148a8f2c1d3040a4b79a0e6e9803791733287105eaff5211355",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatTargetQuery.cs",
+      "sha256": "32db16f799daeb7e9283e6c6d56e2c6bb9ef0e18026ca1bf3819cee286a06949",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Abstract/ICombatTargetQuery.cs.meta",
+      "sha256": "7747bdfafc40372c1f1f53b2fc2121e2e0c0e59a8123dd0ad4a7fc5c27744489",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Components.meta",
+      "sha256": "8eaef35315639a8e301ce1b1dab3d5d83592f556f4e85a63123d4b7695c05b9d",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Components/CombatDebugVisualizationComponent.cs",
+      "sha256": "2f7e4373e622eb221aa5c1cc9f71b1b0ca96b2233509a88817754b2e3cef4650",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Components/CombatDebugVisualizationComponent.cs.meta",
+      "sha256": "5a6cac168b95a83e272c8a0ac190754d317e95f4d62f9058a893b629e089df26",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Components/CombatHitProbeComponent.cs",
+      "sha256": "f2c6e2afde072be238069502e399e50c0cd444d9b8dc02374958060c825656e9",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Components/CombatHitProbeComponent.cs.meta",
+      "sha256": "fbd7d15acdfe139b406b824191bda3c6f07c9526874f495eae8eb7fb869707b7",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Components/CombatHurtboxComponent.cs",
+      "sha256": "8fd11f941b7562efb437505c4f2b6bd33ec554b5a6073c021c08df7da912e54c",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Components/CombatHurtboxComponent.cs.meta",
+      "sha256": "afd7b032f6c477dcabec6b6fa4474f5acef7564ae2bce67e28ec9c835337e58a",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders.meta",
+      "sha256": "429419c75cd1829b464c771222c7259e1c012cde953de50e8f42c17e5bc4f748",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Configs.meta",
+      "sha256": "79e7c1a63a5af1841307db48afb9f6f61b32a095e729152dd06590af8e675c51",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Configs/CombatActionProfileConfig.cs",
+      "sha256": "33ed4f551f7e16a31672bdfaf1be3fb78eb14c7d10d1ed55ebb11b96b7bd3590",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Configs/CombatActionProfileConfig.cs.meta",
+      "sha256": "8ae61bf648c42d380caf2292e910dd4a08306a1789aaf2ec8edfdbe69de9cd29",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Configs/CombatAttackConfig.cs",
+      "sha256": "b3492cfad055278e5b54251f59e4aae4c0411aa622900becb4c261867dcaec97",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Configs/CombatAttackConfig.cs.meta",
+      "sha256": "39d1686a89c8df2c94c56067f666ce86b52abae8374a1e7e82f10e4b13159c65",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data.meta",
+      "sha256": "6fad79ff86a39b6614b1a1b023f4a788a063ef02285e8e04fe378586d58fb394",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatActionSnapshotData.cs",
+      "sha256": "548d6280abebdf665363f512a5d44f31bf1c6e8c3133e4d1d82a20ff99f3bc48",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatActionSnapshotData.cs.meta",
+      "sha256": "896aaf96d8d9aac641381f58b96e20af7e2757e957791ae577d7c560de588d2f",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatActionTimingData.cs",
+      "sha256": "af79169dfcbff5e37e44f975bd04cac48cc92304554d75b4b8df89e2bd2740f5",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatActionTimingData.cs.meta",
+      "sha256": "1cd4b1e66e10e1135ac6bdac4ef94e391c7d2228f04153eee81c80025624d506",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatContactData.cs",
+      "sha256": "d2732ffc333bcf413a16c56ff5cb905a4763a46552538fafcacc11f9b62978c9",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatContactData.cs.meta",
+      "sha256": "f3929773f9f13ed2e8e15e63e8b79f94ab38b16f1ff1e0f68971ba3aaaf8891c",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatShapeData.cs",
+      "sha256": "7a5b95deb53fa93ba1faa7de3b8a07b18ec01bb0a6f158fd71b68716cfded038",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Data/CombatShapeData.cs.meta",
+      "sha256": "cbde985f5240022701871644a41be0aa9ac2d30abbfaf794a963682fd321e76b",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Models.meta",
+      "sha256": "5779f505531dc46f44ff594cbf911cd237285d0099ca27d80c6636a462bd482b",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Models/CombatActionStateModel.cs",
+      "sha256": "88be59ea5aa450464303d9845a18caed9845878eb3e3c8c00abb4d89864a38ed",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Models/CombatActionStateModel.cs.meta",
+      "sha256": "edbc74379086d122a3d264573f79e545b7922e352eb753cf9daf23b6b5265166",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Settings.meta",
+      "sha256": "18bce021e305e0966a8dc70089e253cbc7bd6fba0a0bb9ad13bdd18a9a0a9bc6",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Settings/CombatShapeSettings.cs",
+      "sha256": "96831a507b8a6dfdc50b85451bc1edfb658608a865d0f8017240dab9f4408812",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/DataHolders/Settings/CombatShapeSettings.cs.meta",
+      "sha256": "22c5984cc46118fefc2a4471de3fa50b38ef7464c535049cfceb83ea161dbe74",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Enums.meta",
+      "sha256": "92e16639daefe19a9151e02ff1358e5a347aa6ea6443b222ac88b85128e2b4bf",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Enums/CombatActionKind.cs",
+      "sha256": "9da6bdece372706e919031e4d578f783a5020e8445e43471fe47fa6b414680ba",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Enums/CombatActionKind.cs.meta",
+      "sha256": "7f0ed01a938f30e7e5396a9ba4b63f2483edaa2294416b50b0972b1da1960771",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Enums/CombatActionPhase.cs",
+      "sha256": "335ab856783d7ddf0cafbef669505a07e9df648e6c0f7a76f7577af3f307c568",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Enums/CombatActionPhase.cs.meta",
+      "sha256": "1283e758bec4f6785834d3c055126749d906cb2311d64bd56dd708d128d77729",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Enums/CombatShapeType.cs",
+      "sha256": "64d72446d43efc613ee999c7c4f42cf1507bed27936f82a0b9561b82be2499e9",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Enums/CombatShapeType.cs.meta",
+      "sha256": "7c001f8b49a8914e1e00b738af7939b70e3b9c20bee90495712817f995d46b43",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Init/CombatFeature.cs",
+      "sha256": "cb57dc0dccab7f849f6db23a74638aee76cc2c816ed917c05452abe971ac5d20",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Managers/Services/CombatTargetQueryService.cs",
+      "sha256": "0a60f054a64a8d7d8f5eeb5b93bdf7c2536a2c265ed02d89f7ecc28ac0a11233",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Managers/Services/CombatTargetQueryService.cs.meta",
+      "sha256": "46975596f72ca56b3f33f23adc81456dc4100c9e8d55e29693520c80d3ac8d32",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Other.meta",
+      "sha256": "5f5b0ec08cced62dc20709dfe9650560328dc26a0f0fdb867a9a1182f3221950",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Other/Processors.meta",
+      "sha256": "498a39078c2cac43bd0651f0635acda633c82423dccb56ab1b26f9c340b1500e",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Other/Processors/CombatActionPhaseProcessor.cs",
+      "sha256": "5943f5243b7ae23a11d47197c6fe302a7e1562361be2e3ebe922009fb7daa6a7",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Other/Processors/CombatActionPhaseProcessor.cs.meta",
+      "sha256": "0acb0a7d1e6d7617968b132f41bc0f32e58845fe9d8b798f43873fdf306f6759",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Other/Processors/CombatContactProcessor.cs",
+      "sha256": "cc1f9880adcbfdcd9b8345f65ab9e330e54f827b6bcd4af30c691476160cb3d2",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Other/Processors/CombatContactProcessor.cs.meta",
+      "sha256": "0af725b3ee7696ed911dc8f536ab57282308601a172cb7a6dcb3bebab0f2b6de",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Static.meta",
+      "sha256": "9d6901c04f6a2e0bf60fe35806bb4065b52c7f5c968d691d95e13d9388df3a0c",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Static/Utilities.meta",
+      "sha256": "143db3e56e934f09b64466b0d88e3182b1712ab6940ab90f6918c0003c0827c7",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Static/Utilities/CombatGeometryUtility.cs",
+      "sha256": "a571b466bb48834271f17b1554d608912e1ba4c42559e03b7ae00a664b5baba2",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Static/Utilities/CombatGeometryUtility.cs.meta",
+      "sha256": "f35aca2b140014249b780e96627b3ee60f09a8f2ecd0328ed0233b6fb27ad76e",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Static/Validation.meta",
+      "sha256": "ac4a930303d5941bbc282f56fd8bf5b17bca7c446a8e5a84765a9c70bd1207a2",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Static/Validation/CombatActionProfileValidation.cs",
+      "sha256": "8a97e0df802ce50f98942825639e9477fc8b1b11e25922df34f897511f558a16",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Static/Validation/CombatActionProfileValidation.cs.meta",
+      "sha256": "1cb553e96a5647e88c75cedc29ec5c0b1f42811a3c62e50a2cd72282d4927be0",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Static/Validation/CombatShapeValidation.cs",
+      "sha256": "79c59222034d13c52df8662b2bca3b18096f2d04ed82cf1f11ed64dd174b5f8b",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Static/Validation/CombatShapeValidation.cs.meta",
+      "sha256": "cf6df8d03a28f7de1326e87a1b69a355c00b01ac9c2930ad566dc73b2c390b1d",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Input/Scripts/DataHolders/Data/LocalButtonStateData.cs",
+      "sha256": "28ebce3f2cce70080010c295cc0b00bc64183b2398554c487d6b534f06aa03d4",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Input/Scripts/DataHolders/Models/InputBufferStateModel.cs",
+      "sha256": "228d48e2c90814b13c4d6e8303ececc1179d4b730ef04bf1ad8b6de093840cd0",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Input/Scripts/Managers/Providers/LocalInputProvider.cs",
+      "sha256": "00c7494f6e70f99599cddef3b4a2342de79f6ad982c6e6bb10021b001424e626",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Abstract/BaseMovementStateMachine.cs",
+      "sha256": "f7e5a6803dfe56ab30930068ea191f190dbebd0855ded9100acb4a7dec002d2b",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Abstract/IMovementStateTimerAccessor.cs",
+      "sha256": "224bab23a5e843cdf820cd1d04f6a393d6b758044e31c0e3ee35c8a415432bee",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Abstract/IMovementStateTimerAccessor.cs.meta",
+      "sha256": "4b5b2678153f06b79a5945e9938b03152e81fcc6d98e036aeac1c7725bb7f5ff",
+      "context_only": true
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Abstract/IMovementStateTimerMutator.cs",
+      "sha256": "f80ccbc8f53dfe7e12181da277019c11df9edf6b28a5974915e1a59c7f6816ae",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/DataHolders/Configs/DodgeMovementConfig.cs",
+      "sha256": "5bb0be84bda82cac2e240d1779e4e653b6b92e86ca225d58d128d250ec4905c3",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/DataHolders/Data.meta",
+      "sha256": "fddea7036906a99d038ac0aa352d13a3e44c07697da785e98b0606fcb5aeeaac",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/DataHolders/Data/DodgeTimingData.cs",
+      "sha256": "d25878219093263003628a29774303465b9d5915ff3c1df41289fc47fd90e5ab",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/DataHolders/Data/DodgeTimingData.cs.meta",
+      "sha256": "b1e4eba0df0401e6e860ddce31a0229cf08b550188d9312b2cf2b1145cf60bbe",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Enums.meta",
+      "sha256": "cb42f067acecd8fd28c9e015664274c1739c1113c81deceb5f68749e9e380062",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Enums/DodgeMovementPhase.cs",
+      "sha256": "e55e134d68cbeefbfdac84e32f57222a78ce5a56e01a7e3c2736491d42126ab2",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Enums/DodgeMovementPhase.cs.meta",
+      "sha256": "01544220fa0a8f931fed85c385f64c6f24f9eb6403185f2c5410b20d1b82a559",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Static/Utilities.meta",
+      "sha256": "83e490fe9f2068e8599c6d33fc998130d143c8bb41f892a7da268d6db4d88c06",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Static/Utilities/DodgePhaseUtility.cs",
+      "sha256": "9c157cd1823d242802d65745e442116aebe49e53f99cf42cbf4cdb6952997202",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Static/Utilities/DodgePhaseUtility.cs.meta",
+      "sha256": "61a5d1d2ca982187ed785cb6486d3255edafc7b732569cf4cb98dad75c2b8f60",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Movement/Scripts/Static/Validation/MovementConfigValidation.cs",
+      "sha256": "7ea053e1e27c035d41cdeb0c341f2c614bcc19fd5c7ca916b97d68eadb69ac36",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/MovementSimulation/Scripts/Components/TransformMovementBodyComponent.cs",
+      "sha256": "3df280075da2b19e316756769a1ef6a719251a38e1ddbbf8bc694d12acd79941",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Abstract/BaseNetworkEntityBehaviourComponent.cs",
+      "sha256": "059770477e9dc1ce9ce0a0baba35b834ef3ee906cf9c85e4817e3f564035ee7c",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Abstract/BaseNetworkEntityBehaviourComponent.cs.meta",
+      "sha256": "8759037588da2fc5b81de2f6f85381d1dfd60e4860b7774f473129597c91cebc",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Abstract/BaseNetworkEntityComponent.cs",
+      "sha256": "ab3d880032a38a42dcfc47fa8fb5a7c94f5eaea0a844600f3d445da512443ab1",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Abstract/BaseNetworkEntityCompositeComponent.cs",
+      "sha256": "09ac3698cf66b3409cf3c14ea55492545c2e6056e87a1f02c6d7a4181827496d",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Abstract/BaseNetworkEntityRoot.cs",
+      "sha256": "d2a50ea7b26e9baf2ed0dcca289bed6cebf4131940516b6604a57a1b901ba8b9",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Abstract/IEntityPositionAccessor.cs",
+      "sha256": "1030b040379b1c1ecd616269bd8b3fd5cb8aee462e91abaae9538a498cc2e585",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Abstract/IEntityPositionAccessor.cs.meta",
+      "sha256": "b8b51b2a928e449dfead7da1f8458808a532a5c606f0c6ed58d86201e65cc65d",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Abstract/INetworkEntityComponent.cs",
+      "sha256": "1cb940dc228c7899c7105a7b05ef09f3228b66476e11be1786d2a41657f61d09",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Abstract/INetworkEntityIdAccessor.cs",
+      "sha256": "6d5645084cae36ca1a4876f94a60570cc53ec96bcc202fec1badd482a94f9b16",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Abstract/INetworkEntityIdAccessor.cs.meta",
+      "sha256": "5c9207ce0f52bfbffdda8a13685b04523b152c863aadc6a3824f6227612367ed",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Managers/Registries/NetworkEntityRegistry.cs",
+      "sha256": "a7170775a3b7e8bbed40085f5d8ad7d3e54c4c29649fd5f821d449e8462ff574",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Other.meta",
+      "sha256": "518a575c1806e3ab9fa7daebc79487650876a1679e036166d7418c1b96668522",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Other/Processors.meta",
+      "sha256": "a81b3ae6bce3da7721c7b7bf44a79dfdfe18cdd24d39b7739126832608f9d16a",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Other/Processors/NetworkEntityComponentLifecycleProcessor.cs",
+      "sha256": "3ba3146df1c25141395bd13cd394ca191973cd72a49163020c0763c97aba7bcb",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/NetworkEntities/Scripts/Other/Processors/NetworkEntityComponentLifecycleProcessor.cs.meta",
+      "sha256": "400f2b8e71fc7813fc6c1009c059f494cf5e56373528244b04d1819631de8a5b",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/CombatActionPhaseProcessorTests.cs",
+      "sha256": "c31efbf3bc901bc8705b5a54b6fba80a969516a1435d0cd5bc43ae54f177a4c1",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/CombatActionPhaseProcessorTests.cs.meta",
+      "sha256": "29fdd2696ac59eb5df3d576b0235515892200e423ef20d806435a2b7b7b08f83",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/CombatActionProfileValidationTests.cs",
+      "sha256": "b9160569fa227f555e436c06b4738ae05ef0e12cc9394ceb507ad27fe0cf1bc0",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/CombatActionProfileValidationTests.cs.meta",
+      "sha256": "bbfa871dca6f55f6eacfb853d20405de296b75e44a401e2a63962d3a524b3988",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/CombatContactProcessorTests.cs",
+      "sha256": "14e0c7b14ef7f017d6fb8fc5599e33efb39fca0d7ebe257dea8885a4ba49891e",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/CombatContactProcessorTests.cs.meta",
+      "sha256": "bed27b3d08289a971dd66028398e61f30dbc3794485dfc34aa92d8dbc03abe6d",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/CombatGeometryUtilityTests.cs",
+      "sha256": "89b2078e9ca5f58dbfeb24c7cdd6daaa36438594a9354dcd426ab838ec311598",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/CombatGeometryUtilityTests.cs.meta",
+      "sha256": "b0ec167630d1d4911c58769949a3a60c0a46c3d9c74e4434ff62c13a3c2bbe0e",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/CombatTargetQueryServiceTests.cs",
+      "sha256": "d4fe706a42244180cadeb913593ed9af97d2d2d6dc995e0c5d1a3b3c76adccb6",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/CombatTargetQueryServiceTests.cs.meta",
+      "sha256": "ec8dae0d531c96dde22e180ddc43b6b7638de68575b66838d05aaa13170b1ecf",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/DodgeProcessorTests.cs",
+      "sha256": "fc69b87d66ca3d7f7e7cf3394ff37b7ef5afaa01772cdda1dbbb165c31daf6fc",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/DodgeProcessorTests.cs.meta",
+      "sha256": "ad06442c84cf5cbcd6310947479c3e519d01ec208fe6018ea5dc824e22211c3a",
+      "context_only": true
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/InputBufferControllerTests.cs",
+      "sha256": "10ad4294f30e3e61d0e0e647e242608f54b516b30eff11b6c0b3dcc3f59827cd",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/LocalInputReaderTests.cs",
+      "sha256": "a9addce448f61d9d083ae446902c3dfca0eb57f8fd1788ede5b832f44362e1d2",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/NetworkEntityComponentLifecycleTests.cs",
+      "sha256": "8f3b1207fc60385a970305078676d23c93d1edbf638a08d411bc5124f3442bfc",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Tests/Editor/NetworkEntityComponentLifecycleTests.cs.meta",
+      "sha256": "43baa1c4d544b332dc220a722b6c5f5f21a54fcafe25a0e17fa9ab3407d76db4",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/Prototype/Features/Player/Scripts/Components/ClimbDetectorComponent.cs",
+      "sha256": "0e50d9e716646c90b1110ea18a0b71fd27aefb83fa722a058572bc61aec10872",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/Prototype/Features/Player/Scripts/Components/GroundDetectorComponent.cs",
+      "sha256": "0256cbc6e85f92d1db4b9a58bbd639f68c73478dc752db46338c125983409aff",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/Prototype/Features/Player/Scripts/Components/PlayerCameraComponent.cs",
+      "sha256": "051b4a07b48f877d1cd44219c166a05caca59edbef942b975a35c5eb264e2bb8",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/Prototype/Features/Player/Scripts/Components/PlayerMediatorComponent.cs",
+      "sha256": "d33781c643fa534fc7a2ecae00a2c8f9cd62950c25461ce42491a940a119fbfb",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/Prototype/Features/Player/Scripts/Components/PlayerPoseComponent.cs",
+      "sha256": "e788e698514940b246d8ad02597b767a99d69747ae3567b6984fae1373edfc0f",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Assets/InputActions/InputActions_TechnicalPrototype.inputactions",
+      "sha256": "d4ff7d9965d01928cb6ce5d83175cac790ec937a5f4008c7fd8972dd17700324",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Assets/Prefabs/Prefab_Enemy_Dash_NetworkEntity.prefab",
+      "sha256": "a5a8473e3a1285f9467f10ad0dc80349cfa459009167d6f576eb392315ac865a",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Assets/Prefabs/Prefab_Enemy_NetworkEntity.prefab",
+      "sha256": "0edc5afa5b503dc309c6357e20ac4531748df8bb33741f290e160db7c990fd67",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Components/EnemyAbilityCollectionComponent.cs",
+      "sha256": "0fe649709432c617fcb9f3bf80694b6639b84bc8468d959fd7b653b3ecae6ecb",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Components/EnemyInputSourceComponent.cs",
+      "sha256": "789c6138ee5110e446dde3be33d09cf25d5a3e427ab782925091ea9085f3cf61",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Components/EnemyMovementStateComponent.cs",
+      "sha256": "eb31bec6e82d6ce419115bd76567fa1d1375c4d305d6cb8dcb1e10af5a2dd519",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Components/EnemyNetworkEntityComponent.cs",
+      "sha256": "7793384ff7407a7680fbebf7ac5c8609d2ae9a06bb2c5d8851015487d33fa067",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Components/StateMachines/EnemyBehaviourStateMachine.cs",
+      "sha256": "d6cfa7005c86e71b11de6e35d826881e0203dfe1a737b60b69adaa1d521e017c",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Init/EnemyNetworkEntityInstaller.cs",
+      "sha256": "daccc1ffbd5afc737b003360ea11c9aa81dd3214ee6de91d4625482d960e41a6",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Assets/Configs/Config_TechnicalPrototype_Player_AttackPhases.asset",
+      "sha256": "07de9ed1aa3a34c995d62b84c756d480303fd4b8b140442855768b5644d852c7",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Assets/Configs/Config_TechnicalPrototype_Player_AttackPhases.asset.meta",
+      "sha256": "d95553bb321acee297263aabaddb87d0105f6a1347b90857a27cf0fde2a94aaa",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Assets/Configs/Config_TechnicalPrototype_Player_Dodge.asset",
+      "sha256": "2eb02b8900bac01e3a103b3390baa0bd527fa1fdccddf61ef58c0c8403700053",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Assets/Configs/Config_TechnicalPrototype_Player_TestAttack.asset",
+      "sha256": "0a6f171d58f77402461e2d47aa45cae223fb05462bf635f8c6b5253095100392",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Assets/Configs/Config_TechnicalPrototype_Player_TestAttack.asset.meta",
+      "sha256": "a2e476af082a43fe5131945cd8fe859d49db8236e3f7df32b80aabf35b0818da",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Assets/Prefabs/Prefab_Player_NetworkEntity.prefab",
+      "sha256": "f1c28169077a633a9784fcdc3fc2c44c430fb1972fa2c7054c9eeaa877bc4ccf",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerActionControllerComponent.cs",
+      "sha256": "7913c3ea8c6a14ce59a945da4d6d0b9daf0222a8826cc966398e504fad77f92e",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerActionControllerComponent.cs.meta",
+      "sha256": "8df0ee0e03bd320236c48a878b936f63bc20eca4c8084930383ab18d57e44b0c",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerCombatActionComponent.cs",
+      "sha256": "dde172f21fa139bcc6a371fb70762f90b3d014b4e5d8e89269713b5a551b5b26",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerCombatActionComponent.cs.meta",
+      "sha256": "1887c29615a4fae2378dc3ff3845bde1dbcae52edcff03d1edbad3d64c096a37",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerDebugVisualizationComponent.cs",
+      "sha256": "ee145b71978bd0528a81b845275475d1988e5fdbd7b5a1bff13049e1b4224cfb",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerInputSourceComponent.cs",
+      "sha256": "5bfc38da500b1a94371ffa50dfaa5936d1c9c20ed7349caeb0e0d4633247798f",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerMediatorComponent.cs",
+      "sha256": "9cd40a2a54d3d99f0eddb73938b40dfa7695daf41078f70e8118fdbe9dd764ad",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerNetworkEntityComponent.cs",
+      "sha256": "d80f97249fb10b236479e44e6d763327678cfb3a7a11fded4ae503d5f6173501",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerNetworkInputComponent.cs",
+      "sha256": "fcfa63acc9b0174caf4f0a2f39ff49ecf8970398db34bbfee67d9405ea6c3d71",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/StateMachines/PlayerMovementStateMachine.cs",
+      "sha256": "0d6d1cdd613b164ed38af339f137a83b2086bbc3ff3ce8d2ee514954c4fa6240",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/States/PlayerAttackState.cs",
+      "sha256": "98a5831c3df59872296c544b421716708963fa24a7977e8b94cb1803e756c516",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/States/PlayerAttackState.cs.meta",
+      "sha256": "d5e7c5c8dea61a751bdccba692a1d146392f9a8e07c9ce8b83424a29ee397dc3",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/States/PlayerDodgeState.cs",
+      "sha256": "d9da2bd05fb452ae8f35a6e903eb684d4f4ec6eed6d5ff84d6d668b4101a1858",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/States/PlayerIdleState.cs",
+      "sha256": "f73a62752ce2f4fa37ca3390355d9403768a389021b17baafb8fec358123c615",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/States/PlayerLocomotionState.cs",
+      "sha256": "bfabfa102234b4f961bfc296a0f4dd9c3478b7f9a141a7ff303b9ef89a6bb56b",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/DataHolders/Data/PlayerInputData.cs",
+      "sha256": "e538526aa459275eb949b1923036cd32ab8818f3465e6f5a069907d3edbb4f08",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/DataHolders/Payloads/MediatorEventPayloads/PlayerAttackStatePayload.cs",
+      "sha256": "fde0f0d47ecf3e526700e71bf1800e1a8ae5c21c16e5fec01ca8f687a084ca03",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/DataHolders/Payloads/MediatorEventPayloads/PlayerAttackStatePayload.cs.meta",
+      "sha256": "95b83a2f48b4806f23e16fd0a0d8e2633f398484913b71a2ad41978874a46109",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/DataHolders/Payloads/MediatorEventPayloads/PlayerDodgePhasePayload.cs",
+      "sha256": "a75c91cacc83152e1d3f4b33e3fb6dc5c4edb44d71926286ae03c9a24a9d09cf",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/DataHolders/Payloads/MediatorEventPayloads/PlayerDodgePhasePayload.cs.meta",
+      "sha256": "f928487dbcd61f057308f2de7cf8ad5741022fcac531fb844dd12a87c0fdbf71",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Enums/PlayerMovementState.cs",
+      "sha256": "d7226cd40d10e84c30234a7ca1beb40f18c42161ba483a0170b6d737e354def4",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Init/PlayerNetworkEntityInstaller.cs",
+      "sha256": "7340838cda373066c6e19abe1b79760f5be7cb7f99bbabc91af5402e4ce2a593",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Other/Processors/PlayerDodgeMovementProcessor.cs",
+      "sha256": "16f9e89b6e18f1db83627378b7c039c9f2e37c858852dd278680f055e2e71485",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Other/Processors/PlayerDodgeMovementProcessor.cs.meta",
+      "sha256": "87ea478568dc68e3fbce158da408f6fdfba354062c76c47f5dcd5b3335cabdef",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Static/Constants/PlayerInputActionConstants.cs",
+      "sha256": "571dd77ce347caf090292451ba9d7823250745e8494339861acb6fa6cbfb99ea",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Tests/Editor/EnemyPrefabTests.cs",
+      "sha256": "e33fb755ae4391e2264575a059a323754920d601958b44875fb861c13c48f625",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Tests/Editor/MovementStateConfigurationTests.cs",
+      "sha256": "29ffa7cecfa6e991e3d4c41295f05d93df4917bf999f26b6de2bebcbce80cece",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Tests/Editor/PlayerPrefabTests.cs",
+      "sha256": "56e97d8719b91dff31d40070f4cba325fe1a914bce8e5009628db838bd34b86f",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Tests/Play.meta",
+      "sha256": "b3fad3677e61147c2c932a3967312cf2f1055c660b6c7d8a8e54697ec8f65dbc",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Tests/Play/PlayerCombatPhasePlayModeTests.cs",
+      "sha256": "05787934264e240eab399c9da8e34242b6a7c144662640a13a40c0a5d7480993",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Tests/Play/PlayerCombatPhasePlayModeTests.cs.meta",
+      "sha256": "35092d8794d918989612b53ac6c56903ce2a26413f4284bca6509eb7be8508cc",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Tests/Play/ProjectCore.Tests.Play.asmref",
+      "sha256": "559bd96180feaa56b6c34ecbcc321cb2ff9ceac55e8df0966ce23bfd54fc92cb",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Tests/Play/ProjectCore.Tests.Play.asmref.meta",
+      "sha256": "233e62625c055b62f36a749128f7247d43202f82edb5d7766fd0d5613b89ecec",
+      "context_only": false
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/Template/Features/DebugVisualization/Assets/Configs/Config_Template_DebugVisualization_Settings.asset",
+      "sha256": "5116785163412908ce0691cf292c2d89eed77eb7ce9293d53ecbff9cb478e1fc",
+      "context_only": false
+    }
+  ],
+  "changed_since_review5": [
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Components/CombatDebugVisualizationComponent.cs",
+      "baseline_sha256": null,
+      "sha256": "2f7e4373e622eb221aa5c1cc9f71b1b0ca96b2233509a88817754b2e3cef4650"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/GameCore/Features/Combat/Scripts/Components/CombatDebugVisualizationComponent.cs.meta",
+      "baseline_sha256": null,
+      "sha256": "5a6cac168b95a83e272c8a0ac190754d317e95f4d62f9058a893b629e089df26"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Assets/Prefabs/Prefab_Enemy_NetworkEntity.prefab",
+      "baseline_sha256": "6b81ce801c25c59b3781f92776db6bff3f4c1b871743874aeecd7333cc23d029",
+      "sha256": "0edc5afa5b503dc309c6357e20ac4531748df8bb33741f290e160db7c990fd67"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Enemy/Scripts/Components/EnemyNetworkEntityComponent.cs",
+      "baseline_sha256": "3b1fc8e6ba5dd96487589b03252fde4e47ab9f742abdfb45f31e475a1e813a3a",
+      "sha256": "7793384ff7407a7680fbebf7ac5c8609d2ae9a06bb2c5d8851015487d33fa067"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Assets/Prefabs/Prefab_Player_NetworkEntity.prefab",
+      "baseline_sha256": "d8555f89538541c9cfbcb81161d66079fd8f0dd510543a9bb8ecff2f436697ac",
+      "sha256": "f1c28169077a633a9784fcdc3fc2c44c430fb1972fa2c7054c9eeaa877bc4ccf"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/Player/Scripts/Components/PlayerNetworkEntityComponent.cs",
+      "baseline_sha256": "dc9796032099c608ad3e140988cde4762331856361787b52030fb0f8249fe6eb",
+      "sha256": "d80f97249fb10b236479e44e6d763327678cfb3a7a11fded4ae503d5f6173501"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/TechnicalPrototype/Tests/Play/PlayerCombatPhasePlayModeTests.cs",
+      "baseline_sha256": "d3555683208a3aa19e8418e69d2e75007e55efe7dfe4d6b10fc1b7077c4d65ce",
+      "sha256": "05787934264e240eab399c9da8e34242b6a7c144662640a13a40c0a5d7480993"
+    },
+    {
+      "path": "Assets/ProjectCore/Contexts/Template/Features/DebugVisualization/Assets/Configs/Config_Template_DebugVisualization_Settings.asset",
+      "baseline_sha256": "75575735bf0aaa1878fb3382e1f3cf668058081456061445369f55283d73c2a2",
+      "sha256": "5116785163412908ce0691cf292c2d89eed77eb7ce9293d53ecbff9cb478e1fc"
+    }
+  ],
+  "delta_patch": "FEAT-01-hurtbox-debug-r16.patch",
+  "review_approval_id": "APR-021",
+  "manual_play_approval_id": "APR-022",
+  "accepted_at": "2026-10-17T19:19:08.346425+00:00"
+}

@@ -35,7 +35,7 @@ namespace ProjectCore.Prototype
             _groundDetectorDataMutator.ChangeGroundNormal(hit ? hitInfo.normal : Vector3.up);
         }
 
-        public override void NetworkTick()
+        protected override void OnNetworkTick()
         {
             if (!ShouldPerformCheck())
             {

@@ -95,6 +95,8 @@ GameObject:
   - component: {fileID: 8911535481648758648}
   - component: {fileID: 3526974178999751230}
   - component: {fileID: 2947910090444434332}
+  - component: {fileID: 6596406854792392511}
+  - component: {fileID: 7231880537655156453}
   m_Layer: 0
   m_Name: Prefab_Enemy_NetworkEntity
   m_TagString: Untagged
@@ -172,6 +174,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyNetworkEntityComponent
   _inputSourceComponent: {fileID: 1231098527604241315}
+  _combatHurtboxComponent: {fileID: 6596406854792392511}
+  _combatDebugVisualizationComponent: {fileID: 7231880537655156453}
   _behaviourStateMachine: {fileID: 4125976174204342296}
   _abilityCollectionComponent: {fileID: 2947910090444434332}
   _movementStateComponent: {fileID: 3526974178999751230}
@@ -218,16 +222,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyNetworkEntityInstaller
   _networkEntity: {fileID: 1259357564330911874}
   _inputSourceComponent: {fileID: 1231098527604241315}
-  _behaviourStateMachine: {fileID: 4125976174204342296}
-  _disabledState: {fileID: 3524133119621996886}
-  _targetSelectionState: {fileID: 4206805771678922955}
-  _waitingState: {fileID: 8792766857729800281}
-  _chasingState: {fileID: 2694764230141271905}
   _abilityCollectionComponent: {fileID: 2947910090444434332}
   _movementStateComponent: {fileID: 3526974178999751230}
-  _movementStateMachine: {fileID: 1916683656827304820}
-  _idleState: {fileID: 584413201904313257}
-  _locomotionState: {fileID: 2642395670431192166}
 --- !u!114 &4465512277710050909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,6 +286,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyMovementAbilityCollectionComponent
   _abilityComponents: []
+--- !u!114 &6596406854792392511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2524859144858559395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cc475d105998ec45ad9cc9cd98c77e9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.CombatHurtboxComponent
+  _shape:
+    _shapeType: 0
+    _offset: {x: 0, y: 0.2}
+    _radius: 0.25
+    _size: {x: 0, y: 0}
+    _rotationDegrees: 0
+--- !u!114 &7231880537655156453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2524859144858559395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfbb5d448924ca34dba3ae12070ce4b9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.CombatDebugVisualizationComponent
+  _hurtbox: {fileID: 6596406854792392511}
+  _contactSource: {fileID: 0}
+  _contactHighlightSeconds: 0.2
 --- !u!1 &3359975923103764214
 GameObject:
   m_ObjectHideFlags: 0

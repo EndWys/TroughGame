@@ -26,7 +26,7 @@ namespace ProjectCore.Prototype
             _poseDataMutator = poseDataMutator;
         }
         
-        public override void Init()
+        protected override void OnInitialize()
         {
             if (!ShouldPerformPoseControl())
             {

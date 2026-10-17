@@ -37,7 +37,7 @@ namespace ProjectCore.Prototype
             _climbDetectorDataMutator.ChangeCurrentWallNormal(hit ? hitInfo.normal : Vector3.zero);
         }
 
-        public override void NetworkTick()
+        protected override void OnNetworkTick()
         {
             if (!ShouldPerformCheck())
             {

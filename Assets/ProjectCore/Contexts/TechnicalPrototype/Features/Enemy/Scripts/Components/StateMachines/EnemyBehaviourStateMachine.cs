@@ -14,7 +14,7 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private EnemyBehaviourWaitingState _waitingState;
         [SerializeField] private EnemyBehaviourChasingState _chasingState;
 
-        public override void Init()
+        protected override void OnInitialize()
         {
             InitializeStateMachine();
 
@@ -41,7 +41,7 @@ namespace ProjectCore.TechnicalPrototype
             };
         }
 
-        public override void NetworkTick()
+        protected override void OnNetworkTick()
         {
             if (!ParentNetworkBehaviour.HasStateAuthority)
             {

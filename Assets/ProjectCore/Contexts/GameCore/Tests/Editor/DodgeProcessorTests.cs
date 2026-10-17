@@ -161,6 +161,8 @@ namespace ProjectCore.GameCore
         private sealed class TestMovementStateTimerAccessor :
             IMovementStateTimerAccessor
         {
+            public int? StateTimerEndTick { get; set; }
+
             public bool IsStateTimerFinished { get; set; }
         }
 

@@ -20,6 +20,7 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private PlayerNetworkEntityComponent _playerNetworkEntity;
         [SerializeField] private PlayerInputSourceComponent _inputSource;
         [SerializeField] private TransformMovementBodyComponent _movementBody;
+        [SerializeField] private CombatHitProbeComponent _combatHitProbe;
 
         public void DrawDebug(DebugVisualizationContextAdapter context)
         {
@@ -30,6 +31,7 @@ namespace ProjectCore.TechnicalPrototype
 
             Vector3 bodyPosition = ToWorldPosition(_movementBody.Position);
             DrawState(context, bodyPosition);
+            DrawCombat(context);
             DrawMovement(context, bodyPosition);
             DrawInput(context, bodyPosition);
             DrawNetwork(context);
@@ -44,6 +46,32 @@ namespace ProjectCore.TechnicalPrototype
                 StateChannel,
                 "Action Timer",
                 GetTimerStatus(_playerNetworkEntity.MovementStateTimer));
+        }
+
+        private void DrawCombat(DebugVisualizationContextAdapter context)
+        {
+            if (_playerNetworkEntity.Object == null || !_playerNetworkEntity.Object.IsValid) return;
+            CombatActionSnapshotData action = _playerNetworkEntity.ActionSnapshot;
+            context.Value("Player/Combat", "Phase", action.Phase);
+            context.Value("Player/Combat", "Execution", action.ExecutionId);
+            context.Value("Player/Combat", "Combo Window", action.CanStartNextAction);
+            if (_combatHitProbe == null) return;
+            context.Value("Player/Combat", "Contacts This Tick", _combatHitProbe.LastContactCount);
+            if (action.Kind != CombatActionKind.Attack || action.Phase != CombatActionPhase.Active) return;
+            CombatShapeData shape = _combatHitProbe.LastShape;
+            if (shape.ShapeType == CombatShapeType.Circle)
+            {
+                context.Radius2D(shape.Center, shape.Radius, "Player/Combat");
+                return;
+            }
+            Quaternion rotation = Quaternion.Euler(0f, 0f, shape.RotationDegrees);
+            Vector3 center = shape.Center;
+            Vector3 x = rotation * new Vector3(shape.HalfExtents.x, 0f, 0f);
+            Vector3 y = rotation * new Vector3(0f, shape.HalfExtents.y, 0f);
+            context.Line(center - x - y, center + x - y, "Player/Combat");
+            context.Line(center + x - y, center + x + y, "Player/Combat");
+            context.Line(center + x + y, center - x + y, "Player/Combat");
+            context.Line(center - x + y, center - x - y, "Player/Combat");
         }
 
         private void DrawMovement(DebugVisualizationContextAdapter context, Vector3 bodyPosition)

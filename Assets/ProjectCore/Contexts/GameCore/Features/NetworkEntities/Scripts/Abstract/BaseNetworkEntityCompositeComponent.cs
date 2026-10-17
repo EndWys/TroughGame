@@ -10,20 +10,32 @@ namespace ProjectCore.GameCore
 
         public override IReadOnlyList<INetworkEntityComponent> Components => _components;
 
-        public override void Init()
+        protected override void OnInitialize()
         {
             SetComponents(CreateComponents());
             InitComponents();
         }
 
-        public override void NetworkTick()
+        protected override void OnNetworkTick()
         {
             NetworkTickComponents();
         }
 
-        public override void ClientRender()
+        protected override void OnClientRender()
         {
             ClientRenderComponents();
+        }
+
+        protected override void OnResetLocalRuntime()
+        {
+            try
+            {
+                NetworkEntityComponentLifecycleProcessor.ResetComponents(_components);
+            }
+            finally
+            {
+                _components.Clear();
+            }
         }
 
         protected abstract IEnumerable<INetworkEntityComponent> CreateComponents();

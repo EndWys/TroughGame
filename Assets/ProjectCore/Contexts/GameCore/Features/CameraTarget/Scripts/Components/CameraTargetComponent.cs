@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 using Zenject;
@@ -7,13 +6,9 @@ using Zenject;
 namespace ProjectCore.GameCore
 {
     public sealed class CameraTargetComponent :
-        NetworkBehaviour,
-        INetworkEntityComponent,
+        BaseNetworkEntityBehaviourComponent,
         ICameraTarget
     {
-        private static readonly IReadOnlyList<INetworkEntityComponent> _emptyComponents =
-            Array.Empty<INetworkEntityComponent>();
-
         private ICameraTargetRegistry _cameraTargetRegistry;
 
         [Inject]
@@ -25,9 +20,7 @@ namespace ProjectCore.GameCore
 
         public Transform TargetTransform => transform;
 
-        public IReadOnlyList<INetworkEntityComponent> Components => _emptyComponents;
-
-        public void Init()
+        protected override void OnInitialize()
         {
             if (HasInputAuthority)
             {
@@ -35,22 +28,19 @@ namespace ProjectCore.GameCore
             }
         }
 
-        public void NetworkTick()
+        protected override void OnResetLocalRuntime()
         {
-        }
-
-        public void ClientRender()
-        {
+            _cameraTargetRegistry?.Unregister(this);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
-            _cameraTargetRegistry?.Unregister(this);
+            ResetLocalRuntime();
         }
 
         private void OnDestroy()
         {
-            _cameraTargetRegistry?.Unregister(this);
+            ResetLocalRuntime();
         }
     }
 }

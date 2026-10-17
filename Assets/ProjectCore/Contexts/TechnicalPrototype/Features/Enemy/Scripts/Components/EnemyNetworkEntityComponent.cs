@@ -15,6 +15,8 @@ namespace ProjectCore.TechnicalPrototype
         IEnemyDashStateMutator
     {
         [SerializeField] private EnemyInputSourceComponent _inputSourceComponent;
+        [SerializeField] private CombatHurtboxComponent _combatHurtboxComponent;
+        [SerializeField] private CombatDebugVisualizationComponent _combatDebugVisualizationComponent;
         [SerializeField] private EnemyBehaviourStateMachine _behaviourStateMachine;
         [SerializeField] private EnemyAbilityCollectionComponent _abilityCollectionComponent;
         [SerializeField] private EnemyMovementStateComponent _movementStateComponent;
@@ -42,11 +44,13 @@ namespace ProjectCore.TechnicalPrototype
             return new INetworkEntityComponent[]
             {
                 _inputSourceComponent,
+                _combatHurtboxComponent,
                 _abilityCollectionComponent,
                 _behaviourStateMachine,
                 _movementStateComponent,
                 _movementStateMachine,
                 _movementBodyComponent,
+                _combatDebugVisualizationComponent,
             };
         }
 
@@ -54,6 +58,7 @@ namespace ProjectCore.TechnicalPrototype
         {
             transform.SetParent(_entitiesContainer, true);
         }
+
 
         public EnemyBehaviourStateType CurrentState => CurrentBehaviourState;
 
@@ -74,6 +79,8 @@ namespace ProjectCore.TechnicalPrototype
 
         public bool IsDashCooldownFinished =>
             !DashCooldownTimer.IsRunning || DashCooldownTimer.ExpiredOrNotRunning(Runner);
+
+        public int? StateTimerEndTick => DashActionTimer.IsRunning ? DashActionTimer.TargetTick : null;
 
         public bool IsStateTimerFinished => IsDashActionFinished;
 

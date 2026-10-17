@@ -9,6 +9,7 @@ namespace ProjectCore.TechnicalPrototype
     [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "ProjectCore.TechnicalPrototype", sourceAssembly: "ProjectCore.Runtime", sourceClassName: "IdleState")]
     public sealed class PlayerIdleState : BaseMovementState<PlayerMovementState, PlayerMovementPayload>
     {
+        [SerializeField] private TransformMovementBodyComponent _movementBody;
         private IInputBufferController _inputBufferController;
         private IPlayerFacingDirectionMutator _facingDirectionMutator;
 
@@ -21,13 +22,14 @@ namespace ProjectCore.TechnicalPrototype
             _facingDirectionMutator = facingDirectionMutator;
         }
 
-        public override void Enter() { }
+        public override void Enter() { ((IMovementBodyVelocityMutator)_movementBody).Velocity = Vector2.zero; }
 
         public override void Exit() { }
 
         protected override IReadOnlyList<IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>>
             CreateMovementProcessors()
         {
+            if (_movementBody == null) throw new InvalidOperationException("Idle state requires a movement body.");
             if (_inputBufferController == null)
             {
                 throw new InvalidOperationException("Idle state requires an input buffer controller.");
@@ -42,10 +44,6 @@ namespace ProjectCore.TechnicalPrototype
             {
                 new PlayerFourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload>(
                     facingDirectionMutator: _facingDirectionMutator),
-                new DodgeTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
-                    inputBufferController: _inputBufferController,
-                    dodgeCommandId: MovementInputCommandConstants.DodgeCommandId,
-                    dodgeMovementState: PlayerMovementState.Dodge),
                 new DirectionalLocomotionTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
                     locomotionMovementState: PlayerMovementState.Locomotion),
             };

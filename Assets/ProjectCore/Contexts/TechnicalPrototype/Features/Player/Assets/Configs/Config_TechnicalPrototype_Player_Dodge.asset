@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.DodgeMovementConfig
   _speed: 8
   _durationSeconds: 0.2
+  _preparationSeconds: 0.03
+  _recoverySeconds: 0.1

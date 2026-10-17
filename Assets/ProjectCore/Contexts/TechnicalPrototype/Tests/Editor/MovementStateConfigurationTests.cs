@@ -18,6 +18,113 @@ namespace ProjectCore.TechnicalPrototype
         private PlayerDodgeState _dodgeState;
         private EnemyDashState _dashState;
 
+        [TestCase(DodgeMovementPhase.Preparation)]
+        [TestCase(DodgeMovementPhase.Active)]
+        [TestCase(DodgeMovementPhase.Recovery)]
+        public void DodgeMovementUsesOnlyItsMovementPhase(DodgeMovementPhase phase)
+        {
+            var body = new MovementVelocityMutator();
+            var dodge = new PlayerDodgeMovementProcessor(body, _dodgeConfig, () => phase);
+            Assert.That(dodge.Execute(new PlayerMovementPayload(Vector2.right), out _), Is.False);
+            Assert.That(body.Velocity, Is.EqualTo(phase == DodgeMovementPhase.Active ? Vector2.right * 8f : Vector2.zero));
+        }
+
+        [Test]
+        public void AttackEnterStopsVelocityWithoutACombatDependency()
+        {
+            var attack = _player.AddComponent<PlayerAttackState>();
+            var body = _player.GetComponent<TransformMovementBodyComponent>();
+            SetField(attack, "_movementBody", body);
+            attack.Init();
+            _player.GetComponent<IMovementBodyVelocityMutator>().Velocity = Vector2.one;
+            attack.Enter();
+            Assert.That(body.Velocity, Is.EqualTo(Vector2.zero));
+            Assert.That(attack.Tick(new PlayerMovementPayload(Vector2.right)), Is.EqualTo(PlayerMovementState.Attack));
+        }
+
+        [TestCase(0, DodgeMovementPhase.Preparation)]
+        [TestCase(1, DodgeMovementPhase.Preparation)]
+        [TestCase(2, DodgeMovementPhase.Active)]
+        [TestCase(13, DodgeMovementPhase.Active)]
+        [TestCase(14, DodgeMovementPhase.Recovery)]
+        [TestCase(19, DodgeMovementPhase.Recovery)]
+        [TestCase(20, DodgeMovementPhase.None)]
+        public void DodgeBoundariesUseTheSingleMovementEndTick(int elapsed, DodgeMovementPhase expected)
+        {
+            var timing = new DodgeTimingData(2, 12, 6);
+            Assert.That(DodgePhaseUtility.Evaluate(timing, 120, 100 + elapsed), Is.EqualTo(expected));
+            int start = int.MaxValue - 4;
+            Assert.That(DodgePhaseUtility.Evaluate(timing, unchecked(start + 20), unchecked(start + elapsed)), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void DodgeQuantizesPhasesSeparatelyAndHasNoEarlyRecoveryWindow()
+        {
+            DodgeTimingData timing = MovementConfigValidation.CompileDodgeTiming(_dodgeConfig, 1f / 72f);
+            Assert.That(timing.PreparationTicks, Is.EqualTo(3));
+            Assert.That(timing.ActiveTicks, Is.EqualTo(15));
+            Assert.That(timing.RecoveryTicks, Is.EqualTo(8));
+            Assert.That(timing.TotalTicks, Is.EqualTo(26));
+            Assert.That(DodgePhaseUtility.Evaluate(timing, null, 0), Is.EqualTo(DodgeMovementPhase.None));
+        }
+
+        [Test]
+        public void MovementGraphBuildsAndMovesWithoutCombatBindings()
+        {
+            var root = _player.AddComponent<MovementOnlyRoot>();
+            var machine = _player.AddComponent<PlayerMovementStateMachine>();
+            var idle = _player.AddComponent<PlayerIdleState>();
+            var locomotion = _player.AddComponent<PlayerLocomotionState>();
+            var config = ScriptableObject.CreateInstance<LocomotionMovementConfig>();
+            try
+            {
+                var body = _player.GetComponent<TransformMovementBodyComponent>();
+                SetField(machine, "_idleState", idle);
+                SetField(machine, "_locomotionState", locomotion);
+                SetField(idle, "_movementBody", body);
+                SetField(locomotion, "_movementBody", body);
+                SetField(locomotion, "_locomotionMovementConfig", config);
+                var state = new MovementOnlyState();
+                var container = new DiContainer();
+                container.Bind<INetworkBehaviourAccessor>().FromInstance(_player.GetComponent<INetworkBehaviourAccessor>());
+                container.Bind<INetworkEntityIdAccessor>().FromInstance(_player.GetComponent<INetworkEntityIdAccessor>());
+                container.Bind<Shared.IStateDataMutator<PlayerMovementState>>().FromInstance(state);
+                container.Bind<IMovementStateDataMutator<PlayerMovementState>>().FromInstance(state);
+                container.Bind<IInputBufferController>().FromInstance(new InitializationInputController());
+                container.Bind<IPlayerFacingDirectionMutator>().FromInstance(new MovementOnlyFacing());
+                Assert.DoesNotThrow(() => { container.Inject(machine); container.Inject(idle); container.Inject(locomotion); });
+                Assert.That(machine.CreateStatesDictionary().Keys, Is.EquivalentTo(new[] { PlayerMovementState.Idle, PlayerMovementState.Locomotion }));
+                idle.Init();
+                locomotion.Init();
+                Assert.That(idle.Tick(new PlayerMovementPayload(Vector2.right)), Is.EqualTo(PlayerMovementState.Locomotion));
+                locomotion.Tick(new PlayerMovementPayload(Vector2.right));
+                Assert.That(body.Velocity.x, Is.GreaterThan(0f));
+            }
+            finally { Object.DestroyImmediate(config); }
+        }
+
+        public sealed class MovementOnlyRoot : BaseNetworkEntityRoot
+        {
+            protected override System.Collections.Generic.IEnumerable<INetworkEntityComponent> CreateComponents() =>
+                System.Array.Empty<INetworkEntityComponent>();
+        }
+
+        private sealed class MovementOnlyState : IMovementStateDataMutator<PlayerMovementState>
+        {
+            public PlayerMovementState CurrentState { get; private set; }
+            public PlayerMovementState PreviousState { get; private set; }
+            public PlayerMovementState CurrentMovementStates => CurrentState;
+            public PlayerMovementState PreviousMovementStates => PreviousState;
+            public void ChangeMovementState(PlayerMovementState state) => ChangeState(state);
+            public void ChangeState(PlayerMovementState state) { PreviousState = CurrentState; CurrentState = state; }
+        }
+
+        private sealed class MovementOnlyFacing : IPlayerFacingDirectionMutator
+        {
+            public PlayerFacingDirection FacingDirection { get; private set; }
+            public void SetFacingDirection(PlayerFacingDirection facing) { FacingDirection = facing; }
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -38,6 +145,7 @@ namespace ProjectCore.TechnicalPrototype
             var container = new DiContainer();
             var movementState = new InitializationMovementState();
             container.Bind<IInputBufferController>().FromInstance(new InitializationInputController());
+            container.Bind<IPlayerMediator>().FromInstance(new InitializationMediator());
             container.Bind<IMovementStateTimerMutator>().FromInstance((IMovementStateTimerMutator)movementState);
             container.Bind<IEnemyDashStateMutator>().FromInstance((IEnemyDashStateMutator)movementState);
             container.Bind<IMovementObstacleProbe>().FromInstance(new InitializationObstacleProbe());
@@ -90,6 +198,11 @@ namespace ProjectCore.TechnicalPrototype
                 .SetValue(target, value);
         }
 
+        private sealed class MovementVelocityMutator : IMovementBodyVelocityMutator
+        {
+            public Vector2 Velocity { get; set; }
+        }
+
         private sealed class InitializationInputController : IInputBufferController
         {
             public bool IsLocked => throw new InvalidOperationException("Initialization must not read input.");
@@ -107,6 +220,12 @@ namespace ProjectCore.TechnicalPrototype
                 throw new InvalidOperationException("Initialization must not end an action.");
         }
 
+        private sealed class InitializationMediator : IPlayerMediator
+        {
+            public void Notify(Shared.HandlerPayload payload) =>
+                throw new InvalidOperationException("Initialization must not publish gameplay messages.");
+        }
+
         private sealed class InitializationObstacleProbe : IMovementObstacleProbe
         {
             public bool TryProbe(
@@ -116,6 +235,8 @@ namespace ProjectCore.TechnicalPrototype
 
         private sealed class InitializationMovementState : IMovementStateTimerMutator, IEnemyDashStateMutator
         {
+            public int? StateTimerEndTick => throw new InvalidOperationException("Initialization must not read a timer.");
+            public void StartStateTimerTicks(int ticks) => throw new InvalidOperationException("Initialization must not start a timer.");
             public bool IsStateTimerFinished => throw new InvalidOperationException("Unexpected timer read.");
             public Vector2 DashTargetPosition => throw new InvalidOperationException("Unexpected dash state read.");
             public Vector2 DashDirection => throw new InvalidOperationException("Unexpected dash state read.");
@@ -123,9 +244,6 @@ namespace ProjectCore.TechnicalPrototype
             public bool IsDashCooldownFinished => throw new InvalidOperationException("Unexpected dash state read.");
             public TickTimer DashActionTimer => throw new InvalidOperationException("Unexpected dash timer read.");
             public TickTimer DashCooldownTimer => throw new InvalidOperationException("Unexpected dash timer read.");
-
-            public void StartStateTimer(float durationSeconds) =>
-                throw new InvalidOperationException("Initialization must not start a timer.");
 
             public void StopStateTimer() =>
                 throw new InvalidOperationException("Initialization must not stop a timer.");

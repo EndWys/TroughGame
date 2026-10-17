@@ -4,6 +4,7 @@ using ProjectCore.GameCore;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
@@ -18,6 +19,61 @@ namespace ProjectCore.TechnicalPrototype
             "Assets/ProjectCore/Contexts/TechnicalPrototype/Features/" +
             "Player/Assets/Animations";
         private const float DodgeDurationSeconds = 0.2f;
+
+        [Test]
+        public void CombatReferencesProfilesAndAttackBindingsAreConfigured()
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+            var root = prefab.GetComponent<PlayerNetworkEntityComponent>();
+            var action = prefab.GetComponent<PlayerCombatActionComponent>();
+            var controller = prefab.GetComponent<PlayerActionControllerComponent>();
+            var probe = prefab.GetComponent<CombatHitProbeComponent>();
+            var hurtbox = prefab.GetComponent<CombatHurtboxComponent>();
+            Assert.That(root, Is.InstanceOf<ICombatActionMutator>());
+            Assert.That(action, Is.Not.Null);
+            Assert.That(controller, Is.Not.Null);
+            Assert.That(probe, Is.Not.Null);
+            Assert.That(hurtbox, Is.Not.Null);
+            var serializedRoot = new SerializedObject(root);
+            Assert.That(serializedRoot.FindProperty("_playerActionComponent").objectReferenceValue, Is.SameAs(action));
+            Assert.That(serializedRoot.FindProperty("_actionControllerComponent").objectReferenceValue, Is.SameAs(controller));
+            var serializedController = new SerializedObject(controller);
+            Assert.That(serializedController.FindProperty("_inputSource").objectReferenceValue,
+                Is.SameAs(prefab.GetComponent<PlayerInputSourceComponent>()));
+            Assert.That(serializedController.FindProperty("_combatAction").objectReferenceValue, Is.SameAs(action));
+            Assert.That(serializedController.FindProperty("_movementStateMachine").objectReferenceValue,
+                Is.SameAs(prefab.GetComponentInChildren<PlayerMovementStateMachine>()));
+            Assert.That(serializedController.FindProperty("_dodgeState").objectReferenceValue,
+                Is.SameAs(prefab.GetComponentInChildren<PlayerDodgeState>()));
+            Assert.That(serializedRoot.FindProperty("_combatHitProbeComponent").objectReferenceValue, Is.SameAs(probe));
+            Assert.That(serializedRoot.FindProperty("_combatHurtboxComponent").objectReferenceValue, Is.SameAs(hurtbox));
+            var serializedAction = new SerializedObject(action);
+            var attack = (CombatAttackConfig)serializedAction.FindProperty("_attackConfig").objectReferenceValue;
+            var dodge = (DodgeMovementConfig)new SerializedObject(
+                prefab.GetComponentInChildren<PlayerDodgeState>()).FindProperty("_dodgeMovementConfig").objectReferenceValue;
+            Assert.That(attack, Is.Not.Null);
+            Assert.That(dodge, Is.Not.Null);
+            Assert.That(attack.ActionProfile.Kind, Is.EqualTo(CombatActionKind.Attack));
+            Assert.That(serializedAction.FindProperty("_dodgePhaseProfile"), Is.Null);
+            Assert.That(serializedAction.FindProperty("_movementBody"), Is.Null);
+            Assert.That(root, Is.InstanceOf<IEntityPositionAccessor>());
+            Assert.That(new SerializedObject(probe).FindProperty("_attackConfig"), Is.Null);
+            Assert.That(root, Is.InstanceOf<ICombatAttackResolver>());
+            Assert.That(probe, Is.InstanceOf<ICombatContactAccessor>());
+            Assert.That(new SerializedObject(prefab.GetComponent<PlayerNetworkEntityInstaller>())
+                .FindProperty("_movementBodyComponent"), Is.Null);
+            Assert.DoesNotThrow(() => CombatShapeValidation.ValidateSettings(attack.Hitbox));
+            Assert.DoesNotThrow(() => CombatActionProfileValidation.CompileTiming(attack.ActionProfile, 1f / 60f));
+            Assert.DoesNotThrow(() => MovementConfigValidation.CompileDodgeTiming(dodge, 1f / 60f));
+            var movement = prefab.transform.Find("Movement").GetComponent<PlayerMovementStateMachine>();
+            Assert.That(new SerializedObject(movement).FindProperty("_attackState").objectReferenceValue,
+                Is.SameAs(movement.GetComponent<PlayerAttackState>()));
+            var inputs = AssetDatabase.LoadAssetAtPath<InputActionAsset>(
+                "Assets/ProjectCore/Contexts/TechnicalPrototype/Assets/InputActions/InputActions_TechnicalPrototype.inputactions");
+            var attackInput = inputs.FindAction(PlayerInputActionConstants.Attack, true);
+            Assert.That(attackInput.bindings.Select(binding => binding.path), Does.Contain("<Mouse>/leftButton"));
+            Assert.That(attackInput.bindings.Select(binding => binding.path), Does.Contain("<Gamepad>/buttonWest"));
+        }
 
         [Test]
         public void PlayerPrefabComposesNetworkAndMovementModules()

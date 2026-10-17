@@ -23,7 +23,7 @@ namespace ProjectCore.Prototype
 
         private List<Action<HandlerPayload>> _handlers;
 
-        public override void Init()
+        protected override void OnInitialize()
         {
             _handlers = new List<Action<HandlerPayload>>
             {
@@ -31,7 +31,7 @@ namespace ProjectCore.Prototype
                 HandleDamageTaken,
             };
 
-            base.Init();
+            base.OnInitialize();
         }
 
         public void Notify(HandlerPayload payload)
