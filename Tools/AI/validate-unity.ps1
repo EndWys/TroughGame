@@ -149,7 +149,7 @@ function Invoke-UnityCli {
 function Invoke-PipelineCommand {
     param([string]$Label, [string[]]$CommandArguments)
 
-    $arguments = @('command') + $CommandArguments + @('--project-path', $projectRoot, '--caller', 'plugin', '--skill', 'unity-feature-development', '--format', 'json', '--no-banner', '--no-pager')
+    $arguments = @('command') + $CommandArguments + @('--project-path', $projectRoot, '--caller', 'plugin', '--skill', 'unity-feature-implementation-v2', '--format', 'json', '--no-banner', '--no-pager')
     return Invoke-UnityCli -Label $Label -Arguments $arguments
 }
 

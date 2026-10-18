@@ -1,5 +1,17 @@
 # Workflow Version History
 
+## V2 Activation — 2026-10-19
+
+- The accepted `unity-feature-development-v2` pack is now the only feature workflow.
+  Its skills, stage order, response formats and templates remain unchanged.
+- Removed the legacy aggregator/references, shared feature templates, workflow
+  description, porting report and original DOCX source.
+- Removed the legacy state audit/evidence-cleanup scripts and their regression cases.
+  Connected-Editor validation and its success/failure checks remain.
+- Updated documentation, UI and Notion references to the accepted V2 entry and paths.
+
+The entries below are historical changes, not instructions for the active workflow.
+
 ## 1.7-tg.1 / Manual Bugfix 2.0 — 2026-10-17
 
 - Feature workflow entry is manual-only: explicit `unity-feature-development`

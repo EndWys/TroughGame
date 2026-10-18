@@ -27,12 +27,10 @@ No new pages/tasks, historical cleanup or broad documentation refresh is implied
 
 ## Order and Completion
 
-After all subtasks: `final_verification` → `workflow_audit` → developer final readiness
-acceptance → `notion_finalization` → `retrospective` → `complete`.
-Knowledge promotion is an optional local substep of retrospective, preserving its
-exact-change approval/check/commit rules. Finalization is the penultimate stage;
-retrospective is the final process-revision stage. Audit retains its existing position
-before readiness, so publication never precedes whole-feature acceptance.
+After all subtasks: developer whole-feature `acceptance` → `notion_finalization`
+→ `retrospective` → `complete`. The [coordinator](../../.agents/skills/unity-feature-development-v2/SKILL.md)
+owns this route. Finalization is the penultimate stage; publication never precedes
+whole-feature acceptance.
 No Notion targets: record not applicable locally without spawning a worker.
 Partial/blocked publication preserves accepted development; report both outcomes and
 retry finalization only. Do not mark synchronization complete until readback succeeds.
@@ -49,10 +47,7 @@ Standalone bugs have no automatic Notion operation; embedded fixes remain local 
 whole-feature finalization. Separate explicit non-workflow Notion requests are separate
 tasks and never create recurring publication hooks or broaden these two skills.
 
-This timing restriction applies immediately to active features, superseding old
-publication/refresh instructions without replaying completed work or rewriting state.
-New states use the current CHANGELOG version; active states keep their version and accepted gates.
-Record the new finalization stage when reached; no new implementation approval needed.
+Use the coordinator's state template and preserve existing accepted decisions.
 
 ## Source Authority
 

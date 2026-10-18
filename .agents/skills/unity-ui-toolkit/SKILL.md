@@ -44,7 +44,7 @@ check versioned API/USS support rather than copying blanket plugin prohibitions.
 ## Ownership and Inputs
 
 Identify the owning feature and any active host FEAT or bug case and approved scope. For direct UI
-requests, use `unity-feature-development` only if the developer has explicitly
+requests, use `unity-feature-development-v2` only if the developer has explicitly
 invoked it for that feature. Do not invoke it or create feature state automatically.
 Otherwise handle UI work within the developer's authorized scope. Defects and
 existing-UI improvements use applicable host scope/approvals without fabricating

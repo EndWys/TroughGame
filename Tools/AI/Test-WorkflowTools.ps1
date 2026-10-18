@@ -7,10 +7,8 @@ $previousScenario = $env:TROUGH_WORKFLOW_TEST_SCENARIO
 $testRoot = Join-Path $env:TEMP ('trough-workflow-tests-' + [guid]::NewGuid().ToString('N'))
 $fixtureRoot = Join-Path $testRoot 'project'
 $fixtureTools = Join-Path $fixtureRoot 'Tools/AI'
-$fixtureFeature = Join-Path $fixtureRoot '.ai/features/smoke-test'
-$fixtureEvidence = Join-Path $fixtureRoot '.ai/evidence'
-New-Item -ItemType Directory -Path $fixtureTools, $fixtureFeature, $fixtureEvidence -Force | Out-Null
-Copy-Item -Path (Join-Path $PSScriptRoot '*.ps1') -Destination $fixtureTools
+New-Item -ItemType Directory -Path $fixtureTools -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'validate-unity.ps1') -Destination $fixtureTools
 
 function Assert-True {
     param([bool]$Condition, [string]$Message)
@@ -25,50 +23,6 @@ function Invoke-Fixture {
 }
 
 try {
-    $null = git -C $fixtureRoot init --quiet
-    Assert-True ($LASTEXITCODE -eq 0) 'Could not initialize fixture repository.'
-    Set-Content -LiteralPath (Join-Path $fixtureFeature 'state.yaml') -Encoding utf8 -Value @'
-workflow_version: "1.7-tg.1"
-feature: smoke-test
-stage: requirements
-status: in_progress
-last_updated_at: "2026-10-12T00:00:00Z"
-decisions: []
-approvals: []
-validation_evidence:
-'@
-    Set-Content -LiteralPath (Join-Path $fixtureFeature 'decisions.md') -Value '# Feature Decisions'
-    $audit = Invoke-Fixture 'workflow-audit.ps1' @('-Feature', 'smoke-test')
-    $auditResult = $audit.Output | ConvertFrom-Json
-    Assert-True ($audit.ExitCode -eq 0 -and $auditResult.audit_status -eq 'complete') 'Valid state audit failed.'
-    $missing = Invoke-Fixture 'workflow-audit.ps1' @('-Feature', 'missing-feature')
-    $missingResult = $missing.Output | ConvertFrom-Json
-    Assert-True ($missing.ExitCode -eq 6 -and $missingResult.summary.errors -gt 0) 'Missing state was not detected.'
-
-    $runRoot = Join-Path $fixtureEvidence 'validation/smoke-run'
-    $otherRoot = Join-Path $fixtureEvidence 'validation/other-run'
-    New-Item -ItemType Directory -Path $runRoot, $otherRoot -Force | Out-Null
-    Set-Content -LiteralPath (Join-Path $runRoot 'result.json') -Value '{}'
-    Set-Content -LiteralPath (Join-Path $otherRoot 'result.json') -Value '{}'
-    Add-Content -LiteralPath (Join-Path $fixtureFeature 'state.yaml') -Value @'
-  - id: VAL-001
-    result_path: .ai/evidence/validation/smoke-run/result.json
-'@
-    $preview = Invoke-Fixture 'cleanup-feature-evidence.ps1' @('-Feature', 'smoke-test', '-WhatIf')
-    Assert-True ($preview.ExitCode -eq 0 -and (Test-Path -LiteralPath $runRoot)) 'Dry-run deleted evidence.'
-    Assert-True ($preview.Output -match 'dry_run') 'Dry-run status was not reported.'
-    $cleanup = Invoke-Fixture 'cleanup-feature-evidence.ps1' @('-Feature', 'smoke-test')
-    Assert-True ($cleanup.ExitCode -eq 0 -and -not (Test-Path -LiteralPath $runRoot)) 'Scoped cleanup failed.'
-    Assert-True (Test-Path -LiteralPath $otherRoot) 'Cleanup removed unrelated evidence.'
-    $unsafe = Invoke-Fixture 'cleanup-feature-evidence.ps1' @('-Feature', 'smoke-test', '-EvidenceRoot', $fixtureRoot)
-    Assert-True ($unsafe.ExitCode -ne 0 -and (Test-Path -LiteralPath $fixtureFeature)) 'Unsafe root was accepted.'
-    Add-Content -LiteralPath (Join-Path $fixtureFeature 'state.yaml') -Value @'
-  - id: VAL-002
-    result_path: .ai/evidence/validation/result.json
-'@
-    $bucket = Invoke-Fixture 'cleanup-feature-evidence.ps1' @('-Feature', 'smoke-test')
-    Assert-True ($bucket.Output -match 'Shared evidence bucket' -and (Test-Path -LiteralPath $otherRoot)) 'Shared evidence bucket was not protected.'
-
     $cliScript = Join-Path $testRoot 'fake-cli.ps1'
     Set-Content -LiteralPath $cliScript -Value @'
 $command = $args[1]
@@ -101,7 +55,7 @@ exit 0
         catch { throw "Invalid validation JSON for $($case.Scenario) (exit $($validation.ExitCode)): $($validation.Output)" }
         Assert-True ($validation.ExitCode -eq $case.Exit -and $result.status -eq $case.Status) "Validation scenario failed: $($case.Scenario)"
     }
-    Write-Output 'Workflow tool regression checks: passed (audit, cleanup boundaries/dry-run, validation success/rejection/inconclusive/failure).'
+    Write-Output 'Workflow tool regression checks: passed (validation success/rejection/inconclusive/failure).'
 }
 finally {
     if ($null -eq $previousScenario) { Remove-Item Env:TROUGH_WORKFLOW_TEST_SCENARIO -ErrorAction SilentlyContinue }

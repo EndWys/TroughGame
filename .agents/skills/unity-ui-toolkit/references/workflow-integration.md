@@ -12,14 +12,14 @@ diagnostics/correction/retest; ordinary UI defects remain host corrections. No U
 1. During research inspect UI sources, services and reusable assets. Include the
    UI outcome and validation in the approved feature plan; do not add a subtask
    just because this skill is invoked.
-2. In `subtask_architecture`, present hierarchy, resources, exact types/contracts,
+2. In `architecture`, present hierarchy, resources, exact types/contracts,
    lifecycle, bindings, input and validation using the UI response forms. One
    architecture approval covers these sections; no duplicate skill approval.
    Use MVVM by default; an MVP choice includes its concrete comparison and View/
    Presenter ownership. Record the accepted pattern/revision in the same artifact.
 3. During `implementation`, build the approved visual prototype and present render
-   evidence. Record acceptance in the existing approvals as `gate: review` with
-   subject `UI visual prototype: <view>, revision <n>` and the actual decision.
+   evidence. Return the actual prototype decision and revision to the coordinator
+   for its existing subtask state.
    Keep the subtask in progress; this is not its final developer review/audit.
 4. After prototype acceptance implement complete behavior, audit and present the
    final relevant diff through the host's developer-review/Play Mode gates.
@@ -27,10 +27,9 @@ diagnostics/correction/retest; ordinary UI defects remain host corrections. No U
    after its required acceptance/checks. No UI-stage Notion dispatch; retain accepted
    specification decisions for whole-feature finalization.
 
-Store UI plan/revision/prototype decisions in `subtasks/FEAT-XX.md`; temporary
-screenshots/logs belong in ignored `.ai/evidence/`. Link evidence instead of
-putting screenshot data in YAML. Existing state versions are not silently migrated;
-agree introduction of new prototype gates before resuming an older active task.
+Keep the UI plan in `subtasks/<subtask>/architecture.md`; the coordinator records
+prototype decisions in its existing state. Temporary screenshots/logs belong in
+ignored `.ai/evidence/`; link evidence instead of putting screenshot data in YAML.
 
 ## Defect Corrections and Manual Bugfix Integration
 
