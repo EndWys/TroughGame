@@ -50,12 +50,11 @@ Next: [code audit](ai-code-audit.md), review of the same diff, then Play Mode.
 
 ## Current Subtask Defect
 
-An implementation/check/audit/review/Play Mode defect invokes embedded `unity-bugfix`
-and its [response forms](../../unity-bugfix/references/response-formats.md):
-expected/actual, causal evidence, fix or approved diagnostic plan, iterations,
-exact changes/review/retest. Preserve FEAT/interruption and one host state.
-Do not create standalone bug state. Scope/design revision uses host gates;
-matching check/review/checkpoint evidence is not duplicated.
+Show expected/actual behavior, relevant evidence, correction and actual verification
+within the current FEAT. Existing audit/review/Play Mode gates remain; a defect does
+not start an extra workflow, case/state file or mandatory bugfix response format.
+Do not invoke/load `unity-bugfix` unless the developer explicitly commands it.
+If manually requested, reuse the same feature artifact/case and checkpoint.
 
 ## Scope or Architecture Revision
 
@@ -113,9 +112,18 @@ remains visible for a decision/retrospective; `not_available` does not skip the 
 Record developer presentation only after sending the response. Findings do not
 authorize automatic policy changes.
 
+## Notion Finalization
+
+After whole-feature final readiness acceptance and before retrospective, explicitly
+load `../../notion-feature-finalization/SKILL.md`. Pass exact task/feature targets,
+desired statuses and short accepted specification/plan deltas. No intermediate
+workflow reports. Show confirmed/pending outcomes from remote readback, or record
+not applicable without a worker if there are no Notion targets. Retain that outcome
+in main-agent-owned `notion-finalization.md`; retry this stage only.
+
 ## Retrospective
 
-After final acceptance, present up to three evidenced improvements or explicitly
+After final acceptance and Notion finalization, present up to three evidenced improvements or explicitly
 none. Use audit/iteration/check/scope-correction facts; one-off bugs/preferences
 do not become general rules.
 
@@ -125,7 +133,7 @@ do not become general rules.
 
 Each permanent change requires separate approval.
 
-## Knowledge Promotion
+### Optional Local Knowledge Promotion
 
 Per [knowledge-promotion](knowledge-promotion.md), show eligible KNP, fact/evidence,
 rule, applicability, one owner, duplicates/conflicts, effect, approve/reject/change

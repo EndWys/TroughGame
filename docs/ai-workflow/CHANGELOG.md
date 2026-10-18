@@ -1,5 +1,40 @@
 # Workflow Version History
 
+## 1.7-tg.1 / Manual Bugfix 2.0 — 2026-10-17
+
+- Feature workflow entry is manual-only: explicit `unity-feature-development`
+  invocation starts it; the same feature then continues through the recorded flow
+  without repeated invocation. Generic requests and UI skills cannot auto-start it.
+  `unity-ui-toolkit` retains automatic selection for relevant UI work. No existing
+  feature state or accepted gate is migrated by this invocation-policy update.
+- Disabled implicit `unity-bugfix` invocation. Only a direct developer command
+  naming the skill or starting/resuming its workflow activates it.
+- Removed automatic feature/UI/audit/failed-test handoffs, bug-state creation and
+  imported bugfix gates. Ordinary corrections use the current subtask and host gates.
+- Replaced multi-reference bugfix instructions with one short process: analyze,
+  agree diagnostics/fix, implement, verify/review/accept, deliver. No mandatory
+  tables, separate audit reports or new bug YAML. Existing records remain intact.
+- Explicit manual authorization persists across turns. A fix-and-continue command
+  covers return to the host. Existing checks, acceptance and scoped commit limits remain.
+- Manual-only timing applies immediately to active work without state migration;
+  earlier automatic invocation alone is not authorization. New feature templates
+  and audit tools use 1.7-tg.1; no active feature/bug state is rewritten.
+
+## 1.6-tg.1 — 2026-10-17
+
+- Replaced three broad Notion skills with two explicit-only skills: feature
+  requirements intake and whole-feature finalization. Removed coordinator,
+  intermediate publication/refresh/bugfix operations and mandatory journal tooling.
+- Added `notion_finalization` after whole-feature final readiness acceptance,
+  immediately before final retrospective/process revision. Knowledge promotion
+  remains an optional local retrospective substep with unchanged approval/check/commit rules.
+- Finalization updates exact tasks/feature statuses and brief accepted specification/
+  plan deltas only. No workflow journals, audits, tests or bug iterations in Notion.
+- The developer explicitly applies the timing restriction to active features now;
+  preserve their state/version, history and accepted gates. No replay or auto-migration.
+- New templates/audit tools use 1.6-tg.1. No live Notion or Unity changes are part of
+  this tooling update; historical receipts remain available.
+
 ## 1.5-tg.1 — 2026-10-14
 
 - Added unity-ui-toolkit for runtime screen/popup/widget design, resources,

@@ -1,4 +1,6 @@
 # Только самостоятельные баги. Дефекты фичи используют состояние родителя и case.md.
+# Legacy optional state for existing v1 cases; manual bugfix v2 needs only case.md.
+# Never create a bug workflow automatically from feature/UI corrections.
 bugfix_version: "1.0"
 bug: <bug-kebab-id>
 mode: standalone

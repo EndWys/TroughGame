@@ -45,10 +45,10 @@ result references in the host artifact. Do not add one-off installation reports.
 
 Visual prototype acceptance permits subsequent functional work; it never substitutes
 for final diff review or required Play Mode/retest acceptance. Failed verification
-returns to correction or bug diagnosis at the same host task. Material design/scope
+returns to correction at the same host task; no automatic bugfix-skill invocation. Material design/scope
 changes return to the applicable approval before dependent edits.
 
 Return exact changed paths, observed checks, accepted decisions and remaining work
 to the host. Preserve .meta and unrelated staged changes. This skill grants no
-standalone automatic commit/push or direct Notion permission. Published completion
-must distinguish owner acceptance from checks actually executed.
+standalone automatic commit/push or Notion invocation. Keep UI-stage results local;
+distinguish owner acceptance from checks actually executed.

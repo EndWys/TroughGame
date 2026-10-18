@@ -6,9 +6,9 @@ Optional research/code-review delegation only when the developer or applicable
 instructions authorize it. Short searches and dependent reasoning stay with the
 main agent. Without authorization/subagents, perform a separate read-only review
 yourself while preserving gates/results.
-Notion uses its separately authorized `docs/notion/operation-contract.md`: workers
-may publish scoped remote changes and own journals, but not feature/bug state,
-Git, or Unity. Code-review restrictions do not revoke authorized Notion publication.
+Notion delegation is separately authorized only at requirements intake and
+whole-feature finalization; see `docs/notion/feature-integration.md`. No intermediate
+inspection, bug or code-review stage dispatches a Notion worker.
 
 ## Tasks and Boundaries
 

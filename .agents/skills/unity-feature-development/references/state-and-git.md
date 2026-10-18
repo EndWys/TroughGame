@@ -8,7 +8,8 @@ Keep verifiable state and preserve unrelated staged work.
 ## Ownership and Artifacts
 
 The main agent owns `.ai/features/` and Git. Notion workers receive immutable values
-and own separate journals. Queues, locks, publication status, and journal paths
+only at requirements intake and whole-feature finalization. Queues, locks, remote
+retry status, and worker journal paths
 never enter `state.yaml`. Copy source observations and the approved contract from
 worker results into developer-owned `requirements.md`.
 
@@ -20,13 +21,15 @@ worker results into developer-owned `requirements.md`.
 | `research.md` | Research and accepted plan |
 | `subtasks/FEAT-XX.md` | Local architecture and applicable lifecycle map |
 | `final-verification.md` | Requirement/AC coverage and results |
+| `notion-finalization.md` | Main-agent record of confirmed/pending finalization effects or not applicable; no worker state |
 | `knowledge-promotion.md` | Permanent-rule candidates and decisions |
 
 Record facts/questions/decisions/approvals/checks promptly; details belong in artifacts.
 A record is not approval evidence. An interruption remains the current subtask:
 origin, trigger, evidence, and return decision go in `interruptions`.
-Defects use embedded `unity-bugfix` and `bugs/<bug-id>/case.md`; no second state;
-the host creates the checkpoint once.
+Ordinary defects stay in the current subtask artifact and host gates; no bug state
+or automatic skill invocation. Only a developer-requested bugfix process may reuse
+an existing bug case. The host creates the corrected checkpoint once.
 
 ## Start and Reconciliation
 

@@ -2,3 +2,5 @@ interface:
   display_name: "Unity UI Toolkit"
   short_description: "Runtime UI Toolkit with MVVM and scoped MVP"
   default_prompt: "Use $unity-ui-toolkit to analyze, plan, implement and verify this TroughGame UI within its approved feature or bugfix workflow."
+policy:
+  allow_implicit_invocation: true

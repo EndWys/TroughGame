@@ -1,0 +1,64 @@
+# New V2 feature only. Set the real feature ID; do not migrate an existing state.
+# Keep current outcomes, not an event log. Optional fields appear only when needed.
+schema_version: 1
+workflow: unity-feature-development-v2
+feature: null
+
+stage: requirements
+status: in_progress
+current_subtask: null
+
+results:
+  requirements:
+    status: pending
+  planning:
+    status: pending
+  acceptance:
+    status: pending
+  notion_finalization:
+    status: pending
+  retrospective:
+    status: pending
+
+subtasks: {}
+
+next_action:
+  owner: agent
+  description: Prepare requirements for developer acceptance.
+
+# stage: requirements | planning | architecture | implementation | review |
+#        verification | acceptance | notion_finalization | retrospective | complete
+# Overall status: in_progress | waiting_for_approval | blocked | complete
+# Result status: pending | in_progress | waiting_for_approval | blocked |
+#                complete | accepted | not_applicable
+# Use complete for finished agent work; accepted requires the developer's decision.
+# not_applicable requires an actual applicability basis, not a missing result.
+# Result records may add source and a short summary. source identifies the actual
+# result/acceptance section, available message reference or attributed exact quote.
+# A document's existence alone is not proof that its content was accepted.
+
+# After plan acceptance, add one subtasks.<FEAT-ID> mapping per approved subtask:
+# architecture: {status: pending}
+# implementation: {status: pending}
+# review: {status: pending}
+# verification: {status: pending}
+# checks: []
+# Keep task outcome/scope/dependencies in feature-plan.md, not in this mapping.
+
+# Optional records within a subtask, only as facts become available:
+# - checks entries: name, status (passed/failed/not_run/unavailable), source if any.
+# - review.findings.<finding-ID>: summary, decision (pending/fix/reject/defer),
+#   solution (short authorized correction), status (open/fixed/rejected/deferred),
+#   source. Retain IDs/dispositions; no full code proposals or copied review response.
+# - verification.cases.<case-ID>: expected, actual, status (pending/passed/failed),
+#   source of the developer's result; criteria IDs when useful for coverage.
+# - base_commit: actual comparison commit when known; commit: actual accepted commit.
+# Do not claim missing evidence, reviewed changes or developer confirmation.
+
+# Optional top-level blocker: concise reason and action needed to unblock.
+# next_action.owner: agent | developer
+# For an authorized agent action, add next_action.authorization with the developer
+# instruction/reference covering that action. Retain valid permission on resume.
+# Accepted content and permission to enter the next stage are separate facts.
+# Waiting for permission: owner is developer; description names the requested action.
+# No repository snapshots, stash lists, full requirements, histories or extra indexes.

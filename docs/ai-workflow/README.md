@@ -2,30 +2,37 @@
 
 ## Purpose
 
-Feature workflow version: **1.5-tg.1**. Bugfix workflow version: **1.0**.
-Follow the [common standard](DOCUMENTATION_STANDARD.md); version compatibility is
-recorded in [CHANGELOG.md](CHANGELOG.md).
+Feature workflow version: **1.7-tg.1**. Manual bugfix workflow version: **2.0**.
+Version compatibility is recorded in [CHANGELOG.md](CHANGELOG.md).
 
 | Workflow | Reference | Skill |
 | --- | --- | --- |
 | New feature | [workflow-reference.md](workflow-reference.md) | [unity-feature-development](../../.agents/skills/unity-feature-development/SKILL.md) |
 | Standalone/embedded bug | [bugfix-reference.md](bugfix-reference.md) | [unity-bugfix](../../.agents/skills/unity-bugfix/SKILL.md) |
 | Runtime UI specialization | [UI_TOOLKIT_STANDARD.md](../UI_TOOLKIT_STANDARD.md) | [unity-ui-toolkit](../../.agents/skills/unity-ui-toolkit/SKILL.md) |
-| Notion sources/publication | [notion/README.md](../notion/README.md) | Coordination, intake, and publication through separate workers |
+| Notion sources/publication | [notion/README.md](../notion/README.md) | Two explicit workers: requirements intake and whole-feature finalization |
 
 ## Invocation and Roles
 
-Example: use $unity-feature-development for a new feature, supplying specification
-text/document/Notion URL. Unapproved requirements first become an approval proposal.
-For continuation supply feature ID/state. Notion may prepare the next ready Dev task
-in the current stage after verifying dependencies.
-Use $unity-bugfix with a description or Notion task URL. Embedded defects reuse the
+Start a new feature workflow only by explicitly requesting $unity-feature-development,
+supplying specification text/document/Notion URL. Implicit invocation is disabled;
+generic feature requests or other skills do not activate it. After that first manual
+invocation, the same feature continues through its flow without repeated invocation.
+Unapproved requirements first become an approval proposal.
+For continuation supply feature ID/state and reuse its accepted local requirements.
+Selected Notion sources are read only at explicit requirements intake.
+Only explicitly use $unity-bugfix or command the bugfix workflow when that separate
+process is desired. Generic fix requests and feature/UI defects do not trigger it.
+A manually requested process needs a description and expected behavior; a Notion
+task URL does not trigger a worker. Embedded defects reuse the
 same FEAT/interruption/state. The developer approves requirements, plan, architecture,
 diff, Play Mode, and readiness. The agent works between gates. Accepted subtasks
 commit after required passed checks/Play Mode. Push/merge/release need separate
-requests. Notion owns independent journals and never receives development state.
+requests. Notion workers never receive development state; optional recovery receipts
+are separate from feature state.
 
-Use $unity-ui-toolkit for a screen, popup, widget or UI-related defect. It operates
+`unity-ui-toolkit` remains automatically selectable for a screen, popup, widget or
+UI-related defect; no manual skill command is required. It operates
 inside the current feature/bugfix task with no independent state. Its consolidated
 hierarchy/resource/presentation plan uses the host approval; MVVM is the default
 and justified MVP choices are accepted there. New UI adds visual prototype

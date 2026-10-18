@@ -2,12 +2,15 @@
 
 ## Purpose and Scope
 
-Version **1.5-tg.1**. Use for a new feature from agreed requirements or an explicit
-continuation of a recorded feature. Standalone bugs, research, reviews, tooling setup,
+Version **1.7-tg.1**. Start only on the developer's explicit invocation of
+`unity-feature-development`. A generic feature request or another skill cannot
+activate this workflow. After the initial invocation, continue the same feature and
+authorized resumptions through its recorded flow without repeated skill invocation.
+Standalone bugs, research, reviews, tooling setup,
 and ordinary existing-code improvements do not create feature state.
 The user selected staged approvals and automatic local accepted-subtask commits after
 required passed Play Mode. Developer instructions, AGENTS, and architecture/code/scene
-standards take precedence. Follow the [common standard](DOCUMENTATION_STANDARD.md).
+standards take precedence.
 
 ## Inputs and Roles
 
@@ -54,17 +57,17 @@ the new prototype step; do not silently migrate state.
 | Implementation | Minimal accepted diff, bindings/hierarchy/config, checks, reviewable handoff |
 | Code audit | All relevant final changes and P0/P1/P2 risks; required correction before review |
 | Review | Accept the whole diff or request changes; not a substitute for Play Mode |
-| Play Mode | Original/affected scenario, roles/transitions; failure → embedded diagnosis |
+| Play Mode | Original/affected scenario, roles/transitions; failure → current-subtask correction |
 | Plan update | Facts affecting future work; unchanged plan unless explicitly changed |
 | Final verification | Every RQ/AC linked to implementation/evidence/status; failure/gap → existing FEAT |
 | Workflow audit | Command, result/report, findings; present before final decision |
 | Final readiness | Developer readiness or further-work decision |
-| Retrospective | Up to three supported reusable proposals or none |
-| Knowledge promotion | Exact candidate approval, one canonical change, checks/separate commit or rejection/not applicable |
+| Notion finalization | After full acceptance: exact task/feature statuses and short accepted specification/plan deltas; penultimate stage |
+| Retrospective | Final process revision; up to three supported proposals or none, including optional local knowledge promotion with its existing approvals/checks/separate commit |
 
-Repeat architecture → implementation → audit → review → Play Mode/diagnosis → plan
+Repeat architecture → implementation → audit → review → Play Mode/correction → plan
 for subtasks. Then final verification → workflow audit → developer decision →
-retrospective → knowledge promotion → complete.
+Notion finalization → retrospective (including optional knowledge promotion) → complete.
 
 ## Requirements and Initial Plan
 
@@ -100,22 +103,22 @@ evidence, consequence, and minimal change.
 
 ## Interruptions and Bugs
 
-Feedback/defects create no FEAT. Record origin stage/subtask, trigger, results, and
-return decision in `interruptions`. Design/editorial feedback without a defect is
-ordinary correction. Actual defects at any stage use embedded unity-bugfix:
-confirmed cause → approved exact fix; uncertainty → approved diagnostic plan,
-likelihood/complexity estimates, and analysis. One host state/case/checkpoint;
-do not duplicate evidence for the same final diff.
-After applicable checks/review/retest record completion and await explicit return.
-An accepted-and-continue message may cover both decisions. New feedback continues
-that same interruption.
+Feedback/defects create no FEAT. Correct them in the current subtask and approved
+scope, retaining existing audit, review and verification gates. Scope/design changes
+use the host decision process. Record the reason and relevant evidence in the
+current artifact; do not create a bug workflow or additional approval sequence.
+Never automatically invoke/load `unity-bugfix`, even for failed tests or Play Mode.
+Only a direct developer command naming the skill or starting/resuming its workflow
+activates it; do not solicit activation as a prerequisite to ordinary corrections.
+If manually requested, reuse the current artifact/case, state and checkpoint.
+An explicit fix-and-continue command covers return; preserve accepted history.
 
 ## Play Mode and Final Verification
 
 The developer runs the accepted scenario, returning steps/expected/actual/logs on
 failure. Network/init-order cases cover executing host/client roles and at least one
-spawn/ready/despawn/reuse transition. Cause/probes/fixes/regression use the bugfix
-skill. The final journey includes applicable edge cases, Inspector/assets, and no
+spawn/ready/despawn/reuse transition. Diagnose and correct failures within the
+current host scope; the bugfix skill requires a separate direct developer command. The final journey includes applicable edge cases, Inspector/assets, and no
 new Console errors.
 For every accepted RQ/AC record actual implementation, method/scenario/evidence,
 and `passed`, `failed`, or `not tested`. Code presence is not a passed check.
@@ -138,19 +141,21 @@ silently migrate active features; translation/editorial edits need no migration.
 Before final readiness, requirements/plan/architectures are approved, subtasks passed
 review/Play Mode, checks passed or unavailable limits are explicit, all RQ/AC coverage
 and audit are retained/presented, limitations are visible, and the developer considers
-the final diff. An untested mandatory RQ/AC blocks readiness. Retrospective/promotion
-follow this decision and precede `complete`; they are not circular prerequisites of
-readiness itself.
+the final diff. An untested mandatory RQ/AC blocks readiness. Notion finalization
+follows this decision and precedes the final retrospective
+(with optional local knowledge promotion), then `complete`. These are not prerequisites
+of readiness itself. Finalization requires verified effects or explicit not applicable.
 
 ## Notion, State, Delegation
 
-Only separate workers call MCP through the coordinator. Intake returns sources/
-proposed AC; the main agent owns accepted contract/state/Git. Publish meaningful
-accepted transitions as immutable facts. Final publication receives explicit acceptance,
-exact tasks, actual checks/commits, business status. Verify documents/results before
-completion properties. Publication failure preserves accepted work: separate outcomes,
-retry the same operation ID via worker, no repeated implementation. Do not add Notion
-sync to developer YAML or install background scheduling.
+Follow [Notion integration](../notion/feature-integration.md): explicitly load
+`notion-feature-requirements` only for selected Notion sources at requirements intake,
+and `notion-feature-finalization` only after full acceptance before retrospective.
+The main agent dispatches isolated workers and owns contract/state/Git; no main-agent
+MCP calls, routine source refresh or intermediate publication. Bugfixes and subtasks
+never trigger Notion. Keep accepted decisions locally until finalization.
+This timing supersedes old active-feature hooks without replaying or migrating state.
+Publication failure preserves development; retry finalization without implementation.
 Optional research/code-review subagents require authorized delegation. The main agent
 verifies findings/owns gates/state; without subagents it performs a separate review.
 

@@ -6,25 +6,11 @@ TroughGame. Architecture ownership and dependency direction are defined in
 
 ## Source Layout
 
-Project code is organized below `Assets/ProjectCore`. The context and root layout
-is maintained in
-[`ARCHITECTURE_RULES.md`, Architecture](ARCHITECTURE_RULES.md#architecture).
-This document defines the physical layout inside those owners and the
-type/resource naming conventions.
-
-`Template` is project-agnostic reusable code. `Shared` is independent of
-external APIs and may reference only .NET APIs. Shared Unity property
-attributes, drawers, state foundations, and mediator handlers belong to
-`Template/Scripts/DataHolders/Attributes`, `Other/Editor`, `Abstract`, and
-`Components/Handlers` respectively.
-
-Zenject's `Assets/ProjectCore/Resources/ProjectContext.prefab` is the explicit
-root-layout exception. It keeps both its framework-required location and name.
-
-Context-shared scripts that do not require a feature or DI initialization may
-live in `Contexts/<Context>/Scripts/<Category>` (for example extensions,
-utilities, constants, or networking abstractions). They must still follow the
-same naming and suffix rules.
+Project code lives under `Assets/ProjectCore`. Root/context ownership, `Template`
+reuse, .NET-only `Shared`, context-shared eligibility and Zenject's fixed prefab
+location are defined in [Architecture](ARCHITECTURE_RULES.md#architecture).
+This document defines the layout inside those owners; context-owned scripts
+follow the same category/suffix rules as feature scripts below.
 
 `Scripts/Navigation` is allowed for context-owned scene route types and their
 definitions; it contains only `*Scene` and `*SceneDefinition` scripts.
@@ -36,40 +22,18 @@ adapt reusable feature-framework behavior to its external contracts.
 
 ## Feature Layout
 
-```text
-<Feature>/
-  Assets/                   # non-C# resources owned by the feature
-    Configs/ Catalogs/ Definitions/
-    Prefabs/ Materials/ Sprites/ Fonts/ Animations/ InputActions/ Scenes/ References/
-    UI/
-      UXML/ USS/ PanelSettings/
-  Scripts/
-    Abstract/
-    DataHolders/
-      Attributes/ Configs/ Data/ Definitions/ Descriptors/ DTOs/ Models/ Payloads/ Settings/
-    Enums/
-    Init/
-    Managers/
-      Accumulators/ Controllers/ Coordinators/ Factories/ Flows/ Handlers/
-      Mediators/ Providers/ Registries/ Repositories/ Serializers/ Services/ Storages/
-      Spawners/ Systems/
-    Other/
-      Adapters/ Builders/ Commands/ Converters/ Decorators/ Editor/
-      Mappers/ Presenters/ Processors/ StateMachines/ States/ Strategies/ ViewModels/
-    Static/
-      Constants/ Errors/ Extensions/ Utilities/ Validation/
-    Components/
-      <Name>Component.cs
-      Navigation/ Popups/ Screens/ StateMachines/ States/ Widgets/
-```
+A feature uses two roots: `<Feature>/Scripts/<Category>` for C# and
+`<Feature>/Assets/<ResourceType>` for resources. Script categories are `Abstract`,
+`DataHolders`, `Enums`, `Init`, `Managers`, `Other`, `Static` and `Components`;
+the role subfolders and suffixes are defined in their tables below. Resource
+subfolders follow [Unity Resource Naming](#unity-resource-naming).
 
 Create only folders that are needed. `Scripts` and every category root are
 closed, except for `Abstract`, `Enums`, `Init` and ordinary `*Component` files
 directly in `Scripts/Components`. Other files use documented subfolders.
 Every concrete subfolder contains only scripts with the corresponding suffix.
 Additional organizational subfolders are allowed below a category root when
-they preserve the suffix rule. One file contains one top-level type and the
-file name exactly matches it.
+they preserve the suffix rule. File/type naming follows [Naming](#naming).
 
 Every feature that participates in the lifecycle has
 `Scripts/Init/<Feature>Feature.cs`. All features live directly under their
@@ -77,14 +41,8 @@ context's `Features` folder. Features may provide reusable capabilities,
 compose other capabilities, or adapt public contracts; these responsibilities
 do not introduce feature types or intermediate role folders.
 
-Feature entries inherit `BaseFeature` by default. `BaseMonoBehaviourFeature` is
-allowed only when the feature itself must own serialized scene, prefab, or
-asset references. Such a component lives on the same GameObject as the context
-installer and is added with `AddFeatureFromComponent<TFeature>()`; it follows
-the same explicit initialization flow and does not use `Awake` or `Start`.
-Both bases delegate their lifecycle state and DI operations to the shared
-`FeatureLifecycleAdapter`; new feature helpers must be implemented there
-instead of duplicated between the two bases.
+Feature bases, serialized feature registration, DI helpers and lifecycle
+implementation are defined in [Initialization Flow](ARCHITECTURE_RULES.md#initialization-flow).
 
 ## Script Categories and Suffixes
 
@@ -195,54 +153,29 @@ callbacks. A long-lived object that is not DI `AsSingle` belongs elsewhere.
 
 #### System and Service
 
-Choose the suffix by the responsibility exposed to consumers:
+Choose by the primary responsibility exposed to consumers:
 
-- Use `System` for the owner of a runtime subsystem. For example,
-  `ScreenNavigationSystem` maintains screen history and manages screen
-  transitions and lifecycle; `PopupSystem` manages active windows, completion,
-  cancellation, and input blocking. A subsystem may have one active object,
-  as in `LoadingScreenSystem`, and may delegate work to components, as in
-  `DebugVisualizationSystem`.
-- Use `Service` for a specific capability invoked through operations or
-  queries. For example, `EnemySteeringService` calculates steering,
-  `EnemyTargetingService` selects targets, and `LocalSaveService` provides
-  save/load operations through storage and serializer contracts. The service
-  may keep state, subscriptions, buffers, or resources for that capability.
+- `System` owns a runtime subsystem's active objects, state and interaction rules,
+  such as `ScreenNavigationSystem`. It may have one active object or delegate work.
+- `Service` provides a specific capability through operations/queries, such as
+  `EnemySteeringService` or `LocalSaveService`. It may own state, subscriptions,
+  buffers and resources for that capability.
 
-These roles can overlap. When both descriptions fit, choose the name that
-best explains the primary API and responsibility to consumers. Preserve an
-established, clear name unless it misrepresents that responsibility;
-`SceneFlowService` remains valid for its scene-transition capability even
-though it also owns transition state and scene lifecycle. This convention
-does not require every feature to have a System or a Service, or require both
-roles to coexist in separate classes.
+If both descriptions fit, use the name that best explains the primary API. Preserve
+clear established names (`SceneFlowService` remains valid); neither every feature
+nor every capability requires both roles in separate classes.
 
-The following traits do not determine the suffix:
+State/collections, lifecycle methods, events, async work, per-frame/network-tick
+calls, Unity API access and class size do not determine the suffix. Both roles
+follow Managers DI/initialization and architecture dependency rules; Services must
+not depend directly on Views. `System` implies neither ECS nor a new scheduler;
+`Service` implies neither statelessness nor purity. No mandatory System-to-Service
+hierarchy exists.
 
-- State, collections, `Initialize`, `Dispose`, events, or asynchronous methods
-  are valid for both roles.
-- Per-frame or network-tick invocation does not require `System`.
-  `MovementSimulationService.Simulate` operates on a supplied body even when
-  called from `NetworkTick`. A System may operate through explicit commands
-  and events without its own tick method.
-- Unity API access does not require `System`. `LevelCollisionService` uses
-  Physics2D through its Strategy and Probe contracts. Only `Shared` has the
-  .NET-only dependency restriction; Services still follow the architecture's
-  dependency rules and must not depend directly on Views.
-- Class size and the feature's informal description as a "system" do not
-  determine the role.
-
-`System` does not imply Unity ECS or a new scheduler; `Service` does not imply
-stateless or pure C# behavior. Both follow the existing Managers DI and
-explicit initialization rules. Their suffixes do not establish dependency
-direction or a mandatory System-to-Service hierarchy; ownership and public
-contracts determine those dependencies.
-
-A class that only forwards generic component queries or caller-supplied
-actions does not acquire subsystem rules from a `System` name. Describe the
-capability it actually provides, or remove a redundant wrapper after checking
-its consumers. Role selection is a code-review decision; the architecture
-validator checks folder/suffix correspondence, not these behavioral semantics.
+A generic component-query/forwarding wrapper does not become a subsystem because
+it is named System. Name its actual capability, or remove redundancy after checking
+consumers. Role semantics require code review; the validator checks folder/suffix
+correspondence.
 
 ### DataHolders
 
@@ -353,9 +286,8 @@ Keep validation rules and `Validate*` methods in feature-owned static
 from their explicit initialization or operation methods. Define errors and
 diagnostic messages in the corresponding static `*Errors` classes.
 
-Immutable `static readonly` values are allowed in `Constants`; mutable global
-runtime state and cached services are not. If a static operation needs an
-injected service, make it a Manager or an `Other` strategy instead.
+If a static operation needs an injected service, make it a Manager or an `Other`
+strategy instead.
 
 ### Tests
 
@@ -429,9 +361,7 @@ startup boundary.
   `Utils` unless they are the documented role/suffix.
 - Correct spelling in identifiers and paths; do not preserve legacy typos.
 
-Namespaces are flat below the owning context: `ProjectCore.<Context>` or
-`Shared`. Folder depth and feature responsibility do not extend the namespace. Third-party
-code keeps its original namespace.
+Namespace ownership is defined in [Namespace Convention](ARCHITECTURE_RULES.md#namespace-convention).
 
 | Concept | Canonical form | Examples |
 | --- | --- | --- |
@@ -572,6 +502,10 @@ Keep related overloads together. Do not use regions to hide unrelated members.
 
 ## Unity Resource Naming
 
+- Group resources by type: `Configs`, `Catalogs`, `Definitions`, `Prefabs`,
+  `Materials`, `Sprites`, `Fonts`, `Animations`, `InputActions`, `Scenes`,
+  `References`, and `UI/UXML`, `UI/USS`, `UI/PanelSettings`. Create only needed
+  folders; specific resource placement is defined below.
 - Scenes: `Scene_<Context>[_<Detail>]`.
 - Prefabs: `Prefab_<Feature>_<Purpose>`.
 - Zenject's `ProjectContext.prefab` is the naming exception and keeps its

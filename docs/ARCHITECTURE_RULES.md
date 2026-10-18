@@ -15,76 +15,19 @@ Platform, with the following TroughGame-specific rules:
   Editor/Play tests. Architectural boundaries are additionally enforced through
   folder ownership, namespaces, dependency checks, and code review.
 
-The structure below is the supported project structure. Legacy project-owned
-paths and namespaces are not part of the supported architecture.
+Project-owned content lives under `Assets/ProjectCore`. Supported roots are:
 
-```text
-Assets/
-  ProjectCore/
-    Resources/
-      ProjectContext.prefab
+| Root | Owner / contents |
+| --- | --- |
+| `Assets` | Project-wide resource instances |
+| `Contexts/<Context>` | `Features/<Feature>`, context `Scripts`, `Assets`, and `Tests/Editor` or `Tests/Play` as needed |
+| `Shared` | Context-independent .NET-only primitives |
+| `ThirdParty` | Game-specific external dependencies |
+| `Resources/ProjectContext.prefab` | Zenject's fixed-location exception; do not move or rename |
 
-    Assets/
-      InputActions/
-      Rendering/
-
-    Contexts/
-      Template/
-        Features/
-          <Feature>/
-        Plugins/
-        Scripts/
-        Tests/
-          Editor/
-          Play/
-
-      Project/
-        Assets/
-          Catalogs/
-        Scripts/
-          Init/
-
-      Preloader/
-        Features/
-        Assets/
-          Scenes/
-        Scripts/
-          Abstract/
-          Init/
-          Navigation/
-
-      GameCore/
-        Features/
-          <Feature>/
-        Assets/
-        Scripts/
-          Init/
-
-      TechnicalPrototype/
-        Features/
-          <Feature>/
-        Assets/
-          Scenes/
-        Scripts/
-          Init/
-          Navigation/
-
-      Prototype/                 # legacy experiments; not part of runtime flow
-        Features/
-          <Feature>/
-        Assets/
-          Scenes/
-        Scripts/
-          Init/
-
-    Shared/
-      Attributes/
-      Collections/
-      Modifiers/
-      Patterns/
-      Results/
-    ThirdParty/
-```
+Common plugins remain in `Contexts/Template/Plugins`. Legacy roots/namespaces are
+unsupported. Detailed feature/category/resource placement belongs to
+[CONVENTIONS](CONVENTIONS.md#source-layout); create only the folders actually needed.
 
 ### Assets
 
@@ -137,50 +80,20 @@ not depend on it.
 
 ### Context-Owned Shared Scripts
 
-Not every shared script requires a feature. Code may live directly under
-`Assets/ProjectCore/Contexts/<Context>/Scripts/<Category>` when all of the
-following are true:
+Code may live in `Contexts/<Context>/Scripts/<Category>` when it belongs to that
+context, is shared by its composition/features, and has none of the following:
 
-- it clearly belongs to one context;
-- it is shared by the context composition or by more than one feature in that
-  context;
-- it does not represent an independently connectable gameplay or technical
-  capability;
-- it has no independent feature lifecycle;
-- it does not require DI registration, resolution, or initialization;
-- it does not own context-level runtime state;
-- it does not coordinate feature-owned services, systems, managers, factories,
-  or views;
-- it does not depend on internal types of a concrete feature;
-- it does not own feature resources such as configs, prefabs, scenes, or
-  feature-specific data assets;
-- wrapping it in a feature would add structure without adding ownership or
-  lifecycle meaning.
+- an independently connectable capability, business rule or feature lifecycle;
+- DI registration/resolution/initialization, context-level runtime state, or
+  coordination of feature-owned services, systems, managers, factories or views;
+- dependencies on concrete feature internals;
+- feature-specific resources/configuration.
 
-Typical context-owned scripts are shared base classes, interfaces, enums,
-extensions, utilities, validation helpers, constants, passive data, and generic
-MonoBehaviour components. The absence of DI alone is not sufficient: a
-standalone capability with its own responsibility, state, resources, or
-lifecycle is still a feature.
-
-Common examples are:
-
-```text
-Contexts/GameCore/Scripts/Constants/
-Contexts/GameCore/Scripts/Errors/
-Contexts/GameCore/Scripts/Extensions/
-Contexts/GameCore/Scripts/Utilities/
-Contexts/GameCore/Scripts/Validation/
-Contexts/GameCore/Scripts/Abstract/Networking/
-Contexts/GameCore/Scripts/Enums/Networking/
-Contexts/GameCore/Scripts/DataHolders/Data/
-Contexts/GameCore/Scripts/Other/Strategies/
-Contexts/GameCore/Scripts/Components/Networking/
-```
-
-Context-owned folders still follow the folder/suffix rule documented below.
-For example, `Extensions` contains only `*Extensions`, and `Utilities` contains
-only `*Utility`.
+Typical candidates are shared abstractions, enums, extensions, utilities, constants,
+validation helpers, passive data and generic components. Absence of DI alone is not
+sufficient: a capability with its own responsibility/state/resources/lifecycle stays
+feature-owned. Use the [category/suffix rules](CONVENTIONS.md#script-categories-and-suffixes)
+for these context scripts as well.
 
 Use the narrowest valid owner:
 
@@ -203,38 +116,16 @@ Context `Scripts` must not depend on concrete features. If a shared type needs
 a feature-internal contract, it remains owned by that feature or the contract
 is extracted to a lower-level owner first.
 
-A script must remain feature-owned when any of the following is true:
-
-- it implements a complete capability or business rule;
-- it participates in feature installation, initialization, shutdown, or DI;
-- it owns runtime state or coordinates other behavioral objects;
-- it depends on concrete feature internals;
-- it owns feature-specific resources or configuration.
-
-Context `Scripts` must not become a substitute for `Features`, `Template`, or
-`Shared`.
+Context `Scripts` must not become a substitute for `Features`, `Template` or `Shared`.
 
 ### Shared
 
 `Assets/ProjectCore/Shared` contains code that expresses project-independent
 rules and abstractions without depending on infrastructure.
 
-Allowed dependencies:
-
-- .NET/BCL namespaces such as `System` and `System.Collections.Generic`.
-
-Forbidden dependencies include, but are not limited to:
-
-- UnityEngine and UnityEditor;
-- Photon Fusion;
-- Zenject;
-- UniTask;
-- Newtonsoft.Json;
-- SDKs, backend clients, platform APIs, and project contexts.
-
-Fusion state machines, Zenject installers, network spawning, scene
-initializers, and feature lifecycle code are infrastructure and must live in
-the owning context rather than `Shared`.
+Only .NET/BCL dependencies are allowed. Unity, Fusion, Zenject, UniTask,
+Newtonsoft.Json, other SDKs/platform APIs and project contexts are forbidden.
+Their runtime/lifecycle infrastructure belongs in the owning context.
 
 `Shared` must not become a general-purpose utilities folder. Feature behavior
 belongs to its feature even when the implementation itself is small.
@@ -255,9 +146,6 @@ Current Shared categories are:
 - `Patterns` for pure C# composites, mediators, and state-machine foundations;
 - `Results` for success/failure values and errors. Results are standalone
   primitives rather than a `Patterns` category.
-
-Shared primitives do not receive dedicated test fixtures. Feature and
-integration tests verify behavior at the owning application boundary.
 
 ### ThirdParty
 
@@ -308,77 +196,24 @@ required scene containers and their ownership without changing the lifecycle
 and DI rules in this document.
 
 `Scene_Preloader` is the only supported application entry point and must be the
-first enabled scene in Build Settings. Gameplay scenes are navigation
-destinations and must not be used to initialize the complete application.
+first enabled scene in Build Settings. Gameplay scenes are navigation destinations.
+The configured first destination is currently `TechnicalPrototype`, selected by
+Preloader navigation rather than used as the application entry scene.
 
-```text
-Application startup
-  Zenject ProjectContext
-    ProjectContextInstaller.InstallBindings()
-    bind Template infrastructure
-    bind application-lifetime features, services, and state
-    remain in DontDestroyOnLoad
+- `ProjectContextInstaller` and persistent services belong to Project;
+  `PreloaderContextInstaller` and `ApplicationEntryPoint` belong to Preloader.
+  Their lifetimes follow the [context rules](#contexts).
+- Preloader owns one-shot work such as consent, SDK startup, warm-up or downloads.
+  A service needed afterward is registered in Project even if Preloader initializes it.
+- Gameplay assumes Project and required Preloader startup have completed. Direct
+  gameplay-scene opening requires an Editor development bootstrap that reproduces
+  or redirects through Preloader setup.
+- `ApplicationEntryPoint.Start()` is the sole Unity callback triggering application
+  startup, after Zenject injection. It delegates ordering to
+  `ApplicationInitializationFlow` and attaches root cancellation/error handling.
 
-Scene_Preloader
-  Preloader SceneContext
-  PreloaderContextInstaller.InstallBindings()
-    bind transient startup features
-    bind the single ApplicationEntryPoint
-  ApplicationEntryPoint.Start()
-    enter the application flow once, after Zenject injection is complete
-  ApplicationInitializationFlow
-    ProjectContextInitializer
-      FeatureInitializationFlow(Project features)
-    PreloaderContextInitializer
-      FeatureInitializationFlow(Preloader features)
-    ask ISceneFlowService to open the configured first gameplay scene
-  unload Scene_Preloader and destroy all Preloader-scoped objects
-
-Scene_TechnicalPrototype (initial gameplay destination)
-  TechnicalPrototypeContextInstaller
-    bind only scene-owned features
-    compose shared GameCore features for the scene
-  persistent SceneFlowService
-    resolve IGameSceneLifecycle from the scene container
-    FeatureInitializationFlow(TechnicalPrototype features)
-    expose the scene as ready only after initialization completes
-```
-
-Startup rules:
-
-- `Assets/ProjectCore/Resources/ProjectContext.prefab`,
-  `ProjectContextInstaller`, and all services that must
-  survive scene changes belong to the `Project` context.
-- The Project context is initialized once and remains alive until application
-  shutdown.
-- `PreloaderContextInstaller` and `ApplicationEntryPoint` belong to the
-  `Preloader` scene context and are destroyed when that scene is unloaded.
-- Preloader features are for one-shot work such as consent flows, SDK startup,
-  warm-up, or initial downloads. A service that must remain usable afterward
-  must be bound in `Project`, even if Preloader triggers its initialization.
-- A gameplay scene assumes that both Project initialization and required
-  Preloader startup work have completed.
-- Opening a gameplay scene directly is allowed only through a dedicated editor
-  development bootstrap that reproduces or redirects through Preloader setup.
-- The initial destination is `TechnicalPrototype` during development, and it
-  must be selected by Preloader navigation rather than used as the application
-  entry scene in Build Settings.
-- Installers only register bindings. They do not start asynchronous work or
-  initialize features.
-- `ApplicationEntryPoint.Start()` is the only project-owned Unity lifecycle
-  callback allowed to trigger application startup. `Start` is used so Zenject
-  has completed scene injection before the asynchronous pipeline begins.
-- `ApplicationEntryPoint` only crosses the Unity-to-application boundary. It
-  delegates ordering to `ApplicationInitializationFlow` and attaches root
-  cancellation and error handling to the returned async operation.
-- Features, services, components, and scene initializers must not create
-  independent initialization chains from `Awake`, `OnEnable`, or `Start`.
-- Scene transitions go through one persistent flow coordinator. That
-  coordinator loads the scene, obtains its initialization contract through DI,
-  awaits scene initialization, and only then exposes the scene as ready.
-- Unity lifecycle methods may perform strictly local component setup, but they
-  must not resolve dependencies, initialize application systems, or determine
-  startup order.
+The ordered startup, installer responsibilities, scene readiness and permitted
+local callbacks are defined once in [Initialization Flow](#initialization-flow).
 
 ## Feature Architecture
 
@@ -468,30 +303,19 @@ and standalone features only.
   Controller owns presentation state and UI flow; MonoBehaviour and
   VisualElement Components only render supplied data and forward user input.
 
-> Folder taxonomy, suffix semantics, naming, member order, access modifiers,
-> resource naming, and coding style are maintained in
-> [`CONVENTIONS.md`](CONVENTIONS.md). This document defines architecture,
-> ownership, dependency direction, lifecycle, and DI rules.
-
 ## Feature Structure
 
-The canonical folder layout, placement decision order, category tables, and
-suffix meanings are maintained in
-[`CONVENTIONS.md`, Feature Layout](CONVENTIONS.md#feature-layout) and
-[Script Categories and Suffixes](CONVENTIONS.md#script-categories-and-suffixes).
-This section adds ownership, DI, and lifecycle constraints.
-
-Every feature has a clear owner context, keeps its code and resources inside
-that feature, and uses `Scripts/Init/<Feature>Feature.cs` when it participates
-in the unified lifecycle. Feature folders express ownership, not namespaces.
-Mandatory Clean Architecture layer folders are not part of the project standard.
+Features own their code/resources and express ownership rather than namespaces.
+The closed categories, placement order and suffix meanings are defined in
+[CONVENTIONS](CONVENTIONS.md#feature-layout). Mandatory Clean Architecture layer
+folders and intermediate feature role folders are not part of the standard.
+Contracts belong to the feature owning the capability; runtime consumers use its
+public contracts, while installers/groups compose concrete implementations.
 
 ### Strict Folder And Suffix Rule
 
-Use the [canonical placement rules](CONVENTIONS.md#script-placement) and
-[role tables](CONVENTIONS.md#script-categories-and-suffixes). Document a new
-category in CONVENTIONS before introducing it; define any new ownership,
-dependency, or lifecycle constraints here. A contract role alone needs no folder.
+Document a new category in CONVENTIONS before introducing it; add any new ownership,
+dependency or lifecycle constraints here. A contract role alone needs no folder.
 
 ### Managers
 
@@ -512,41 +336,16 @@ locators, start initialization from constructors or detached background tasks,
 or depend on another feature's internal implementation. Their initialization
 is invoked by the owning feature after bindings are installed.
 
-### DataHolders
-
-Use the [DataHolders rules](CONVENTIONS.md#dataholders) for passive data,
-configuration, settings, and transport shapes. Passing a config through DI
-does not make it a Manager or give it ownership of a workflow.
-
 ### Components
 
-Use the [Components categories](CONVENTIONS.md#components) for Unity-facing
-types. Components receive runtime dependencies through DI; serialized fields
-reference scene objects, prefabs, assets, and visual configuration.
-Presentation Views render state and forward events to injected contracts.
-Unity-bound states own bounded processing and delegate reusable operations.
-Local Unity callbacks must not start feature or application initialization.
+Components receive runtime services through DI and scene/asset/visual references
+through serialized fields. Category-specific behavior and placement are defined in
+[CONVENTIONS](CONVENTIONS.md#components).
 
-### Other
-
-Use the [Other roles](CONVENTIONS.md#other) for remaining feature-owned
-behavior. If an object becomes a long-lived DI-managed dependency, move it
-to its actual Managers role. Adapter dependencies still follow the public
-contract and context-direction rules.
-
-### Abstract
-
-The [contract vocabulary and abstract-base naming](CONVENTIONS.md#abstract)
-are maintained in CONVENTIONS. A contract belongs to the feature that owns
-the capability, regardless of where its first implementation lives.
-Runtime consumers use those public contracts; feature groups and installers
-compose implementations.
-
-### Static
-
-Follow the [Static rules](CONVENTIONS.md#static), including the bounded Debug
-Visualization facade exception. Runtime state and backend lifecycle remain
-owned by DI objects, rather than by their static facade.
+The [Other](CONVENTIONS.md#other), [DataHolders](CONVENTIONS.md#dataholders),
+[Abstract](CONVENTIONS.md#abstract) and [Static](CONVENTIONS.md#static) rules own their
+respective type semantics; feature dependencies still follow the public contracts
+and context direction above.
 
 ### Tests
 
@@ -559,16 +358,6 @@ assembly definitions and references; do not add new `.asmdef` files.
 Test assemblies are excluded from normal player builds and must not be
 production dependencies. Tests of startup enter scenes through the supported
 Preloader flow.
-
-### Enums
-
-Enum naming is defined in [CONVENTIONS](CONVENTIONS.md#enums).
-
-### Init
-
-Composition type roles are defined in [CONVENTIONS](CONVENTIONS.md#init).
-An Initializer is explicitly invoked and awaited by its owning flow.
-The lifecycle and initialization order are defined below.
 
 ## Initialization Flow
 
@@ -595,9 +384,6 @@ Registration and initialization are separate operations:
 
 Initialization responsibilities are deliberately separated:
 
-- `ApplicationEntryPoint` is the single Unity lifecycle trigger.
-- `ApplicationInitializationFlow` owns the Project -> Preloader -> first-scene
-  startup order.
 - `FeatureInitializationFlow` is a reusable DI service that sequentially
   initializes the explicitly ordered features of one owning context. It never
   starts itself from a Unity callback.
@@ -647,9 +433,7 @@ Feature initialization rules:
   requires serialized scene, prefab, or asset references may instead inherit
   `BaseMonoBehaviourFeature`, live on the same GameObject as its context
   installer, and be added through `AddFeatureFromComponent<TFeature>()`.
-- Serialized feature groups inherit `BaseMonoBehaviourFeatureGroup`, reference
-  every MonoBehaviour child explicitly, and are themselves added through
-  `AddFeatureFromComponent<TFeatureGroup>()`.
+- Serialized groups follow the explicit-reference composition in [Feature Groups](#feature-groups).
 - Both feature bases expose protected `BindAsSingle`, `BindInterfacesAsSingle`,
   `Resolve`, and `ResolveAs` DI helpers. Their implementation is centralized in
   `FeatureLifecycleAdapter` and the bases only delegate to it. Use
@@ -659,8 +443,8 @@ Feature initialization rules:
   Use `ResolveAs` only during feature initialization to invoke
   implementation-only startup work; do not add `InitializeAsync` to a public
   service or system interface solely for feature lifecycle orchestration.
-- Initialization order is declared explicitly by the owning context or feature
-  group. It is not discovered through Unity callback timing or reflection.
+- Initialization order is declared by the owning context or feature group, not
+  Unity callback timing, script execution order or reflection.
 - Every feature base receives its owning context container exactly once through
   `InstallBindings(DiContainer)`. After every feature has registered bindings,
   `InitializeAsync(CancellationToken)` may resolve and initialize its DI-managed
@@ -673,7 +457,7 @@ Feature initialization rules:
 - Each initialization method completes only when the feature is ready for its
   consumers.
 - Initialization failures propagate to the root flow, which logs and handles
-  them in one place. Features must not silently detach initialization tasks.
+  them in one place. No `async void` or detached initialization tasks.
 - Scene-owned initialization receives a cancellation token tied to scene
   unloading; application-owned initialization receives an application-lifetime
   token.
@@ -683,23 +467,15 @@ Feature initialization rules:
 - Disposal and scene shutdown are coordinated by the same flow owner rather
   than by an unrelated startup chain.
 
-Forbidden initialization patterns:
-
-```text
-FeatureA.Awake() -> FeatureB.Init() -> FeatureC.Start()
-Start() -> async void initialization
-OnEnable() -> Container.Resolve<T>() -> Init()
-fire-and-forget startup tasks without root error handling
-script execution order used as a dependency mechanism
-```
-
-`Awake`, `OnEnable`, and `Start` may still be used for local MonoBehaviour
-concerns that do not affect dependency creation, application readiness, feature
-initialization, or initialization order.
+`Awake`, `OnEnable` and `Start` may perform local component setup only; they
+must not create/resolve dependencies, start application/feature initialization or
+determine readiness/order. The sole application startup exception is
+`ApplicationEntryPoint.Start()` as defined above.
 
 ## Dependency Injection
 
-Project-owned runtime dependencies are supplied through Zenject DI.
+Project-owned runtime dependencies are supplied through Zenject DI. Injection
+supplies dependencies; initialization remains part of the explicitly awaited flow.
 
 Rules:
 
@@ -747,97 +523,28 @@ consumers.
 
 ## Namespace Convention
 
-Folder depth below a context does not extend its namespace.
-
-```csharp
-// Assets/ProjectCore/Shared/**
-namespace Shared;
-
-// Assets/ProjectCore/Contexts/Template/**
-namespace ProjectCore.Template;
-
-// Assets/ProjectCore/Contexts/Project/**
-namespace ProjectCore.Project;
-
-// Assets/ProjectCore/Contexts/Preloader/**
-namespace ProjectCore.Preloader;
-
-// Assets/ProjectCore/Contexts/GameCore/**
-namespace ProjectCore.GameCore;
-
-// Assets/ProjectCore/Contexts/TechnicalPrototype/**
-namespace ProjectCore.TechnicalPrototype;
-
-// Assets/ProjectCore/Contexts/Prototype/**
-namespace ProjectCore.Prototype;
-```
-
-Do not use legacy forms such as:
-
-```text
-GameCore.Movement
-GameCore.Combat.Init
-Prototype.Prototype
-Prototype.Player.Init
-PhotonZenjectBridge
-namespace Project
-ProjectCore.Contexts.<Context>.<Feature>
-```
-
-External packages are excluded from this convention.
+Project code uses only `Shared` or `ProjectCore.<Context>`, for example
+`ProjectCore.GameCore`. Folder depth and feature names do not extend namespaces;
+legacy forms such as `GameCore.Movement` and `ProjectCore.Contexts.<Context>.<Feature>`
+are invalid. External packages retain their original namespaces.
 
 ## Naming Convention
 
-`CONVENTIONS.md` is the source of truth for naming and coding style.
-
-### Code
-
-Use its [Naming](CONVENTIONS.md#naming),
-[Type Name Composition](CONVENTIONS.md#type-name-composition),
-[Injection Method Names](CONVENTIONS.md#injection-method-names),
-[Empty, Default, and NoOp](CONVENTIONS.md#empty-default-and-noop), and
-[Nested Implementation Types](CONVENTIONS.md#nested-implementation-types).
-Injecting dependencies does not start initialization; it remains part of the
-explicitly awaited feature/context flow.
-
-### Folders
-
-Use the canonical [Source Layout](CONVENTIONS.md#source-layout),
-[Feature Layout](CONVENTIONS.md#feature-layout), and
-[category tables](CONVENTIONS.md#script-categories-and-suffixes).
-
-### Unity Assets
-
-Resource names, semantic folders, owner names, CreateAssetMenu, and rename
-compatibility are defined in
-[Unity Resource Naming](CONVENTIONS.md#unity-resource-naming).
-An instance's owning context may differ from the context that defines its type.
+[CONVENTIONS](CONVENTIONS.md) owns naming, category/suffix tables, folder/resource
+layout, member order, access modifiers and coding style. Use the relevant section
+instead of maintaining copies in this architecture document.
 
 ## Coding Rules
 
-Coding style, member order, and API visibility are maintained in
-[CONVENTIONS](CONVENTIONS.md#c-and-unity-coding-rules). Ownership and runtime
-behavior continue to follow this document's dependency, DI, and lifecycle
-rules. In particular, Services must not depend directly on Views; integration
-uses the appropriate public presentation contract.
+Services must not depend directly on Views; integration uses public contracts or
+adapters. Other C#/Unity coding rules are defined in
+[CONVENTIONS](CONVENTIONS.md#c-and-unity-coding-rules).
 
 ## Runtime UI Toolkit
 
-Use [UI_TOOLKIT_STANDARD.md](UI_TOOLKIT_STANDARD.md) for runtime UI presentation:
-MVVM by default and MVP only as an explained, accepted architecture choice.
-It owns ViewModel/Presenter boundaries, synchronization and presentation lifetime.
-Domain services do not depend on Views, ViewModels or Presenters. Construct per-view presentation objects through
-the existing DI/factory flow; do not bind them as global scene/application
-singletons. Reuse Template ScreenNavigation/Popup definitions, catalogs and hosts.
-Existing UI migration requires approved scope. Folder/suffix ownership remains
-with CONVENTIONS.
-
-Context-owned UI resources are consumed within their owning context. Cross-context
-UI reuse uses root-owned common resources under `Assets/ProjectCore/Assets` or
-project-independent Template resources. Do not reference another concrete
-context's private UI assets directly; promote genuinely common resources through
-an approved ownership change. Root common UI must not depend on concrete-context
-UI assets. Resource instances may still use reusable Template types.
+[UI_TOOLKIT_STANDARD](UI_TOOLKIT_STANDARD.md) owns presentation architecture,
+MVVM/default and accepted MVP choices, binding, per-view lifetime and resource
+reuse/promotion. These UI rules supplement the dependency and ownership rules here.
 
 ## Architecture Validation
 

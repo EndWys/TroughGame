@@ -4,16 +4,16 @@
 
 Define read and verified-write procedures for separate Notion workers. Discover
 actual tools from the current connection; do not copy an API manual or assume another
-installation's capabilities. Read-only preflight on 2026-10-12 showed advertised
-search/fetch/access inspection, row/view queries, property/content edits, page creation.
-Tool availability grants neither every target's access nor arbitrary operation authority.
+installation's capabilities. Use Notion MCP exclusively, not browser automation,
+web search or a separate HTTP client. Apply these rules only within the
+[two permitted feature operations](feature-integration.md).
 
 ## Reading and Preparation
 
 Use Notion search for **every content search**. Fetch content/schema by exact supplied/
 resolved IDs. Prefer relation IDs/saved views for bounded selection; check pagination/
 completeness. Fetch `collection://` schemas; distinguish database/source/view IDs.
-Task `Статус` currently has type `select`, not `status`. Actual schema controls query
+Task `Статус` was observed as `select`, not `status`. Actual schema controls query
 fields, not assumed SQL names. Do not expand to unrelated projects/services for missing
 requirements.
 Before content edits read `notion://docs/enhanced-markdown-spec` through Notion fetch/
@@ -31,9 +31,9 @@ unknown blocks. Do not bypass child-deletion protection; routine publication nev
 removes/archives/moves entities.
 For asynchronous writes retain operation/task ID and await final outcome before
 readback. Accepted request is not completed publication. On timeout/ambiguous failure
-fetch target; search the exact stable publication marker for uncertain creation.
-Reconcile once, then return `partial`/`blocked` if uncertainty remains. No blind retry/
-duplicate creation.
+fetch the target and compare the requested delta with current content/properties.
+Reconcile once, then return `partial`/`blocked` if uncertainty remains. Skip already
+applied edits. These skills never create pages/tasks or append audit markers.
 
 ## Limits and Recovery
 
@@ -48,4 +48,3 @@ caller handoff.
 
 - [Operation contract](operation-contract.md).
 - [Notion documentation standard](documentation-standard.md).
-- [Common workflow standard](../ai-workflow/DOCUMENTATION_STANDARD.md).

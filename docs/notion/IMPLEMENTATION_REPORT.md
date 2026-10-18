@@ -1,3 +1,9 @@
+# Historical Report — Superseded
+
+This report describes the retired 2026-10-12 integration. It is not an active
+instruction source. The developer replaced that integration on 2026-10-17 with
+the [two explicit operations](README.md); do not invoke the old skills or operations.
+
 # Notion integration: результаты установки
 
 Дата: 2026-10-12. Feature workflow: **1.3-tg.1**. Протокол операций: **1**.

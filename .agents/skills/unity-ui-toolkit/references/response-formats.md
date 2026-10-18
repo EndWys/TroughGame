@@ -21,7 +21,8 @@ unchanged accepted plan.
 
 Describe the intended behavior, design/source dimensions, relevant states and
 actual host. Next action is hierarchy/resource/presentation planning or a specific blocking
-clarification. For a bug use the bugfix evidence/hypothesis forms as well.
+clarification. For a defect, show relevant expected/actual evidence within the host
+process; do not load additional bugfix forms or start its workflow automatically.
 
 ## Consolidated Architecture and Resources
 
@@ -90,4 +91,5 @@ review and required Play Mode/retest as distinct decisions.
 
 On return state accepted UI outcome, current host FEAT/case/phase, decision/evidence
 references, remaining placeholder or verification work, and the next host action.
-The host owns checkpoint/commit; only immutable accepted facts go to Notion workers.
+The host owns checkpoint/commit. No UI handoff invokes Notion; retain accepted
+specification decisions locally until whole-feature finalization.

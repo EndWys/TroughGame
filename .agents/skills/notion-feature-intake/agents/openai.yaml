@@ -1,4 +1,0 @@
-interface:
-  display_name: "TroughGame: Чтение контекста Notion"
-  short_description: "Источники, требования фичи и контекст баг-задачи"
-  default_prompt: "Используй $notion-feature-intake: подготовь контекст фичи или баг-задачи TroughGame отдельным сабагентом."

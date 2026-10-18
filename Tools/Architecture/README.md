@@ -1,202 +1,91 @@
 # Architecture Validator
 
-`Validate-Architecture.ps1` checks TroughGame source layout and architectural
-conventions without loading Unity or requiring external dependencies.
+On-demand reference for `Validate-Architecture.ps1`. Reading this README is not
+required for every feature task; the validation requirements in AGENTS still apply.
+Read only the section needed to run the tool or understand a diagnostic.
+Validator regression tests are for maintaining the tool.
+
+The script checks project source/resource structure without loading Unity.
+Architecture and naming policy belong to [ARCHITECTURE_RULES](../../docs/ARCHITECTURE_RULES.md)
+and [CONVENTIONS](../../docs/CONVENTIONS.md); runtime UI policy belongs to
+[UI_TOOLKIT_STANDARD](../../docs/UI_TOOLKIT_STANDARD.md).
 
 ## Usage
 
-Report all migration violations without failing the command:
+Run from the repository root. Normal project verification:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\Tools\Architecture\Validate-Architecture.ps1 `
-  -Mode Report
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Tools\Architecture\Validate-Architecture.ps1 -Mode Strict
 ```
 
-Write a machine-readable report:
+`Strict` exits with code `1` when Error diagnostics remain, otherwise `0`.
+`Report` lists diagnostics without failing for those violations. Warnings require
+review and do not themselves fail Strict mode. `-SummaryOnly` suppresses individual
+diagnostics; omit it when investigating a failure.
+
+For a JSON report when needed:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\Tools\Architecture\Validate-Architecture.ps1 `
-  -Mode Report `
-  -SummaryOnly `
-  -OutputPath Logs\ArchitectureValidation.json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Tools\Architecture\Validate-Architecture.ps1 -Mode Report -OutputPath .ai/evidence/architecture/result.json
 ```
 
-Fail when an Error remains:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\Tools\Architecture\Validate-Architecture.ps1 `
-  -Mode Strict `
-  -SummaryOnly
-```
-
-Validate the checked-in positive regression fixture:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\Tools\Architecture\Validate-Architecture.ps1 `
-  -ProjectRoot .\Tools\Architecture\Fixtures\Valid `
-  -Mode Strict
-```
-
-The valid fixture must report `0 errors, 0 warnings`.
-
-Run the inheritance/type-name regression checks:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\Tools\Architecture\Test-TypeResolution.ps1
-```
-
-The runner checks exact diagnostic rules, file paths, and Strict exit codes.
-It includes the positive fixture and `Fixtures/TypeNamesInvalid`, where a plain
-class in Components must produce `VIEW001` even when another context has a valid
-MonoBehaviour with the same name. Other cases cover local-name precedence,
-imports, qualified names, aliases, generic arity, multiline generic bases,
-ambiguous imports, framework namesakes, Managers, context-owned Components, and cycles.
-Generated fixtures are created in a temporary directory and removed after the run.
-
-Run naming-rule regression checks:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass `
-  -File .\Tools\Architecture\Test-NamingValidation.ps1
-```
-
-The naming runner checks the same `Editor`, `EditorWindow`, and
-`AttributeDrawer` suffixes for context and feature tooling. It also verifies
-that top-level abstract classes require `Base` outside Abstract, while the
-four documented Template generic definition families and Shared primitives
-retain their naming scope. Negative fixtures check the exception's owner,
-generic arity, and base type. Each case checks exact diagnostics and exit codes.
+An alternate checkout or fixture can be selected with `-ProjectRoot`.
 
 ## Diagnostic Families
 
+Use the reported rule, file, line and message to locate the issue. Consult the
+owning project standard before changing code; a diagnostic is not authorization
+for unrelated cleanup.
+
 | Prefix | Area |
 | --- | --- |
-| `PATH` | Source ownership and legacy roots |
-| `NS` | Context and Shared namespaces |
-| `SHARED` | Forbidden Shared dependencies |
-| `FEATURE` | Flat feature ownership; obsolete role folders are rejected |
-| `SCRIPT` | Closed feature `Scripts` taxonomy |
-| `CONTEXT` | Shared context `Scripts/<Category>` |
-| `SUFFIX` | Folder and type suffix correspondence |
-| `TYPE` | File/type correspondence and top-level type count |
-| `ABSTRACT`, `ENUM`, `STATIC` | Special type category rules |
-| `MANAGER`, `VIEW`, `DI` | DI-managed and MonoBehaviour placement |
-| `NAME` | Known spelling, interface/base prefixes, and legacy suffix rules |
-| `INIT` | Initialization callback and `async void` checks |
-| `TEST` | Flat Editor and Play test placement |
-| `ASSET` | Own resource naming, ownership, placement, metadata and authoring |
+| `PATH`, `NS`, `SHARED` | Source ownership, namespaces and Shared dependencies |
+| `FEATURE`, `SCRIPT`, `CONTEXT` | Feature/context placement and script categories |
+| `SUFFIX`, `NAME`, `ABSTRACT`, `ENUM`, `STATIC` | Naming and type categories |
+| `TYPE` | File/type correspondence and type resolution |
+| `MANAGER`, `VIEW`, `DI` | Managed types, components and DI placement |
+| `INIT` | Initialization callbacks and async startup |
+| `TEST` | Editor/Play test placement |
+| `ASSET` | Resource naming, ownership, placement and metadata |
 
-Errors are deterministic convention violations and fail Strict mode. Warnings
-are heuristic findings that require manual review.
+`TYPE004` indicates ambiguous base-type resolution; inspect imports and qualified
+names. `VIEW001`/`VIEW002` retain their original IDs but check `Scripts/Components`.
+Other individual diagnostic messages describe the failed check.
 
-`TYPE004` reports an ambiguous base type when more than one known type is
-available through imports. Use a qualified type name or a `using` alias.
+## Analysis Limits
 
-`TEST001` requires every test fixture to live directly in
-`Contexts/<Context>/Tests/Editor` or `Contexts/<Context>/Tests/Play`.
-Feature-local `Scripts/Tests`, other environment names, and nested test-category
-folders are invalid.
+- Parsing is lightweight, not compiler-based. Nested types, global usings, aliases
+  to constructed generic types and external custom bases may require manual review.
+  Inheritance resolution uses project types and known MonoBehaviour/NetworkBehaviour/
+  VisualElement roots, namespaces, imports, aliases and generic arity.
+- DI binding discovery and initialization callback checks are heuristic; warnings
+  need contextual review rather than automatic code changes.
+- Naming/category checks do not prove semantic responsibility or architecture quality.
+  ViewModel/Presenter suffixes do not establish MVVM/MVP correctness or per-view lifetime.
+- Resource checks cover project-owned resources; Plugins/ThirdParty are excluded.
+  Serialized references, cross-context consumers and semantic ownership require
+  inspection; path checks do not establish the dependency graph.
+- A clean report does not replace compilation, behavior tests, scene/prefab checks
+  or code review.
 
-## Initial Migration Baseline
+## Validator Maintenance
 
-Baseline captured on 2026-07-22 against 131 first-party C# files:
+Run the relevant regression runner when changing validator behavior or its fixtures,
+not during ordinary feature development:
 
-```text
-267 errors
-4 warnings
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Tools\Architecture\Test-TypeResolution.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Tools\Architecture\Test-NamingValidation.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Tools\Architecture\Test-ResourceValidation.ps1
 ```
 
-| Rule | Count | Meaning at baseline |
-| --- | ---: | --- |
-| `NS001` | 107 | Legacy or incorrect namespaces |
-| `FEATURE001` | 102 | Features do not yet have a Modules, Implementations, Infrastructure, or Bridges owner |
-| `NAME004` | 19 | Legacy `Changer` suffixes |
-| `PATH001` | 14 | Shared remains under legacy `Assets/Shared` |
-| `PATH002` | 10 | Project-owned scripts remain outside Contexts or ProjectCore/Shared |
-| `NAME001` | 9 | `Proyotype` or `Enteties` spelling in paths |
-| `SUFFIX001` | 3 | Context script folder/suffix mismatch |
-| `TYPE003` | 2 | More than one top-level type in one file |
-| `INIT002` | 1 | `async void Start` in the legacy feature installer |
-| `CONTEXT002` | 2 | Undocumented shared context category |
-| `INIT001` | 2 | Lifecycle callbacks appear to start initialization chains |
+These cover type/inheritance resolution, naming rules and resource validation,
+including negative cases and expected diagnostics/exit codes. Generated fixtures
+are temporary. The checked-in positive fixture can also be run directly:
 
-The baseline is historical and is not an allowlist. Current strict validation
-must remain at zero errors and warnings.
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Tools\Architecture\Validate-Architecture.ps1 -ProjectRoot .\Tools\Architecture\Fixtures\Valid -Mode Strict
+```
 
-Context-owned scripts use the documented non-feature categories such as
-`Abstract`, `Enums`, `Extensions`, `DataHolders`, `Other`, and `Components`. Outside
-`Init`, these scripts must not participate in DI. A complete capability,
-stateful service, or lifecycle participant remains feature-owned.
-
-## Static Analysis Limits
-
-- `Other/ViewModels` and `Other/Presenters` accept concrete `*ViewModel` and
-  `*Presenter` presentation objects respectively under
-  context/feature ownership. Suffix checks do not prove MVVM responsibilities,
-  plain C# inheritance, per-view lifetime or approval of an MVP choice; review these against
-  [UI_TOOLKIT_STANDARD.md](../../docs/UI_TOOLKIT_STANDARD.md). ViewModels are not
-  passive Models or container-lifetime Managers; the same applies to Presenters.
-
-- The naming vocabulary is defined in `docs/CONVENTIONS.md`. Contract and
-  implementation suffixes need not match, subject interfaces may omit a role
-  suffix, and nested implementation types do not follow top-level category
-  suffix rules. Contract responsibility, word order, generic parameter meaning,
-  injection method names, and `Empty`/`Default`/`NoOp` semantics require code
-  review; a clean validator report does not certify these naming decisions.
-- MonoBehaviour inheritance is resolved from project-owned types and the known
-  roots `UnityEngine.MonoBehaviour`, `Fusion.NetworkBehaviour`, and
-  `UnityEngine.UIElements.VisualElement`. Type identities include the namespace
-  and generic arity; each inheritance link uses its declaring file's namespace,
-  imports, and aliases. An external custom base type may require manual review.
-- Type parsing remains lightweight and assumes one primary top-level type and
-  one namespace per file, as required by project conventions. It is not a C#
-  compiler and does not model every language construct, such as nested types,
-  global using directives, or aliases to constructed generic types.
-- Manager `AsSingle`, open-generic `AsCached`, and Feature binding discovery is
-  heuristic and produces a Warning when the binding cannot be found statically.
-- Lifecycle callback inspection intentionally produces Warnings because local
-  component setup may be valid.
-- Direct `BaseMonoBehaviourFeature` descendants must be registered through
-  `AddFeatureFromComponent<TFeature>()`. Exact GameObject placement and
-  serialized references still require Unity prefab or scene validation.
-- The validator does not replace Unity compilation, Test Runner, scene loading,
-  prefab validation, or architecture review.
-
-## Resource validation
-
-Run `powershell -NoProfile -ExecutionPolicy Bypass -File
-Tools/Architecture/Test-ResourceValidation.ps1` from the repository root.
-The runner checks valid resource folders, negative naming/ownership/metadata cases,
-the ProjectContext and third-party exceptions, and SceneDefinition placement.
-
-Own non-C# resources under ProjectCore are checked; Plugins and ThirdParty are
-excluded. C# fixture metadata is not required by this resource stage. Existing
-SDK roots outside ProjectCore are not relocated or treated as project-owned content.
-
-Common UI resources use root `Assets/ProjectCore/Assets` semantic folders from
-[CONVENTIONS](../../docs/CONVENTIONS.md#common-ui-resource-layout). Font source
-assets (`.ttf`, `.otf`) require `Font_` naming and `Assets/Fonts` placement.
-Resource fixtures cover the shared root layout and invalid names/folders.
-Cross-context UI references and common-resource consumers still require reference
-inspection/review; this path validator does not enforce the dependency graph.
-
-| Rule | Check |
-| --- | --- |
-| ASSET001 | Matching resource .meta exists |
-| ASSET002 | Project/context/feature Assets root, with ProjectContext exception |
-| ASSET003 | Prefix and name pattern for the resource extension |
-| ASSET004 | Semantic folder; SceneDefinition exception requires its matching scene |
-| ASSET005 | Config owner matches its containing context |
-| ASSET006 | Empty folders, warning only |
-| ASSET007 | CreateAssetMenu context spelling matches the script context |
-
-`VIEW001` and `VIEW002` retain their IDs for compatibility but now validate
-`Scripts/Components`. Ordinary `*Component` scripts live in that root; role
-folders retain their suffixes and MonoBehaviour/VisualElement checks.
-The validator cannot infer semantic ownership from arbitrary serialized references;
-resource types and their configured instances may have different owners.
+That fixture is expected to report zero errors and warnings. Fixture results describe
+the validator's regression coverage, not the current game project's runtime readiness.

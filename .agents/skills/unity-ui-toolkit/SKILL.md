@@ -9,10 +9,12 @@ description: Design, implement, bind and verify TroughGame runtime UI Toolkit sc
 
 Own the UI technical work from design analysis through functional verification.
 Reproduce the approved design with adaptive layout, reusable resources, MVVM by default,
-data binding and input behavior. For defects, specialize the existing bugfix
-investigation and correction rather than designing a replacement screen.
+data binding and input behavior. Correct targeted defects within the current host
+scope; do not automatically start a bugfix workflow or redesign the screen.
 This skill runs in the developer agent. It creates no independent workflow state
 and does not dispatch another agent by default.
+Automatic selection for relevant UI work remains enabled; a manual invocation is
+not required. This does not authorize starting another skill's workflow.
 
 ## Documents and Rules
 
@@ -42,9 +44,11 @@ check versioned API/USS support rather than copying blanket plugin prohibitions.
 ## Ownership and Inputs
 
 Identify the owning feature and any active host FEAT or bug case and approved scope. For direct UI
-requests, route new feature work through `unity-feature-development` and defects
-through `unity-bugfix`; ordinary existing-UI improvements need only applicable
-explicit approvals and do not fabricate feature/bug state.
+requests, use `unity-feature-development` only if the developer has explicitly
+invoked it for that feature. Do not invoke it or create feature state automatically.
+Otherwise handle UI work within the developer's authorized scope. Defects and
+existing-UI improvements use applicable host scope/approvals without fabricating
+feature/bug state. `unity-bugfix` requires a direct developer command.
 Without recorded host state, retain applicable decisions in the current developer
 handoff or existing change artifact. A narrow explicit edit may already authorize
 its exact changes; do not add a full planning/prototype gate for an unaffected area.
@@ -73,12 +77,13 @@ elements need no artificial ViewModel or Presenter.
 | Visual prototype | Approved structure/styles/resources, representative preview data, render evidence and differences | Developer accepts visual prototype before complete functional wiring |
 | Functional implementation | Binding, input/commands, dynamic content, lifecycle, navigation and service integration | Applicable checks and independent inspection of the final relevant diff |
 | Review and verification | Exact changes, visual/functional results, risks and remaining limits | Host diff review and required Play Mode/retest acceptance |
-| Return | Accepted facts, remaining actions and exact host continuation | Host owns state/checkpoint/commit and isolated Notion publication |
+| Return | Accepted facts, remaining actions and exact host continuation | Host owns state/checkpoint/commit; no UI-stage Notion invocation |
 
 The visual phase may include minimal input or sample binding needed to exercise
 layout, but must not present mock actions as working product behavior. Targeted
 edits/bugs may skip unaffected phases with an explicit reason; no forced complete
-screen redesign or MVVM migration. Bug diagnostic and fix-plan gates still apply.
+screen redesign or MVVM migration. Bugfix-specific gates apply only inside a
+developer-invoked bugfix workflow; do not import them into ordinary UI corrections.
 
 ## Iteration and Stop Conditions
 
@@ -93,9 +98,10 @@ revision of the applicable approval. Existing authorization persists; silence
 is not approval. Show the concrete proposal before asking and explain a stop
 with the exact rule's link and a short quote.
 
-If a defect appears, enter `unity-bugfix`, preserving the host interruption and
-single state. Use UI evidence/probes and then return explicitly to the interrupted
-UI phase and host flow. Do not replace causal diagnosis with cosmetic changes.
+If a defect appears, inspect UI evidence and correct the current phase within host
+scope, then repeat relevant checks. Do not invoke/load `unity-bugfix` or add its
+gates unless directly commanded by the developer. A manually requested bugfix uses
+the same host artifact/case, state and checkpoint.
 
 ## Completion
 
@@ -103,5 +109,5 @@ Use stage-specific responses in the developer's language. Report actual evidence
 and unavailable checks separately. Complete UI work only when the approved visual
 and behavior criteria are covered, required review/retest is accepted, resources
 are identified as final or accepted placeholders, and the host receives the result.
-Commit/publication permissions come from the host, not this skill. Notion actions
-remain with its isolated workers through `notion-project-coordination`.
+Commit permissions come from the host. UI stages never invoke Notion; accepted
+specification decisions remain local until whole-feature finalization.

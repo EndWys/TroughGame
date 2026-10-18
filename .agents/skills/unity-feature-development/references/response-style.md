@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Follow `docs/ai-workflow/DOCUMENTATION_STANDARD.md`. This reference governs
-presentation, not stages/authority. The developer's explicit format takes precedence.
+This reference governs presentation, not stages/authority. The developer's explicit
+format takes precedence.
 Use the smallest structure that makes the result/decision reviewable.
 Instruction documents are English; render responses and table labels in the
 developer's language (Russian in this project unless requested otherwise).
@@ -44,7 +44,7 @@ item as approval.
 | Audit | Scope/evidence/findings or explicit absence |
 | Review | Full relevant diff, executed checks, accept/change |
 | Play Mode | Preconditions, steps, expected result, actual result/failure data |
-| Bug | unity-bugfix forms: expected/actual, cause/hypotheses, approved probes/fix, exact diff, retest |
+| Defect/correction | Expected/actual, evidence, scoped correction and verification; no automatic bugfix skill or extra response forms |
 | Plan | Delta only when explicitly requested; otherwise unchanged |
 | Final verification | All RQ/AC with implementation/evidence/status/gaps |
 | Workflow audit | Command/report, process findings separately from code audit |

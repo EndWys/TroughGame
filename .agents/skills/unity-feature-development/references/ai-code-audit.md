@@ -36,4 +36,5 @@ approved architecture, and actually inspected areas.
 If none, explicitly state no actionable findings, reviewed scope, and next review.
 Audit does not permit scope expansion. Record status, finding IDs, and time in
 the subtask. P0/P1 return to correction/checks/audit; P2 remain visible to the
-developer. Actual defects use embedded `unity-bugfix`.
+developer. Correct defects within the current subtask and its existing gates.
+Do not invoke `unity-bugfix` unless directly commanded by the developer.

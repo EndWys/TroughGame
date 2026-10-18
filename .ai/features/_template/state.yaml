@@ -1,8 +1,11 @@
 # Перед запуском фичи скопируйте каталог в .ai/features/<feature-kebab-case>/.
 # Храните краткие факты; основания решений записывайте в decisions.md.
 
-workflow_version: "1.5-tg.1"
+workflow_version: "1.7-tg.1"
 feature: <feature-kebab-case>
+# Final stages: final_verification -> workflow_audit -> final readiness acceptance
+# -> notion_finalization -> retrospective (optional local knowledge promotion) -> complete.
+# Notion worker receipts remain outside feature state.
 stage: requirements
 status: in_progress # in_progress | waiting_for_approval | blocked | failed | complete
 current_subtask: null

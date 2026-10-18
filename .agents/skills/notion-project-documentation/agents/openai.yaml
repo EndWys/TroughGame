@@ -1,4 +1,0 @@
-interface:
-  display_name: "TroughGame: Документация Notion"
-  short_description: "Публикация принятых фактов и статусов проекта"
-  default_prompt: "Используй $notion-project-documentation: опубликуй принятые изменения TroughGame отдельным Notion-сабагентом."

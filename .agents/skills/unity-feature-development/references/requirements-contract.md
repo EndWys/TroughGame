@@ -6,10 +6,11 @@ Before research/design, prepare an agreed behavior and validation contract.
 Exclude classes, files, API, Unity objects, and implementation options. Save it
 in `.ai/features/<feature>/requirements.md`; record status/reference in state.
 Present all applicable content in chat.
-For Notion use the coordinator and `notion-feature-intake` to obtain page/task IDs,
-source sections, observed versions, and proposed AC. The worker does not read
-developer contract/state. Page status is not approval. Refresh and compare material
-source changes when resuming.
+For selected Notion sources at `requirements`, explicitly load
+`../../notion-feature-requirements/SKILL.md` and dispatch its isolated worker for
+source-backed requirements, task IDs and proposed AC. Page status is not approval.
+Reuse the accepted local contract on resume; no automatic source refresh. A material
+gap goes to the developer; another intake needs an explicit requirements request.
 
 ## Contract Content
 

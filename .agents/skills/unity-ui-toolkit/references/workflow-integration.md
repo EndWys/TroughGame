@@ -4,8 +4,8 @@
 
 Specialize UI work without duplicating host state, approvals or task ownership.
 The developer agent uses this skill directly. Feature workflow owns its FEAT,
-state, scope and checkpoint. Bugfix workflow owns causal analysis, diagnostic
-actions, selected correction and retest. Notion owns independent worker journals.
+state, scope and checkpoint. A manually invoked bugfix workflow owns its agreed
+diagnostics/correction/retest; ordinary UI defects remain host corrections. No UI stage dispatches a Notion worker.
 
 ## Feature Integration
 
@@ -24,28 +24,24 @@ actions, selected correction and retest. Notion owns independent worker journals
 4. After prototype acceptance implement complete behavior, audit and present the
    final relevant diff through the host's developer-review/Play Mode gates.
 5. Hand back accepted UI facts and exact continuation. The host commits once
-   after its required acceptance/checks and publishes through Notion coordination.
+   after its required acceptance/checks. No UI-stage Notion dispatch; retain accepted
+   specification decisions for whole-feature finalization.
 
 Store UI plan/revision/prototype decisions in `subtasks/FEAT-XX.md`; temporary
 screenshots/logs belong in ignored `.ai/evidence/`. Link evidence instead of
 putting screenshot data in YAML. Existing state versions are not silently migrated;
 agree introduction of new prototype gates before resuming an older active task.
 
-## Defect Integration
+## Defect Corrections and Manual Bugfix Integration
 
-Use `unity-bugfix` for layout/scaling, binding, input, navigation, lifetime or
-collection defects. First establish expected/actual behavior, steps, version,
-resolution, input mode and evidence. Confirmed cause → exact fix proposal;
-uncertainty → approved probes, not speculative redesign.
-
-UI forms extend the diagnostic/fix handoff without replacing hypotheses,
-confidence, conditional complexity or diagnostic approval. Reuse unchanged
-hierarchy/assets; skip full prototype approval for a targeted fix unless the
-approved correction actually redesigns the UI. Validate the original scenario.
-
-An embedded bug stays in the existing FEAT/interruption/case, with one host state
-and corrected checkpoint. A standalone bug stays in its bug state. Return to the
-recorded phase after accepted retest; do not close the whole feature on bug closure.
+Layout/scaling, binding, input, navigation, lifetime and collection defects stay in
+the current host scope and existing verification/review gates. Inspect the actual
+view, resolution, input and lifecycle conditions. Do not load/invoke `unity-bugfix`,
+create its state, import its approval/response forms or ask to activate it.
+Only a direct developer command starts that process. If requested, supplement its
+short case with relevant UI evidence, preserve one host state/checkpoint and reuse
+unchanged hierarchy/assets. Targeted fixes do not require a full visual prototype
+unless the accepted correction redesigns the UI. Retest the original scenario.
 
 ## Feedback and Resume
 

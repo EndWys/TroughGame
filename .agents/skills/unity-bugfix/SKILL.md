@@ -1,70 +1,57 @@
 ---
 name: unity-bugfix
-description: Diagnose and fix TroughGame defects with evidence, approved investigation and exact fix plans, regression checks, review and retest gates. Use for standalone bugs and defects within active features; exclude feature design, general refactoring and security-specific remediation.
+description: Run the TroughGame bugfix process only when the developer explicitly requests this skill or starts/resumes the bugfix workflow. Never select automatically for a defect, failed test, review feedback or feature correction.
 ---
 
-# Unity Bug Diagnosis and Fixing
+# Manual Bugfix Workflow
 
-## Purpose and Scope
+## Invocation
 
-Analyze existing evidence read-only first. A confirmed cause leads to a fix proposal;
-an uncertain cause leads to approved data collection. The developer selects material
-options and accepts results. Do not design new features or silently change agreed
-behavior. Missing/conflicting expectations require a product decision. Bugs do not
-authorize unrelated refactoring. Vulnerabilities follow the applicable security-fix skill.
+Start only on a direct developer command naming `$unity-bugfix`, this skill, or
+explicitly starting/resuming the bugfix workflow. A generic request to fix code,
+reported bug, failed check, task URL or feature-workflow reference is not a command
+to invoke this skill. Never invoke it automatically from feature or UI work.
+Once manually started, continue the same authorized bug process across turns without
+asking to invoke it again. Do not treat an old automatic invocation as authorization
+to resume it. The developer can return to ordinary feature work at any time.
 
-## Documents and Rules
+## Process
 
-Read AGENTS, architecture/conventions, applicable contracts, and
-`docs/ai-workflow/DOCUMENTATION_STANDARD.md`. Use installed `unity:unity-cli`
-for Editor operations and the scene hierarchy standard for scenes.
+1. **Analyze.** Establish expected/actual behavior, a minimal reproducer and available
+   evidence. Inspect existing code/logs first. Explain the likely cause and confidence;
+   distinguish a confirmed mechanism from a hypothesis. Ask only blocking questions.
+2. **Agree the next action.** A confirmed cause leads to an exact fix proposal:
+   affected files/objects, before/after behavior, risks and checks. If evidence is
+   insufficient, propose the smallest useful diagnostic action with expected outcomes,
+   impact and a stop condition. Get approval for new probes or the fix unless already
+   authorized. Diagnostic approval does not authorize a production fix. Do not invent
+   alternative fixes or repeat approval for an unchanged plan.
+3. **Fix.** Implement the agreed correction within scope. Remove temporary probes
+   unless their retention is accepted. Changed scope or an invalidated hypothesis
+   returns to analysis/proposal; do not silently redesign the feature.
+4. **Verify and accept.** Run relevant project checks, repeat the original case and
+   check affected adjacent behavior. Review the final diff and report actual results
+   and limitations. Obtain developer diff acceptance and required retest/Play Mode
+   acceptance; one response can cover both when its evidence is explicit. Failed
+   retest returns to analysis. Compilation alone does not prove the defect fixed.
+5. **Deliver.** Summarize cause, correction and verification. For an embedded fix,
+   return to the same feature subtask/checkpoint under its existing gates. A developer
+   instruction to fix and continue already authorizes that return; no extra ceremony.
 
-| When to Read | Reference |
-| --- | --- |
-| Causes, hypotheses, experiments | [diagnosis.md](references/diagnosis.md) |
-| Start/resume, standalone/embedded | [state-and-integration.md](references/state-and-integration.md) |
-| Every handoff/approval | [response-formats.md](references/response-formats.md) |
-| Implementation, checks, commit, Notion | [verification-and-delivery.md](references/verification-and-delivery.md) |
-| UI layout, input, binding, navigation, lifetime or collection defects | [unity-ui-toolkit](../unity-ui-toolkit/SKILL.md) |
+## Records and Integration
 
-## Stages and Gates
+Keep one short case: expected/actual, cause/evidence, agreed action, changes and
+verification. No mandatory response tables, likelihood/complexity matrix, separate
+audit report or repeated stage receipts. Use a table only when it improves clarity.
+For standalone work use `.ai/bugs/<bug-id>/case.md`; new work needs no state YAML.
+For a manually requested embedded process reuse the current feature artifact or its
+existing bug case. Never create a new FEAT or duplicate state/evidence/checkpoints.
+Preserve existing case/state/approvals on resume; do not migrate or regenerate them.
 
-| Stage | Deliverable | Transition / Stop |
-| --- | --- | --- |
-| `intake` | Expected/actual, source, steps, version/commit, roles/logs | Read-only analysis; blocking questions only |
-| `root_cause_analysis` | Mechanism, facts, inferences, alternatives | Confirmed → `fix_proposal`; otherwise → `diagnostic_plan` |
-| `diagnostic_plan` | Hypotheses/likelihood, discriminating probes, conditional fix complexity; exact logs/Profiler/test steps | Approve new actions/instrumentation |
-| `diagnostic_execution` | Actual results, unavailable checks, remaining hypotheses | Analyze again; changed/new probes need an approved revision |
-| `fix_proposal` | Cause, before/after, exact files/members/assets, real options/recommendation | Approve selected fix/scope |
-| `implementation` | Accepted correction, probe cleanup, useful regression | Checks/audit; stop for scope/design change |
-| `verification_review` | Checks, original scenario, complete relevant diff audit/risks | Required findings → correction/analysis; developer diff acceptance |
-| `retest_acceptance` | Original case, adjacent paths, required Play Mode/peer/lifecycle cases | Failure → analysis; explicit acceptance before delivery |
-| `delivery` | Accepted commit and Notion outcome/publication blocker | Standalone complete; embedded awaits explicit return to feature |
-
-Authorization persists; do not re-approve unchanged probes/fixes. Mechanical edits
-within the exact accepted plan add no gate. New mechanism/owner/API/behavior/scope/
-experiment needs revision. Complete available authorized preparation before asking.
-Silence and compilation success prove neither consent nor original-case remediation.
-
-## Stop Conditions
-
-For runtime UI defects use `unity-ui-toolkit` in this agent, with this workflow's
-case/host state. Add UI-specific context, probes, exact hierarchy/binding changes
-and render/input evidence. Its technical forms supplement causal analysis and
-approved diagnostic/fix plans; do not force a whole-screen prototype/redesign or
-unrelated MVVM migration. This workflow retains review/retest and delivery gates.
-
-Diagnostic approval permits described probes, not a production fix. Fix approval
-permits the selected correction, not hypothesis investigation or unrelated cleanup.
-Review accepts the final diff and does not replace retest/Play Mode; both are needed
-before commit. Show proposals in chat; explain stops with the exact rule's link/short
-quote. If new evidence/failed retest disproves the fix, return to analysis.
-
-## Ownership and Completion
-
-Within an active feature the same developer agent uses current FEAT/interruption,
-one host state, and `bugs/<bug-id>/case.md`. Create no second state/new subtask.
-The host owns transitions and one corrected checkpoint. Standalone bugs use
-`.ai/bugs/<bug-id>/` from the template, without feature state. Notion uses a separate
-worker through the coordinator, receiving immutable facts/decisions/results and
-never reading developer state/cases. Closing a bug task does not complete its feature/stage.
+Follow AGENTS and local architecture/conventions. Use `unity:unity-cli` for Editor
+operations and UI Toolkit guidance when relevant; do not start a fallback Editor.
+Apply relevant architecture/build/diff and connected-Editor checks. State unavailable
+checks honestly and add a regression test only when it meaningfully protects behavior.
+After accepted standalone diff/retest and passing checks, the existing permission for
+one scoped local fix commit remains; preserve unrelated staged work. Embedded commits
+belong to the host. No push/merge/release or Notion invocation is authorized here.

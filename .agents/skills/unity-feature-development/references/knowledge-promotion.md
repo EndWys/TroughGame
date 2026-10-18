@@ -2,7 +2,7 @@
 
 ## Purpose
 
-After final acceptance/retrospective, decide which proven reusable lesson becomes
+As an optional local substep of the final retrospective, decide which proven reusable lesson becomes
 a permanent rule. This does not reopen implementation, create subtasks, or change
 the product without a decision. The developer approves each candidate; the agent
 applies the exact accepted change.
@@ -53,11 +53,13 @@ decision rather than silently reconciling policy.
    without another question; changed rule/target requires revision.
 
 No candidates → `not_applicable`; rejection also completes this stage without
-policy changes. A Notion target is updated by its separate worker.
+policy changes. This substep does not invoke Notion or publish process lessons there.
 
 ## Versions and Resume
 
 New features use the current CHANGELOG version. Do not rewrite existing state
 automatically. Changes to gates/state contract/approval semantics require a choice:
-continue the old process or migrate explicitly. Editorial/language changes alone
+continue the old process or migrate explicitly. The 1.6-tg.1 Notion timing
+restriction is explicitly authorized for active work and supersedes old hooks immediately;
+it does not rewrite active state or repeat approved gates. Editorial/language changes alone
 do not require migration.

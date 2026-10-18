@@ -1,6 +1,6 @@
 ---
 name: unity-feature-development
-description: Run TroughGame's workflow for a new feature from approved requirements or an explicitly requested continuation of its recorded workflow. Do not use for standalone bugs, research, or ordinary existing-feature changes.
+description: Start TroughGame's feature-development workflow only on a direct developer command to use this skill, then continue that feature through its recorded flow. Never select implicitly from a generic feature request or another skill.
 ---
 
 # Unity Feature Development
@@ -9,15 +9,20 @@ description: Run TroughGame's workflow for a new feature from approved requireme
 
 The agent owns state, research, implementation, and available checks within
 approved scope. The developer accepts product decisions, architecture, Play Mode
-results, and final readiness. New states use `1.5-tg.1`.
-Use for a new feature from agreed requirements or an explicit recorded continuation.
+results, and final readiness. New states use `1.7-tg.1`.
+Start a new feature workflow only when the developer explicitly invokes this skill
+by name or commands its use. A generic request to develop a feature, a specification,
+a task URL or another skill's recommendation does not activate it or create state.
+After that initial invocation, continue development and later authorized resumptions
+of the same feature through this flow without requiring another skill invocation.
+Preserve its accepted approvals, current stage and existing authorization across turns.
+Do not automatically adopt unrelated work or restart completed stages.
 Standalone bugs, research, reviews, tooling setup, and existing-feature improvements
 do not create feature state. Reopen a completed workflow only when explicitly requested.
 
 ## Documents and Rules
 
-Read `AGENTS.md`, `docs/ai-workflow/DOCUMENTATION_STANDARD.md`, and
-`docs/ai-workflow/workflow-reference.md`. Use `docs/project-overview.md` and
+Read `AGENTS.md` and `docs/ai-workflow/workflow-reference.md`. Use `docs/project-overview.md` and
 `docs/project-map.md` for context. Policy owners are `docs/ARCHITECTURE_RULES.md`,
 `docs/CONVENTIONS.md`, and `docs/SCENE_HIERARCHY_STANDARD.md`.
 Developer instructions and existing project standards take precedence.
@@ -46,12 +51,14 @@ dependencies after registrations finish; initialization is awaited through the u
 flow. Preserve `Assets/ProjectCore/Resources/ProjectContext.prefab`; add no `.asmdef`.
 For Editor operations use `unity:unity-cli`, a status preflight, and explicit project targeting.
 
-Notion uses a separate worker through `notion-project-coordination`; see
-`docs/notion/feature-integration.md`. The worker returns sources and proposed
-requirements/acceptance criteria (AC); the main agent obtains approval and owns
-its own contract. Do not call MCP directly, read/edit worker journals, or add Notion
-sync fields to feature YAML. Refresh source observations before resume/implementation;
-material changes require an approved revision.
+Notion has exactly two explicit dispatch points; see
+`docs/notion/feature-integration.md`. At requirements intake from selected Notion
+sources explicitly load `../notion-feature-requirements/SKILL.md` and dispatch its
+isolated worker. At `notion_finalization` explicitly load
+`../notion-feature-finalization/SKILL.md`. Never invoke/load Notion skills on routine
+resume, subtasks, patches, bugs or intermediate decisions. Reuse the local contract.
+The main agent owns state and never calls Notion MCP. The new timing limits apply
+to active features without rewriting versions, replaying work or revoking gates.
 
 ## Start and Resume
 
@@ -82,19 +89,22 @@ new prototype gate. Do not silently update their workflow version.
 | `implementation` | Minimal approved changes and Unity integration | Audit on success; stop for scope change/uncertainty |
 | `ai_audit` | Separate inspection of all relevant changes | Fix P0/P1 before developer review |
 | `developer_review` | Full diff acceptance or specific feedback | Corrections → implementation; acceptance → Play Mode |
-| `play_mode_verification` | Scenario and actual result | Failure → diagnosis; success → plan update |
+| `play_mode_verification` | Scenario and actual result | Failure → current-subtask correction; success → plan update |
 | `plan_update` | Justified delta or unchanged plan | Plan changes need approval |
 | `final_verification` | Every requirement/AC mapped to actual checks | Workflow audit before final readiness |
 | `workflow_audit` | Executed audit and presented result | Developer final readiness decision |
-| `retrospective` | Up to three supported improvements or none | Eligible candidates → knowledge promotion |
-| `knowledge_promotion` | Approved rule, rejection, or not applicable | Exact change, separate commit, completion |
+| `notion_finalization` | Whole-feature task/feature statuses and concise accepted specification deltas | Only after full acceptance; verified synchronization or explicit not applicable |
+| `retrospective` | Final process revision; up to three supported improvements or none | Optional local knowledge promotion with its existing approval/check/commit rules, then complete |
 
 Do not create/split/rename/reorder subtasks without the approved initial plan or
 an explicitly requested approved plan delta. A correction remains the same subtask.
-An actual defect in implementation/checks/audit/review/Play Mode invokes `unity-bugfix`
-embedded in the feature: current FEAT/interruption, `bugs/<bug-id>/case.md`, one
-host state and checkpoint. Diagnostic and fix gates are separate; after review/retest,
-explicitly return to the host flow.
+Defects in implementation/checks/audit/review/Play Mode remain corrections in the
+current FEAT and approved scope, using existing audit/review/verification gates.
+Do not automatically load/invoke `unity-bugfix`, create bug workflow state, import
+its gates or ask to activate it. Material scope/design uncertainty uses host gates.
+Only a direct developer command starts the manual bugfix process; if requested,
+reuse the current artifact/case, one host state and corrected checkpoint. Existing
+manual authorization persists; ordinary defects alone never establish it.
 
 `waiting_for_approval`, `blocked`, `in_progress`, `failed`, and `complete` must
 match facts. An approval record is not proof: identify the human, exact subject/
@@ -115,8 +125,10 @@ Compare lifecycle with the approved dependency map. Changed owner/order/readines
 requires architecture revision. After accepted review, required passed Play Mode,
 and applicable checks, create one accepted checkpoint per state-and-git.
 
-At meaningful accepted gates pass immutable facts for `publish_progress`/
-`update_documentation`. After final acceptance, pass `finalize_feature` with exact
-tasks, AC/checks/Play Mode, commits, limitations, and the actual business status.
-Report development and Notion outcomes separately on publication failure; retry
-through the worker without replaying implementation. Complete only by workflow-reference criteria.
+Keep all intermediate gates, bugs, decisions, audits and tests local. After all
+subtasks, final verification, presented workflow audit and developer final readiness
+acceptance, enter `notion_finalization`. Pass exact task/feature targets and accepted
+specification/plan deltas to its worker. No Notion targets means not applicable,
+without a worker. Report verified/pending publication separately; retry only this
+stage on failure. Then perform `retrospective`, including optional local knowledge
+promotion, and complete by workflow-reference criteria. Do not publish retrospectives.

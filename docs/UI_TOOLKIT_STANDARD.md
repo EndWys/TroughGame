@@ -21,8 +21,7 @@ only within an approved change. Editor IMGUI/uGUI are outside this standard.
 
 Input flows View → ViewModel command → domain service → state/notification →
 ViewModel → View. A presentation contract may request navigation; its coordinator
-owns window creation/history. Do not inject a concrete View into a domain service
-or let the ViewModel manipulate the visual tree. In MVP, input flows View →
+owns window creation/history. In MVP, input flows View →
 Presenter → domain service → Presenter → View contract. The View implements
 that contract and owns actual controls, geometry, focus and visual transitions.
 
@@ -31,7 +30,7 @@ Purely decorative frames/icons and stateless controls need no separate presentat
 owner. A reusable widget with independent state/commands may own one; item
 ViewModels represent row presentation where useful.
 Do not create a general MVVM/MVP framework or package without a demonstrated need and
-approved architecture. Shared cannot reference Unity UI/Properties APIs.
+approved architecture.
 
 ## Pattern Selection
 
@@ -55,34 +54,28 @@ Independent child widgets may own their bounded presentation state, without
 duplicating their parent's decisions. Navigation, DI, services, lifecycle and
 verification remain common; do not build parallel window frameworks.
 
-Manual callbacks or scoped state-to-control updates within a View are compatible
-with MVVM. Native DataBinding is optional where it does not simplify the task.
-The distinction is ownership/dependency direction, not whether every field binds.
-
 ## Construction, Ownership and Lifetime
 
 Construct Views and ViewModels/Presenters through the existing DI/factory flow.
-A presentation owner
-belongs to one screen/popup/widget instance, not an application/scene `AsSingle`
-binding. Constructor injection does not turn it into a Manager. Domain services
-keep their existing container lifetime. Abstract contracts/base classes go in
-`Scripts/Abstract`; concrete ViewModels go in `Scripts/Other/ViewModels` with
-`ViewModel` suffix; concrete per-view Presenters use `Scripts/Other/Presenters`
-with `Presenter` suffix. MVP View interfaces belong in `Scripts/Abstract` and
-expose only necessary state/events/operations. Views use Components/Screens,
-Popups or Widgets. Wire the View/Presenter explicitly after construction; avoid
+A presentation owner belongs to one screen/popup/widget instance, not an
+application/scene `AsSingle` binding. Constructor injection does not turn it into
+a Manager. Domain services keep their existing container lifetime. Folder/suffix placement follows
+[Other](CONVENTIONS.md#other), [Abstract](CONVENTIONS.md#abstract) and
+[Components](CONVENTIONS.md#components). MVP View interfaces expose only necessary
+state/events/operations. Wire the View/Presenter explicitly after construction; avoid
 circular constructor dependencies and hidden service-locator resolution.
 
 Integrate screens with Template ScreenNavigation and popups with Template Popup.
 Use typed definitions, scene catalogs and their existing UIDocument hosts.
 Settings/payloads are operation inputs passed directly, not DI registrations.
 UXML is cloned before view initialization; query and bind in the supported
-initialization hook. Do not introduce hidden Awake/Start initialization chains.
+initialization hook.
 
 Specify the owner and release point for each subscription, binding, row and task.
-Final close disposes owned subscriptions/resources and cancels owned operations;
-it never disposes borrowed domain services. A hidden screen retained in navigation
-history is not necessarily closed: explicitly define pause/resume/update policy.
+Final close unregisters owned callbacks/bindings, disposes owned subscriptions/resources
+and cancels owned operations; it never disposes borrowed domain services. A hidden
+screen retained in navigation history is not necessarily closed: explicitly define
+pause/resume/update policy.
 Popup cancellation/dismissal/failure follows the existing typed response contract.
 Avoid continuations updating a closed/replaced presentation owner or recycled row. Disable
 or coalesce duplicate submissions and expose failure/retry/cancel behavior.
@@ -90,6 +83,8 @@ or coalesce duplicate submissions and expose failure/retry/cancel behavior.
 ## Binding and Input
 
 Use Unity runtime DataBinding for properties where it simplifies synchronization.
+Manual callbacks or scoped state-to-control updates within a View are compatible
+with MVVM; the distinction is ownership, not whether every field binds.
 Select binding modes explicitly: ToTarget for projected read-only state, TwoWay
 for editable drafts where appropriate. A command validates and commits the draft
 through the domain service; TwoWay does not bypass authority. Discrete actions
@@ -99,13 +94,10 @@ may use explicit registered callbacks invoking commands.
 Use supported property-change notification and/or data-source versioning when
 appropriate. Cache expensive projections, notify on actual changes, and keep
 structural collection refresh explicit. Avoid whole-screen polling every frame.
-Unregister owned callbacks and bindings at their actual lifecycle end.
 
-In MVP, register View events once, update the accepted View contract explicitly
-and detach owned subscriptions on release. A local input draft may be read through
-that contract, but presentation decisions and domain commit authority remain with
-the Presenter and service respectively. Do not create a duplicate ViewModel merely
-to wrap Presenter state. Both patterns require runtime synchronization/input checks.
+In MVP, register View events once and update the accepted View contract explicitly.
+A local input draft may be read through that contract, but presentation decisions
+and domain commit authority remain with the Presenter and service respectively.
 
 ## Presentation and Resources
 
@@ -113,14 +105,10 @@ Keep layout/style primarily in UXML/USS, reusable templates and shared design
 tokens. Runtime style changes are allowed for actual geometry/visual state;
 do not duplicate an entire stylesheet in C#. Panel scaling and adaptive layout
 are separate decisions: reuse the host's policy and approve shared changes.
-Verify FHD/UHD plus relevant aspect ratios, window sizes, content and input modes.
-
-Use the [common UI resource layout](CONVENTIONS.md#common-ui-resource-layout)
-under `Assets/ProjectCore/Assets`. Feature and context resources keep their narrow
-owner; cross-context UI resource dependencies follow the architecture rules.
 
 ## Common UI Resources
 
+Use the [common UI resource layout](CONVENTIONS.md#common-ui-resource-layout).
 Search the owning feature, the approved root CommonUI groups, resources within the
 same context and relevant Template capabilities before requesting new art.
 Other concrete contexts may inform a promotion proposal, not supply direct private
@@ -152,10 +140,12 @@ Use [unity-ui-toolkit](../.agents/skills/unity-ui-toolkit/SKILL.md) inside the h
 feature/bugfix workflow. Approve hierarchy/resources/presentation architecture
 together, including any MVP choice;
 for new UI accept the visual prototype before complete logic. Final diff review
-and required Play Mode/retest remain distinct. A targeted fix preserves existing
-causal/approval gates and does not require a new complete design.
+and required Play Mode/retest remain distinct. A targeted fix uses existing host
+scope and approval gates, without a new complete design or automatic `unity-bugfix`
+invocation. Skill selection follows [AGENTS.md](../AGENTS.md#skill-selection).
 
-Verify rendered hierarchy, resolution scaling, overflow, long/empty/error content,
-binding/input, navigation/focus, close/reopen and recycled rows as applicable.
+Verify rendered hierarchy, FHD/UHD scaling, relevant aspect ratios/window sizes,
+input modes, overflow, long/empty/error content, binding/input, navigation/focus,
+close/reopen and recycled rows as applicable.
 Compilation and static checks alone do not prove visual or runtime correctness.
 The skill's validation reference defines evidence collection and response forms.

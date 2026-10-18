@@ -59,14 +59,9 @@ containers are kept so a scene can grow without changing its overall shape.
 - `SceneContext` owns only the Zenject `SceneContext` component and its
   serialized installer list. It does not host scene feature components.
 - `SceneFeatures` hosts the scene context installer and every
-  `BaseMonoBehaviourFeature` included through
-  `AddFeatureFromComponent<TFeature>()`.
-- A feature added with `AddFeatureFromComponent<TFeature>()` must remain on the
-  same object as its installer, because the initialization framework resolves
-  that component from the installer's `GameObject`.
-- Scene-specific behavior belongs to the owning context; reusable gameplay
-  behavior belongs to GameCore or Template according to the architecture
-  rules.
+  `BaseMonoBehaviourFeature` registered through `AddFeatureFromComponent<TFeature>()`.
+  They share this object because the framework resolves each feature from its
+  installer's `GameObject`.
 
 ### `===== NETWORK =====`
 
@@ -111,7 +106,6 @@ saved, or treated as project-owned UI objects.
   markers, and presentation objects that are part of gameplay.
 - Group objects by a stable gameplay responsibility when the scene grows; do
   not introduce a new top-level container for a feature.
-- Scene content must not replace DI bindings or lifecycle initialization.
 
 ### `===== ENVIRONMENT =====`
 
@@ -122,33 +116,24 @@ saved, or treated as project-owned UI objects.
 
 ## Lifecycle And References
 
-- Gameplay scenes are entered through `Scene_Preloader` and
-  `ISceneFlowService`; they are not independent application entry points.
-- `SceneContext` bindings are registered by the context installer and scene
-  initialization is performed by `IGameSceneLifecycle` through the unified
-  flow.
-- Do not start a second initialization chain from arbitrary `Awake`,
-  `OnEnable`, or `Start` methods.
-- Serialized references may cross containers only for Unity presentation or
-  composition: for example, `SceneContext` to its installer, a feature to its
-  UI component, or a bootstrap component to its runner prefab.
-- Functional runtime dependencies between systems, services, factories, and
-  coordinators are supplied through DI, not hierarchy searches.
+Scene entry, registration and initialization follow the architecture's
+[Runtime Entry Flow](ARCHITECTURE_RULES.md#runtime-entry-flow) and
+[Initialization Flow](ARCHITECTURE_RULES.md#initialization-flow). Runtime dependencies
+follow its [DI rules](ARCHITECTURE_RULES.md#dependency-injection).
+
+Serialized references may cross containers only for Unity presentation or
+composition: for example, `SceneContext` to its installer, a feature to its
+UI component, or a bootstrap component to its runner prefab.
 
 ## New Gameplay Scene Checklist
 
 Before considering a new gameplay scene ready for feature work, verify that:
 
-- its name follows `Scene_<Context>[_<Detail>]`;
-- the six root containers exist in the documented order;
-- `SceneContext` and `SceneFeatures` follow the ownership rules above;
+- its name follows [Unity Resource Naming](CONVENTIONS.md#unity-resource-naming);
+- its authored hierarchy follows [Root Hierarchy](#root-hierarchy) and
+  [Container Ownership](#container-ownership), including required camera, UI and
+  network objects;
 - every required scene feature is registered through the context installer;
-- UI components are under `===== UI =====`, while UI feature entries are under
-  `SceneFeatures`;
-- the scene includes a tagged `Main Camera` when UI or IMGUI is present;
-- Fusion objects are grouped under `===== NETWORK =====` when the scene is
-  networked;
-- no authored object is an ungrouped scene root;
 - the scene is registered through the typed Scene Flow definition and is
   reached through the Preloader flow;
 - the relevant Play Mode startup or scene-composition test asserts the new
