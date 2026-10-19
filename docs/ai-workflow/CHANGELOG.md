@@ -1,5 +1,12 @@
 # Workflow Version History
 
+## Manual Refactoring — 2026-10-19
+
+- Added explicit-only `unity-refactoring` for problem investigation or assessment of
+  a developer-provided plan, ending in an agreed numbered refactoring proposal.
+- Technique selection uses a local guide; implementation requires explicit permission.
+  No automatic feature/UI/bugfix invocation or additional workflow state is introduced.
+
 ## V2 Activation — 2026-10-19
 
 - The accepted `unity-feature-development-v2` pack is now the only feature workflow.

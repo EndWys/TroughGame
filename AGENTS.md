@@ -31,6 +31,9 @@ Do not add `.asmdef` files or move `Assets/ProjectCore/Resources/ProjectContext.
   flow; do not create workflow state for ordinary edits or tooling work.
 - [unity-bugfix](.agents/skills/unity-bugfix/SKILL.md) is manual-only. Defects during
   feature/UI work remain corrections in the active subtask, without automatic invocation.
+- [unity-refactoring](.agents/skills/unity-refactoring/SKILL.md) is manual-only.
+  Code smells, review findings and developer plans do not trigger it automatically;
+  feature/UI/bugfix workflows must not load it without a direct developer request.
 - [unity-ui-toolkit](.agents/skills/unity-ui-toolkit/SKILL.md) may be selected for relevant
   runtime UI work; it cannot start a feature or bugfix workflow.
 - Feature-workflow Notion calls are limited to [requirements intake](.agents/skills/notion-feature-requirements/SKILL.md)

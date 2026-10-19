@@ -7,6 +7,7 @@ stage routing and its stage skills own outputs and response formats.
 | --- | --- |
 | New feature | [unity-feature-development-v2](../../.agents/skills/unity-feature-development-v2/SKILL.md) |
 | Manual bugfix | [unity-bugfix](../../.agents/skills/unity-bugfix/SKILL.md), [bugfix reference](bugfix-reference.md) |
+| Manual refactoring | [unity-refactoring](../../.agents/skills/unity-refactoring/SKILL.md) |
 | Runtime UI specialization | [unity-ui-toolkit](../../.agents/skills/unity-ui-toolkit/SKILL.md) |
 | Notion requirements/finalization | [Notion integration](../notion/feature-integration.md) |
 
