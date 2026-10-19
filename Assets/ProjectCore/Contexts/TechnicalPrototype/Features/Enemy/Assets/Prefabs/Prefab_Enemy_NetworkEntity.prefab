@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 584413201904313257}
   - component: {fileID: 2642395670431192166}
   m_Layer: 0
-  m_Name: Movement
+  m_Name: States
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93273a05ea308ee499c634046240d852, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyMovementStateMachine
   _idleState: {fileID: 584413201904313257}
   _locomotionState: {fileID: 2642395670431192166}
@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1d18c7f61f3ffe469b835a041d53a2e, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyIdleState
 --- !u!114 &2642395670431192166
 MonoBehaviour:
@@ -71,11 +71,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e036a3741fbb15488224b7a25529448, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyLocomotionState
   _locomotionMovementConfig: {fileID: 11400000, guid: e95343e2e9cf6be478c0ffd9195a1f49, type: 2}
   _chaseConfig: {fileID: 11400000, guid: 35210a2d35cfac446945da603c3122eb, type: 2}
-  _movementBody: {fileID: 8911535481648758648}
 --- !u!1 &2524859144858559395
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,7 +92,6 @@ GameObject:
   - component: {fileID: 1660854554113357123}
   - component: {fileID: 4465512277710050909}
   - component: {fileID: 8911535481648758648}
-  - component: {fileID: 3526974178999751230}
   - component: {fileID: 2947910090444434332}
   - component: {fileID: 6596406854792392511}
   - component: {fileID: 7231880537655156453}
@@ -132,7 +130,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
   SortKey: 739574048
   ObjectInterest: 1
@@ -142,7 +140,6 @@ MonoBehaviour:
   - {fileID: 3195028490362469912}
   - {fileID: 1259357564330911874}
   - {fileID: 8911535481648758648}
-  - {fileID: 3526974178999751230}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &3195028490362469912
 MonoBehaviour:
@@ -154,7 +151,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkTransform
   _stateAuthorityChangeErrorCorrectionDelta: 0
   SyncScale: 0
@@ -171,16 +168,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0fc2d716ccdd5644829a4c300bc3152, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyNetworkEntityComponent
   _inputSourceComponent: {fileID: 1231098527604241315}
   _combatHurtboxComponent: {fileID: 6596406854792392511}
   _combatDebugVisualizationComponent: {fileID: 7231880537655156453}
   _behaviourStateMachine: {fileID: 4125976174204342296}
   _abilityCollectionComponent: {fileID: 2947910090444434332}
-  _movementStateComponent: {fileID: 3526974178999751230}
-  _movementStateMachine: {fileID: 1916683656827304820}
+  _entityStateMachine: {fileID: 1916683656827304820}
   _movementBodyComponent: {fileID: 8911535481648758648}
+  _CurrentEntityState: 0
+  _PreviousEntityState: 0
   _CurrentBehaviourState: 0
   _PreviousBehaviourState: 0
 --- !u!114 &1231098527604241315
@@ -193,7 +191,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01668e6606216784888099fed0685d7d, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyInputSourceComponent
 --- !u!114 &7643102433778432920
 MonoBehaviour:
@@ -205,7 +203,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 346d4940dc7fffd42a42abcb84cade02, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyDebugVisualizationComponent
   _enemyNetworkEntity: {fileID: 1259357564330911874}
 --- !u!114 &1660854554113357123
@@ -218,12 +216,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9554dbc5367daef4fbe4069380d9002a, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyNetworkEntityInstaller
   _networkEntity: {fileID: 1259357564330911874}
   _inputSourceComponent: {fileID: 1231098527604241315}
   _abilityCollectionComponent: {fileID: 2947910090444434332}
-  _movementStateComponent: {fileID: 3526974178999751230}
+  _movementBody: {fileID: 8911535481648758648}
 --- !u!114 &4465512277710050909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,7 +232,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Zenject::Zenject.GameObjectContext
   _scriptableObjectInstallers: []
   _monoInstallers:
@@ -252,27 +250,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32c4e4264ca44646a7fd221b51f891d6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.GameCore.TransformMovementBodyComponent
   _offset: {x: 0, y: 0.2}
   _collisionRadius: 0.2
   _collisionMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &3526974178999751230
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2524859144858559395}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2f7795f916366d45a96ef023d1a7251, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyMovementStateComponent
-  _CurrentState: 0
-  _PreviousState: 0
 --- !u!114 &2947910090444434332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,7 +267,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c2d1a43c4fadcce469077ee24b93003e, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyMovementAbilityCollectionComponent
   _abilityComponents: []
 --- !u!114 &6596406854792392511
@@ -365,7 +349,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0a1b1ff73b892a4e8d87c042f99fdf3, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyBehaviourStateMachine
   _disabledState: {fileID: 3524133119621996886}
   _targetSelectionState: {fileID: 4206805771678922955}
@@ -381,7 +365,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3760ef109d6ee0744a2f1a832ee7f77a, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyBehaviourDisabledState
 --- !u!114 &4206805771678922955
 MonoBehaviour:
@@ -393,7 +377,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 36968a2509b05144dbdb52886670f3e3, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyBehaviourTargetSelectionState
 --- !u!114 &8792766857729800281
 MonoBehaviour:
@@ -405,7 +389,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 325e7e8decd33b148b5e4ca905c31567, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyBehaviourWaitingState
 --- !u!114 &2694764230141271905
 MonoBehaviour:
@@ -417,7 +401,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7363d6c12d085764a9f6ed34f4d168a6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: ProjectCore.Runtime::ProjectCore.TechnicalPrototype.EnemyBehaviourChasingState
   _chaseConfig: {fileID: 11400000, guid: 35210a2d35cfac446945da603c3122eb, type: 2}
 --- !u!1 &6903314817501715423

@@ -1,54 +1,30 @@
 using System;
 using System.Collections.Generic;
 using ProjectCore.GameCore;
+using Shared;
 using UnityEngine;
 using Zenject;
-
 namespace ProjectCore.TechnicalPrototype
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "ProjectCore.TechnicalPrototype", sourceAssembly: "ProjectCore.Runtime", sourceClassName: "IdleState")]
-    public sealed class PlayerIdleState : BaseMovementState<PlayerMovementState, PlayerMovementPayload>
+    public sealed class PlayerIdleState : BaseEntityState<PlayerEntityState, PlayerEntityPayload>
     {
-        [SerializeField] private TransformMovementBodyComponent _movementBody;
-        private IInputBufferController _inputBufferController;
-        private IPlayerFacingDirectionMutator _facingDirectionMutator;
 
+        private IMovementBodyVelocityMutator _body;
         [Inject]
-        private void Construct(
-            IInputBufferController inputBufferController,
-            IPlayerFacingDirectionMutator facingDirectionMutator)
-        {
-            _inputBufferController = inputBufferController;
-            _facingDirectionMutator = facingDirectionMutator;
-        }
-
-        public override void Enter() { ((IMovementBodyVelocityMutator)_movementBody).Velocity = Vector2.zero; }
-
+        private void Construct(IMovementBodyVelocityMutator body) { _body = body; }
+        public override void Enter() { _body.Velocity = Vector2.zero; }
+        public override void Restore() { _body.Velocity = Vector2.zero; }
         public override void Exit() { }
-
-        protected override IReadOnlyList<IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>>
-            CreateMovementProcessors()
+        protected override IReadOnlyList<IStateProcessor<PlayerEntityState, PlayerEntityPayload>> CreateProcessors()
         {
-            if (_movementBody == null) throw new InvalidOperationException("Idle state requires a movement body.");
-            if (_inputBufferController == null)
+            return new IStateProcessor<PlayerEntityState, PlayerEntityPayload>[]
             {
-                throw new InvalidOperationException("Idle state requires an input buffer controller.");
-            }
-
-            if (_facingDirectionMutator == null)
-            {
-                throw new InvalidOperationException("Idle state requires a facing direction mutator.");
-            }
-
-            return new IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>[]
-            {
-                new PlayerFourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload>(
-                    facingDirectionMutator: _facingDirectionMutator),
-                new DirectionalLocomotionTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
-                    locomotionMovementState: PlayerMovementState.Locomotion),
+                CreateProcessor<PlayerActionTransitionProcessor>(PlayerInputActionConstants.AttackCommandId, PlayerEntityState.Attack, false, (Func<bool>)(() => true)),
+                CreateProcessor<PlayerActionTransitionProcessor>(MovementInputCommandConstants.DodgeCommandId, PlayerEntityState.Dodge, false, (Func<bool>)(() => true)),
+                CreateProcessor<PlayerFourDirectionalFacingProcessor<PlayerEntityState, PlayerEntityPayload>>(),
+                CreateProcessor<DirectionalLocomotionTransitionProcessor<PlayerEntityState, PlayerEntityPayload>>(PlayerEntityState.Locomotion),
             };
         }
-
-        protected override PlayerMovementState FallbackState => PlayerMovementState.Idle;
+        protected override PlayerEntityState FallbackState => PlayerEntityState.Idle;
     }
 }

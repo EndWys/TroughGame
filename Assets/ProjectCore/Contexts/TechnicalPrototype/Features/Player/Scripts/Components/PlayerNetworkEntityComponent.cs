@@ -11,13 +11,14 @@ namespace ProjectCore.TechnicalPrototype
     public sealed class PlayerNetworkEntityComponent :
         BaseNetworkEntityRoot,
         IColleague,
-        IMovementStateDataMutator<PlayerMovementState>,
-        IMovementStateTimerMutator,
+        IStateDataMutator<PlayerEntityState>,
+        IEntityStateTimerMutator,
         IInputBufferStateMutator,
         IPlayerFacingDirectionMutator,
         ICombatActionMutator,
         ICombatAttackResolver,
-        ICombatInvulnerabilityMutator
+        ICombatInvulnerabilityMutator,
+        IPlayerInputDirectionMutator
     {
         #region Components
 
@@ -27,8 +28,7 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private CombatHitProbeComponent _combatHitProbeComponent;
         [SerializeField] private CombatDebugVisualizationComponent _combatDebugVisualizationComponent;
         [SerializeField] private PlayerMediatorComponent _playerMediatorComponent;
-        [SerializeField] private PlayerActionControllerComponent _actionControllerComponent;
-        [SerializeField] private PlayerMovementStateMachine _movementStateMachine;
+        [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("_movementStateMachine")] private PlayerEntityStateMachine _entityStateMachine;
         [SerializeField] private TransformMovementBodyComponent _movementBodyComponent;
         [SerializeField] private CameraTargetComponent _cameraTargetComponent;
         [SerializeField] private TargetableNetworkEntityComponent _targetableNetworkEntityComponent;
@@ -49,11 +49,11 @@ namespace ProjectCore.TechnicalPrototype
         #region Networked State
 
         [Networked, OnChangedRender(nameof(OnCurrentStateChanged))]
-        public PlayerMovementState CurrentState { get; private set; }
-        [Networked] public PlayerMovementState PreviousState { get; private set; }
+        public PlayerEntityState CurrentState { get; private set; }
+        [Networked] public PlayerEntityState PreviousState { get; private set; }
         [Networked, OnChangedRender(nameof(OnFacingDirectionChanged))]
         public PlayerFacingDirection FacingDirection { get; private set; }
-        [Networked] public TickTimer MovementStateTimer { get; private set; }
+        [Networked] public TickTimer EntityStateTimer { get; private set; }
         [Networked] public TickTimer InvulnerabilityTimer { get; private set; }
         [Networked] private InputBufferStateModel InputBufferStateValue { get; set; }
         [Networked] private CombatActionStateModel ActionStateValue { get; set; }
@@ -82,17 +82,17 @@ namespace ProjectCore.TechnicalPrototype
 
         #endregion
 
-        #region Movement State Timing
+        #region Entity State Timing
 
-        public int? StateTimerEndTick => MovementStateTimer.IsRunning ? MovementStateTimer.TargetTick : null;
+        public int? StateTimerEndTick => EntityStateTimer.IsRunning ? EntityStateTimer.TargetTick : null;
 
         public bool IsStateTimerFinished =>
-            MovementStateTimer.IsRunning && MovementStateTimer.ExpiredOrNotRunning(Runner);
+            EntityStateTimer.IsRunning && EntityStateTimer.ExpiredOrNotRunning(Runner);
 
         public void StartStateTimerTicks(int durationTicks)
         {
             if (durationTicks <= 0) throw new ArgumentOutOfRangeException(nameof(durationTicks));
-            MovementStateTimer = TickTimer.CreateFromTicks(Runner, durationTicks);
+            EntityStateTimer = TickTimer.CreateFromTicks(Runner, durationTicks);
         }
 
         public bool IsInvulnerable => Object != null && Object.IsValid && Runner != null &&
@@ -109,7 +109,7 @@ namespace ProjectCore.TechnicalPrototype
 
         public void StopStateTimer()
         {
-            MovementStateTimer = TickTimer.None;
+            EntityStateTimer = TickTimer.None;
         }
 
         #endregion
@@ -159,10 +159,8 @@ namespace ProjectCore.TechnicalPrototype
 
         #endregion
 
-        #region Movement State Data
+        #region Entity State Data
 
-        public PlayerMovementState CurrentMovementStates => CurrentState;
-        public PlayerMovementState PreviousMovementStates => PreviousState;
 
         #endregion
 
@@ -175,7 +173,7 @@ namespace ProjectCore.TechnicalPrototype
                 ActionStateValue = default;
                 LatestInputDirectionValue = default;
                 InputBufferStateValue = default;
-                MovementStateTimer = TickTimer.None;
+                EntityStateTimer = TickTimer.None;
                 InvulnerabilityTimer = TickTimer.None;
             }
             if (HasStateAuthority || HasInputAuthority)
@@ -187,7 +185,7 @@ namespace ProjectCore.TechnicalPrototype
         protected override void AfterComponentsInitialized()
         {
             transform.SetParent(_entitiesContainer, true);
-            NotifyMovementStateChanged();
+            NotifyEntityStateChanged();
             NotifyFacingDirectionChanged();
         }
 
@@ -199,8 +197,7 @@ namespace ProjectCore.TechnicalPrototype
                 _combatHurtboxComponent,
                 _playerActionComponent,
                 _playerMediatorComponent,
-                _actionControllerComponent,
-                _movementStateMachine,
+                _entityStateMachine,
                 _movementBodyComponent,
                 _combatHitProbeComponent,
                 _combatDebugVisualizationComponent,
@@ -211,7 +208,7 @@ namespace ProjectCore.TechnicalPrototype
 
         #endregion
 
-        #region Movement State Mutation
+        #region Entity State Mutation
 
 
         public bool TryGetAttack(ushort actionId, out CombatAttackConfig attack)
@@ -219,12 +216,7 @@ namespace ProjectCore.TechnicalPrototype
             return _playerActionComponent.TryGetAttack(actionId, out attack);
         }
 
-        public void ChangeMovementState(PlayerMovementState newState)
-        {
-            ChangeState(newState);
-        }
-
-        public void ChangeState(PlayerMovementState newState)
+        public void ChangeState(PlayerEntityState newState)
         {
             PreviousState = CurrentState;
             CurrentState = newState;
@@ -232,11 +224,11 @@ namespace ProjectCore.TechnicalPrototype
 
         #endregion
 
-        #region Movement State Presentation
+        #region Entity State Presentation
 
         private void OnCurrentStateChanged()
         {
-            NotifyMovementStateChanged();
+            NotifyEntityStateChanged();
         }
 
         private void OnFacingDirectionChanged()
@@ -244,10 +236,10 @@ namespace ProjectCore.TechnicalPrototype
             NotifyFacingDirectionChanged();
         }
 
-        private void NotifyMovementStateChanged()
+        private void NotifyEntityStateChanged()
         {
             _playerMediatorComponent.Notify(
-                new PlayerMovementStateChangedPayload(this, CurrentState, PreviousState));
+                new PlayerEntityStateChangedPayload(this, CurrentState, PreviousState));
         }
 
         private void NotifyFacingDirectionChanged()

@@ -1,68 +1,30 @@
 using System;
 using System.Collections.Generic;
 using ProjectCore.GameCore;
+using Shared;
 using UnityEngine;
 using Zenject;
-
 namespace ProjectCore.TechnicalPrototype
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "ProjectCore.TechnicalPrototype", sourceAssembly: "ProjectCore.Runtime", sourceClassName: "LocomotionState")]
-    public sealed class PlayerLocomotionState : BaseMovementState<PlayerMovementState, PlayerMovementPayload>
+    public sealed class PlayerLocomotionState : BaseEntityState<PlayerEntityState, PlayerEntityPayload>
     {
         [SerializeField] private LocomotionMovementConfig _locomotionMovementConfig;
-        [SerializeField] private TransformMovementBodyComponent _movementBody;
-        private IInputBufferController _inputBufferController;
-        private IPlayerFacingDirectionMutator _facingDirectionMutator;
-
+        private IMovementBodyVelocityMutator _body;
         [Inject]
-        private void Construct(
-            IInputBufferController inputBufferController,
-            IPlayerFacingDirectionMutator facingDirectionMutator)
-        {
-            _inputBufferController = inputBufferController;
-            _facingDirectionMutator = facingDirectionMutator;
-        }
-
-        public override void Enter() { }
-
+        private void Construct(IMovementBodyVelocityMutator body) { _body = body; }
+        public override void Enter() {  }
         public override void Exit() { }
-
-        protected override IReadOnlyList<IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>>
-            CreateMovementProcessors()
+        protected override IReadOnlyList<IStateProcessor<PlayerEntityState, PlayerEntityPayload>> CreateProcessors()
         {
-            if (_movementBody == null)
+            return new IStateProcessor<PlayerEntityState, PlayerEntityPayload>[]
             {
-                throw new InvalidOperationException("Locomotion state requires a movement body reference.");
-            }
-
-            if (_inputBufferController == null)
-            {
-                throw new InvalidOperationException("Locomotion state requires an input command controller.");
-            }
-
-            if (_facingDirectionMutator == null)
-            {
-                throw new InvalidOperationException("Locomotion state requires a facing direction mutator.");
-            }
-
-            if (_locomotionMovementConfig == null)
-            {
-                throw new InvalidOperationException(
-                    "Locomotion state requires a locomotion movement config reference.");
-            }
-
-            return new IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>[]
-            {
-                new PlayerFourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload>(
-                    facingDirectionMutator: _facingDirectionMutator),
-                new LocomotionProcessor<PlayerMovementState, PlayerMovementPayload>(
-                    movementBodyVelocityMutator: _movementBody,
-                    locomotionMovementConfig: _locomotionMovementConfig),
-                new NoDirectionTransitionProcessor<PlayerMovementState, PlayerMovementPayload>(
-                    idleMovementState: PlayerMovementState.Idle),
+                CreateProcessor<PlayerActionTransitionProcessor>(PlayerInputActionConstants.AttackCommandId, PlayerEntityState.Attack, false, (Func<bool>)(() => true)),
+                CreateProcessor<PlayerActionTransitionProcessor>(MovementInputCommandConstants.DodgeCommandId, PlayerEntityState.Dodge, false, (Func<bool>)(() => true)),
+                CreateProcessor<PlayerFourDirectionalFacingProcessor<PlayerEntityState, PlayerEntityPayload>>(),
+                CreateProcessor<LocomotionProcessor<PlayerEntityState, PlayerEntityPayload>>(_locomotionMovementConfig),
+                CreateProcessor<NoDirectionTransitionProcessor<PlayerEntityState, PlayerEntityPayload>>(PlayerEntityState.Idle),
             };
         }
-
-        protected override PlayerMovementState FallbackState => PlayerMovementState.Locomotion;
+        protected override PlayerEntityState FallbackState => PlayerEntityState.Locomotion;
     }
 }

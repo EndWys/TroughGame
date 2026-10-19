@@ -9,13 +9,16 @@ namespace ProjectCore.TechnicalPrototype
     {
         [SerializeField, Min(0.001f)] private float _actionBufferLifetimeSeconds = 0.15f;
         private IInputBufferController _inputBufferController;
+        private IPlayerInputDirectionMutator _direction;
+        private IInputBufferStateAccessor _bufferState;
         private PlayerInputFrameData _currentInput;
         private bool _hasInput;
 
         [Inject]
-        private void Construct(IInputBufferController inputBufferController)
+        private void Construct(IInputBufferController inputBufferController, IPlayerInputDirectionMutator direction, IInputBufferStateAccessor bufferState)
         {
             _inputBufferController = inputBufferController;
+            _direction = direction; _bufferState = bufferState;
         }
 
         public override bool TryGetInput(out PlayerInputFrameData input)
@@ -42,6 +45,7 @@ namespace ProjectCore.TechnicalPrototype
         protected override void OnNetworkTick()
         {
             if (!ParentNetworkBehaviour.HasStateAuthority && !ParentNetworkBehaviour.HasInputAuthority) return;
+            _inputBufferController.HasBufferedCommand(_bufferState.BufferedCommand.CommandId);
             if (!ParentNetworkBehaviour.GetInput(out PlayerInputData input))
             {
                 _currentInput = default;
@@ -49,6 +53,7 @@ namespace ProjectCore.TechnicalPrototype
                 return;
             }
 
+            if (input.MoveDirection.sqrMagnitude > 0f) _direction.SetLatestInputDirection(input.MoveDirection.normalized);
             ushort commandId = input.LatestActionCommandId;
             if (commandId == PlayerInputActionConstants.AttackCommandId ||
                 commandId == MovementInputCommandConstants.DodgeCommandId && input.MoveDirection.sqrMagnitude > 0f)

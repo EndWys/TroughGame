@@ -45,7 +45,7 @@ namespace ProjectCore.TechnicalPrototype
             context.Value(
                 StateChannel,
                 "Action Timer",
-                GetTimerStatus(_playerNetworkEntity.MovementStateTimer));
+                GetTimerStatus(_playerNetworkEntity.EntityStateTimer));
         }
 
         private void DrawCombat(DebugVisualizationContextAdapter context)
@@ -57,7 +57,7 @@ namespace ProjectCore.TechnicalPrototype
             context.Value("Player/Combat", "Combo Window", action.CanStartNextAction);
             if (_combatHitProbe == null) return;
             context.Value("Player/Combat", "Contacts This Tick", _combatHitProbe.LastContactCount);
-            if (action.Kind != CombatActionKind.Attack || action.Phase != CombatActionPhase.Active) return;
+            if (action.Kind != CombatActionKind.Attack || action.Phase != ActionPhase.Active) return;
             CombatShapeData shape = _combatHitProbe.LastShape;
             if (shape.ShapeType == CombatShapeType.Circle)
             {

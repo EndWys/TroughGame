@@ -35,48 +35,21 @@ namespace ProjectCore.GameCore
         public CombatActionSnapshotData Evaluate(
             in CombatActionStateModel state,
             CombatActionKind kind,
-            in CombatActionTimingData timing,
+            in ActionTimingData timing,
             int currentTick)
         {
-            CombatActionPhase phase = CombatActionPhase.None;
-            bool canStartNextAction = false;
-            bool isComplete = false;
-
-            if (state.ActionId != 0)
-            {
-                int elapsed = unchecked(currentTick - state.StartedTick);
-                long recoveryStart = (long)timing.PreparationTicks + timing.ActiveTicks;
-                long totalTicks = recoveryStart + timing.RecoveryTicks;
-
-                if (elapsed >= totalTicks)
-                {
-                    isComplete = true;
-                }
-                else if (elapsed >= recoveryStart)
-                {
-                    phase = CombatActionPhase.Recovery;
-                    long recoveryElapsed = elapsed - recoveryStart;
-                    canStartNextAction = recoveryElapsed >= timing.ComboWindowStartTicks &&
-                        recoveryElapsed < timing.ComboWindowEndTicks;
-                }
-                else if (elapsed >= timing.PreparationTicks)
-                {
-                    phase = CombatActionPhase.Active;
-                }
-                else if (elapsed >= 0)
-                {
-                    phase = CombatActionPhase.Preparation;
-                }
-            }
+            ActionTimelineData timeline = ActionTimelineData.FromStartTick(
+                timing, state.ActionId != 0 ? state.StartedTick : (int?)null);
+            ActionPhaseSnapshotData snapshot = timeline.Evaluate(currentTick);
 
             return new CombatActionSnapshotData(
                 state.ActionId,
                 state.ExecutionId,
                 kind,
-                phase,
+                snapshot.Phase,
                 state.Direction,
-                canStartNextAction,
-                isComplete);
+                snapshot.IsRecoveryCancelWindowOpen,
+                snapshot.IsComplete);
         }
 
         public void Cancel(ref CombatActionStateModel state)

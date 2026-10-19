@@ -16,7 +16,7 @@ namespace ProjectCore.TechnicalPrototype
         private INetworkBehaviourAccessor _networkBehaviourAccessor;
         private IEnemyTargetingService _targetingService;
         private IEnemySteeringService _steeringService;
-        private IMovementStateDataAccessor<EnemyMovementState> _movementStateDataAccessor;
+        private Shared.IStateDataAccessor<EnemyEntityState> _movementStateDataAccessor;
         private IEnemyAbilityCollection _abilityCollection;
         private IReadOnlyList<BaseEnemyChaseAbilityProcessor> _chaseAbilityProcessors;
         private NetworkEntityIdData _retargetCandidateId;
@@ -30,7 +30,7 @@ namespace ProjectCore.TechnicalPrototype
             INetworkBehaviourAccessor networkBehaviourAccessor,
             IEnemyTargetingService targetingService,
             IEnemySteeringService steeringService,
-            IMovementStateDataAccessor<EnemyMovementState> movementStateDataAccessor,
+            Shared.IStateDataAccessor<EnemyEntityState> movementStateDataAccessor,
             IEnemyAbilityCollection abilityCollection)
         {
             _inputSource = inputSource ?? throw new ArgumentNullException(nameof(inputSource));
@@ -73,7 +73,7 @@ namespace ProjectCore.TechnicalPrototype
                 throw new InvalidOperationException("Enemy chasing state requires a chase config reference.");
             }
 
-            if (_movementStateDataAccessor.CurrentMovementStates == EnemyMovementState.Dash)
+            if (_movementStateDataAccessor.CurrentState == EnemyEntityState.Dash)
             {
                 _inputSource.SetInput(default);
                 return EnemyBehaviourStateType.Chasing;

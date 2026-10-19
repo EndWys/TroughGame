@@ -33,13 +33,13 @@ namespace ProjectCore.GameCore
             SetField("_actionId", ushort.MaxValue);
             SetField("_preparationSeconds", 0.26f);
             SetField("_activeSeconds", float.Epsilon);
-            CombatActionTimingData timing = CombatActionProfileValidation.CompileTiming(_config, 0.125f);
+            ActionTimingData timing = CombatActionProfileValidation.CompileTiming(_config, 0.125f);
 
             Assert.That(timing.PreparationTicks, Is.EqualTo(3));
             Assert.That(timing.ActiveTicks, Is.EqualTo(1));
             Assert.That(timing.RecoveryTicks, Is.EqualTo(4));
-            Assert.That(timing.ComboWindowStartTicks, Is.EqualTo(1));
-            Assert.That(timing.ComboWindowEndTicks, Is.EqualTo(3));
+            Assert.That(timing.RecoveryCancelWindowStartTicks, Is.EqualTo(1));
+            Assert.That(timing.RecoveryCancelWindowEndTicks, Is.EqualTo(3));
         }
 
         [TestCase("_preparationSeconds", 0f)]
@@ -86,9 +86,9 @@ namespace ProjectCore.GameCore
                 CombatActionProfileValidation.CompileTiming(_config, 0.125f));
 
             SetField("_comboWindowEndSeconds", 0.13f);
-            CombatActionTimingData timing = CombatActionProfileValidation.CompileTiming(_config, 0.125f);
-            Assert.That(timing.ComboWindowStartTicks, Is.EqualTo(2));
-            Assert.That(timing.ComboWindowEndTicks, Is.EqualTo(2));
+            ActionTimingData timing = CombatActionProfileValidation.CompileTiming(_config, 0.125f);
+            Assert.That(timing.RecoveryCancelWindowStartTicks, Is.EqualTo(2));
+            Assert.That(timing.RecoveryCancelWindowEndTicks, Is.EqualTo(2));
         }
 
         [Test]
@@ -97,10 +97,10 @@ namespace ProjectCore.GameCore
             SetField("_recoverySeconds", 0.51f);
             SetField("_comboWindowStartSeconds", 0.5f);
             SetField("_comboWindowEndSeconds", 0.51f);
-            CombatActionTimingData timing = CombatActionProfileValidation.CompileTiming(_config, 0.125f);
+            ActionTimingData timing = CombatActionProfileValidation.CompileTiming(_config, 0.125f);
             Assert.That(timing.RecoveryTicks, Is.EqualTo(5));
-            Assert.That(timing.ComboWindowStartTicks, Is.EqualTo(4));
-            Assert.That(timing.ComboWindowEndTicks, Is.EqualTo(5));
+            Assert.That(timing.RecoveryCancelWindowStartTicks, Is.EqualTo(4));
+            Assert.That(timing.RecoveryCancelWindowEndTicks, Is.EqualTo(5));
         }
 
         [Test]

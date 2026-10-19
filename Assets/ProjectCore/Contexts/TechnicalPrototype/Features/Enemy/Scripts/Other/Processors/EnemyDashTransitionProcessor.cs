@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ProjectCore.TechnicalPrototype
 {
     public sealed class EnemyDashTransitionProcessor :
-        IMovementStateProcessor<EnemyMovementState, EnemyMovementPayload>
+        IMovementStateProcessor<EnemyEntityState, EnemyEntityPayload>
     {
         private readonly IMovementCollisionBodyAccessor _movementCollisionBodyAccessor;
         private readonly IMovementObstacleProbe _movementObstacleProbe;
@@ -28,7 +28,7 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(dashMovementConfig));
         }
 
-        public bool Execute(EnemyMovementPayload payload, out EnemyMovementState resultState)
+        public bool Execute(EnemyEntityPayload payload, out EnemyEntityState resultState)
         {
             if (!payload.IsDashRequested ||
                 payload.Direction.sqrMagnitude <= Mathf.Epsilon ||
@@ -43,7 +43,7 @@ namespace ProjectCore.TechnicalPrototype
                 direction: payload.Direction,
                 durationSeconds: _dashMovementConfig.DurationSeconds,
                 cooldownSeconds: _dashMovementConfig.CooldownSeconds);
-            resultState = EnemyMovementState.Dash;
+            resultState = EnemyEntityState.Dash;
             return true;
         }
 

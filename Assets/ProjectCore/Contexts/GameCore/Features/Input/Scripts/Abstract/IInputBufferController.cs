@@ -8,8 +8,8 @@ namespace ProjectCore.GameCore
 
         void BufferCommand(InputBufferCommandDescriptor command, float lifetimeSeconds);
 
-        bool BeginAction(ushort commandId);
+        bool TryConsumeBufferedCommandAndLock(ushort commandId);
 
-        void EndAction();
+        void ReleaseCommandLock();
     }
 }

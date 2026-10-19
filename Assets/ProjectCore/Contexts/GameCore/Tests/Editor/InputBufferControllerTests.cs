@@ -18,7 +18,7 @@ namespace ProjectCore.GameCore
                 state,
                 new TestNetworkBehaviourAccessor());
 
-            Assert.That(controller.BeginAction(1), Is.True);
+            Assert.That(controller.TryConsumeBufferedCommandAndLock(1), Is.True);
             Assert.That(
                 state.BufferedCommand.CommandId,
                 Is.EqualTo(0));
@@ -39,7 +39,7 @@ namespace ProjectCore.GameCore
                 state,
                 new TestNetworkBehaviourAccessor());
 
-            controller.EndAction();
+            controller.ReleaseCommandLock();
 
             Assert.That(controller.IsLocked, Is.False);
             Assert.That(state.IsLocked, Is.False);
@@ -59,12 +59,12 @@ namespace ProjectCore.GameCore
             var controller = new InputBufferController(state, state, new TestNetworkBehaviourAccessor());
 
             Assert.That(controller.HasBufferedCommand(2), Is.True);
-            Assert.That(controller.BeginAction(2), Is.False);
+            Assert.That(controller.TryConsumeBufferedCommandAndLock(2), Is.False);
             Assert.That(state.BufferedCommand.CommandId, Is.EqualTo(2));
             Assert.That(state.IsLocked, Is.True);
 
-            controller.EndAction();
-            Assert.That(controller.BeginAction(2), Is.True);
+            controller.ReleaseCommandLock();
+            Assert.That(controller.TryConsumeBufferedCommandAndLock(2), Is.True);
             Assert.That(state.BufferedCommand.CommandId, Is.Zero);
             Assert.That(controller.IsLocked, Is.True);
         }
@@ -82,7 +82,7 @@ namespace ProjectCore.GameCore
             var controller = new InputBufferController(state, state, new TestNetworkBehaviourAccessor());
 
             Assert.That(controller.HasBufferedCommand((ushort)commandId), Is.False);
-            Assert.That(controller.BeginAction((ushort)commandId), Is.False);
+            Assert.That(controller.TryConsumeBufferedCommandAndLock((ushort)commandId), Is.False);
             Assert.That(state.BufferedCommand.CommandId, Is.EqualTo(2));
             Assert.That(controller.IsLocked, Is.False);
         }
@@ -115,7 +115,7 @@ namespace ProjectCore.GameCore
             var controller = new InputBufferController(state, state, new TestNetworkBehaviourAccessor());
 
             state.ClearBufferedCommand();
-            controller.EndAction();
+            controller.ReleaseCommandLock();
 
             Assert.That(controller.IsLocked, Is.False);
             Assert.That(controller.HasBufferedCommand(2), Is.False);

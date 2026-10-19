@@ -1,3 +1,5 @@
+using Shared;
+using ProjectCore.Template;
 using System;
 using System.Collections.Generic;
 using ProjectCore.GameCore;
@@ -8,74 +10,54 @@ namespace ProjectCore.TechnicalPrototype
 {
     public sealed class EnemyDashAbilityComponent :
         MonoBehaviour,
-        IEnemyMovementAbilityContributor,
+        IEnemyEntityStateContributor,
         IEnemyChaseAbilityContributor
     {
         [SerializeField] private EnemyDashState _dashState;
-        [SerializeField] private TransformMovementBodyComponent _movementBody;
         [SerializeField] private EnemyDashAbilityConfig _dashAbilityConfig;
 
-        private IEnemyDashStateMutator _dashStateMutator;
-        private IEnemyDashStateAccessor _dashStateAccessor;
-        private IMovementObstacleProbe _movementObstacleProbe;
-        private INetworkBehaviourAccessor _networkBehaviourAccessor;
+        private IClassFactory _classFactory;
 
         [Inject]
-        private void Construct(
-            IEnemyDashStateMutator dashStateMutator,
-            IEnemyDashStateAccessor dashStateAccessor,
-            IMovementObstacleProbe movementObstacleProbe,
-            INetworkBehaviourAccessor networkBehaviourAccessor)
+        private void Construct(IClassFactory classFactory)
         {
-            _dashStateMutator = dashStateMutator ??
-                throw new ArgumentNullException(nameof(dashStateMutator));
-            _dashStateAccessor = dashStateAccessor ??
-                throw new ArgumentNullException(nameof(dashStateAccessor));
-            _movementObstacleProbe = movementObstacleProbe ??
-                throw new ArgumentNullException(nameof(movementObstacleProbe));
-            _networkBehaviourAccessor = networkBehaviourAccessor ??
-                throw new ArgumentNullException(nameof(networkBehaviourAccessor));
+            _classFactory = classFactory ?? throw new ArgumentNullException(nameof(classFactory));
         }
 
-        public void AddMovementStates(
-            IDictionary<EnemyMovementState, BaseMovementState<EnemyMovementState, EnemyMovementPayload>>
-                movementStates)
+        public void AddEntityStates(
+            IDictionary<EnemyEntityState, BaseEntityState<EnemyEntityState, EnemyEntityPayload>>
+                entityStates)
         {
-            if (movementStates == null)
+            if (entityStates == null)
             {
-                throw new ArgumentNullException(nameof(movementStates));
+                throw new ArgumentNullException(nameof(entityStates));
             }
 
-            movementStates.Add(EnemyMovementState.Dash, RequireDashState());
+            entityStates.Add(EnemyEntityState.Dash, RequireDashState());
         }
 
         public void AddTransitionProcessors(
-            EnemyMovementState sourceMovementState,
-            IList<IMovementStateProcessor<EnemyMovementState, EnemyMovementPayload>> processors)
+            EnemyEntityState sourceState,
+            IList<IStateProcessor<EnemyEntityState, EnemyEntityPayload>> processors)
         {
             if (processors == null)
             {
                 throw new ArgumentNullException(nameof(processors));
             }
 
-            if (sourceMovementState != EnemyMovementState.Idle &&
-                sourceMovementState != EnemyMovementState.Locomotion)
+            if (sourceState != EnemyEntityState.Idle &&
+                sourceState != EnemyEntityState.Locomotion)
             {
                 return;
             }
 
-            processors.Add(new EnemyDashTransitionProcessor(
-                movementCollisionBodyAccessor: RequireMovementBody(),
-                movementObstacleProbe: _movementObstacleProbe,
-                dashStateMutator: _dashStateMutator,
-                dashMovementConfig: RequireDashAbilityConfig().DashMovementConfig));
+            processors.Add(_classFactory.Create<EnemyDashTransitionProcessor>(new object[] { RequireDashAbilityConfig().DashMovementConfig }));
         }
 
         public BaseEnemyChaseAbilityProcessor CreateChaseAbilityProcessor()
         {
             return RequireDashAbilityConfig().CreateChaseAbilityProcessor(
-                _networkBehaviourAccessor,
-                _dashStateAccessor);
+                _classFactory);
         }
 
         private EnemyDashState RequireDashState()
@@ -83,13 +65,6 @@ namespace ProjectCore.TechnicalPrototype
             return _dashState != null
                 ? _dashState
                 : throw new InvalidOperationException("Enemy dash ability requires a dash state reference.");
-        }
-
-        private TransformMovementBodyComponent RequireMovementBody()
-        {
-            return _movementBody != null
-                ? _movementBody
-                : throw new InvalidOperationException("Enemy dash ability requires a movement body reference.");
         }
 
         private EnemyDashAbilityConfig RequireDashAbilityConfig()

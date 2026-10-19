@@ -12,18 +12,21 @@ namespace ProjectCore.TechnicalPrototype
         BaseNetworkEntityRoot,
         IEnemyBehaviourStateMutator,
         IEnemyTargetMutator,
-        IEnemyDashStateMutator
+        IEnemyDashStateMutator,
+        IStateDataMutator<EnemyEntityState>
     {
         [SerializeField] private EnemyInputSourceComponent _inputSourceComponent;
         [SerializeField] private CombatHurtboxComponent _combatHurtboxComponent;
         [SerializeField] private CombatDebugVisualizationComponent _combatDebugVisualizationComponent;
         [SerializeField] private EnemyBehaviourStateMachine _behaviourStateMachine;
         [SerializeField] private EnemyAbilityCollectionComponent _abilityCollectionComponent;
-        [SerializeField] private EnemyMovementStateComponent _movementStateComponent;
-        [SerializeField] private EnemyMovementStateMachine _movementStateMachine;
+        [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("_movementStateMachine")] private EnemyEntityStateMachine _entityStateMachine;
         [SerializeField] private TransformMovementBodyComponent _movementBodyComponent;
 
         private Transform _entitiesContainer;
+
+        [Networked] public EnemyEntityState CurrentEntityState { get; private set; }
+        [Networked] public EnemyEntityState PreviousEntityState { get; private set; }
 
         [Networked] public EnemyBehaviourStateType CurrentBehaviourState { get; private set; }
         [Networked] public EnemyBehaviourStateType PreviousBehaviourState { get; private set; }
@@ -47,8 +50,7 @@ namespace ProjectCore.TechnicalPrototype
                 _combatHurtboxComponent,
                 _abilityCollectionComponent,
                 _behaviourStateMachine,
-                _movementStateComponent,
-                _movementStateMachine,
+                _entityStateMachine,
                 _movementBodyComponent,
                 _combatDebugVisualizationComponent,
             };
@@ -63,6 +65,15 @@ namespace ProjectCore.TechnicalPrototype
         public EnemyBehaviourStateType CurrentState => CurrentBehaviourState;
 
         public EnemyBehaviourStateType PreviousState => PreviousBehaviourState;
+
+        EnemyEntityState IStateDataAccessor<EnemyEntityState>.CurrentState => CurrentEntityState;
+        EnemyEntityState IStateDataAccessor<EnemyEntityState>.PreviousState => PreviousEntityState;
+
+        void IStateDataMutator<EnemyEntityState>.ChangeState(EnemyEntityState state)
+        {
+            PreviousEntityState = CurrentEntityState;
+            CurrentEntityState = state;
+        }
 
         public NetworkEntityIdData TargetEntityId => new(TargetEntityIdValue);
 

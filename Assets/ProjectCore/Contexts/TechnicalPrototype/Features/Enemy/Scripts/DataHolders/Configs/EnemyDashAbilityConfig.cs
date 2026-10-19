@@ -1,5 +1,6 @@
 using System;
 using ProjectCore.GameCore;
+using ProjectCore.Template;
 using UnityEngine;
 
 namespace ProjectCore.TechnicalPrototype
@@ -15,33 +16,10 @@ namespace ProjectCore.TechnicalPrototype
 
         public DashMovementConfig DashMovementConfig => _dashMovementConfig;
 
-        public BaseEnemyChaseAbilityProcessor CreateChaseAbilityProcessor(
-            INetworkBehaviourAccessor networkBehaviourAccessor,
-            IEnemyDashStateAccessor dashStateAccessor)
+        public BaseEnemyChaseAbilityProcessor CreateChaseAbilityProcessor(IClassFactory factory)
         {
-            if (_dashMovementConfig == null)
-            {
-                throw new InvalidOperationException(
-                    "Enemy dash ability requires a dash movement config reference.");
-            }
-
-            if (networkBehaviourAccessor == null)
-            {
-                throw new InvalidOperationException(
-                    "Enemy dash ability requires a network behaviour accessor.");
-            }
-
-            if (dashStateAccessor == null)
-            {
-                throw new ArgumentNullException(nameof(dashStateAccessor));
-            }
-
-            return new EnemyDashChaseAbilityProcessor(
-                networkBehaviourAccessor: networkBehaviourAccessor,
-                dashStateAccessor: dashStateAccessor,
-                dashMovementConfig: _dashMovementConfig,
-                targetOffset: _targetOffset,
-                startDistanceTolerance: _startDistanceTolerance);
+            if (_dashMovementConfig == null) throw new InvalidOperationException("Dash movement config is required.");
+            return factory.Create<EnemyDashChaseAbilityProcessor>(new object[] { _dashMovementConfig, _targetOffset, _startDistanceTolerance });
         }
     }
 }

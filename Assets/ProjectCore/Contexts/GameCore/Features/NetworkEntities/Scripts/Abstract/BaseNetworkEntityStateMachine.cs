@@ -6,7 +6,7 @@ using Zenject;
 namespace ProjectCore.GameCore
 {
     public abstract class BaseNetworkEntityStateMachine<TStatesType, TState, TStatePayload> :
-        BaseNetworkEntityComponent, 
+        BaseNetworkEntityComponent,
         IStateMachine<TStatesType, TState, TStatePayload> where TStatesType : Enum
         where TState : IState<TStatesType, TStatePayload>
         where TStatePayload : struct
@@ -22,48 +22,52 @@ namespace ProjectCore.GameCore
 
         public IReadOnlyDictionary<TStatesType, TState> States => _states;
 
+        protected IStateDataMutator<TStatesType> StateData => _stateDataMutator;
+
         protected void InitializeStateMachine()
         {
             _states = CreateStatesDictionary();
         }
-        
+
         public abstract Dictionary<TStatesType, TState> CreateStatesDictionary();
-    
+
         public void ChangeState(TStatesType newState)
         {
             BeforePreviousStateExit();
-                
+
             _states[_stateDataMutator.CurrentState].Exit();
-    
+
             AfterPreviousStateExit();
-            
+
             _stateDataMutator.ChangeState(newState);
-    
+
             BeforeNextStateEnter();
-                
+
             _states[_stateDataMutator.CurrentState].Enter();
-    
+
             AfterNextStateEnter();
         }
-    
+
         public void UpdateStates(TStatePayload payload)
         {
             TStatesType nextState = _states[_stateDataMutator.CurrentState].Tick(payload);
-                    
-            if (EqualityComparer<TStatesType>.Default.Equals(nextState, _stateDataMutator.CurrentState))
+
+            if (EqualityComparer<TStatesType>.Default.Equals(nextState, _stateDataMutator.CurrentState) && !ShouldReenterCurrentState)
             {
                 return;
             }
-                    
+
             ChangeState(nextState);
         }
-    
+
+        protected virtual bool ShouldReenterCurrentState => false;
+
         protected virtual void BeforePreviousStateExit() { }
-            
+
         protected virtual void AfterPreviousStateExit() { }
-            
+
         protected virtual void BeforeNextStateEnter() { }
-            
+
         protected virtual void AfterNextStateEnter() { }
     }
 }

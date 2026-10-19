@@ -26,7 +26,7 @@ namespace ProjectCore.TechnicalPrototype
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
             var root = prefab.GetComponent<PlayerNetworkEntityComponent>();
             var action = prefab.GetComponent<PlayerCombatActionComponent>();
-            var controller = prefab.GetComponent<PlayerActionControllerComponent>();
+            var controller = prefab.GetComponentInChildren<PlayerEntityStateMachine>();
             var probe = prefab.GetComponent<CombatHitProbeComponent>();
             var hurtbox = prefab.GetComponent<CombatHurtboxComponent>();
             Assert.That(root, Is.InstanceOf<ICombatActionMutator>());
@@ -36,13 +36,10 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(hurtbox, Is.Not.Null);
             var serializedRoot = new SerializedObject(root);
             Assert.That(serializedRoot.FindProperty("_playerActionComponent").objectReferenceValue, Is.SameAs(action));
-            Assert.That(serializedRoot.FindProperty("_actionControllerComponent").objectReferenceValue, Is.SameAs(controller));
+            Assert.That(serializedRoot.FindProperty("_entityStateMachine").objectReferenceValue, Is.SameAs(controller));
             var serializedController = new SerializedObject(controller);
             Assert.That(serializedController.FindProperty("_inputSource").objectReferenceValue,
                 Is.SameAs(prefab.GetComponent<PlayerInputSourceComponent>()));
-            Assert.That(serializedController.FindProperty("_combatAction").objectReferenceValue, Is.SameAs(action));
-            Assert.That(serializedController.FindProperty("_movementStateMachine").objectReferenceValue,
-                Is.SameAs(prefab.GetComponentInChildren<PlayerMovementStateMachine>()));
             Assert.That(serializedController.FindProperty("_dodgeState").objectReferenceValue,
                 Is.SameAs(prefab.GetComponentInChildren<PlayerDodgeState>()));
             Assert.That(serializedRoot.FindProperty("_combatHitProbeComponent").objectReferenceValue, Is.SameAs(probe));
@@ -65,7 +62,7 @@ namespace ProjectCore.TechnicalPrototype
             Assert.DoesNotThrow(() => CombatShapeValidation.ValidateSettings(attack.Hitbox));
             Assert.DoesNotThrow(() => CombatActionProfileValidation.CompileTiming(attack.ActionProfile, 1f / 60f));
             Assert.DoesNotThrow(() => MovementConfigValidation.CompileDodgeTiming(dodge, 1f / 60f));
-            var movement = prefab.transform.Find("Movement").GetComponent<PlayerMovementStateMachine>();
+            var movement = prefab.transform.Find("States").GetComponent<PlayerEntityStateMachine>();
             Assert.That(new SerializedObject(movement).FindProperty("_attackState").objectReferenceValue,
                 Is.SameAs(movement.GetComponent<PlayerAttackState>()));
             var inputs = AssetDatabase.LoadAssetAtPath<InputActionAsset>(
@@ -102,7 +99,7 @@ namespace ProjectCore.TechnicalPrototype
                 playerEntity.FindProperty("_playerMediatorComponent")
                     .objectReferenceValue,
                 Is.Not.Null);
-            Assert.That(playerEntity.FindProperty("_movementStateMachine").objectReferenceValue, Is.Not.Null);
+            Assert.That(playerEntity.FindProperty("_entityStateMachine").objectReferenceValue, Is.Not.Null);
             Assert.That(
                 playerEntity.FindProperty("_movementBodyComponent")
                     .objectReferenceValue,
@@ -138,15 +135,15 @@ namespace ProjectCore.TechnicalPrototype
                     .objectReferenceValue,
                 Is.SameAs(prefab.GetComponent<TransformMovementBodyComponent>()));
 
-            Transform movement = prefab.transform.Find("Movement");
+            Transform movement = prefab.transform.Find("States");
 
             Assert.That(movement, Is.Not.Null);
-            Assert.That(movement.GetComponent<PlayerMovementStateMachine>(), Is.Not.Null);
+            Assert.That(movement.GetComponent<PlayerEntityStateMachine>(), Is.Not.Null);
             Assert.That(movement.GetComponent<PlayerIdleState>(), Is.Not.Null);
             Assert.That(movement.GetComponent<PlayerLocomotionState>(), Is.Not.Null);
             Assert.That(movement.GetComponent<PlayerDodgeState>(), Is.Not.Null);
 
-            SerializedObject movementStateMachine = new(movement.GetComponent<PlayerMovementStateMachine>());
+            SerializedObject movementStateMachine = new(movement.GetComponent<PlayerEntityStateMachine>());
             Assert.That(movementStateMachine.FindProperty("_idleState").objectReferenceValue, Is.Not.Null);
 
             TransformMovementBodyComponent movementBody =
@@ -162,7 +159,7 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(prefab.GetComponent<Rigidbody2D>(), Is.Null);
             Assert.That(prefab.transform.childCount, Is.EqualTo(2));
             Assert.That(prefab.transform.GetChild(0).name, Is.EqualTo("Visual"));
-            Assert.That(prefab.transform.GetChild(1).name, Is.EqualTo("Movement"));
+            Assert.That(prefab.transform.GetChild(1).name, Is.EqualTo("States"));
             Transform visual = prefab.transform.GetChild(0);
             Assert.That(visual.GetComponent<SpriteRenderer>(), Is.Not.Null);
 
@@ -183,9 +180,11 @@ namespace ProjectCore.TechnicalPrototype
                 locomotionState.FindProperty("_locomotionMovementConfig")
                     .objectReferenceValue,
                 Is.Not.Null);
-            Assert.That(locomotionState.FindProperty("_movementBody").objectReferenceValue, Is.Not.Null);
+            var installer = new SerializedObject(prefab.GetComponent<PlayerNetworkEntityInstaller>());
+            Assert.That(installer.FindProperty("_movementBody").objectReferenceValue, Is.SameAs(movementBody));
+            Assert.That(installer.FindProperty("_entityStateMachine").objectReferenceValue, Is.SameAs(movement.GetComponent<PlayerEntityStateMachine>()));
             SerializedObject dodgeState = new(movement.GetComponent<PlayerDodgeState>());
-            Assert.That(dodgeState.FindProperty("_movementBody").objectReferenceValue, Is.Not.Null);
+
             Assert.That(dodgeState.FindProperty("_dodgeMovementConfig").objectReferenceValue, Is.Not.Null);
         }
 

@@ -1,3 +1,4 @@
+using Shared;
 using System;
 using System.Collections.Generic;
 using ProjectCore.GameCore;
@@ -5,7 +6,7 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class EnemyIdleState : BaseMovementState<EnemyMovementState, EnemyMovementPayload>
+    public sealed class EnemyIdleState : BaseEntityState<EnemyEntityState, EnemyEntityPayload>
     {
         private IEnemyAbilityCollection _abilityCollection;
 
@@ -20,23 +21,22 @@ namespace ProjectCore.TechnicalPrototype
 
         public override void Exit() { }
 
-        protected override IReadOnlyList<IMovementStateProcessor<EnemyMovementState, EnemyMovementPayload>>
-            CreateMovementProcessors()
+        protected override IReadOnlyList<IStateProcessor<EnemyEntityState, EnemyEntityPayload>>
+            CreateProcessors()
         {
-            var processors = new List<IMovementStateProcessor<EnemyMovementState, EnemyMovementPayload>>();
+            var processors = new List<IStateProcessor<EnemyEntityState, EnemyEntityPayload>>();
 
-            foreach (IEnemyMovementAbilityContributor ability in
-                     _abilityCollection.GetAbilities<IEnemyMovementAbilityContributor>())
+            foreach (IEnemyEntityStateContributor ability in
+                     _abilityCollection.GetAbilities<IEnemyEntityStateContributor>())
             {
-                ability.AddTransitionProcessors(EnemyMovementState.Idle, processors);
+                ability.AddTransitionProcessors(EnemyEntityState.Idle, processors);
             }
 
             processors.Add(
-                new DirectionalLocomotionTransitionProcessor<EnemyMovementState, EnemyMovementPayload>(
-                    locomotionMovementState: EnemyMovementState.Locomotion));
+                CreateProcessor<DirectionalLocomotionTransitionProcessor<EnemyEntityState, EnemyEntityPayload>>(EnemyEntityState.Locomotion));
             return processors;
         }
 
-        protected override EnemyMovementState FallbackState => EnemyMovementState.Idle;
+        protected override EnemyEntityState FallbackState => EnemyEntityState.Idle;
     }
 }

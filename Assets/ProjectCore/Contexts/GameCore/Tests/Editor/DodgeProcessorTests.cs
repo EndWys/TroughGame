@@ -139,7 +139,7 @@ namespace ProjectCore.GameCore
                 BufferedCommand = command;
             }
 
-            public bool BeginAction(ushort commandId)
+            public bool TryConsumeBufferedCommandAndLock(ushort commandId)
             {
                 if (IsLocked ||
                     !HasBufferedCommand(commandId))
@@ -152,7 +152,7 @@ namespace ProjectCore.GameCore
                 return true;
             }
 
-            public void EndAction()
+            public void ReleaseCommandLock()
             {
                 IsLocked = false;
             }

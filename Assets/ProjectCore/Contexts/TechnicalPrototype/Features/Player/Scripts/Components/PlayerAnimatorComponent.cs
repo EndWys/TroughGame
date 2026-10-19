@@ -12,17 +12,17 @@ namespace ProjectCore.TechnicalPrototype
 
         public void PlayIdle()
         {
-            _animator.SetInteger(MovementStateParameter, (int)PlayerMovementState.Idle);
+            _animator.SetInteger(MovementStateParameter, (int)PlayerEntityState.Idle);
         }
 
         public void PlayLocomotion()
         {
-            _animator.SetInteger(MovementStateParameter, (int)PlayerMovementState.Locomotion);
+            _animator.SetInteger(MovementStateParameter, (int)PlayerEntityState.Locomotion);
         }
 
         public void PlayDodge()
         {
-            _animator.SetInteger(MovementStateParameter, (int)PlayerMovementState.Dodge);
+            _animator.SetInteger(MovementStateParameter, (int)PlayerEntityState.Dodge);
         }
 
         public void SetFacingDirection(PlayerFacingDirection facingDirection)

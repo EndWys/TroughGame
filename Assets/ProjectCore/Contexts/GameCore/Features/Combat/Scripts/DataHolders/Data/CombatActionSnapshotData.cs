@@ -8,7 +8,7 @@ namespace ProjectCore.GameCore
             ushort actionId,
             uint executionId,
             CombatActionKind kind,
-            CombatActionPhase phase,
+            ActionPhase phase,
             Vector2 direction,
             bool canStartNextAction,
             bool isComplete)
@@ -25,7 +25,7 @@ namespace ProjectCore.GameCore
         public ushort ActionId { get; }
         public uint ExecutionId { get; }
         public CombatActionKind Kind { get; }
-        public CombatActionPhase Phase { get; }
+        public ActionPhase Phase { get; }
         public Vector2 Direction { get; }
         public bool CanStartNextAction { get; }
         public bool IsComplete { get; }

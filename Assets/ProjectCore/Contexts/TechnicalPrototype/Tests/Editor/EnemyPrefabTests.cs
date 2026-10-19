@@ -65,7 +65,7 @@ namespace ProjectCore.TechnicalPrototype
             EnemyAbilityCollectionComponent abilityCollection =
                 prefab.GetComponent<EnemyAbilityCollectionComponent>();
             Assert.That(abilityCollection, Is.Not.Null);
-            Assert.That(prefab.GetComponent<EnemyMovementStateComponent>(), Is.Not.Null);
+            Assert.That(prefab.GetComponent<EnemyNetworkEntityComponent>(), Is.Not.Null);
 
             SerializedObject serializedEnemyEntity = new(enemyEntity);
             Assert.That(
@@ -78,10 +78,7 @@ namespace ProjectCore.TechnicalPrototype
                 serializedEnemyEntity.FindProperty("_abilityCollectionComponent").objectReferenceValue,
                 Is.SameAs(abilityCollection));
             Assert.That(
-                serializedEnemyEntity.FindProperty("_movementStateComponent").objectReferenceValue,
-                Is.SameAs(prefab.GetComponent<EnemyMovementStateComponent>()));
-            Assert.That(
-                serializedEnemyEntity.FindProperty("_movementStateMachine").objectReferenceValue,
+                serializedEnemyEntity.FindProperty("_entityStateMachine").objectReferenceValue,
                 Is.Not.Null);
             Assert.That(
                 serializedEnemyEntity.FindProperty("_movementBodyComponent").objectReferenceValue,
@@ -110,10 +107,10 @@ namespace ProjectCore.TechnicalPrototype
                 serializedStateMachine.FindProperty("_chasingState").objectReferenceValue,
                 Is.SameAs(behaviour.GetComponent<EnemyBehaviourChasingState>()));
 
-            Transform movement = prefab.transform.Find("Movement");
+            Transform movement = prefab.transform.Find("States");
             Assert.That(movement, Is.Not.Null);
-            EnemyMovementStateMachine movementStateMachine =
-                movement.GetComponent<EnemyMovementStateMachine>();
+            EnemyEntityStateMachine movementStateMachine =
+                movement.GetComponent<EnemyEntityStateMachine>();
             Assert.That(movementStateMachine, Is.Not.Null);
             Assert.That(movement.GetComponent<EnemyIdleState>(), Is.Not.Null);
             Assert.That(movement.GetComponent<EnemyLocomotionState>(), Is.Not.Null);
@@ -148,7 +145,7 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(prefab, Is.Not.Null);
             Assert.That(AssetDatabase.GetLabels(prefab), Does.Contain("FusionPrefab"));
 
-            Transform movement = prefab.transform.Find("Movement");
+            Transform movement = prefab.transform.Find("States");
             Assert.That(movement, Is.Not.Null);
             EnemyDashState dashState = movement.GetComponent<EnemyDashState>();
             EnemyNetworkEntityInstaller installer = prefab.GetComponent<EnemyNetworkEntityInstaller>();
@@ -195,9 +192,6 @@ namespace ProjectCore.TechnicalPrototype
 
             SerializedObject serializedDashState = new(dashState);
             Assert.That(
-                serializedDashState.FindProperty("_movementBody").objectReferenceValue,
-                Is.SameAs(movementBody));
-            Assert.That(
                 serializedDashState.FindProperty("_dashMovementConfig").objectReferenceValue,
                 Is.SameAs(dashMovementConfig));
 
@@ -205,9 +199,6 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(
                 serializedDashAbility.FindProperty("_dashState").objectReferenceValue,
                 Is.SameAs(dashState));
-            Assert.That(
-                serializedDashAbility.FindProperty("_movementBody").objectReferenceValue,
-                Is.SameAs(movementBody));
             Assert.That(
                 serializedDashAbility.FindProperty("_dashAbilityConfig").objectReferenceValue,
                 Is.SameAs(dashAbilityConfig));

@@ -1,6 +1,5 @@
 using System;
 using ProjectCore.GameCore;
-using Shared;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using Zenject;
@@ -8,22 +7,19 @@ using Zenject;
 namespace ProjectCore.TechnicalPrototype
 {
     [MovedFrom(true, "ProjectCore.TechnicalPrototype", null, "PlayerActionComponent")]
-    public sealed class PlayerCombatActionComponent : BaseNetworkEntityComponent, IColleague
+    public sealed class PlayerCombatActionComponent : BaseNetworkEntityComponent
     {
         [SerializeField] private CombatAttackConfig _attackConfig;
 
-        private readonly CombatActionPhaseProcessor _processor = new();
+        private CombatActionPhaseProcessor _processor;
         private ICombatActionMutator _state;
-        private IPlayerFacingDirectionMutator _facing;
-        private IPlayerMediator _mediator;
-        private CombatActionTimingData _attackTiming;
+        private ActionTimingData _attackTiming;
 
         [Inject]
-        private void Construct(ICombatActionMutator state, IPlayerFacingDirectionMutator facing, IPlayerMediator mediator)
+        private void Construct(ICombatActionMutator state, ProjectCore.Template.IClassFactory factory)
         {
             _state = state ?? throw new ArgumentNullException(nameof(state));
-            _facing = facing ?? throw new ArgumentNullException(nameof(facing));
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _processor = factory.Create<CombatActionPhaseProcessor>();
         }
 
         public CombatActionSnapshotData ActionSnapshot
@@ -38,9 +34,6 @@ namespace ProjectCore.TechnicalPrototype
                     ParentNetworkBehaviour.Runner.Tick.Raw);
             }
         }
-
-        public bool CanStartAttack => IsComponentAvailable && HasSimulationAuthority &&
-            (_state.ActionState.ActionId == 0 || ActionSnapshot.IsComplete || ActionSnapshot.CanStartNextAction);
 
         private bool HasSimulationAuthority =>
             ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
@@ -57,23 +50,13 @@ namespace ProjectCore.TechnicalPrototype
 
         public void StartAttack(Vector2 direction)
         {
-            if (!CanStartAttack) throw new InvalidOperationException("Attack cannot start in this state.");
+            if (!IsComponentAvailable || !HasSimulationAuthority) throw new InvalidOperationException("Attack cannot start in this state.");
             if (direction.sqrMagnitude <= 0f)
-                direction = PlayerFacingDirectionUtility.ToVector(_facing.FacingDirection);
+                throw new ArgumentException("Attack direction must be nonzero.", nameof(direction));
             CombatActionStateModel state = _state.ActionState;
             _processor.Start(ref state, _attackConfig.ActionProfile.ActionId, direction,
                 ParentNetworkBehaviour.Runner.Tick.Raw);
             _state.SetActionState(state);
-            _facing.SetFacingDirection(PlayerFacingDirectionUtility.FromVector(
-                direction, _facing.FacingDirection, 0.01f));
-            _mediator.Notify(new PlayerAttackStatePayload(this, true, true));
-        }
-
-        protected override void OnNetworkTick()
-        {
-            if (!HasSimulationAuthority || _state.ActionState.ActionId == 0) return;
-            if (ActionSnapshot.IsComplete) StopAttack(false);
-            else _mediator.Notify(new PlayerAttackStatePayload(this, true, false));
         }
 
         public bool TryGetAttack(ushort actionId, out CombatAttackConfig attack)
@@ -83,19 +66,13 @@ namespace ProjectCore.TechnicalPrototype
             return attack != null;
         }
 
-        public void CancelAction()
-        {
-            if (IsInitialized && HasValidNetworkContext && HasSimulationAuthority) StopAttack(true);
-        }
+        internal void StopForTransition() { StopAttack(); }
 
-        internal void StopForTransition() { StopAttack(false); }
-
-        private void StopAttack(bool clearInput)
+        private void StopAttack()
         {
             CombatActionStateModel state = _state.ActionState;
             _processor.Cancel(ref state);
             _state.SetActionState(state);
-            _mediator.Notify(new PlayerAttackStatePayload(this, false, false, clearInput));
         }
 
         protected override void OnResetLocalRuntime() { _attackTiming = default; }

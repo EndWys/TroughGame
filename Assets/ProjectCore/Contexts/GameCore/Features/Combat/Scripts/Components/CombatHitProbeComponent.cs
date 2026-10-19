@@ -59,7 +59,7 @@ namespace ProjectCore.GameCore
             _targets.Clear();
             _contacts.Clear();
             CombatActionSnapshotData snapshot = _action.ActionSnapshot;
-            if (snapshot.Phase != CombatActionPhase.Active || snapshot.Kind != CombatActionKind.Attack)
+            if (snapshot.Phase != ActionPhase.Active || snapshot.Kind != CombatActionKind.Attack)
             {
                 _processor.Reset();
                 return;

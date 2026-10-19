@@ -7,22 +7,22 @@ namespace ProjectCore.GameCore
     public sealed class CombatActionPhaseProcessorTests
     {
         private readonly CombatActionPhaseProcessor _processor = new CombatActionPhaseProcessor();
-        private readonly CombatActionTimingData _timing = new CombatActionTimingData(2, 3, 5, 1, 4);
+        private readonly ActionTimingData _timing = new ActionTimingData(2, 3, 5, 1, 4);
 
-        [TestCase(-1, CombatActionPhase.None, false, false)]
-        [TestCase(0, CombatActionPhase.Preparation, false, false)]
-        [TestCase(1, CombatActionPhase.Preparation, false, false)]
-        [TestCase(2, CombatActionPhase.Active, false, false)]
-        [TestCase(4, CombatActionPhase.Active, false, false)]
-        [TestCase(5, CombatActionPhase.Recovery, false, false)]
-        [TestCase(6, CombatActionPhase.Recovery, true, false)]
-        [TestCase(8, CombatActionPhase.Recovery, true, false)]
-        [TestCase(9, CombatActionPhase.Recovery, false, false)]
-        [TestCase(10, CombatActionPhase.None, false, true)]
-        [TestCase(11, CombatActionPhase.None, false, true)]
+        [TestCase(-1, ActionPhase.None, false, false)]
+        [TestCase(0, ActionPhase.Preparation, false, false)]
+        [TestCase(1, ActionPhase.Preparation, false, false)]
+        [TestCase(2, ActionPhase.Active, false, false)]
+        [TestCase(4, ActionPhase.Active, false, false)]
+        [TestCase(5, ActionPhase.Recovery, false, false)]
+        [TestCase(6, ActionPhase.Recovery, true, false)]
+        [TestCase(8, ActionPhase.Recovery, true, false)]
+        [TestCase(9, ActionPhase.Recovery, false, false)]
+        [TestCase(10, ActionPhase.None, false, true)]
+        [TestCase(11, ActionPhase.None, false, true)]
         public void EvaluateUsesPhaseAndHalfOpenWindowBoundaries(
             int elapsed,
-            CombatActionPhase phase,
+            ActionPhase phase,
             bool canChain,
             bool complete)
         {
@@ -58,7 +58,7 @@ namespace ProjectCore.GameCore
                 copy, CombatActionKind.Dodge, _timing, currentTick);
 
             Assert.That(replay, Is.EqualTo(forward));
-            Assert.That(replay.Phase, Is.EqualTo(CombatActionPhase.Recovery));
+            Assert.That(replay.Phase, Is.EqualTo(ActionPhase.Recovery));
             Assert.That(replay.CanStartNextAction, Is.True);
             Assert.That(state, Is.EqualTo(copy));
         }
@@ -77,7 +77,7 @@ namespace ProjectCore.GameCore
             Assert.That(state.StartedTick, Is.Zero);
             Assert.That(state.Direction, Is.EqualTo(Vector2.zero));
             CombatActionSnapshotData idle = _processor.Evaluate(state, CombatActionKind.Dodge, _timing, 30);
-            Assert.That(idle.Phase, Is.EqualTo(CombatActionPhase.None));
+            Assert.That(idle.Phase, Is.EqualTo(ActionPhase.None));
             Assert.That(idle.IsComplete, Is.False);
             Assert.That(idle.CanStartNextAction, Is.False);
             Assert.That(idle.ExecutionId, Is.EqualTo(uint.MaxValue));
@@ -91,7 +91,7 @@ namespace ProjectCore.GameCore
         {
             var state = new CombatActionStateModel();
             _processor.Start(ref state, 1, Vector2.zero, 0);
-            var timing = new CombatActionTimingData(2, 3, 5, 2, 2);
+            var timing = new ActionTimingData(2, 3, 5, 2, 2);
 
             for (int tick = 5; tick < 10; tick++)
             {

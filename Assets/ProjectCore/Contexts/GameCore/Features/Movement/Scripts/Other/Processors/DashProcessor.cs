@@ -11,7 +11,7 @@ namespace ProjectCore.GameCore
         private readonly IMovementBodyVelocityMutator _movementBodyVelocityMutator;
         private readonly IMovementCollisionBodyAccessor _movementCollisionBodyAccessor;
         private readonly IMovementObstacleProbe _movementObstacleProbe;
-        private readonly IMovementStateTimerAccessor _movementStateTimerAccessor;
+        private readonly IEntityStateTimerAccessor _movementStateTimerAccessor;
         private readonly DashMovementConfig _dashMovementConfig;
         private readonly Func<Vector2> _dashDirectionProvider;
         private readonly Func<float> _simulationDeltaTimeProvider;
@@ -21,7 +21,7 @@ namespace ProjectCore.GameCore
             IMovementBodyVelocityMutator movementBodyVelocityMutator,
             IMovementCollisionBodyAccessor movementCollisionBodyAccessor,
             IMovementObstacleProbe movementObstacleProbe,
-            IMovementStateTimerAccessor movementStateTimerAccessor,
+            IEntityStateTimerAccessor movementStateTimerAccessor,
             DashMovementConfig dashMovementConfig,
             Func<Vector2> dashDirectionProvider,
             Func<float> simulationDeltaTimeProvider,

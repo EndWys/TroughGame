@@ -106,11 +106,11 @@ namespace ProjectCore.Template
                     Is.True);
                 Assert.That(behaviourStateMachine, Is.Not.Null);
                 Assert.That(
-                    enemy.TryGetEntityComponent(out EnemyMovementStateMachine movementStateMachine),
+                    enemy.TryGetEntityComponent(out EnemyEntityStateMachine movementStateMachine),
                     Is.True);
                 Assert.That(movementStateMachine, Is.Not.Null);
                 Assert.That(
-                    enemy.TryGetEntityComponent(out EnemyMovementStateComponent movementState),
+                    enemy.TryGetRootContract<Shared.IStateDataAccessor<EnemyEntityState>>(out var movementState),
                     Is.True);
                 Assert.That(movementState, Is.Not.Null);
                 Assert.That(

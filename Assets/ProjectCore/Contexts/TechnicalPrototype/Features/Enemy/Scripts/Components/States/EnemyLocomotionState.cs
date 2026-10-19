@@ -1,3 +1,4 @@
+using Shared;
 using System;
 using System.Collections.Generic;
 using ProjectCore.GameCore;
@@ -7,11 +8,10 @@ using Zenject;
 namespace ProjectCore.TechnicalPrototype
 {
     public sealed class EnemyLocomotionState :
-        BaseMovementState<EnemyMovementState, EnemyMovementPayload>
+        BaseEntityState<EnemyEntityState, EnemyEntityPayload>
     {
         [SerializeField] private LocomotionMovementConfig _locomotionMovementConfig;
         [SerializeField] private EnemyChaseConfig _chaseConfig;
-        [SerializeField] private TransformMovementBodyComponent _movementBody;
 
         private IMovementObstacleProbe _movementObstacleProbe;
         private IEnemyAbilityCollection _abilityCollection;
@@ -31,15 +31,9 @@ namespace ProjectCore.TechnicalPrototype
 
         public override void Exit() { }
 
-        protected override IReadOnlyList<IMovementStateProcessor<EnemyMovementState, EnemyMovementPayload>>
-            CreateMovementProcessors()
+        protected override IReadOnlyList<IStateProcessor<EnemyEntityState, EnemyEntityPayload>>
+            CreateProcessors()
         {
-            if (_movementBody == null)
-            {
-                throw new InvalidOperationException(
-                    "Enemy locomotion state requires a movement body reference.");
-            }
-
             if (_locomotionMovementConfig == null)
             {
                 throw new InvalidOperationException(
@@ -52,25 +46,19 @@ namespace ProjectCore.TechnicalPrototype
                     "Enemy locomotion state requires a chase config reference.");
             }
 
-            var processors = new List<IMovementStateProcessor<EnemyMovementState, EnemyMovementPayload>>();
+            var processors = new List<IStateProcessor<EnemyEntityState, EnemyEntityPayload>>();
 
-            foreach (IEnemyMovementAbilityContributor ability in
-                     _abilityCollection.GetAbilities<IEnemyMovementAbilityContributor>())
+            foreach (IEnemyEntityStateContributor ability in
+                     _abilityCollection.GetAbilities<IEnemyEntityStateContributor>())
             {
-                ability.AddTransitionProcessors(EnemyMovementState.Locomotion, processors);
+                ability.AddTransitionProcessors(EnemyEntityState.Locomotion, processors);
             }
 
-            processors.Add(new ObstacleAvoidanceLocomotionProcessor<EnemyMovementState, EnemyMovementPayload>(
-                movementBodyVelocityMutator: _movementBody,
-                movementCollisionBodyAccessor: _movementBody,
-                movementObstacleProbe: _movementObstacleProbe,
-                locomotionMovementConfig: _locomotionMovementConfig,
-                obstacleProbeDistance: _chaseConfig.ObstacleProbeDistance));
-            processors.Add(new NoDirectionTransitionProcessor<EnemyMovementState, EnemyMovementPayload>(
-                idleMovementState: EnemyMovementState.Idle));
+            processors.Add(CreateProcessor<ObstacleAvoidanceLocomotionProcessor<EnemyEntityState, EnemyEntityPayload>>(_locomotionMovementConfig, _chaseConfig.ObstacleProbeDistance));
+            processors.Add(CreateProcessor<NoDirectionTransitionProcessor<EnemyEntityState, EnemyEntityPayload>>(EnemyEntityState.Idle));
             return processors;
         }
 
-        protected override EnemyMovementState FallbackState => EnemyMovementState.Locomotion;
+        protected override EnemyEntityState FallbackState => EnemyEntityState.Locomotion;
     }
 }

@@ -70,7 +70,7 @@ namespace ProjectCore.GameCore
             _stateMutator.SetBufferedCommand(command, expirationTimer);
         }
 
-        public bool BeginAction(ushort commandId)
+        public bool TryConsumeBufferedCommandAndLock(ushort commandId)
         {
             if (commandId == 0 ||
                 IsLocked ||
@@ -84,7 +84,7 @@ namespace ProjectCore.GameCore
             return true;
         }
 
-        public void EndAction()
+        public void ReleaseCommandLock()
         {
             _stateMutator.UnlockInput();
         }

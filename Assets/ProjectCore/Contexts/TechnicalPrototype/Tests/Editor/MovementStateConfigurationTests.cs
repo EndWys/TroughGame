@@ -5,6 +5,7 @@ using NUnit.Framework;
 using ProjectCore.GameCore;
 using UnityEngine;
 using Zenject;
+using ProjectCore.Template;
 using Object = UnityEngine.Object;
 
 namespace ProjectCore.TechnicalPrototype
@@ -18,61 +19,74 @@ namespace ProjectCore.TechnicalPrototype
         private PlayerDodgeState _dodgeState;
         private EnemyDashState _dashState;
 
-        [TestCase(DodgeMovementPhase.Preparation)]
-        [TestCase(DodgeMovementPhase.Active)]
-        [TestCase(DodgeMovementPhase.Recovery)]
-        public void DodgeMovementUsesOnlyItsMovementPhase(DodgeMovementPhase phase)
+        [TestCase(ActionPhase.Preparation)]
+        [TestCase(ActionPhase.Active)]
+        [TestCase(ActionPhase.Recovery)]
+        public void DodgeMovementUsesOnlyItsMovementPhase(ActionPhase phase)
         {
             var body = new MovementVelocityMutator();
             var dodge = new PlayerDodgeMovementProcessor(body, _dodgeConfig, () => phase);
-            Assert.That(dodge.Execute(new PlayerMovementPayload(Vector2.right), out _), Is.False);
-            Assert.That(body.Velocity, Is.EqualTo(phase == DodgeMovementPhase.Active ? Vector2.right * 8f : Vector2.zero));
+            Assert.That(dodge.Execute(new PlayerEntityPayload(Vector2.right), out _), Is.False);
+            Assert.That(body.Velocity, Is.EqualTo(phase == ActionPhase.Active ? Vector2.right * 8f : Vector2.zero));
         }
 
         [Test]
-        public void AttackEnterStopsVelocityWithoutACombatDependency()
+        public void EntityScopedFactoryKeepsMovementDependenciesIsolated()
         {
-            var attack = _player.AddComponent<PlayerAttackState>();
-            var body = _player.GetComponent<TransformMovementBodyComponent>();
-            SetField(attack, "_movementBody", body);
-            attack.Init();
-            _player.GetComponent<IMovementBodyVelocityMutator>().Velocity = Vector2.one;
-            attack.Enter();
-            Assert.That(body.Velocity, Is.EqualTo(Vector2.zero));
-            Assert.That(attack.Tick(new PlayerMovementPayload(Vector2.right)), Is.EqualTo(PlayerMovementState.Attack));
+            var first = new MovementVelocityMutator();
+            var second = new MovementVelocityMutator();
+            var config = ScriptableObject.CreateInstance<LocomotionMovementConfig>();
+            try
+            {
+                foreach (var body in new[] { first, second })
+                {
+                    var scope = new DiContainer();
+                    scope.BindInterfacesAndSelfTo<ClassFactory>().AsSingle();
+                    scope.Bind<IMovementBodyVelocityMutator>().FromInstance(body);
+                    var processor = scope.Resolve<IClassFactory>().Create<LocomotionProcessor<PlayerEntityState, PlayerEntityPayload>>(new object[] { config });
+                    processor.Execute(new PlayerEntityPayload(body == first ? Vector2.right : Vector2.up), out _);
+                }
+                Assert.That(first.Velocity.x, Is.GreaterThan(0));
+                Assert.That(first.Velocity.y, Is.Zero);
+                Assert.That(second.Velocity.x, Is.Zero);
+                Assert.That(second.Velocity.y, Is.GreaterThan(0));
+            }
+            finally { Object.DestroyImmediate(config); }
         }
 
-        [TestCase(0, DodgeMovementPhase.Preparation)]
-        [TestCase(1, DodgeMovementPhase.Preparation)]
-        [TestCase(2, DodgeMovementPhase.Active)]
-        [TestCase(13, DodgeMovementPhase.Active)]
-        [TestCase(14, DodgeMovementPhase.Recovery)]
-        [TestCase(19, DodgeMovementPhase.Recovery)]
-        [TestCase(20, DodgeMovementPhase.None)]
-        public void DodgeBoundariesUseTheSingleMovementEndTick(int elapsed, DodgeMovementPhase expected)
+        [TestCase(0, ActionPhase.Preparation)]
+        [TestCase(1, ActionPhase.Preparation)]
+        [TestCase(2, ActionPhase.Active)]
+        [TestCase(13, ActionPhase.Active)]
+        [TestCase(14, ActionPhase.Recovery)]
+        [TestCase(19, ActionPhase.Recovery)]
+        [TestCase(20, ActionPhase.None)]
+        public void DodgeBoundariesUseTheSingleMovementEndTick(int elapsed, ActionPhase expected)
         {
-            var timing = new DodgeTimingData(2, 12, 6);
-            Assert.That(DodgePhaseUtility.Evaluate(timing, 120, 100 + elapsed), Is.EqualTo(expected));
+            var timing = new ActionTimingData(2, 12, 6);
+            Assert.That(ActionTimelineData.FromEndTick(timing, 120).Evaluate(100 + elapsed).Phase, Is.EqualTo(expected));
             int start = int.MaxValue - 4;
-            Assert.That(DodgePhaseUtility.Evaluate(timing, unchecked(start + 20), unchecked(start + elapsed)), Is.EqualTo(expected));
+            Assert.That(ActionTimelineData.FromEndTick(timing, unchecked(start + 20))
+                .Evaluate(unchecked(start + elapsed)).Phase, Is.EqualTo(expected));
         }
 
         [Test]
         public void DodgeQuantizesPhasesSeparatelyAndHasNoEarlyRecoveryWindow()
         {
-            DodgeTimingData timing = MovementConfigValidation.CompileDodgeTiming(_dodgeConfig, 1f / 72f);
+            ActionTimingData timing = MovementConfigValidation.CompileDodgeTiming(_dodgeConfig, 1f / 72f);
             Assert.That(timing.PreparationTicks, Is.EqualTo(3));
             Assert.That(timing.ActiveTicks, Is.EqualTo(15));
             Assert.That(timing.RecoveryTicks, Is.EqualTo(8));
             Assert.That(timing.TotalTicks, Is.EqualTo(26));
-            Assert.That(DodgePhaseUtility.Evaluate(timing, null, 0), Is.EqualTo(DodgeMovementPhase.None));
+            Assert.That(timing.HasRecoveryCancelWindow, Is.False);
+            Assert.That(ActionTimelineData.FromEndTick(timing, null).Evaluate(0).Phase, Is.EqualTo(ActionPhase.None));
         }
 
         [Test]
         public void MovementGraphBuildsAndMovesWithoutCombatBindings()
         {
             var root = _player.AddComponent<MovementOnlyRoot>();
-            var machine = _player.AddComponent<PlayerMovementStateMachine>();
+            var machine = _player.AddComponent<PlayerEntityStateMachine>();
             var idle = _player.AddComponent<PlayerIdleState>();
             var locomotion = _player.AddComponent<PlayerLocomotionState>();
             var config = ScriptableObject.CreateInstance<LocomotionMovementConfig>();
@@ -81,23 +95,24 @@ namespace ProjectCore.TechnicalPrototype
                 var body = _player.GetComponent<TransformMovementBodyComponent>();
                 SetField(machine, "_idleState", idle);
                 SetField(machine, "_locomotionState", locomotion);
-                SetField(idle, "_movementBody", body);
-                SetField(locomotion, "_movementBody", body);
                 SetField(locomotion, "_locomotionMovementConfig", config);
                 var state = new MovementOnlyState();
                 var container = new DiContainer();
                 container.Bind<INetworkBehaviourAccessor>().FromInstance(_player.GetComponent<INetworkBehaviourAccessor>());
                 container.Bind<INetworkEntityIdAccessor>().FromInstance(_player.GetComponent<INetworkEntityIdAccessor>());
-                container.Bind<Shared.IStateDataMutator<PlayerMovementState>>().FromInstance(state);
-                container.Bind<IMovementStateDataMutator<PlayerMovementState>>().FromInstance(state);
-                container.Bind<IInputBufferController>().FromInstance(new InitializationInputController());
+                container.Bind<Shared.IStateDataMutator<PlayerEntityState>>().FromInstance(state);
+                container.BindInterfacesAndSelfTo<ClassFactory>().AsSingle();
+                container.Bind<IMovementBodyVelocityMutator>().FromInstance(_player.GetComponent<IMovementBodyVelocityMutator>());
+                container.Bind<IEntityStateRestart>().FromInstance(machine);
+                container.Bind<IInputBufferStateMutator>().FromInstance(new InitializationBufferState());
+                container.Bind<IInputBufferController>().FromInstance(new EmptyInputController());
                 container.Bind<IPlayerFacingDirectionMutator>().FromInstance(new MovementOnlyFacing());
                 Assert.DoesNotThrow(() => { container.Inject(machine); container.Inject(idle); container.Inject(locomotion); });
-                Assert.That(machine.CreateStatesDictionary().Keys, Is.EquivalentTo(new[] { PlayerMovementState.Idle, PlayerMovementState.Locomotion }));
+                Assert.That(machine.CreateStatesDictionary().Keys, Is.EquivalentTo(new[] { PlayerEntityState.Idle, PlayerEntityState.Locomotion }));
                 idle.Init();
                 locomotion.Init();
-                Assert.That(idle.Tick(new PlayerMovementPayload(Vector2.right)), Is.EqualTo(PlayerMovementState.Locomotion));
-                locomotion.Tick(new PlayerMovementPayload(Vector2.right));
+                Assert.That(idle.Tick(new PlayerEntityPayload(Vector2.right)), Is.EqualTo(PlayerEntityState.Locomotion));
+                locomotion.Tick(new PlayerEntityPayload(Vector2.right));
                 Assert.That(body.Velocity.x, Is.GreaterThan(0f));
             }
             finally { Object.DestroyImmediate(config); }
@@ -109,14 +124,14 @@ namespace ProjectCore.TechnicalPrototype
                 System.Array.Empty<INetworkEntityComponent>();
         }
 
-        private sealed class MovementOnlyState : IMovementStateDataMutator<PlayerMovementState>
+        private sealed class MovementOnlyState : Shared.IStateDataMutator<PlayerEntityState>
         {
-            public PlayerMovementState CurrentState { get; private set; }
-            public PlayerMovementState PreviousState { get; private set; }
-            public PlayerMovementState CurrentMovementStates => CurrentState;
-            public PlayerMovementState PreviousMovementStates => PreviousState;
-            public void ChangeMovementState(PlayerMovementState state) => ChangeState(state);
-            public void ChangeState(PlayerMovementState state) { PreviousState = CurrentState; CurrentState = state; }
+            public PlayerEntityState CurrentState { get; private set; }
+            public PlayerEntityState PreviousState { get; private set; }
+            public PlayerEntityState CurrentMovementStates => CurrentState;
+            public PlayerEntityState PreviousMovementStates => PreviousState;
+            public void ChangeMovementState(PlayerEntityState state) => ChangeState(state);
+            public void ChangeState(PlayerEntityState state) { PreviousState = CurrentState; CurrentState = state; }
         }
 
         private sealed class MovementOnlyFacing : IPlayerFacingDirectionMutator
@@ -139,14 +154,20 @@ namespace ProjectCore.TechnicalPrototype
 
             SetField(_dodgeState, "_movementBody", _player.AddComponent<TransformMovementBodyComponent>());
             SetField(_dodgeState, "_dodgeMovementConfig", _dodgeConfig);
-            SetField(_dashState, "_movementBody", _enemy.AddComponent<TransformMovementBodyComponent>());
+            _enemy.AddComponent<TransformMovementBodyComponent>();
             SetField(_dashState, "_dashMovementConfig", _dashConfig);
 
             var container = new DiContainer();
             var movementState = new InitializationMovementState();
+            container.BindInterfacesAndSelfTo<ClassFactory>().AsSingle();
+            container.Bind<IMovementBodyVelocityMutator>().FromInstance(_player.GetComponent<IMovementBodyVelocityMutator>());
+            container.Bind<IEntityStateTimerAccessor>().FromInstance(movementState);
+            container.Bind<IMovementCollisionBodyAccessor>().FromInstance(_enemy.GetComponent<IMovementCollisionBodyAccessor>());
+            container.Bind<IInputBufferStateMutator>().FromInstance(new InitializationBufferState());
+            container.Bind<ICombatInvulnerabilityMutator>().FromInstance(new InitializationInvulnerability());
             container.Bind<IInputBufferController>().FromInstance(new InitializationInputController());
             container.Bind<IPlayerMediator>().FromInstance(new InitializationMediator());
-            container.Bind<IMovementStateTimerMutator>().FromInstance((IMovementStateTimerMutator)movementState);
+            container.Bind<IEntityStateTimerMutator>().FromInstance((IEntityStateTimerMutator)movementState);
             container.Bind<IEnemyDashStateMutator>().FromInstance((IEnemyDashStateMutator)movementState);
             container.Bind<IMovementObstacleProbe>().FromInstance(new InitializationObstacleProbe());
             container.Bind<INetworkBehaviourAccessor>().FromInstance(new InitializationNetworkAccessor());
@@ -203,6 +224,30 @@ namespace ProjectCore.TechnicalPrototype
             public Vector2 Velocity { get; set; }
         }
 
+        private sealed class EmptyInputController : IInputBufferController
+        {
+            public bool IsLocked => false;
+            public bool HasBufferedCommand(ushort commandId) => false;
+            public void BufferCommand(InputBufferCommandDescriptor command, float lifetimeSeconds) { }
+            public bool TryConsumeBufferedCommandAndLock(ushort commandId) => false;
+            public void ReleaseCommandLock() { }
+        }
+        private sealed class InitializationBufferState : IInputBufferStateMutator
+        {
+            public InputBufferCommandDescriptor BufferedCommand => default;
+            public TickTimer BufferedCommandTimer => default;
+            public bool IsLocked => false;
+            public void SetBufferedCommand(InputBufferCommandDescriptor command, TickTimer timer) { throw new InvalidOperationException(); }
+            public void ClearBufferedCommand() { throw new InvalidOperationException(); }
+            public void LockInput() { throw new InvalidOperationException(); }
+            public void UnlockInput() { throw new InvalidOperationException(); }
+        }
+        private sealed class InitializationInvulnerability : ICombatInvulnerabilityMutator
+        {
+            public bool IsInvulnerable => false;
+            public void SetInvulnerabilityUntilTick(int? endTick) { throw new InvalidOperationException(); }
+        }
+
         private sealed class InitializationInputController : IInputBufferController
         {
             public bool IsLocked => throw new InvalidOperationException("Initialization must not read input.");
@@ -213,10 +258,10 @@ namespace ProjectCore.TechnicalPrototype
             public void BufferCommand(InputBufferCommandDescriptor command, float lifetimeSeconds) =>
                 throw new InvalidOperationException("Initialization must not buffer input.");
 
-            public bool BeginAction(ushort commandId) =>
+            public bool TryConsumeBufferedCommandAndLock(ushort commandId) =>
                 throw new InvalidOperationException("Initialization must not begin an action.");
 
-            public void EndAction() =>
+            public void ReleaseCommandLock() =>
                 throw new InvalidOperationException("Initialization must not end an action.");
         }
 
@@ -233,7 +278,7 @@ namespace ProjectCore.TechnicalPrototype
                 throw new InvalidOperationException("Initialization must not simulate movement.");
         }
 
-        private sealed class InitializationMovementState : IMovementStateTimerMutator, IEnemyDashStateMutator
+        private sealed class InitializationMovementState : IEntityStateTimerMutator, IEnemyDashStateMutator
         {
             public int? StateTimerEndTick => throw new InvalidOperationException("Initialization must not read a timer.");
             public void StartStateTimerTicks(int ticks) => throw new InvalidOperationException("Initialization must not start a timer.");

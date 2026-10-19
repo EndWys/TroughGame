@@ -9,15 +9,15 @@ namespace ProjectCore.TechnicalPrototype
         public void ProcessorConvertsDirectionalPayloadToFacingDirection()
         {
             FacingDirectionMutatorStub mutator = new(PlayerFacingDirection.SouthEast);
-            PlayerFourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload> processor =
+            PlayerFourDirectionalFacingProcessor<PlayerEntityState, PlayerEntityPayload> processor =
                 new(mutator);
 
             bool hasTransition = processor.Execute(
-                new PlayerMovementPayload(new Vector2(-1f, 1f)),
-                out PlayerMovementState resultState);
+                new PlayerEntityPayload(new Vector2(-1f, 1f)),
+                out PlayerEntityState resultState);
 
             Assert.That(hasTransition, Is.False);
-            Assert.That(resultState, Is.EqualTo(default(PlayerMovementState)));
+            Assert.That(resultState, Is.EqualTo(default(PlayerEntityState)));
             Assert.That(mutator.FacingDirection, Is.EqualTo(PlayerFacingDirection.NorthWest));
         }
 
@@ -25,10 +25,10 @@ namespace ProjectCore.TechnicalPrototype
         public void ProcessorPreservesFacingAxisMissingFromInput()
         {
             FacingDirectionMutatorStub mutator = new(PlayerFacingDirection.SouthWest);
-            PlayerFourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload> processor =
+            PlayerFourDirectionalFacingProcessor<PlayerEntityState, PlayerEntityPayload> processor =
                 new(mutator);
 
-            processor.Execute(new PlayerMovementPayload(Vector2.up), out _);
+            processor.Execute(new PlayerEntityPayload(Vector2.up), out _);
 
             Assert.That(mutator.FacingDirection, Is.EqualTo(PlayerFacingDirection.NorthWest));
         }
@@ -37,10 +37,10 @@ namespace ProjectCore.TechnicalPrototype
         public void ProcessorIgnoresDirectionBelowAxisThreshold()
         {
             FacingDirectionMutatorStub mutator = new(PlayerFacingDirection.SouthWest);
-            PlayerFourDirectionalFacingProcessor<PlayerMovementState, PlayerMovementPayload> processor =
+            PlayerFourDirectionalFacingProcessor<PlayerEntityState, PlayerEntityPayload> processor =
                 new(mutator);
 
-            processor.Execute(new PlayerMovementPayload(new Vector2(0.001f, 0.001f)), out _);
+            processor.Execute(new PlayerEntityPayload(new Vector2(0.001f, 0.001f)), out _);
 
             Assert.That(mutator.FacingDirection, Is.EqualTo(PlayerFacingDirection.SouthWest));
             Assert.That(mutator.SetCalls, Is.Zero);

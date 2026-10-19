@@ -51,7 +51,7 @@ namespace ProjectCore.TechnicalPrototype
                         break;
                     case 1:
                         if (player.ActionState.ActionId == 0) break;
-                        Assert.That(player.ActionSnapshot.Phase, Is.EqualTo(CombatActionPhase.Preparation),
+                        Assert.That(player.ActionSnapshot.Phase, Is.EqualTo(ActionPhase.Preparation),
                             "Early input must be injected at attack onset, not when a frame coroutine catches up.");
                         firstExecution = player.ActionState.ExecutionId;
                         facing = player.FacingDirection;
@@ -78,7 +78,7 @@ namespace ProjectCore.TechnicalPrototype
                     case 4:
                         if (player.ActionState.ExecutionId == beforeChain) break;
                         Assert.That(player.ActionState.Direction, Is.EqualTo(Vector2.left));
-                        action.CancelAction();
+                        player.GetComponentInChildren<PlayerEntityStateMachine>().CancelCurrentAction();
                         Assert.That(player.ActionState.ActionId, Is.Zero);
                         Assert.That(buffer.IsLocked, Is.False);
                         Assert.That(player.BufferedCommand.CommandId, Is.Zero);
@@ -220,7 +220,7 @@ namespace ProjectCore.TechnicalPrototype
                     Assert.That(player.TryGetAttack(before.ActionId, out CombatAttackConfig attack), Is.True);
                     Assert.That(attack.ActionProfile.ActionId, Is.EqualTo(before.ActionId));
                     Assert.That(player.TryGetAttack(ushort.MaxValue, out _), Is.False);
-                    action.CancelAction();
+                    player.GetComponentInChildren<PlayerEntityStateMachine>().CancelCurrentAction();
                     Assert.That(player.BufferedCommand.CommandId, Is.Zero);
                     step = 2;
                 }
@@ -402,7 +402,7 @@ namespace ProjectCore.TechnicalPrototype
                     case 1:
                         if (probe.ContactTick != _runner.Tick.Raw || probe.Contacts.Count == 0) break;
                         Assert.That(probe.Contacts.Count, Is.EqualTo(1));
-                        Assert.That(player.ActionSnapshot.Phase, Is.EqualTo(CombatActionPhase.Active));
+                        Assert.That(player.ActionSnapshot.Phase, Is.EqualTo(ActionPhase.Active));
                         execution = player.ActionState.ExecutionId;
                         contactTick = probe.ContactTick;
                         probe.enabled = false;
@@ -421,10 +421,10 @@ namespace ProjectCore.TechnicalPrototype
                         break;
                     case 3:
                         Assert.That(player.ActionState.ExecutionId, Is.EqualTo(execution));
-                        Assert.That(player.ActionSnapshot.Phase, Is.EqualTo(CombatActionPhase.Active));
+                        Assert.That(player.ActionSnapshot.Phase, Is.EqualTo(ActionPhase.Active));
                         Assert.That(probe.ContactTick, Is.EqualTo(_runner.Tick.Raw));
                         Assert.That(probe.Contacts, Is.Empty, "Disable must preserve the per-execution contact ledger.");
-                        action.CancelAction();
+                        player.GetComponentInChildren<PlayerEntityStateMachine>().CancelCurrentAction();
                         step = 4;
                         break;
                 }
@@ -459,7 +459,7 @@ namespace ProjectCore.TechnicalPrototype
                 if (step == 2)
                 {
                     Assert.That(player.ActionState.ActionId, Is.Zero, "Dodge must not be a Combat execution.");
-                    if (player.CurrentState != PlayerMovementState.Dodge)
+                    if (player.CurrentState != PlayerEntityState.Dodge)
                     {
                         Assert.That(_runner.Tick.Raw, Is.GreaterThanOrEqualTo(endTick));
                         Assert.That(preparation && active && recovery && queuedLate, Is.True);
@@ -469,17 +469,17 @@ namespace ProjectCore.TechnicalPrototype
                     Assert.That(player.StateTimerEndTick, Is.EqualTo(endTick), "No early restart of Dodge.");
                     switch (dodge.Phase)
                     {
-                        case DodgeMovementPhase.Preparation:
+                        case ActionPhase.Preparation:
                             preparation = true;
                             Assert.That(body.Velocity, Is.EqualTo(Vector2.zero));
                             Assert.That(player.IsInvulnerable, Is.False);
                             break;
-                        case DodgeMovementPhase.Active:
+                        case ActionPhase.Active:
                             Assert.That(player.IsInvulnerable, Is.True);
                             if (!active)
                             {
-                                var machine = player.GetComponentInChildren<PlayerMovementStateMachine>();
-                                typeof(PlayerMovementStateMachine).GetField("_enteredState", BindingFlags.Instance | BindingFlags.NonPublic)
+                                var machine = player.GetComponentInChildren<PlayerEntityStateMachine>();
+                                typeof(BaseEntityStateMachine<PlayerEntityState, BaseEntityState<PlayerEntityState, PlayerEntityPayload>, PlayerEntityPayload>).GetField("_enteredState", BindingFlags.Instance | BindingFlags.NonPublic)
                                     .SetValue(machine, null);
                                 machine.NetworkTick();
                                 Assert.That(player.StateTimerEndTick, Is.EqualTo(endTick), "Local activation restore must not restart the network Dodge timer.");
@@ -488,7 +488,7 @@ namespace ProjectCore.TechnicalPrototype
                             }
                             active = true;
                             break;
-                        case DodgeMovementPhase.Recovery:
+                        case ActionPhase.Recovery:
                             Assert.That(body.Velocity, Is.EqualTo(Vector2.zero));
                             Assert.That(player.IsInvulnerable, Is.False);
                             if (!recovery) Assert.That(player.BufferedCommand.CommandId, Is.Zero, "Early command must expire during Dodge.");
@@ -505,7 +505,7 @@ namespace ProjectCore.TechnicalPrototype
                 {
                     Assert.That(_runner.Tick.Raw, Is.GreaterThanOrEqualTo(endTick));
                     Assert.That(body.Velocity, Is.EqualTo(Vector2.zero), "Attack Enter must stop the previous movement immediately.");
-                    player.GetComponent<PlayerCombatActionComponent>().CancelAction();
+                    player.GetComponentInChildren<PlayerEntityStateMachine>().CancelCurrentAction();
                     step = 4;
                 }
             }, () => step == 4);
@@ -540,22 +540,22 @@ namespace ProjectCore.TechnicalPrototype
                 {
                     if (_runner.Tick.Raw < firstEnd)
                     {
-                        Assert.That(player.CurrentState, Is.EqualTo(PlayerMovementState.Dodge));
+                        Assert.That(player.CurrentState, Is.EqualTo(PlayerEntityState.Dodge));
                         Assert.That(player.StateTimerEndTick, Is.EqualTo(firstEnd));
-                        if (!queued && dodge.Phase == DodgeMovementPhase.Recovery)
+                        if (!queued && dodge.Phase == ActionPhase.Recovery)
                         {
                             buffer.BufferCommand(new InputBufferCommandDescriptor(MovementInputCommandConstants.DodgeCommandId), 0.15f);
                             queued = true;
                         }
                     }
-                    else if (player.CurrentState == PlayerMovementState.Dodge && player.StateTimerEndTick > firstEnd)
+                    else if (player.CurrentState == PlayerEntityState.Dodge && player.StateTimerEndTick > firstEnd)
                     {
                         Assert.That(queued, Is.True);
                         Assert.That(player.ActionState.ActionId, Is.Zero);
                         step = 3;
                     }
                 }
-                else if (step == 3 && player.CurrentState != PlayerMovementState.Dodge)
+                else if (step == 3 && player.CurrentState != PlayerEntityState.Dodge)
                 {
                     Assert.That(player.StateTimerEndTick, Is.Null, "Dodge completion must clear its movement deadline.");
                     Assert.That(player.IsInvulnerable, Is.False);
@@ -567,7 +567,7 @@ namespace ProjectCore.TechnicalPrototype
                 $"timer={player.StateTimerEndTick}, firstEnd={firstEnd}, queued={queued}, " +
                 $"buffer={player.BufferedCommand.CommandId}, locked={player.IsLocked}, " +
                 $"mediator={player.GetComponent<PlayerMediatorComponent>().IsComponentAvailable}, " +
-                $"movement={player.GetComponentInChildren<PlayerMovementStateMachine>().IsComponentAvailable}");
+                $"movement={player.GetComponentInChildren<PlayerEntityStateMachine>().IsComponentAvailable}");
         }
 
         [UnityTest]
@@ -578,7 +578,7 @@ namespace ProjectCore.TechnicalPrototype
             UseDirectionalInput();
             var buffer = player.GetComponent<GameObjectContext>().Container.Resolve<IInputBufferController>();
             var dodge = player.GetComponentInChildren<PlayerDodgeState>();
-            var movement = player.GetComponentInChildren<PlayerMovementStateMachine>();
+            var movement = player.GetComponentInChildren<PlayerEntityStateMachine>();
             var body = player.GetComponent<TransformMovementBodyComponent>();
             int step = 0, effectEnd = 0;
             yield return RunTickSequence(() =>
@@ -591,7 +591,7 @@ namespace ProjectCore.TechnicalPrototype
                 else if (step == 1)
                 {
                     AssertDodgeStarted(player);
-                    if (dodge.Phase != DodgeMovementPhase.Active) return;
+                    if (dodge.Phase != ActionPhase.Active) return;
                     Assert.That(player.IsInvulnerable, Is.True);
                     effectEnd = player.InvulnerabilityTimer.TargetTick.Value;
                     movement.enabled = false;
@@ -610,17 +610,17 @@ namespace ProjectCore.TechnicalPrototype
                         step = 3;
                     }
                 }
-                else if (step == 3 && player.CurrentState != PlayerMovementState.Dodge) step = 4;
+                else if (step == 3 && player.CurrentState != PlayerEntityState.Dodge) step = 4;
             }, () => step == 4);
         }
 
         [UnityTest]
-        public IEnumerator SoloMediatorTickDoesNotConsumeCommandsAndControllerStartsAttack()
+        public IEnumerator SoloMediatorTickDoesNotConsumeCommandsAndEntityStateStartsAttack()
         {
             yield return StartSolo();
             var player = FindPlayer();
             var mediator = player.GetComponent<PlayerMediatorComponent>();
-            var controller = player.GetComponent<PlayerActionControllerComponent>();
+            var controller = player.GetComponentInChildren<PlayerEntityStateMachine>();
             var action = player.GetComponent<PlayerCombatActionComponent>();
             var buffer = player.GetComponent<GameObjectContext>().Container.Resolve<IInputBufferController>();
             Assert.That(controller, Is.Not.Null);
@@ -639,11 +639,11 @@ namespace ProjectCore.TechnicalPrototype
 
                 controller.NetworkTick();
                 Assert.That(player.ActionState.ActionId, Is.Not.Zero);
-                Assert.That(player.CurrentState, Is.EqualTo(PlayerMovementState.Attack),
-                    "Attack notification must still route through the mediator to Movement.");
+                Assert.That(player.CurrentState, Is.EqualTo(PlayerEntityState.Attack),
+                    "Entity state must start the attack without mediator gameplay routing.");
                 Assert.That(player.BufferedCommand.CommandId, Is.Zero);
                 Assert.That(buffer.IsLocked, Is.True);
-                action.CancelAction();
+                player.GetComponentInChildren<PlayerEntityStateMachine>().CancelCurrentAction();
                 step = 1;
             }, () => step == 1);
         }
@@ -686,7 +686,7 @@ namespace ProjectCore.TechnicalPrototype
                         Assert.That(resolved, Is.SameAs(attack));
                         Assert.That(player.BufferedCommand.CommandId, Is.Zero);
                         Assert.That(buffer.IsLocked, Is.True);
-                        action.CancelAction();
+                        player.GetComponentInChildren<PlayerEntityStateMachine>().CancelCurrentAction();
                         step = 2;
                     }
                 }, () => step == 2);
@@ -695,7 +695,7 @@ namespace ProjectCore.TechnicalPrototype
             {
                 if (action != null)
                 {
-                    if (action.HasValidNetworkContext) action.CancelAction();
+                    if (action.HasValidNetworkContext) player.GetComponentInChildren<PlayerEntityStateMachine>().CancelCurrentAction();
                     attackField.SetValue(action, originalAttack);
                     if (action.HasValidNetworkContext) action.Init();
                 }
@@ -712,7 +712,7 @@ namespace ProjectCore.TechnicalPrototype
 
         private void AssertDodgeStarted(PlayerNetworkEntityComponent player)
         {
-            Assert.That(player.CurrentState, Is.EqualTo(PlayerMovementState.Dodge),
+            Assert.That(player.CurrentState, Is.EqualTo(PlayerEntityState.Dodge),
                 "The buffered Dodge must enter its movement state on the next simulation tick.");
             Assert.That(player.ActionState.ActionId, Is.Zero, "Dodge must not start a Combat execution.");
             Assert.That(player.IsLocked, Is.True, "The independent input buffer must remain locked during Dodge.");
@@ -763,7 +763,7 @@ namespace ProjectCore.TechnicalPrototype
                 _lastTick = Probe.ContactTick;
                 foreach (CombatContactData contact in Probe.Contacts)
                 {
-                    AllContactsWereActive &= Player.ActionSnapshot.Phase == CombatActionPhase.Active;
+                    AllContactsWereActive &= Player.ActionSnapshot.Phase == ActionPhase.Active;
                     RecordedContacts.Add(contact);
                 }
             }

@@ -1,3 +1,4 @@
+using Shared;
 using System;
 using System.Collections.Generic;
 using ProjectCore.GameCore;
@@ -6,9 +7,8 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class EnemyDashState : BaseMovementState<EnemyMovementState, EnemyMovementPayload>
+    public sealed class EnemyDashState : BaseEntityState<EnemyEntityState, EnemyEntityPayload>
     {
-        [SerializeField] private TransformMovementBodyComponent _movementBody;
         [SerializeField] private DashMovementConfig _dashMovementConfig;
 
         private IEnemyDashStateMutator _dashStateMutator;
@@ -36,14 +36,9 @@ namespace ProjectCore.TechnicalPrototype
             _dashStateMutator.StopDash();
         }
 
-        protected override IReadOnlyList<IMovementStateProcessor<EnemyMovementState, EnemyMovementPayload>>
-            CreateMovementProcessors()
+        protected override IReadOnlyList<IStateProcessor<EnemyEntityState, EnemyEntityPayload>>
+            CreateProcessors()
         {
-            if (_movementBody == null)
-            {
-                throw new InvalidOperationException("Enemy dash state requires a movement body reference.");
-            }
-
             if (_dashMovementConfig == null)
             {
                 throw new InvalidOperationException(
@@ -52,21 +47,13 @@ namespace ProjectCore.TechnicalPrototype
 
             MovementConfigValidation.ValidateDash(_dashMovementConfig);
 
-            return new IMovementStateProcessor<EnemyMovementState, EnemyMovementPayload>[]
+            return new IStateProcessor<EnemyEntityState, EnemyEntityPayload>[]
             {
-                new DashProcessor<EnemyMovementState, EnemyMovementPayload>(
-                    movementBodyVelocityMutator: _movementBody,
-                    movementCollisionBodyAccessor: _movementBody,
-                    movementObstacleProbe: _movementObstacleProbe,
-                    movementStateTimerAccessor: _dashStateMutator,
-                    dashMovementConfig: _dashMovementConfig,
-                    dashDirectionProvider: GetDashDirection,
-                    simulationDeltaTimeProvider: GetSimulationDeltaTime,
-                    nextMovementState: EnemyMovementState.Locomotion),
+                CreateProcessor<DashProcessor<EnemyEntityState, EnemyEntityPayload>>(_dashMovementConfig, (Func<Vector2>)GetDashDirection, (Func<float>)GetSimulationDeltaTime, EnemyEntityState.Locomotion),
             };
         }
 
-        protected override EnemyMovementState FallbackState => EnemyMovementState.Dash;
+        protected override EnemyEntityState FallbackState => EnemyEntityState.Dash;
 
         private Vector2 GetDashDirection()
         {

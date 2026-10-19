@@ -8,71 +8,82 @@ using Zenject;
 namespace ProjectCore.TechnicalPrototype
 {
     [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "ProjectCore.TechnicalPrototype", sourceAssembly: "ProjectCore.Runtime", sourceClassName: "DodgeState")]
-    public sealed class PlayerDodgeState : BaseMovementState<PlayerMovementState, PlayerMovementPayload>, IColleague
+    public sealed class PlayerDodgeState : BaseEntityState<PlayerEntityState, PlayerEntityPayload>
     {
-        [SerializeField] private TransformMovementBodyComponent _movementBody;
         [SerializeField] private DodgeMovementConfig _dodgeMovementConfig;
-        private IMovementStateTimerMutator _timer;
+        private IMovementBodyVelocityMutator _movementBody;
+        private IEntityStateTimerMutator _timer;
         private INetworkBehaviourAccessor _network;
-        private IPlayerMediator _mediator;
-        private DodgeTimingData? _timing;
+        private ICombatInvulnerabilityMutator _invulnerability;
+        private IInputBufferController _buffer;
+        private IInputBufferStateMutator _bufferState;
+        private ActionTimingData? _timing;
 
         [Inject]
-        private void Construct(IMovementStateTimerMutator timer, INetworkBehaviourAccessor network, IPlayerMediator mediator)
+        private void Construct(
+            IEntityStateTimerMutator timer,
+            INetworkBehaviourAccessor network,
+            IMovementBodyVelocityMutator body,
+            IInputBufferController buffer,
+            IInputBufferStateMutator bufferState,
+            ICombatInvulnerabilityMutator invulnerability)
         {
             _timer = timer ?? throw new ArgumentNullException(nameof(timer));
             _network = network ?? throw new ArgumentNullException(nameof(network));
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _movementBody = body ?? throw new ArgumentNullException(nameof(body));
+            _buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            _bufferState = bufferState ?? throw new ArgumentNullException(nameof(bufferState));
+            _invulnerability = invulnerability ?? throw new ArgumentNullException(nameof(invulnerability));
         }
 
-        private DodgeTimingData Timing => _timing ??= MovementConfigValidation.CompileDodgeTiming(
+        private ActionTimingData Timing => _timing ??= MovementConfigValidation.CompileDodgeTiming(
             _dodgeMovementConfig, _network.ParentNetworkBehaviour.Runner.DeltaTime);
 
-        public DodgeMovementPhase Phase => DodgePhaseUtility.Evaluate(
-            Timing, _timer.StateTimerEndTick, _network.ParentNetworkBehaviour.Runner.Tick.Raw);
+        public ActionPhase Phase => Timeline.Evaluate(_network.ParentNetworkBehaviour.Runner.Tick.Raw).Phase;
 
-        public int? ActiveEndTick => _timer.StateTimerEndTick.HasValue
-            ? unchecked(_timer.StateTimerEndTick.Value - Timing.RecoveryTicks) : null;
+        private ActionTimelineData Timeline => ActionTimelineData.FromEndTick(Timing, _timer.StateTimerEndTick);
 
         public override void Init()
         {
+            MovementConfigValidation.ValidateDodge(_dodgeMovementConfig);
             _timing = null;
             base.Init();
         }
 
         public override void Enter()
         {
-            ((IMovementBodyVelocityMutator)_movementBody).Velocity = Vector2.zero;
+            _movementBody.Velocity = Vector2.zero;
+            _bufferState.LockInput();
             // A restored network timer already identifies the execution; never restart it on correction.
             if (!_timer.StateTimerEndTick.HasValue) _timer.StartStateTimerTicks(Timing.TotalTicks);
         }
 
-        public override PlayerMovementState Tick(PlayerMovementPayload payload)
+        public override PlayerEntityState Tick(PlayerEntityPayload payload)
         {
-            PlayerMovementState next = base.Tick(payload);
-            _mediator.Notify(new PlayerDodgePhasePayload(this, Phase, ActiveEndTick));
+            PlayerEntityState next = base.Tick(payload);
+            ActionTimelineData timeline = Timeline;
+            ActionPhaseSnapshotData snapshot = timeline.Evaluate(_network.ParentNetworkBehaviour.Runner.Tick.Raw);
+            _invulnerability.SetInvulnerabilityUntilTick(
+                snapshot.Phase == ActionPhase.Active ? timeline.ActiveEndTick : null);
             return next;
         }
 
         public override void Exit()
         {
-            ((IMovementBodyVelocityMutator)_movementBody).Velocity = Vector2.zero;
+            _movementBody.Velocity = Vector2.zero;
             _timer.StopStateTimer();
-            _mediator.Notify(new PlayerDodgePhasePayload(this, DodgeMovementPhase.None, null));
+            _invulnerability.SetInvulnerabilityUntilTick(null);
+            _buffer.ReleaseCommandLock();
         }
 
-        protected override IReadOnlyList<IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>>
-            CreateMovementProcessors()
+        protected override IReadOnlyList<IStateProcessor<PlayerEntityState, PlayerEntityPayload>> CreateProcessors()
         {
-            if (_movementBody == null || _dodgeMovementConfig == null)
-                throw new InvalidOperationException("Dodge requires a movement body and config.");
-            MovementConfigValidation.ValidateDodge(_dodgeMovementConfig);
-            return new IMovementStateProcessor<PlayerMovementState, PlayerMovementPayload>[]
+            return new IStateProcessor<PlayerEntityState, PlayerEntityPayload>[]
             {
-                new PlayerDodgeMovementProcessor(_movementBody, _dodgeMovementConfig, () => Phase),
+                CreateProcessor<PlayerDodgeMovementProcessor>(_dodgeMovementConfig, (Func<ActionPhase>)(() => Phase)),
             };
         }
 
-        protected override PlayerMovementState FallbackState => PlayerMovementState.Dodge;
+        protected override PlayerEntityState FallbackState => PlayerEntityState.Dodge;
     }
 }
