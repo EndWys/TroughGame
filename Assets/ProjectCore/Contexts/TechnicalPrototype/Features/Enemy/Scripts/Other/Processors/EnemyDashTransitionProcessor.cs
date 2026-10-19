@@ -30,9 +30,9 @@ namespace ProjectCore.TechnicalPrototype
 
         public bool Execute(EnemyEntityPayload payload, out EnemyEntityState resultState)
         {
-            if (!payload.IsDashRequested ||
-                payload.Direction.sqrMagnitude <= Mathf.Epsilon ||
-                IsDashPathBlocked(payload.Direction))
+            if (!payload.IsDashRequested
+                || payload.Direction.sqrMagnitude <= Mathf.Epsilon
+                || IsDashPathBlocked(payload.Direction))
             {
                 resultState = default;
                 return false;
@@ -43,6 +43,7 @@ namespace ProjectCore.TechnicalPrototype
                 direction: payload.Direction,
                 durationSeconds: _dashMovementConfig.DurationSeconds,
                 cooldownSeconds: _dashMovementConfig.CooldownSeconds);
+
             resultState = EnemyEntityState.Dash;
             return true;
         }

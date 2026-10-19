@@ -7,10 +7,15 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, sourceNamespace: "ProjectCore.TechnicalPrototype", sourceAssembly: "ProjectCore.Runtime", sourceClassName: "DodgeState")]
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(
+        true,
+        sourceNamespace: "ProjectCore.TechnicalPrototype",
+        sourceAssembly: "ProjectCore.Runtime",
+        sourceClassName: "DodgeState")]
     public sealed class PlayerDodgeState : BaseEntityState<PlayerEntityState, PlayerEntityPayload>
     {
         [SerializeField] private DodgeMovementConfig _dodgeMovementConfig;
+
         private IMovementBodyVelocityMutator _movementBody;
         private IEntityStateTimerMutator _timer;
         private INetworkBehaviourAccessor _network;
@@ -36,12 +41,17 @@ namespace ProjectCore.TechnicalPrototype
             _invulnerability = invulnerability ?? throw new ArgumentNullException(nameof(invulnerability));
         }
 
-        private ActionTimingData Timing => _timing ??= MovementConfigValidation.CompileDodgeTiming(
-            _dodgeMovementConfig, _network.ParentNetworkBehaviour.Runner.DeltaTime);
+        private ActionTimingData Timing =>
+            _timing ??= MovementConfigValidation.CompileDodgeTiming(
+                _dodgeMovementConfig,
+                _network.ParentNetworkBehaviour.Runner.DeltaTime);
 
         public ActionPhase Phase => Timeline.Evaluate(_network.ParentNetworkBehaviour.Runner.Tick.Raw).Phase;
 
-        private ActionTimelineData Timeline => ActionTimelineData.FromEndTick(Timing, _timer.StateTimerEndTick);
+        private ActionTimelineData Timeline =>
+            ActionTimelineData.FromEndTick(
+                Timing,
+                _timer.StateTimerEndTick);
 
         public override void Init()
         {
@@ -54,17 +64,23 @@ namespace ProjectCore.TechnicalPrototype
         {
             _movementBody.Velocity = Vector2.zero;
             _bufferState.LockInput();
+
             // A restored network timer already identifies the execution; never restart it on correction.
-            if (!_timer.StateTimerEndTick.HasValue) _timer.StartStateTimerTicks(Timing.TotalTicks);
+            if (!_timer.StateTimerEndTick.HasValue)
+                _timer.StartStateTimerTicks(Timing.TotalTicks);
         }
 
         public override PlayerEntityState Tick(PlayerEntityPayload payload)
         {
             PlayerEntityState next = base.Tick(payload);
             ActionTimelineData timeline = Timeline;
-            ActionPhaseSnapshotData snapshot = timeline.Evaluate(_network.ParentNetworkBehaviour.Runner.Tick.Raw);
+
+            ActionPhaseSnapshotData snapshot = timeline.Evaluate(
+                _network.ParentNetworkBehaviour.Runner.Tick.Raw);
+
             _invulnerability.SetInvulnerabilityUntilTick(
                 snapshot.Phase == ActionPhase.Active ? timeline.ActiveEndTick : null);
+
             return next;
         }
 
@@ -76,11 +92,14 @@ namespace ProjectCore.TechnicalPrototype
             _buffer.ReleaseCommandLock();
         }
 
-        protected override IReadOnlyList<IStateProcessor<PlayerEntityState, PlayerEntityPayload>> CreateProcessors()
+        protected override IReadOnlyList<IStateProcessor<PlayerEntityState, PlayerEntityPayload>>
+            CreateProcessors()
         {
             return new IStateProcessor<PlayerEntityState, PlayerEntityPayload>[]
             {
-                CreateProcessor<PlayerDodgeMovementProcessor>(_dodgeMovementConfig, (Func<ActionPhase>)(() => Phase)),
+                CreateProcessor<PlayerDodgeMovementProcessor>(
+                    _dodgeMovementConfig,
+                    (Func<ActionPhase>)(() => Phase)),
             };
         }
 

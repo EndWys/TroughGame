@@ -17,9 +17,13 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(abilityCollection));
         }
 
-        public override void Enter() { }
+        public override void Enter()
+        {
+        }
 
-        public override void Exit() { }
+        public override void Exit()
+        {
+        }
 
         protected override IReadOnlyList<IStateProcessor<EnemyEntityState, EnemyEntityPayload>>
             CreateProcessors()
@@ -33,7 +37,9 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             processors.Add(
-                CreateProcessor<DirectionalLocomotionTransitionProcessor<EnemyEntityState, EnemyEntityPayload>>(EnemyEntityState.Locomotion));
+                CreateProcessor<DirectionalLocomotionTransitionProcessor<EnemyEntityState, EnemyEntityPayload>>(
+                    EnemyEntityState.Locomotion));
+
             return processors;
         }
 

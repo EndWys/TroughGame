@@ -13,6 +13,7 @@ namespace ProjectCore.GameCore
         private TStateType? _enteredState;
 
         protected abstract TStateType InitialState { get; }
+
         protected override bool ShouldReenterCurrentState => _restartRequested;
 
         public void RequestRestart()
@@ -50,10 +51,16 @@ namespace ProjectCore.GameCore
             UpdateStates(payload);
         }
 
-        protected virtual void InitializeState(TState state) { state.Init(); }
+        protected virtual void InitializeState(TState state)
+        {
+            state.Init();
+        }
 
         protected abstract bool TryGetPayload(out TPayload payload);
-        protected virtual void BeforeStateUpdate(TPayload payload) { }
+
+        protected virtual void BeforeStateUpdate(TPayload payload)
+        {
+        }
 
         protected virtual bool ShouldSimulate()
         {

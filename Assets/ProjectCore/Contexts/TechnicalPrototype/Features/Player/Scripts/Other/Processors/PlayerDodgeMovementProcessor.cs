@@ -11,8 +11,10 @@ namespace ProjectCore.TechnicalPrototype
         private readonly DodgeMovementConfig _config;
         private readonly Func<ActionPhase> _phase;
 
-        public PlayerDodgeMovementProcessor(IMovementBodyVelocityMutator body,
-            DodgeMovementConfig config, Func<ActionPhase> phase)
+        public PlayerDodgeMovementProcessor(
+            IMovementBodyVelocityMutator body,
+            DodgeMovementConfig config,
+            Func<ActionPhase> phase)
         {
             _body = body ?? throw new ArgumentNullException(nameof(body));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -23,8 +25,10 @@ namespace ProjectCore.TechnicalPrototype
         {
             ActionPhase phase = _phase();
 
-            _body.Velocity = phase == ActionPhase.Active ?
-                Vector2.ClampMagnitude(payload.Input.MoveDirection, 1f) * _config.Speed :
+            _body.Velocity = phase == ActionPhase.Active
+                ?
+                Vector2.ClampMagnitude(payload.Input.MoveDirection, 1f) * _config.Speed
+                :
                 Vector2.zero;
 
             resultState = PlayerEntityState.Idle;

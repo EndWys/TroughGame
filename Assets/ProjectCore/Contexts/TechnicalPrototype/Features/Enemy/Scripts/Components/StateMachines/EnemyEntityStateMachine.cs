@@ -5,7 +5,11 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ProjectCore.TechnicalPrototype", null, "EnemyMovementStateMachine")]
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(
+        true,
+        "ProjectCore.TechnicalPrototype",
+        null,
+        "EnemyMovementStateMachine")]
     public sealed class EnemyEntityStateMachine : BaseEntityStateMachine<
         EnemyEntityState,
         BaseEntityState<EnemyEntityState, EnemyEntityPayload>,
@@ -61,6 +65,7 @@ namespace ProjectCore.TechnicalPrototype
                 direction: input.Direction,
                 isDashRequested: input.IsDashRequested,
                 dashTargetPosition: input.DashTargetPosition);
+
             return true;
         }
 

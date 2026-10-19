@@ -30,6 +30,7 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             Vector3 bodyPosition = ToWorldPosition(_movementBody.Position);
+
             DrawState(context, bodyPosition);
             DrawCombat(context);
             DrawMovement(context, bodyPosition);
@@ -42,6 +43,7 @@ namespace ProjectCore.TechnicalPrototype
         {
             context.Value(StateChannel, "Current", _playerNetworkEntity.CurrentState);
             context.Value(StateChannel, "Previous", _playerNetworkEntity.PreviousState);
+
             context.Value(
                 StateChannel,
                 "Action Timer",
@@ -51,22 +53,32 @@ namespace ProjectCore.TechnicalPrototype
         private void DrawCombat(DebugVisualizationContextAdapter context)
         {
             CombatActionSnapshotData action = _playerNetworkEntity.ActionSnapshot;
+
             context.Value("Player/Combat", "Phase", action.Phase);
             context.Value("Player/Combat", "Execution", action.ExecutionId);
             context.Value("Player/Combat", "Combo Window", action.CanStartNextAction);
-            if (_combatHitProbe == null) return;
+
+            if (_combatHitProbe == null)
+                return;
+
             context.Value("Player/Combat", "Contacts This Tick", _combatHitProbe.LastContactCount);
-            if (action.Kind != CombatActionKind.Attack || action.Phase != ActionPhase.Active) return;
+
+            if (action.Kind != CombatActionKind.Attack || action.Phase != ActionPhase.Active)
+                return;
+
             CombatShapeData shape = _combatHitProbe.LastShape;
+
             if (shape.ShapeType == CombatShapeType.Circle)
             {
                 context.Radius2D(shape.Center, shape.Radius, "Player/Combat");
                 return;
             }
+
             Quaternion rotation = Quaternion.Euler(0f, 0f, shape.RotationDegrees);
             Vector3 center = shape.Center;
             Vector3 x = rotation * new Vector3(shape.HalfExtents.x, 0f, 0f);
             Vector3 y = rotation * new Vector3(0f, shape.HalfExtents.y, 0f);
+
             context.Line(center - x - y, center + x - y, "Player/Combat");
             context.Line(center + x - y, center + x + y, "Player/Combat");
             context.Line(center + x + y, center - x + y, "Player/Combat");
@@ -77,6 +89,7 @@ namespace ProjectCore.TechnicalPrototype
         {
             Vector3 transformPosition = transform.position;
             Vector2 velocity = _movementBody.Velocity;
+
             Vector2 facingDirection = PlayerFacingDirectionUtility.ToVector(
                 _playerNetworkEntity.FacingDirection);
 
@@ -110,10 +123,12 @@ namespace ProjectCore.TechnicalPrototype
 
             context.Value(InputChannel, "Direction", hasInput ? direction : "Unavailable");
             context.Value(InputChannel, "Buffered Command", GetBufferedCommandLabel());
+
             context.Value(
                 InputChannel,
                 "Buffered Command Timer",
                 GetTimerStatus(_playerNetworkEntity.BufferedCommandTimer));
+
             context.Value(InputChannel, "Locked", _playerNetworkEntity.IsLocked);
 
             if (direction.sqrMagnitude > 0f)
@@ -143,18 +158,22 @@ namespace ProjectCore.TechnicalPrototype
         private void DrawWorldLabels(DebugVisualizationContextAdapter context, Vector3 bodyPosition)
         {
             Vector3 labelsBasePosition = bodyPosition + WorldLabelsBaseOffset;
+
             context.Label(
                 labelsBasePosition,
                 $"Entity: {_playerNetworkEntity.EntityId} | Input Authority: {GetInputAuthorityLabel()}",
                 NetworkChannel);
+
             context.Label(
                 labelsBasePosition - Vector3.up * WorldLabelSpacing,
                 $"{_playerNetworkEntity.CurrentState} <- {_playerNetworkEntity.PreviousState}",
                 StateChannel);
+
             context.Label(
                 labelsBasePosition - Vector3.up * WorldLabelSpacing * 2f,
                 $"Velocity: {_movementBody.Velocity}",
                 MovementChannel);
+
             context.Label(
                 labelsBasePosition - Vector3.up * WorldLabelSpacing * 3f,
                 GetInputBufferWorldLabel(),
@@ -165,6 +184,7 @@ namespace ProjectCore.TechnicalPrototype
         {
             string lockStatus = _playerNetworkEntity.IsLocked ? "Locked" : "Unlocked";
             string timerStatus = GetTimerStatus(_playerNetworkEntity.BufferedCommandTimer);
+
             return $"Buffer: {GetBufferedCommandLabel()} | {timerStatus} | {lockStatus}";
         }
 
@@ -205,6 +225,7 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             float? remainingTime = timer.RemainingTime(_playerNetworkEntity.Runner);
+
             return remainingTime.HasValue ? $"{remainingTime.Value:0.00}s" : "Expired";
         }
 

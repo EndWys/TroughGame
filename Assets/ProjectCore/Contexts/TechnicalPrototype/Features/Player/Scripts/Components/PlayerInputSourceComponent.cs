@@ -9,6 +9,7 @@ namespace ProjectCore.TechnicalPrototype
         IPlayerInputAccessor
     {
         [SerializeField, Min(0.001f)] private float _actionBufferLifetimeSeconds = 0.15f;
+
         private IInputBufferController _inputBufferController;
         private IPlayerInputDirectionMutator _direction;
         private IInputBufferStateAccessor _bufferState;
@@ -16,16 +17,23 @@ namespace ProjectCore.TechnicalPrototype
         private bool _hasInput;
 
         [Inject]
-        private void Construct(IInputBufferController inputBufferController, IPlayerInputDirectionMutator direction, IInputBufferStateAccessor bufferState)
+        private void Construct(
+            IInputBufferController inputBufferController,
+            IPlayerInputDirectionMutator direction,
+            IInputBufferStateAccessor bufferState)
         {
-            _inputBufferController = inputBufferController ?? throw new ArgumentNullException(nameof(inputBufferController));
+            _inputBufferController = inputBufferController ?? throw new ArgumentNullException(
+                nameof(
+                    inputBufferController));
+
             _direction = direction ?? throw new ArgumentNullException(nameof(direction));
             _bufferState = bufferState ?? throw new ArgumentNullException(nameof(bufferState));
         }
 
-        public PlayerInputSnapshotData Input => new(
-            _hasInput ? _currentDirection : Vector2.zero,
-            _direction.LatestInputDirection);
+        public PlayerInputSnapshotData Input =>
+            new(
+                _hasInput ? _currentDirection : Vector2.zero,
+                _direction.LatestInputDirection);
 
         public override bool TryGetInput(out PlayerInputSnapshotData input)
         {
@@ -69,11 +77,12 @@ namespace ProjectCore.TechnicalPrototype
 
             ushort commandId = input.LatestActionCommandId;
 
-            if (commandId == PlayerInputActionConstants.AttackCommandId ||
-                commandId == MovementInputCommandConstants.DodgeCommandId
+            if (commandId == PlayerInputActionConstants.AttackCommandId
+                || commandId == MovementInputCommandConstants.DodgeCommandId
                 && input.MoveDirection.sqrMagnitude > 0f)
             {
-                _inputBufferController.BufferCommand(new(commandId),
+                _inputBufferController.BufferCommand(
+                    new(commandId),
                     _actionBufferLifetimeSeconds);
             }
 

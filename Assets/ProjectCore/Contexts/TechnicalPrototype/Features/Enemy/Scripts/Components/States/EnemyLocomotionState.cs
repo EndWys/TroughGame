@@ -27,9 +27,13 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(abilityCollection));
         }
 
-        public override void Enter() { }
+        public override void Enter()
+        {
+        }
 
-        public override void Exit() { }
+        public override void Exit()
+        {
+        }
 
         protected override IReadOnlyList<IStateProcessor<EnemyEntityState, EnemyEntityPayload>>
             CreateProcessors()
@@ -54,8 +58,15 @@ namespace ProjectCore.TechnicalPrototype
                 ability.AddTransitionProcessors(EnemyEntityState.Locomotion, processors);
             }
 
-            processors.Add(CreateProcessor<ObstacleAvoidanceLocomotionProcessor<EnemyEntityState, EnemyEntityPayload>>(_locomotionMovementConfig, _chaseConfig.ObstacleProbeDistance));
-            processors.Add(CreateProcessor<NoDirectionTransitionProcessor<EnemyEntityState, EnemyEntityPayload>>(EnemyEntityState.Idle));
+            processors.Add(
+                CreateProcessor<ObstacleAvoidanceLocomotionProcessor<EnemyEntityState, EnemyEntityPayload>>(
+                    _locomotionMovementConfig,
+                    _chaseConfig.ObstacleProbeDistance));
+
+            processors.Add(
+                CreateProcessor<NoDirectionTransitionProcessor<EnemyEntityState, EnemyEntityPayload>>(
+                    EnemyEntityState.Idle));
+
             return processors;
         }
 

@@ -26,6 +26,7 @@ namespace ProjectCore.GameCore
             out TStateType resultState)
         {
             Vector2 direction = Vector2.ClampMagnitude(payload.Direction, 1f);
+
             _movementBodyVelocityMutator.Velocity =
                 direction * _locomotionMovementConfig.MaxSpeed;
 

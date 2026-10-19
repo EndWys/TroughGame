@@ -30,14 +30,21 @@ namespace ProjectCore.TechnicalPrototype
                     return default;
 
                 CombatActionStateModel state = _state.ActionState;
+
                 if (state.ActionId != 0 && state.ActionId != _attackConfig.ActionProfile.ActionId)
                     throw new InvalidOperationException("Unknown replicated attack ID.");
-                return _processor.Evaluate(state, CombatActionKind.Attack, _attackTiming,
+
+                return _processor.Evaluate(
+                    state,
+                    CombatActionKind.Attack,
+                    _attackTiming,
                     ParentNetworkBehaviour.Runner.Tick.Raw);
             }
         }
 
-        protected override bool IsComponentValid => _attackConfig != null && _attackConfig.ActionProfile != null;
+        protected override bool IsComponentValid =>
+            _attackConfig != null
+            && _attackConfig.ActionProfile != null;
 
         protected override void OnInitialize()
         {
@@ -45,7 +52,9 @@ namespace ProjectCore.TechnicalPrototype
                 throw new InvalidOperationException("Player attack requires an attack definition/profile.");
 
             _attackTiming = CombatActionProfileValidation.CompileTiming(
-                _attackConfig.ActionProfile, ParentNetworkBehaviour.Runner.DeltaTime);
+                _attackConfig.ActionProfile,
+                ParentNetworkBehaviour.Runner.DeltaTime);
+
             CombatShapeValidation.ValidateSettings(_attackConfig.Hitbox);
         }
 
@@ -58,28 +67,41 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentException("Attack direction must be nonzero.", nameof(direction));
 
             CombatActionStateModel state = _state.ActionState;
-            _processor.Start(ref state, _attackConfig.ActionProfile.ActionId, direction,
+
+            _processor.Start(
+                ref state,
+                _attackConfig.ActionProfile.ActionId,
+                direction,
                 ParentNetworkBehaviour.Runner.Tick.Raw);
+
             _state.SetActionState(state);
         }
 
         public bool TryGetAttack(ushort actionId, out CombatAttackConfig attack)
         {
             attack = IsComponentAvailable && _attackConfig.ActionProfile.ActionId == actionId
-                ? _attackConfig : null;
+                ? _attackConfig
+                : null;
 
             return attack != null;
         }
 
-        internal void StopForTransition() { StopAttack(); }
+        internal void StopForTransition()
+        {
+            StopAttack();
+        }
 
         private void StopAttack()
         {
             CombatActionStateModel state = _state.ActionState;
+
             _processor.Cancel(ref state);
             _state.SetActionState(state);
         }
 
-        protected override void OnResetLocalRuntime() { _attackTiming = default; }
+        protected override void OnResetLocalRuntime()
+        {
+            _attackTiming = default;
+        }
     }
 }

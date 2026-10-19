@@ -30,8 +30,8 @@ namespace ProjectCore.GameCore
         public bool HasValidNetworkContext => _lifecycle.HasValidNetworkContext(ParentNetworkBehaviour);
 
         public bool HasSimulationAuthority =>
-            HasValidNetworkContext &&
-            (ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority);
+            HasValidNetworkContext
+            && (ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority);
 
         public bool IsComponentAvailable =>
             IsInitialized && HasValidNetworkContext && isActiveAndEnabled && IsComponentValid;
@@ -49,14 +49,16 @@ namespace ProjectCore.GameCore
 
         public void NetworkTick()
         {
-            if (!TryBeginCallback()) return;
+            if (!TryBeginCallback())
+                return;
 
             OnNetworkTick();
         }
 
         public void ClientRender()
         {
-            if (!TryBeginCallback()) return;
+            if (!TryBeginCallback())
+                return;
 
             OnClientRender();
         }
@@ -66,19 +68,30 @@ namespace ProjectCore.GameCore
             _lifecycle.Reset(OnResetLocalRuntime);
         }
 
-        protected virtual void OnInitialize() { }
+        protected virtual void OnInitialize()
+        {
+        }
 
-        protected virtual void OnNetworkTick() { }
+        protected virtual void OnNetworkTick()
+        {
+        }
 
-        protected virtual void OnClientRender() { }
+        protected virtual void OnClientRender()
+        {
+        }
 
-        protected virtual void OnResetLocalRuntime() { }
+        protected virtual void OnResetLocalRuntime()
+        {
+        }
 
-        protected virtual void OnNetworkContextInvalidated() { }
+        protected virtual void OnNetworkContextInvalidated()
+        {
+        }
 
         private bool TryBeginCallback()
         {
-            if (IsComponentAvailable) return true;
+            if (IsComponentAvailable)
+                return true;
 
             if (IsInitialized && !HasValidNetworkContext)
                 OnNetworkContextInvalidated();

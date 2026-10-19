@@ -6,7 +6,11 @@ using Zenject;
 
 namespace ProjectCore.TechnicalPrototype
 {
-    [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "ProjectCore.TechnicalPrototype", null, "PlayerMovementStateMachine")]
+    [UnityEngine.Scripting.APIUpdating.MovedFrom(
+        true,
+        "ProjectCore.TechnicalPrototype",
+        null,
+        "PlayerMovementStateMachine")]
     public sealed class PlayerEntityStateMachine : BaseEntityStateMachine<
             PlayerEntityState,
             BaseEntityState<PlayerEntityState, PlayerEntityPayload>,
@@ -16,6 +20,7 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private PlayerLocomotionState _locomotionState;
         [SerializeField] private PlayerDodgeState _dodgeState;
         [SerializeField] private PlayerAttackState _attackState;
+
         private IPlayerInputAccessor _input;
         private IInputBufferStateMutator _bufferState;
 
@@ -45,7 +50,9 @@ namespace ProjectCore.TechnicalPrototype
             BaseEntityState<PlayerEntityState, PlayerEntityPayload>>
             CreateStatesDictionary()
         {
-            var states = new Dictionary<PlayerEntityState, BaseEntityState<PlayerEntityState, PlayerEntityPayload>>
+            var states = new Dictionary<
+                PlayerEntityState,
+                BaseEntityState<PlayerEntityState, PlayerEntityPayload>>
             {
                 { PlayerEntityState.Idle, _idleState },
                 { PlayerEntityState.Locomotion, _locomotionState },

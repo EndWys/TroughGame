@@ -35,24 +35,26 @@ namespace ProjectCore.TechnicalPrototype
             Vector2 approachPosition,
             out EnemyInputData input)
         {
-            if (targetEntityId.Type != PlayerNetworkEntityConstants.Player ||
-                !_dashStateAccessor.IsDashCooldownFinished)
+            if (targetEntityId.Type != PlayerNetworkEntityConstants.Player
+                || !_dashStateAccessor.IsDashCooldownFinished)
             {
                 input = default;
                 return false;
             }
 
             Vector2 enemyPosition = _networkBehaviourAccessor.ParentNetworkBehaviour.transform.position;
+
             Vector2 targetOffsetDirection = GetTargetOffsetDirection(
                 enemyPosition,
                 targetPosition,
                 approachPosition);
+
             Vector2 dashTargetPosition = targetPosition + targetOffsetDirection * _targetOffset;
             Vector2 dashDirection = dashTargetPosition - enemyPosition;
             float dashDistance = dashDirection.magnitude;
 
-            if (Mathf.Abs(dashDistance - _dashMovementConfig.Distance) > _startDistanceTolerance ||
-                dashDistance <= Mathf.Epsilon)
+            if (Mathf.Abs(dashDistance - _dashMovementConfig.Distance) > _startDistanceTolerance
+                || dashDistance <= Mathf.Epsilon)
             {
                 input = default;
                 return false;
@@ -62,6 +64,7 @@ namespace ProjectCore.TechnicalPrototype
                 direction: dashDirection.normalized,
                 isDashRequested: true,
                 dashTargetPosition: dashTargetPosition);
+
             return true;
         }
 
@@ -78,6 +81,7 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             Vector2 enemyDirection = enemyPosition - targetPosition;
+
             return enemyDirection.sqrMagnitude > Mathf.Epsilon ? enemyDirection.normalized : Vector2.right;
         }
     }

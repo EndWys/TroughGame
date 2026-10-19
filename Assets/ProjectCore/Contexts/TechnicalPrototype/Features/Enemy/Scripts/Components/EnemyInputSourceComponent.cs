@@ -19,6 +19,7 @@ namespace ProjectCore.TechnicalPrototype
                 direction: input.Direction,
                 isDashRequested: input.IsDashRequested,
                 dashTargetPosition: input.DashTargetPosition);
+
             _hasInput = true;
         }
 

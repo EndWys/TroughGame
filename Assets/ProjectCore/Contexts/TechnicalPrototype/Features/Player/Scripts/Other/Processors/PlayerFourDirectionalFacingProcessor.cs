@@ -27,6 +27,7 @@ namespace ProjectCore.TechnicalPrototype
                     payload.Direction,
                     _facingDirectionMutator.FacingDirection,
                     AxisThreshold);
+
                 _facingDirectionMutator.SetFacingDirection(facingDirection);
             }
 

@@ -29,7 +29,9 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(networkBehaviourAccessor));
         }
 
-        public override void Enter() { }
+        public override void Enter()
+        {
+        }
 
         public override void Exit()
         {
@@ -49,7 +51,11 @@ namespace ProjectCore.TechnicalPrototype
 
             return new IStateProcessor<EnemyEntityState, EnemyEntityPayload>[]
             {
-                CreateProcessor<DashProcessor<EnemyEntityState, EnemyEntityPayload>>(_dashMovementConfig, (Func<Vector2>)GetDashDirection, (Func<float>)GetSimulationDeltaTime, EnemyEntityState.Locomotion),
+                CreateProcessor<DashProcessor<EnemyEntityState, EnemyEntityPayload>>(
+                    _dashMovementConfig,
+                    (Func<Vector2>)GetDashDirection,
+                    (Func<float>)GetSimulationDeltaTime,
+                    EnemyEntityState.Locomotion),
             };
         }
 

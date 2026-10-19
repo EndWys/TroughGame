@@ -52,7 +52,10 @@ namespace ProjectCore.GameCore
         {
             TStatesType nextState = _states[_stateDataMutator.CurrentState].Tick(payload);
 
-            if (EqualityComparer<TStatesType>.Default.Equals(nextState, _stateDataMutator.CurrentState) && !ShouldReenterCurrentState)
+            if (EqualityComparer<TStatesType>.Default.Equals(
+                nextState,
+                _stateDataMutator.CurrentState)
+                && !ShouldReenterCurrentState)
             {
                 return;
             }
@@ -62,12 +65,20 @@ namespace ProjectCore.GameCore
 
         protected virtual bool ShouldReenterCurrentState => false;
 
-        protected virtual void BeforePreviousStateExit() { }
+        protected virtual void BeforePreviousStateExit()
+        {
+        }
 
-        protected virtual void AfterPreviousStateExit() { }
+        protected virtual void AfterPreviousStateExit()
+        {
+        }
 
-        protected virtual void BeforeNextStateEnter() { }
+        protected virtual void BeforeNextStateEnter()
+        {
+        }
 
-        protected virtual void AfterNextStateEnter() { }
+        protected virtual void AfterNextStateEnter()
+        {
+        }
     }
 }

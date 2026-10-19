@@ -28,6 +28,7 @@ namespace ProjectCore.TechnicalPrototype
         public void SetFacingDirection(PlayerFacingDirection facingDirection)
         {
             Vector2 direction = PlayerFacingDirectionUtility.ToVector(facingDirection);
+
             _animator.SetFloat(DirectionXParameter, direction.x);
             _animator.SetFloat(DirectionYParameter, direction.y);
         }

@@ -84,10 +84,12 @@ namespace ProjectCore.TechnicalPrototype
             ValidateConfiguration();
             EnemySpawnValidation.ValidatePrefab(enemyPrefab, enemyName);
             Transform spawnPoint = _spawnPoints[_nextSpawnIndex];
+
             _networkEntitySpawner.Spawn(
                 Runner,
                 enemyPrefab,
                 new EnemySpawnPayload(spawnPoint.position, spawnPoint.rotation));
+
             _nextSpawnIndex = (_nextSpawnIndex + 1) % _spawnPoints.Length;
             return true;
         }
@@ -101,6 +103,7 @@ namespace ProjectCore.TechnicalPrototype
 
             var enemies = new List<BaseNetworkEntityRoot>(
                 _networkEntityRegistry.GetByType(EnemyNetworkEntityConstants.Enemy));
+
             int despawnedEnemiesCount = 0;
 
             foreach (BaseNetworkEntityRoot enemy in enemies)

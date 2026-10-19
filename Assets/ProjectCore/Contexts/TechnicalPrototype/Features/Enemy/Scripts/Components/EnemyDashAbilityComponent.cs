@@ -45,13 +45,15 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(processors));
             }
 
-            if (sourceState != EnemyEntityState.Idle &&
-                sourceState != EnemyEntityState.Locomotion)
+            if (sourceState != EnemyEntityState.Idle
+                && sourceState != EnemyEntityState.Locomotion)
             {
                 return;
             }
 
-            processors.Add(_classFactory.Create<EnemyDashTransitionProcessor>(new object[] { RequireDashAbilityConfig().DashMovementConfig }));
+            processors.Add(
+                _classFactory.Create<EnemyDashTransitionProcessor>(
+                    new object[] { RequireDashAbilityConfig().DashMovementConfig }));
         }
 
         public BaseEnemyChaseAbilityProcessor CreateChaseAbilityProcessor()

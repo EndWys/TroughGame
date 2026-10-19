@@ -34,6 +34,7 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             Transform spawnPoint = GetNextSpawnPoint();
+
             BaseNetworkEntityRoot playerEntity = _networkEntitySpawner.Spawn(
                 runner,
                 _playerPrefab,
@@ -45,9 +46,9 @@ namespace ProjectCore.TechnicalPrototype
 
         public override void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
-            if (!HasStateAuthority ||
-                !runner.TryGetPlayerObject(player, out NetworkObject playerObject) ||
-                !playerObject.TryGetComponent(out BaseNetworkEntityRoot playerEntity))
+            if (!HasStateAuthority
+                || !runner.TryGetPlayerObject(player, out NetworkObject playerObject)
+                || !playerObject.TryGetComponent(out BaseNetworkEntityRoot playerEntity))
             {
                 return;
             }
@@ -60,6 +61,7 @@ namespace ProjectCore.TechnicalPrototype
             PlayerSpawnValidation.ValidateSpawnPoints(_spawnPoints, name);
 
             Transform spawnPoint = _spawnPoints[_nextSpawnIndex % _spawnPoints.Length];
+
             _nextSpawnIndex++;
 
             return spawnPoint;

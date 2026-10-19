@@ -38,8 +38,8 @@ namespace ProjectCore.GameCore
         {
             Vector2 direction = Vector2.ClampMagnitude(payload.Direction, 1f);
 
-            if (direction.sqrMagnitude > Mathf.Epsilon &&
-                _movementObstacleProbe.TryProbe(
+            if (direction.sqrMagnitude > Mathf.Epsilon
+                && _movementObstacleProbe.TryProbe(
                     _movementCollisionBodyAccessor,
                     direction,
                     _obstacleProbeDistance,

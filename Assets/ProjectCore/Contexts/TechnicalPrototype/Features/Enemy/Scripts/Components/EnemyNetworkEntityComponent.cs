@@ -20,18 +20,29 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private CombatDebugVisualizationComponent _combatDebugVisualizationComponent;
         [SerializeField] private EnemyBehaviourStateMachine _behaviourStateMachine;
         [SerializeField] private EnemyAbilityCollectionComponent _abilityCollectionComponent;
-        [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("_movementStateMachine")] private EnemyEntityStateMachine _entityStateMachine;
+        [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("_movementStateMachine")]
+        private EnemyEntityStateMachine _entityStateMachine;
         [SerializeField] private TransformMovementBodyComponent _movementBodyComponent;
 
         private Transform _entitiesContainer;
 
-        [Networked] public EnemyEntityState CurrentEntityState { get; private set; }
-        [Networked] public EnemyEntityState PreviousEntityState { get; private set; }
+        [Networked]
+        public EnemyEntityState CurrentEntityState { get; private set; }
 
-        [Networked] public EnemyBehaviourStateType CurrentBehaviourState { get; private set; }
-        [Networked] public EnemyBehaviourStateType PreviousBehaviourState { get; private set; }
-        [Networked] private uint TargetEntityIdValue { get; set; }
-        [Networked] private EnemyDashStateModel DashStateValue { get; set; }
+        [Networked]
+        public EnemyEntityState PreviousEntityState { get; private set; }
+
+        [Networked]
+        public EnemyBehaviourStateType CurrentBehaviourState { get; private set; }
+
+        [Networked]
+        public EnemyBehaviourStateType PreviousBehaviourState { get; private set; }
+
+        [Networked]
+        private uint TargetEntityIdValue { get; set; }
+
+        [Networked]
+        private EnemyDashStateModel DashStateValue { get; set; }
 
         [Inject]
         private void Construct(
@@ -61,12 +72,12 @@ namespace ProjectCore.TechnicalPrototype
             transform.SetParent(_entitiesContainer, true);
         }
 
-
         public EnemyBehaviourStateType CurrentState => CurrentBehaviourState;
 
         public EnemyBehaviourStateType PreviousState => PreviousBehaviourState;
 
         EnemyEntityState IStateDataAccessor<EnemyEntityState>.CurrentState => CurrentEntityState;
+
         EnemyEntityState IStateDataAccessor<EnemyEntityState>.PreviousState => PreviousEntityState;
 
         void IStateDataMutator<EnemyEntityState>.ChangeState(EnemyEntityState state)
@@ -145,6 +156,7 @@ namespace ProjectCore.TechnicalPrototype
         public void StopDash()
         {
             EnemyDashStateModel state = DashStateValue;
+
             state.ActionTimer = TickTimer.None;
             DashStateValue = state;
         }

@@ -17,7 +17,9 @@ namespace ProjectCore.GameCore
             _classFactory = classFactory ?? throw new ArgumentNullException(nameof(classFactory));
         }
 
-        public virtual void Restore() { }
+        public virtual void Restore()
+        {
+        }
 
         protected TProcessor CreateProcessor<TProcessor>(params object[] parameters)
         {

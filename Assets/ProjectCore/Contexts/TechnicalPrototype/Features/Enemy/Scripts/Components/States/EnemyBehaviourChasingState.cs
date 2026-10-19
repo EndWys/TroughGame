@@ -10,6 +10,7 @@ namespace ProjectCore.TechnicalPrototype
     public sealed class EnemyBehaviourChasingState : BaseEnemyBehaviourState
     {
         [SerializeField] private EnemyChaseConfig _chaseConfig;
+
         private EnemyInputSourceComponent _inputSource;
         private IEnemyTargetAccessor _targetAccessor;
         private IEnemyTargetMutator _targetMutator;
@@ -80,8 +81,8 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             if (!_targetingService.TryGetTargetPosition(
-                    _targetAccessor.TargetEntityId,
-                    out Vector2 targetPosition))
+                _targetAccessor.TargetEntityId,
+                out Vector2 targetPosition))
             {
                 _inputSource.SetInput(default);
                 _targetMutator.ClearTargetEntityId();
@@ -89,13 +90,14 @@ namespace ProjectCore.TechnicalPrototype
             }
 
             Vector2 position = _networkBehaviourAccessor.ParentNetworkBehaviour.transform.position;
+
             NetworkEntityIdData targetEntityId = ReassessTarget(
                 position,
                 targetPosition,
                 _targetAccessor.TargetEntityId);
 
-            if (targetEntityId != _targetAccessor.TargetEntityId &&
-                _targetingService.TryGetTargetPosition(targetEntityId, out targetPosition))
+            if (targetEntityId != _targetAccessor.TargetEntityId
+                && _targetingService.TryGetTargetPosition(targetEntityId, out targetPosition))
             {
                 _targetMutator.SetTargetEntityId(targetEntityId);
             }
@@ -108,10 +110,10 @@ namespace ProjectCore.TechnicalPrototype
                 _chaseConfig.SeparationWeight);
 
             if (TryCreateAbilityInput(
-                    targetEntityId,
-                    targetPosition,
-                    steering.ApproachPosition,
-                    out EnemyInputData abilityInput))
+                targetEntityId,
+                targetPosition,
+                steering.ApproachPosition,
+                out EnemyInputData abilityInput))
             {
                 _inputSource.SetInput(abilityInput);
                 return EnemyBehaviourStateType.Chasing;
@@ -136,10 +138,10 @@ namespace ProjectCore.TechnicalPrototype
             NetworkEntityIdData currentTargetEntityId)
         {
             if (!_targetingService.TryFindNearestTarget(
-                    position,
-                    out NetworkEntityIdData candidateEntityId) ||
-                candidateEntityId == currentTargetEntityId ||
-                !_targetingService.TryGetTargetPosition(candidateEntityId, out Vector2 candidatePosition))
+                position,
+                out NetworkEntityIdData candidateEntityId)
+                || candidateEntityId == currentTargetEntityId
+                || !_targetingService.TryGetTargetPosition(candidateEntityId, out Vector2 candidatePosition))
             {
                 ResetRetargeting();
                 return currentTargetEntityId;
@@ -180,10 +182,10 @@ namespace ProjectCore.TechnicalPrototype
             foreach (BaseEnemyChaseAbilityProcessor abilityProcessor in _chaseAbilityProcessors)
             {
                 if (abilityProcessor.TryCreateInput(
-                        targetEntityId,
-                        targetPosition,
-                        approachPosition,
-                        out input))
+                    targetEntityId,
+                    targetPosition,
+                    approachPosition,
+                    out input))
                 {
                     return true;
                 }

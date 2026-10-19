@@ -29,7 +29,8 @@ namespace ProjectCore.TechnicalPrototype
                 throw new ArgumentNullException(nameof(payload));
             }
 
-            if (!IsComponentAvailable) return;
+            if (!IsComponentAvailable)
+                return;
 
             foreach (Action<HandlerPayload> handler in _handlers)
             {
@@ -37,7 +38,10 @@ namespace ProjectCore.TechnicalPrototype
             }
         }
 
-        protected override void OnResetLocalRuntime() { _handlers = null; }
+        protected override void OnResetLocalRuntime()
+        {
+            _handlers = null;
+        }
 
         private void HandleEntityStateChanged(HandlerPayload payload)
         {

@@ -1,9 +1,11 @@
 using System;
 using ProjectCore.GameCore;
 using Shared;
+
 namespace ProjectCore.TechnicalPrototype
 {
-    public sealed class PlayerActionTransitionProcessor : IStateProcessor<PlayerEntityState, PlayerEntityPayload>
+    public sealed class PlayerActionTransitionProcessor :
+        IStateProcessor<PlayerEntityState, PlayerEntityPayload>
     {
         private readonly IInputBufferController _buffer;
         private readonly IEntityStateRestart _restart;
@@ -12,8 +14,13 @@ namespace ProjectCore.TechnicalPrototype
         private readonly bool _reenter;
         private readonly Func<bool> _canTransition;
 
-        public PlayerActionTransitionProcessor(IInputBufferController buffer, IEntityStateRestart restart,
-            ushort commandId, PlayerEntityState target, bool reenter, Func<bool> canTransition)
+        public PlayerActionTransitionProcessor(
+            IInputBufferController buffer,
+            IEntityStateRestart restart,
+            ushort commandId,
+            PlayerEntityState target,
+            bool reenter,
+            Func<bool> canTransition)
         {
             _buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             _restart = restart ?? throw new ArgumentNullException(nameof(restart));
@@ -26,10 +33,18 @@ namespace ProjectCore.TechnicalPrototype
         public bool Execute(PlayerEntityPayload payload, out PlayerEntityState resultState)
         {
             resultState = default;
-            if (!_canTransition() || !_buffer.HasBufferedCommand(_commandId)) return false;
+
+            if (!_canTransition() || !_buffer.HasBufferedCommand(_commandId))
+                return false;
+
             _buffer.ReleaseCommandLock();
-            if (!_buffer.TryConsumeBufferedCommandAndLock(_commandId)) return false;
-            if (_reenter) _restart.RequestRestart();
+
+            if (!_buffer.TryConsumeBufferedCommandAndLock(_commandId))
+                return false;
+
+            if (_reenter)
+                _restart.RequestRestart();
+
             resultState = _target;
             return true;
         }
