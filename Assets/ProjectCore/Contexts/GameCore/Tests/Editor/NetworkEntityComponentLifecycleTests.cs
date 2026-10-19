@@ -249,6 +249,7 @@ namespace ProjectCore.GameCore
             public int Dispatches;
             public bool IsInitialized { get; private set; }
             public bool HasValidNetworkContext => true;
+            public bool HasSimulationAuthority => true;
             public bool IsComponentAvailable => IsInitialized;
             public TestChild(int id, List<int> resets) { _id = id; _resets = resets; }
             public IReadOnlyList<INetworkEntityComponent> Components => Array.Empty<INetworkEntityComponent>();

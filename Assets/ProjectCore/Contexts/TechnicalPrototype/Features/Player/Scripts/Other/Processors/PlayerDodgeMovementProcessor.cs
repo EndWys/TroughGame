@@ -22,8 +22,11 @@ namespace ProjectCore.TechnicalPrototype
         public bool Execute(PlayerEntityPayload payload, out PlayerEntityState resultState)
         {
             ActionPhase phase = _phase();
-            _body.Velocity = phase == ActionPhase.Active
-                ? Vector2.ClampMagnitude(payload.Direction, 1f) * _config.Speed : Vector2.zero;
+
+            _body.Velocity = phase == ActionPhase.Active ?
+                Vector2.ClampMagnitude(payload.Input.MoveDirection, 1f) * _config.Speed :
+                Vector2.zero;
+
             resultState = PlayerEntityState.Idle;
             return phase == ActionPhase.None;
         }

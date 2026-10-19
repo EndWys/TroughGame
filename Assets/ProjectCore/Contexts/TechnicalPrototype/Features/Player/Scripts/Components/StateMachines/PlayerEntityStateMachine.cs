@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ProjectCore.GameCore;
 using UnityEngine;
@@ -15,15 +16,24 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private PlayerLocomotionState _locomotionState;
         [SerializeField] private PlayerDodgeState _dodgeState;
         [SerializeField] private PlayerAttackState _attackState;
-        [SerializeField] private PlayerInputSourceComponent _inputSource;
+        private IPlayerInputAccessor _input;
         private IInputBufferStateMutator _bufferState;
 
         [Inject]
-        private void Construct(IInputBufferStateMutator bufferState) { _bufferState = bufferState; }
+        private void Construct(IInputBufferStateMutator bufferState, IPlayerInputAccessor input)
+        {
+            _bufferState = bufferState ?? throw new ArgumentNullException(nameof(bufferState));
+            _input = input ?? throw new ArgumentNullException(nameof(input));
+        }
 
         public void CancelCurrentAction()
         {
-            if (!IsComponentAvailable || (!ParentNetworkBehaviour.HasStateAuthority && !ParentNetworkBehaviour.HasInputAuthority)) return;
+            if (!IsComponentAvailable)
+                return;
+
+            if (!HasSimulationAuthority)
+                return;
+
             _bufferState.ClearBufferedCommand();
             ChangeState(PlayerEntityState.Idle);
         }
@@ -40,27 +50,19 @@ namespace ProjectCore.TechnicalPrototype
                 { PlayerEntityState.Idle, _idleState },
                 { PlayerEntityState.Locomotion, _locomotionState },
             };
-            if (_dodgeState != null) states.Add(PlayerEntityState.Dodge, _dodgeState);
-            if (_attackState != null) states.Add(PlayerEntityState.Attack, _attackState);
+
+            if (_dodgeState != null)
+                states.Add(PlayerEntityState.Dodge, _dodgeState);
+
+            if (_attackState != null)
+                states.Add(PlayerEntityState.Attack, _attackState);
+
             return states;
         }
 
         protected override bool TryGetPayload(out PlayerEntityPayload payload)
         {
-            if (_inputSource == null)
-            {
-                payload = default;
-                return false;
-            }
-
-            Vector2 direction = Vector2.zero;
-
-            if (_inputSource.TryGetInput(out PlayerInputFrameData input))
-            {
-                direction = input.Direction;
-            }
-
-            payload = new(direction);
+            payload = new PlayerEntityPayload(_input.Input);
             return true;
         }
 

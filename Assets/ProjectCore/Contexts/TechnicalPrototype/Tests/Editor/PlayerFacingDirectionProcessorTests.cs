@@ -13,7 +13,7 @@ namespace ProjectCore.TechnicalPrototype
                 new(mutator);
 
             bool hasTransition = processor.Execute(
-                new PlayerEntityPayload(new Vector2(-1f, 1f)),
+                new PlayerEntityPayload(new PlayerInputSnapshotData(new Vector2(-1f, 1f), default)),
                 out PlayerEntityState resultState);
 
             Assert.That(hasTransition, Is.False);
@@ -28,7 +28,7 @@ namespace ProjectCore.TechnicalPrototype
             PlayerFourDirectionalFacingProcessor<PlayerEntityState, PlayerEntityPayload> processor =
                 new(mutator);
 
-            processor.Execute(new PlayerEntityPayload(Vector2.up), out _);
+            processor.Execute(new PlayerEntityPayload(new PlayerInputSnapshotData(Vector2.up, default)), out _);
 
             Assert.That(mutator.FacingDirection, Is.EqualTo(PlayerFacingDirection.NorthWest));
         }
@@ -40,7 +40,7 @@ namespace ProjectCore.TechnicalPrototype
             PlayerFourDirectionalFacingProcessor<PlayerEntityState, PlayerEntityPayload> processor =
                 new(mutator);
 
-            processor.Execute(new PlayerEntityPayload(new Vector2(0.001f, 0.001f)), out _);
+            processor.Execute(new PlayerEntityPayload(new PlayerInputSnapshotData(new Vector2(0.001f, 0.001f), default)), out _);
 
             Assert.That(mutator.FacingDirection, Is.EqualTo(PlayerFacingDirection.SouthWest));
             Assert.That(mutator.SetCalls, Is.Zero);

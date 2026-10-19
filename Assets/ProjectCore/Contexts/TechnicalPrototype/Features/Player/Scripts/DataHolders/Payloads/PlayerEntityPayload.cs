@@ -5,11 +5,12 @@ namespace ProjectCore.TechnicalPrototype
 {
     public readonly struct PlayerEntityPayload : ILocomotionPayload
     {
-        public PlayerEntityPayload(Vector2 direction)
+        public PlayerEntityPayload(PlayerInputSnapshotData input)
         {
-            Direction = direction;
+            Input = input;
         }
 
-        public Vector2 Direction { get; }
+        public PlayerInputSnapshotData Input { get; }
+        Vector2 ILocomotionPayload.Direction => Input.MoveDirection;
     }
 }

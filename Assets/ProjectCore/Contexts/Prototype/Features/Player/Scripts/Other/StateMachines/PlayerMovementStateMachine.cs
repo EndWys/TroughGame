@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AYellowpaper.SerializedCollections;
 using ProjectCore.GameCore;
@@ -31,10 +32,10 @@ namespace ProjectCore.Prototype
             IGroundDetectorDataMutator groundDetectorDataMutator,
             IPlayerMediator mediator)
         {
-            _movementStateDataMutator = movementStateDataMutator;
-            _jumpDataMutator = jumpDataMutator;
-            _groundDetectorDataMutator = groundDetectorDataMutator;
-            _mediator = mediator;
+            _movementStateDataMutator = movementStateDataMutator ?? throw new ArgumentNullException(nameof(movementStateDataMutator));
+            _jumpDataMutator = jumpDataMutator ?? throw new ArgumentNullException(nameof(jumpDataMutator));
+            _groundDetectorDataMutator = groundDetectorDataMutator ?? throw new ArgumentNullException(nameof(groundDetectorDataMutator));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         protected override MovementStates InitialState => MovementStates.Idle;

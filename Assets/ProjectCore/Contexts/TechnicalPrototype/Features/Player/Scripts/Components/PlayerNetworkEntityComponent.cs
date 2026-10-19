@@ -159,11 +159,6 @@ namespace ProjectCore.TechnicalPrototype
 
         #endregion
 
-        #region Entity State Data
-
-
-        #endregion
-
         #region Entity Lifecycle
 
         protected override void BeforeComponentsInitialized()

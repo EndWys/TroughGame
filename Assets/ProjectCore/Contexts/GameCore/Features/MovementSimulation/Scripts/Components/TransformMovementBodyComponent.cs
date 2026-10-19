@@ -64,7 +64,7 @@ namespace ProjectCore.GameCore
 
         protected override void OnNetworkTick()
         {
-            if (!HasStateAuthority && !HasInputAuthority)
+            if (!HasSimulationAuthority)
             {
                 return;
             }

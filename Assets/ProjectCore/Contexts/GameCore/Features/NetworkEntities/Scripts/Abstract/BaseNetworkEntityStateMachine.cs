@@ -17,7 +17,7 @@ namespace ProjectCore.GameCore
         [Inject]
         private void Construct(IStateDataMutator<TStatesType> stateDataMutator)
         {
-            _stateDataMutator = stateDataMutator;
+            _stateDataMutator = stateDataMutator ?? throw new ArgumentNullException(nameof(stateDataMutator));
         }
 
         public IReadOnlyDictionary<TStatesType, TState> States => _states;

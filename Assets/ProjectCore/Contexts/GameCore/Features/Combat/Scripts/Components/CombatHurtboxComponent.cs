@@ -36,7 +36,7 @@ namespace ProjectCore.GameCore
 
         protected override void OnInitialize()
         {
-            if (_origin == null) throw new InvalidOperationException("Hurtbox requires an injected movement origin.");
+            if (!IsComponentValid) throw new InvalidOperationException("Hurtbox requires an injected movement origin.");
             CombatShapeValidation.ValidateSettings(_shape);
         }
     }

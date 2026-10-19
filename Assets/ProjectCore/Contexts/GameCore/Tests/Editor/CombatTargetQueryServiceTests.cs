@@ -223,6 +223,7 @@ namespace ProjectCore.GameCore
             public bool IsAvailable { get; set; }
             public bool IsInitialized => true;
             public bool HasValidNetworkContext => true;
+            public bool HasSimulationAuthority => true;
             public bool IsComponentAvailable => IsAvailable;
             public CombatShapeData WorldShape { get; set; }
             public IReadOnlyList<INetworkEntityComponent> Components => Array.Empty<INetworkEntityComponent>();

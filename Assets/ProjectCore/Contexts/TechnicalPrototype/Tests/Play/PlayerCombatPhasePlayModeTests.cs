@@ -33,6 +33,8 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(container.Resolve<ICombatActionMutator>(), Is.SameAs(player));
             Assert.That(container.Resolve<ICombatActionSnapshotAccessor>(), Is.SameAs(player));
             Assert.That(container.Resolve<ICombatActionStateAccessor>(), Is.SameAs(player));
+            var inputAccessor = container.Resolve<IPlayerInputAccessor>();
+            Assert.That(inputAccessor, Is.SameAs(player.GetComponent<PlayerInputSourceComponent>()));
             var buffer = container.Resolve<IInputBufferController>();
             var action = player.GetComponent<PlayerCombatActionComponent>();
             player.SetLatestInputDirection(Vector2.right);
@@ -55,6 +57,16 @@ namespace ProjectCore.TechnicalPrototype
                             "Early input must be injected at attack onset, not when a frame coroutine catches up.");
                         firstExecution = player.ActionState.ExecutionId;
                         facing = player.FacingDirection;
+                        PlayerInputSnapshotData previousInput = inputAccessor.Input;
+                        Assert.That(previousInput.MoveDirection, Is.EqualTo(Vector2.zero));
+                        Assert.That(previousInput.LastNonZeroDirection, Is.EqualTo(Vector2.right));
+                        player.SetLatestInputDirection(Vector2.up);
+                        Assert.That(inputAccessor.Input.LastNonZeroDirection, Is.EqualTo(Vector2.up),
+                            "Input must read the restored network direction rather than a cached copy.");
+                        Assert.That(inputAccessor.Input.MoveDirection, Is.EqualTo(Vector2.zero));
+                        Assert.That(previousInput.LastNonZeroDirection, Is.EqualTo(Vector2.right),
+                            "A snapshot already passed to a state must remain unchanged.");
+                        Assert.That(player.FacingDirection, Is.EqualTo(facing));
                         buffer.BufferCommand(new InputBufferCommandDescriptor(PlayerInputActionConstants.AttackCommandId), 0.15f);
                         step = 2;
                         break;
@@ -194,6 +206,35 @@ namespace ProjectCore.TechnicalPrototype
                     buffer.BufferCommand(new InputBufferCommandDescriptor(MovementInputCommandConstants.DodgeCommandId), 0.15f);
                     CombatActionStateModel before = player.ActionState;
                     Vector3 position = player.transform.position;
+                    action.enabled = false;
+                    try
+                    {
+                        Assert.That(action.IsInitialized && action.HasValidNetworkContext, Is.True);
+                        Assert.That(action.IsComponentAvailable, Is.False);
+                        Assert.That(action.ActionSnapshot, Is.EqualTo(default(CombatActionSnapshotData)));
+                        Assert.That(action.TryGetAttack(before.ActionId, out _), Is.False);
+                        Assert.That(player.ActionState, Is.EqualTo(before),
+                            "Disabling action access must preserve the replicated execution.");
+                    }
+                    finally { action.enabled = true; }
+                    Assert.That(action.ActionSnapshot.ActionId, Is.EqualTo(before.ActionId));
+                    Assert.That(action.TryGetAttack(before.ActionId, out _), Is.True);
+
+                    var attackConfigField = typeof(PlayerCombatActionComponent).GetField(
+                        "_attackConfig", BindingFlags.Instance | BindingFlags.NonPublic);
+                    object attackConfig = attackConfigField.GetValue(action);
+                    attackConfigField.SetValue(action, null);
+                    try
+                    {
+                        Assert.That(action.IsComponentAvailable, Is.False);
+                        Assert.That(action.ActionSnapshot, Is.EqualTo(default(CombatActionSnapshotData)));
+                        Assert.That(action.TryGetAttack(before.ActionId, out _), Is.False);
+                        Assert.That(player.ActionState, Is.EqualTo(before));
+                    }
+                    finally { attackConfigField.SetValue(action, attackConfig); }
+                    Assert.That(action.IsComponentAvailable, Is.True);
+                    Assert.That(action.ActionSnapshot.ActionId, Is.EqualTo(before.ActionId));
+
                     action.ResetLocalRuntime();
                     probe.ResetLocalRuntime();
                     hurtbox.ResetLocalRuntime();
@@ -242,6 +283,8 @@ namespace ProjectCore.TechnicalPrototype
             yield return RunTickSequence(() =>
             {
                 probe.enabled = false;
+                Assert.That(probe.IsInitialized, Is.False);
+                Assert.That(((INetworkEntityComponent)probe).HasSimulationAuthority, Is.True);
                 probe.Init();
                 Assert.That(probe.IsInitialized && probe.HasValidNetworkContext, Is.True);
                 Assert.That(probe.IsComponentAvailable, Is.False);
@@ -256,6 +299,7 @@ namespace ProjectCore.TechnicalPrototype
                 Assert.That(probe.Renders, Is.EqualTo(1));
                 probe.LocalValid = false;
                 Assert.That(probe.IsComponentAvailable, Is.False);
+                Assert.That(probe.HasSimulationAuthority, Is.True);
                 probe.NetworkTick();
                 probe.ClientRender();
                 Assert.That(probe.Ticks + probe.Renders, Is.EqualTo(2));
@@ -268,6 +312,7 @@ namespace ProjectCore.TechnicalPrototype
                 try
                 {
                     Assert.That(probe.HasValidNetworkContext, Is.False);
+                    Assert.That(probe.HasSimulationAuthority, Is.False);
                     Assert.That(probe.IsComponentAvailable, Is.False);
                     Assert.That(probe.Invalidations, Is.Zero, "Availability getters must be pure.");
                     probe.NetworkTick();
@@ -289,6 +334,7 @@ namespace ProjectCore.TechnicalPrototype
                 {
                     body.Init();
                     Assert.That(body.IsInitialized && body.HasValidNetworkContext, Is.True);
+                    Assert.That(body.HasSimulationAuthority, Is.True);
                     Assert.That(body.IsComponentAvailable, Is.False);
                     velocity.Velocity = Vector2.one;
                     Vector3 position = player.transform.position;

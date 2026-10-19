@@ -31,7 +31,7 @@ namespace ProjectCore.GameCore
 
         protected virtual bool ShouldSimulateMovement()
         {
-            return ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
+            return HasSimulationAuthority;
         }
     }
 }

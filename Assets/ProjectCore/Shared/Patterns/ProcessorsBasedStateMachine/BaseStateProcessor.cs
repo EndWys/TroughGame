@@ -12,7 +12,7 @@ namespace Shared
 
         protected BaseStateProcessor(TState state)
         {
-            State = state;
+            State = state ?? throw new ArgumentNullException(nameof(state));
         }
 
         public abstract bool Execute(TStatePayload payload, out TStatesType resultState);

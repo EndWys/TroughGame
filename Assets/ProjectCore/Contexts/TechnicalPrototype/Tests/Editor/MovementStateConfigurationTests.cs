@@ -26,7 +26,7 @@ namespace ProjectCore.TechnicalPrototype
         {
             var body = new MovementVelocityMutator();
             var dodge = new PlayerDodgeMovementProcessor(body, _dodgeConfig, () => phase);
-            Assert.That(dodge.Execute(new PlayerEntityPayload(Vector2.right), out _), Is.False);
+            Assert.That(dodge.Execute(new PlayerEntityPayload(new PlayerInputSnapshotData(Vector2.right, default)), out _), Is.False);
             Assert.That(body.Velocity, Is.EqualTo(phase == ActionPhase.Active ? Vector2.right * 8f : Vector2.zero));
         }
 
@@ -44,7 +44,7 @@ namespace ProjectCore.TechnicalPrototype
                     scope.BindInterfacesAndSelfTo<ClassFactory>().AsSingle();
                     scope.Bind<IMovementBodyVelocityMutator>().FromInstance(body);
                     var processor = scope.Resolve<IClassFactory>().Create<LocomotionProcessor<PlayerEntityState, PlayerEntityPayload>>(new object[] { config });
-                    processor.Execute(new PlayerEntityPayload(body == first ? Vector2.right : Vector2.up), out _);
+                    processor.Execute(new PlayerEntityPayload(new PlayerInputSnapshotData(body == first ? Vector2.right : Vector2.up, default)), out _);
                 }
                 Assert.That(first.Velocity.x, Is.GreaterThan(0));
                 Assert.That(first.Velocity.y, Is.Zero);
@@ -107,12 +107,13 @@ namespace ProjectCore.TechnicalPrototype
                 container.Bind<IInputBufferStateMutator>().FromInstance(new InitializationBufferState());
                 container.Bind<IInputBufferController>().FromInstance(new EmptyInputController());
                 container.Bind<IPlayerFacingDirectionMutator>().FromInstance(new MovementOnlyFacing());
+                container.Bind<IPlayerInputAccessor>().FromInstance(new MovementOnlyInput());
                 Assert.DoesNotThrow(() => { container.Inject(machine); container.Inject(idle); container.Inject(locomotion); });
                 Assert.That(machine.CreateStatesDictionary().Keys, Is.EquivalentTo(new[] { PlayerEntityState.Idle, PlayerEntityState.Locomotion }));
                 idle.Init();
                 locomotion.Init();
-                Assert.That(idle.Tick(new PlayerEntityPayload(Vector2.right)), Is.EqualTo(PlayerEntityState.Locomotion));
-                locomotion.Tick(new PlayerEntityPayload(Vector2.right));
+                Assert.That(idle.Tick(new PlayerEntityPayload(new PlayerInputSnapshotData(Vector2.right, default))), Is.EqualTo(PlayerEntityState.Locomotion));
+                locomotion.Tick(new PlayerEntityPayload(new PlayerInputSnapshotData(Vector2.right, default)));
                 Assert.That(body.Velocity.x, Is.GreaterThan(0f));
             }
             finally { Object.DestroyImmediate(config); }
@@ -138,6 +139,11 @@ namespace ProjectCore.TechnicalPrototype
         {
             public PlayerFacingDirection FacingDirection { get; private set; }
             public void SetFacingDirection(PlayerFacingDirection facing) { FacingDirection = facing; }
+        }
+
+        private sealed class MovementOnlyInput : IPlayerInputAccessor
+        {
+            public PlayerInputSnapshotData Input => default;
         }
 
         [SetUp]

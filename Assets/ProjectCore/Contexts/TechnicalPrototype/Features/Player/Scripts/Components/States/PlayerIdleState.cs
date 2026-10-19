@@ -11,7 +11,10 @@ namespace ProjectCore.TechnicalPrototype
 
         private IMovementBodyVelocityMutator _body;
         [Inject]
-        private void Construct(IMovementBodyVelocityMutator body) { _body = body; }
+        private void Construct(IMovementBodyVelocityMutator body)
+        {
+            _body = body ?? throw new ArgumentNullException(nameof(body));
+        }
         public override void Enter() { _body.Velocity = Vector2.zero; }
         public override void Restore() { _body.Velocity = Vector2.zero; }
         public override void Exit() { }

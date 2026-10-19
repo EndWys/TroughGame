@@ -47,7 +47,7 @@ namespace ProjectCore.Prototype
 
         private bool ShouldPerformCheck()
         {
-            return ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
+            return HasSimulationAuthority;
         }
 
 #if UNITY_EDITOR

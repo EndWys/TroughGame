@@ -11,7 +11,10 @@ namespace ProjectCore.TechnicalPrototype
         [SerializeField] private LocomotionMovementConfig _locomotionMovementConfig;
         private IMovementBodyVelocityMutator _body;
         [Inject]
-        private void Construct(IMovementBodyVelocityMutator body) { _body = body; }
+        private void Construct(IMovementBodyVelocityMutator body)
+        {
+            _body = body ?? throw new ArgumentNullException(nameof(body));
+        }
         public override void Enter() {  }
         public override void Exit() { }
         protected override IReadOnlyList<IStateProcessor<PlayerEntityState, PlayerEntityPayload>> CreateProcessors()

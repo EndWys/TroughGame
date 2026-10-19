@@ -250,6 +250,7 @@ MonoBehaviour:
   _movementBody: {fileID: 7885406040919925618}
   _combatAction: {fileID: 8692851226458253613}
   _entityStateMachine: {fileID: 3893509649565096512}
+  _inputSource: {fileID: 930001002}
 --- !u!114 &8489854188152957200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,7 +469,6 @@ MonoBehaviour:
   _locomotionState: {fileID: 964983221566649929}
   _dodgeState: {fileID: 964983221566649930}
   _attackState: {fileID: 7097864012017895641}
-  _inputSource: {fileID: 930001002}
 --- !u!114 &964983221566649931
 MonoBehaviour:
   m_ObjectHideFlags: 0

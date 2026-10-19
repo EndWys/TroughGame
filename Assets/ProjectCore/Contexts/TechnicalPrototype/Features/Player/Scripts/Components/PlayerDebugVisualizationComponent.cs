@@ -50,7 +50,6 @@ namespace ProjectCore.TechnicalPrototype
 
         private void DrawCombat(DebugVisualizationContextAdapter context)
         {
-            if (_playerNetworkEntity.Object == null || !_playerNetworkEntity.Object.IsValid) return;
             CombatActionSnapshotData action = _playerNetworkEntity.ActionSnapshot;
             context.Value("Player/Combat", "Phase", action.Phase);
             context.Value("Player/Combat", "Execution", action.ExecutionId);
@@ -106,8 +105,8 @@ namespace ProjectCore.TechnicalPrototype
 
         private void DrawInput(DebugVisualizationContextAdapter context, Vector3 bodyPosition)
         {
-            bool hasInput = _inputSource.TryGetInput(out PlayerInputFrameData input);
-            Vector2 direction = hasInput ? input.Direction : Vector2.zero;
+            bool hasInput = _inputSource.TryGetInput(out PlayerInputSnapshotData input);
+            Vector2 direction = input.MoveDirection;
 
             context.Value(InputChannel, "Direction", hasInput ? direction : "Unavailable");
             context.Value(InputChannel, "Buffered Command", GetBufferedCommandLabel());

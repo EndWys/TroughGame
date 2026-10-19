@@ -29,6 +29,10 @@ namespace ProjectCore.GameCore
 
         public bool HasValidNetworkContext => _lifecycle.HasValidNetworkContext(ParentNetworkBehaviour);
 
+        public bool HasSimulationAuthority =>
+            HasValidNetworkContext &&
+            (ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority);
+
         public bool IsComponentAvailable =>
             IsInitialized && HasValidNetworkContext && isActiveAndEnabled && IsComponentValid;
 

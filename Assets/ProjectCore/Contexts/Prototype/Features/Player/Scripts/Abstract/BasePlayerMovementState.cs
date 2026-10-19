@@ -1,3 +1,4 @@
+using System;
 using ProjectCore.GameCore;
 using UnityEngine;
 using Zenject;
@@ -23,11 +24,11 @@ namespace ProjectCore.Prototype
             IGroundDetectorDataAccessor groundDetectorDataAccessor,
             IClimbDetectorDataMutator climbDetectorDataMutator)
         {
-            PlayerPoseComponent = playerPoseComponent;
-            NetworkBehaviourAccessor = networkBehaviourAccessor;
-            JumpDataAccessor = jumpDataAccessor;
-            GroundDetectorDataAccessor = groundDetectorDataAccessor;
-            ClimbDetectorDataMutator = climbDetectorDataMutator;
+            PlayerPoseComponent = playerPoseComponent ?? throw new ArgumentNullException(nameof(playerPoseComponent));
+            NetworkBehaviourAccessor = networkBehaviourAccessor ?? throw new ArgumentNullException(nameof(networkBehaviourAccessor));
+            JumpDataAccessor = jumpDataAccessor ?? throw new ArgumentNullException(nameof(jumpDataAccessor));
+            GroundDetectorDataAccessor = groundDetectorDataAccessor ?? throw new ArgumentNullException(nameof(groundDetectorDataAccessor));
+            ClimbDetectorDataMutator = climbDetectorDataMutator ?? throw new ArgumentNullException(nameof(climbDetectorDataMutator));
         }
 
         public virtual void Init(PlayerMovementStateMachine context)

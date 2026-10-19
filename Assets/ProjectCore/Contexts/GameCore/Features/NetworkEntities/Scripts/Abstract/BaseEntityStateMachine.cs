@@ -57,7 +57,7 @@ namespace ProjectCore.GameCore
 
         protected virtual bool ShouldSimulate()
         {
-            return ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
+            return HasSimulationAuthority;
         }
 
         protected override void AfterNextStateEnter()

@@ -96,7 +96,7 @@ namespace ProjectCore.Prototype
 
         private bool ShouldPerformPoseControl()
         {
-            return ParentNetworkBehaviour.HasStateAuthority || ParentNetworkBehaviour.HasInputAuthority;
+            return HasSimulationAuthority;
         }
     }
 }

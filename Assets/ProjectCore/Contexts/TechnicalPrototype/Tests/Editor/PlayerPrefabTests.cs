@@ -38,8 +38,12 @@ namespace ProjectCore.TechnicalPrototype
             Assert.That(serializedRoot.FindProperty("_playerActionComponent").objectReferenceValue, Is.SameAs(action));
             Assert.That(serializedRoot.FindProperty("_entityStateMachine").objectReferenceValue, Is.SameAs(controller));
             var serializedController = new SerializedObject(controller);
-            Assert.That(serializedController.FindProperty("_inputSource").objectReferenceValue,
+            Assert.That(serializedController.FindProperty("_inputSource"), Is.Null);
+            Assert.That(new SerializedObject(prefab.GetComponent<PlayerNetworkEntityInstaller>())
+                .FindProperty("_inputSource").objectReferenceValue,
                 Is.SameAs(prefab.GetComponent<PlayerInputSourceComponent>()));
+            Assert.That(root, Is.Not.InstanceOf<IPlayerInputAccessor>());
+            Assert.That(prefab.GetComponent<PlayerInputSourceComponent>(), Is.InstanceOf<IPlayerInputAccessor>());
             Assert.That(serializedController.FindProperty("_dodgeState").objectReferenceValue,
                 Is.SameAs(prefab.GetComponentInChildren<PlayerDodgeState>()));
             Assert.That(serializedRoot.FindProperty("_combatHitProbeComponent").objectReferenceValue, Is.SameAs(probe));

@@ -8,6 +8,8 @@ namespace ProjectCore.GameCore
 
         bool HasValidNetworkContext { get; }
 
+        bool HasSimulationAuthority { get; }
+
         bool IsComponentAvailable { get; }
 
         void Init();
